@@ -58,7 +58,7 @@ class Xrace_UserController extends AbstractController
 			{
 				$UserList['UserList'][$UserId]['sex'] = isset($SexList[$UserInfo['sex']])?$SexList[$UserInfo['sex']]:"保密";
 				$UserList['UserList'][$UserId]['AuthStatus'] = isset($AuthStatusList[$UserInfo['auth_state']])?$AuthStatusList[$UserInfo['auth_state']]:"未知";
-				$UserList['UserList'][$UserId]['AuthStatus'] = isset($AuthIdTypesList[strtoupper(trim($UserInfo['id_type']))])?$UserList['UserList'][$UserId]['AuthStatus']."/".$AuthIdTypesList[strtoupper(trim($UserInfo['id_type']))]:$UserList['UserList'][$UserId]['AuthStatus'];
+				$UserList['UserList'][$UserId]['AuthStatus'] = ($UserInfo['auth_state'] == "AUTHED" && isset($AuthIdTypesList[strtoupper(trim($UserInfo['id_type']))]))?$UserList['UserList'][$UserId]['AuthStatus']."/".$AuthIdTypesList[strtoupper(trim($UserInfo['id_type']))]:$UserList['UserList'][$UserId]['AuthStatus'];
 				$UserList['UserList'][$UserId]['Birthday'] = is_null($UserInfo['birth_day'])?"未知":$UserInfo['birth_day'];
 
 			}
@@ -265,24 +265,15 @@ class Xrace_UserController extends AbstractController
 					}
 					elseif($UserInfo['auth_state'] == "UNAUTH")
 					{
-						$Auth = $this->oUser->UserUnAuth($UserId,$UserInfo,$UserAuthInfo);
+						$UInfo = array('auth_state'=>$UserInfo['auth_state']);
+						$Auth = $this->oUser->UserUnAuth($UserId,$UInfo,$UserAuthInfo);
 						$response = $Auth ? array('errno' => 0) : array('errno' => 9);
 
 					}
 
 				}
-				die();
 
 			}
-			//elseif(if($UserInfo['id_type']==""))
-			//elseif(intval($bind['RaceCatalogId'])<=0)
-			{
-			//	$response = array('errno' => 2);
-			}
-			//print_r($UserInfo);
-			//print_r($response);
-			//die();
-
 			echo json_encode($response);
 			return true;
 

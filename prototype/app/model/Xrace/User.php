@@ -176,9 +176,10 @@ class Xrace_User extends Base_Widget
 		return $this->db->getOne($sql);
 	}
 	/**
-	 * 获取用户数量
-	 * @param $fields
-	 * @param $params
+	 * 用户实名名认证通过
+	 * @param $UserId
+	 * @param $UserInfo
+	 * @param $AuthInfo
 	 * @return array
 	 */
 	public function UserAuth($UserId,$UserInfo,$AuthInfo)
@@ -204,5 +205,35 @@ class Xrace_User extends Base_Widget
 			return false;
 		}
 	}
+	/**
+	 * 用户实名名认证通过
+	 * @param $UserId
+	 * @param $UserInfo
+	 * @param $AuthInfo
+	 * @return array
+	 */
+	public function UserUnAuth($UserId,$UserInfo,$AuthInfo)
+	{
 
+		$UserAuthInfo = $this->getUserAuthInfo($UserId);
+		$UserAuthInfo['auth_resp'] = $AuthInfo['auth_resp'];
+		$UserAuthInfo['auth_result'] = "DENY";
+		$UserAuthInfo['op_time'] = date("Y-m-d H:i:s",time());
+		$UserAuthInfo['op_uid'] = $AuthInfo['op_uid'];
+		//事务开始
+		$this->db->begin();
+		$UserProfileUpdate = $this->updateUserInfo($UserId,$UserInfo);
+		$UserAuthInfoUpdate = $this->updateUserAuthInfo($UserId,$UserAuthInfo);
+		$UserAuthLogInsert = $this->insertUserAuthLog($UserAuthInfo+array('auth_id'=>rand(111,999)));
+		if($UserProfileUpdate && $UserAuthInfoUpdate && $UserAuthLogInsert)
+		{
+			$this->db->commit();
+			return true;
+		}
+		else
+		{
+			$this->db->rollBack();
+			return false;
+		}
+	}
 }

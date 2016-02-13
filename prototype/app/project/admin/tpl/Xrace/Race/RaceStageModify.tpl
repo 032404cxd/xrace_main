@@ -54,6 +54,7 @@ $('#race_stage_update_submit').click(function(){
 				errors[1] = '赛事分站名称不能为空，请修正后再次提交';
 				errors[2] = '赛事分站ID无效，请修正后再次提交';
 				errors[3] = '请选择一个有效的赛事，请修正后再次提交';
+				errors[4] = '请选择至少一个赛事分组，请修正后再次提交';
 				errors[9] = '入库失败，请修正后再次提交';
 				divBox.alertBox(errors[jsonResponse.errno],function(){});
 			} else {
