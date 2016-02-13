@@ -11,14 +11,22 @@ class Xrace_User extends Base_Widget
 	protected $table = 'user_profile';
 	protected $table_auth = 'user_auth';
 	protected $table_auth_log = 'user_auth_log';
+	//性别列表
 	protected $sex = array('MALE'=>"男","FEMALE"=>"女");
+	//实名认证状态
 	protected $auth_status = array('UNAUTH'=>"未审核","AUTHING"=>"审核中","AUTHED"=>"已审核");
+	//提交时对应的实名认证状态名
 	protected $auth_status_submit = array('UNAUTH'=>"不通过","AUTHED"=>"审核通过");
+	//认证记录中对应的实名认证状态名
+	protected $auth_status_log = array('DENY'=>"拒绝","ALLOWED"=>"通过");
+	//实名认证用到的证件类型列表
 	protected $auth_id_type = array('IDCARD'=>"身份证","PASSPORT"=>"护照");
+	//获取性别列表
 	public function getSexList()
 	{
 		return $this->sex;
 	}
+	//获取实名认证状态
 	public function getAuthStatus($type = "display")
 	{
 		if($type=="display")
@@ -30,14 +38,15 @@ class Xrace_User extends Base_Widget
 			return $this->auth_status_submit;
 		}
 	}
+	//获取实名认证的证件列表
 	public function getAuthIdType()
 	{
 		return $this->auth_id_type;
 	}
 	/**
-	 * 获取单条记录
-	 * @param integer $AppId
-	 * @param string $fields
+	 * 获取单个用户记录
+	 * @param char $UserId 用户ID
+	 * @param string $fields 所要获取的数据列
 	 * @return array
 	 */
 	public function getUserInfo($UserId, $fields = '*')
@@ -47,9 +56,9 @@ class Xrace_User extends Base_Widget
 		return $this->db->selectRow($table_to_process, $fields, '`user_id` = ?', $UserId);
 	}
 	/**
-	 * 更新
-	 * @param integer $AppId
-	 * @param array $bind
+	 * 更新单个用户记录
+	 * @param char $UserId 用户ID
+	 * @param array $bind 更新的数据列表
 	 * @return boolean
 	 */
 	public function updateUserInfo($UserId, array $bind)
@@ -59,8 +68,8 @@ class Xrace_User extends Base_Widget
 		return $this->db->update($table_to_process, $bind, '`user_id` = ?', $UserId);
 	}
 	/**
-	 * 更新
-	 * @param integer $AppId
+	 * 更新单个用户的实名认证状态记录
+	 * @param char $UserId 用户ID
 	 * @param array $bind
 	 * @return boolean
 	 */
@@ -71,9 +80,8 @@ class Xrace_User extends Base_Widget
 		return $this->db->update($table_to_process, $bind, '`user_id` = ?', $UserId);
 	}
 	/**
-	 * 更新
-	 * @param integer $AppId
-	 * @param array $bind
+	 * 插入一条用户的实名认证记录
+	 * @param array $bind 更新的数据列表
 	 * @return boolean
 	 */
 	public function insertUserAuthLog(array $bind)
@@ -82,9 +90,9 @@ class Xrace_User extends Base_Widget
 		return $this->db->insert($table_to_process, $bind);
 	}
 	/**
-	 * 获取单条记录
-	 * @param integer $AppId
-	 * @param string $fields
+	 * 获取单条用户实名认证的状态记录
+	 * @param char $UserId 用户ID
+	 * @param string $fields 所要获取的数据列
 	 * @return array
 	 */
 	public function getUserAuthInfo($UserId, $fields = '*')
@@ -95,8 +103,8 @@ class Xrace_User extends Base_Widget
 	}
 	/**
 	 * 获取用户列表
-	 * @param $fields
-	 * @param $params
+	 * @param $fields  所要获取的数据列
+	 * @param $params 传入的条件列表
 	 * @return array
 	 */
 	public function getUserLst($params,$fields = array("*"))
@@ -147,9 +155,9 @@ class Xrace_User extends Base_Widget
 	}
 	/**
 	 * 获取用户数量
-	 * @param $fields
-	 * @param $params
-	 * @return array
+	 * @param $fields  所要获取的数据列
+	 * @param $params 传入的条件列表
+	 * @return integer
 	 */
 	public function getUserCount($params)
 	{
@@ -177,10 +185,10 @@ class Xrace_User extends Base_Widget
 	}
 	/**
 	 * 用户实名名认证通过
-	 * @param $UserId
-	 * @param $UserInfo
-	 * @param $AuthInfo
-	 * @return array
+	 * @param $UserId 用户ID
+	 * @param $UserInfo 更新的用户信息
+	 * @param $AuthInfo 更新的用户实名认证状态数据
+	 * @return boolean
 	 */
 	public function UserAuth($UserId,$UserInfo,$AuthInfo)
 	{
@@ -207,10 +215,10 @@ class Xrace_User extends Base_Widget
 	}
 	/**
 	 * 用户实名名认证通过
-	 * @param $UserId
-	 * @param $UserInfo
-	 * @param $AuthInfo
-	 * @return array
+	 * @param $UserId 用户ID
+	 * @param $UserInfo 更新的用户信息
+	 * @param $AuthInfo 更新的用户实名认证状态数据
+	 * @return boolean
 	 */
 	public function UserUnAuth($UserId,$UserInfo,$AuthInfo)
 	{
