@@ -157,10 +157,38 @@ class Xrace_UserController extends AbstractController
 			$UserInfo['sex'] = isset($SexList[$UserInfo['sex']])?$SexList[$UserInfo['sex']]:"保密";
 			//实名认证状态
 			$UserInfo['AuthStatus'] = isset($AuthStatusList[$UserInfo['auth_state']])?$AuthStatusList[$UserInfo['auth_state']]:"未知";
+			//证件有效期
+			$UserInfo['AuthExpireDate'] = !is_null($UserInfo['expire_day'])?$UserInfo['expire_day']:"未知";
 			//用户头像
 			$UserInfo['thumb'] = urldecode($UserInfo['thumb']);
 			//实名认证证件类型
 			$UserInfo['AuthIdType'] = isset($AuthIdTypesList[strtoupper(trim($UserInfo['id_type']))])?$AuthIdTypesList[strtoupper(trim($UserInfo['id_type']))]:"未知";
+			//获取用户实名认证记录
+			$UserInfo['UserAuthLog'] = $this->oUser->getUserAuthLog($UserId,'submit_time,op_time,op_uid,auth_result,auth_resp');
+			if(count($UserInfo['UserAuthLog']))
+			{
+				//初始化一个空的后台管理员列表
+				$ManagerList = array();
+				//获取实名认证记录的状态列表
+				$AuthLogIdStatusList = $this->oUser->getAuthLogStatusTypeList();
+				foreach($UserInfo['UserAuthLog'] as $LogId => $AuthLog)
+				{
+					// 如果管理员记录已经获取到
+					if(isset($ManagerList[$AuthLog['op_uid']]))
+					{
+						$ManagerInfo = $ManagerList[$AuthLog['op_uid']];
+					}
+					//否则重新获取
+					else
+					{
+						$ManagerInfo = $this->manager->get($AuthLog['op_uid'], "name");
+					}
+					//记录管理员账号
+					$UserInfo['UserAuthLog'][$LogId]['ManagerName'] = $ManagerInfo['name'];
+					//认证结果
+					$UserInfo['UserAuthLog'][$LogId]['AuthResult'] = $AuthLogIdStatusList[$AuthLog['auth_result']];
+				}
+			}
 			//渲染模板
 			include $this->tpl('Xrace_User_UserDetail');
 		}

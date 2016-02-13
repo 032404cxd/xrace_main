@@ -43,6 +43,11 @@ class Xrace_User extends Base_Widget
 	{
 		return $this->auth_id_type;
 	}
+	//获取实名认证的记录的状态列表
+	public function getAuthLogStatusTypeList()
+	{
+		return $this->auth_status_log;
+	}
 	/**
 	 * 获取单个用户记录
 	 * @param char $UserId 用户ID
@@ -243,5 +248,18 @@ class Xrace_User extends Base_Widget
 			$this->db->rollBack();
 			return false;
 		}
+	}
+	/**
+	 * 获取单个用户记录
+	 * @param char $UserId 用户ID
+	 * @param string $fields 所要获取的数据列
+	 * @return array
+	 */
+	public function getUserAuthLog($UserId, $fields = '*')
+	{
+		$UserId = trim($UserId);
+		$table_to_process = Base_Widget::getDbTable($this->table_auth_log);
+		$sql = "select $fields from $table_to_process where  `user_id` = ? order by op_time desc";
+		return $this->db->getAll($sql,  $UserId);
 	}
 }
