@@ -33,8 +33,9 @@
         {tpl:if($UserInfo.id_number!="")}
         <tr class="hover">
             <th align="center" class="rowtip">证件类型</th>
-            <td align="left" colspan = "3">{tpl:$UserInfo.AuthIdType/}</td>
-
+            <td align="left">{tpl:$UserInfo.AuthIdType/}</td>
+            <th align="center" class="rowtip">生日</th>
+            <td align="left">{tpl:$UserInfo.Birthday/}</td>
         </tr>
         <tr class="hover">
             <th align="center" class="rowtip">证件号码</th>

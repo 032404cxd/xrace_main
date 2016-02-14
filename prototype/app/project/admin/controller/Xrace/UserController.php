@@ -159,6 +159,8 @@ class Xrace_UserController extends AbstractController
 			$UserInfo['AuthStatus'] = isset($AuthStatusList[$UserInfo['auth_state']])?$AuthStatusList[$UserInfo['auth_state']]:"未知";
 			//证件有效期
 			$UserInfo['AuthExpireDate'] = !is_null($UserInfo['expire_day'])?$UserInfo['expire_day']:"未知";
+			//证件有效期
+			$UserInfo['Birthday'] = !is_null($UserInfo['birth_day'])?$UserInfo['birth_day']:"未知";
 			//用户头像
 			$UserInfo['thumb'] = urldecode($UserInfo['thumb']);
 			//实名认证证件类型
@@ -362,6 +364,67 @@ class Xrace_UserController extends AbstractController
 			}
 			echo json_encode($response);
 			return true;
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//实名认证记录
+	public function authLogAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission(0);
+		if($PermissionCheck['return'])
+		{
+			//页面参数预处理
+			$params['StartDate'] = isset($this->request->StartDate)?substr(strtoupper(trim($this->request->StartDate)),0,10):date("Y-m-d",time());
+			$params['EndDate'] = isset($this->request->EndDate)?substr(strtoupper(trim($this->request->EndDate)),0,10):date("Y-m-d",time());
+			$params['AuthResult'] = isset($this->request->AuthResult)?substr(strtoupper(trim($this->request->AuthResult)),0,8):"";
+			$params['ManagerId'] = isset($this->request->ManagerId)?intval($this->request->ManagerId):0;
+
+			//分页参数
+			$params['Page'] = abs(intval($this->request->Page))?abs(intval($this->request->Page)):1;
+			$params['PageSize'] = 2;
+			//获取用户列表时需要获得记录总数
+			$params['getCount'] = 1;
+
+			//获取实名认证记录的状态列表
+			$AuthLogIdStatusList = $this->oUser->getAuthLogStatusTypeList();
+			//获取所有管理员列表
+			$ManagerList = $this->manager->getAll('id,name');
+			//获取实名认证记录
+			$AuthLog = $this->oUser->getAuthLog($params);
+			//导出EXCEL链接
+			$export_var = "<a href =".(Base_Common::getUrl('','xrace/user','auth.log.download',$params))."><导出表格></a>";
+			//翻页参数
+			$page_url = Base_Common::getUrl('','xrace/user','auth.log',$params)."&Page=~page~";
+			$page_content =  base_common::multi($AuthLog['AuthLogCount'], $page_url, $params['Page'], $params['PageSize'], 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');
+			//初始化一个空的用户数组
+			$UserList = array();
+			foreach($AuthLog['AuthLog'] as $AuthId => $LogInfo)
+			{
+				//管理员账号
+				$AuthLog['AuthLog'][$AuthId]['ManagerName'] = isset($ManagerList[$LogInfo['op_uid']])? $ManagerList[$LogInfo['op_uid']]['name']:"未知";
+				$AuthLog['AuthLog'][$AuthId]['AuthResultName'] = isset($AuthLogIdStatusList[$LogInfo['auth_result']])?$AuthLogIdStatusList[$LogInfo['auth_result']]:"未知";
+				// 如果管理员记录已经获取到
+				if(isset($UserList[$LogInfo['user_id']]))
+				{
+					$ManagerInfo = $UserList[$LogInfo['user_id']];
+				}
+				//否则重新获取
+				else
+				{
+					$ManagerInfo = $this->oUser->getUserInfo($LogInfo['user_id'], "name");
+				}
+				$AuthLog['AuthLog'][$AuthId]['UserName'] = $ManagerInfo['name'];
+				//实名认证提交的照片
+				$AuthLog['AuthLog'][$AuthId]['submit_img1'] = isset($AuthLog['AuthLog'][$AuthId]['submit_img1'])?urldecode($AuthLog['AuthLog'][$AuthId]['submit_img1']):"";
+				$AuthLog['AuthLog'][$AuthId]['submit_img2'] = isset($AuthLog['AuthLog'][$AuthId]['submit_img2'])?urldecode($AuthLog['AuthLog'][$AuthId]['submit_img2']):"";
+			}
+			//模板渲染
+			include $this->tpl('Xrace_User_AuthLog');
 		}
 		else
 		{

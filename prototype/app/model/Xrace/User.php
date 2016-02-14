@@ -249,6 +249,7 @@ class Xrace_User extends Base_Widget
 			return false;
 		}
 	}
+
 	/**
 	 * 获取单个用户记录
 	 * @param char $UserId 用户ID
@@ -261,5 +262,83 @@ class Xrace_User extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_auth_log);
 		$sql = "select $fields from $table_to_process where  `user_id` = ? order by op_time desc";
 		return $this->db->getAll($sql,  $UserId);
+	}
+	/**
+	 * 获取实名认证记录
+	 * @param $fields  所要获取的数据列
+	 * @param $params 传入的条件列表
+	 * @return array
+	 */
+	public function getAuthLog($params,$fields = array("*"))
+	{
+		//生成查询列
+		$fields = Base_common::getSqlFields($fields);
+
+		//获取需要用到的表名
+		$table_to_process = Base_Widget::getDbTable($this->table_auth_log);
+		//开始时间
+		$whereStartDate = isset($params['StartDate'])?" op_time >= '".$params['StartDate']."' ":"";
+		//开始时间
+		$whereEndDate = isset($params['EndDate'])?" op_time <= '".date("Y-m-d",strtotime($params['EndDate'])+86400)."' ":"";
+		//审核结果
+		$whereAuthResult = isset($this->auth_status_log[$params['AuthResult']])?" auth_result = '".$params['AuthResult']."' ":"";
+		//操作人
+		$whereManager = $params['ManagerId']?" op_uid = ".$params['ManagerId']." ":"";
+		//所有查询条件置入数组
+		$whereCondition = array($whereStartDate,$whereEndDate,$whereAuthResult,$whereManager);
+		//生成条件列
+		$where = Base_common::getSqlWhere($whereCondition);
+		//获取用户数量
+		if(isset($params['getCount'])&&$params['getCount']==1)
+		{
+			$AuthLogCount = $this->getAuthLogCount($params);
+		}
+		else
+		{
+			$AuthLogCount = 0;
+		}
+		$limit  = isset($params['Page'])&&$params['Page']?" limit ".($params['Page']-1)*$params['PageSize'].",".$params['PageSize']." ":"";
+		$order = " ORDER BY op_time desc";
+		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." ".$order." ".$limit;
+		$return = $this->db->getAll($sql);
+		$AuthLog = array('AuthLog'=>array(),'AuthLogCount'=>$AuthLogCount);
+		if(count($return))
+		{
+			foreach($return as $key => $value)
+			{
+				$AuthLog['AuthLog'][$value['auth_id']] = $value;
+			}
+		}
+		return $AuthLog;
+	}
+	/**
+	 * 获取用户数量
+	 * @param $fields  所要获取的数据列
+	 * @param $params 传入的条件列表
+	 * @return integer
+	 */
+	public function getAuthLogCount($params)
+	{
+		//生成查询列
+		$fields = Base_common::getSqlFields(array("AuthLOgCount"=>"count(auth_id)"));
+
+		//获取需要用到的表名
+		$table_to_process = Base_Widget::getDbTable($this->table_auth_log);
+		//开始时间
+		$whereStartDate = isset($params['StartDate'])?" op_time >= '".$params['StartDate']."' ":"";
+		//开始时间
+		$whereEndDate = isset($params['EndDate'])?" op_time <= '".date("Y-m-d",strtotime($params['EndDate'])+86400)."' ":"";
+		//审核结果
+		$whereAuthResult = isset($this->auth_status_log[$params['AuthResult']])?" auth_result = '".$params['AuthResult']."' ":"";
+		//操作人
+		$whereManager = $params['ManagerId']?" op_uid = ".$params['ManagerId']." ":"";
+		//所有查询条件置入数组
+		$whereCondition = array($whereStartDate,$whereEndDate,$whereAuthResult,$whereManager);
+		//生成条件列
+		$where = Base_common::getSqlWhere($whereCondition);
+
+		//生成条件列
+		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
+		return $this->db->getOne($sql);
 	}
 }

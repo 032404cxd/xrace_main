@@ -277,7 +277,13 @@ class Widget_Manager extends Base_Widget
     public function getAll($fields = '*')
     {
         $sql = "SELECT $fields FROM {$this->table} ";
-        return $this->db->getAll($sql);
+        $return =  $this->db->getAll($sql);
+        $ManagerList = array();
+        foreach($return as $key => $value)
+        {
+            $ManagerList[$value['id']] = $value;
+        }
+        return $ManagerList;
     }
 
     /**
