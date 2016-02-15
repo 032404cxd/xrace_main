@@ -2,11 +2,52 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="69647171-536b-4395-bf05-d9681e9d8e8d" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/App.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Area.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Cage.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Class.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Depot.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Faq.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Faq/Type.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Hero.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Instmap.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/ItemSeal.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Job.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Loto.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Machine.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/MailFix.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Map.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Money.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/MoneyType.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Partner.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Partner/App.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Passage.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Permission.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Product/Pack.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Product/Product.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Product/Type.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Quest.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Research.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Research/Question.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/SecurityAnswer.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Server.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Skin.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/SocketQueue.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/SocketType.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Source.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Source/Action.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Source/Detail.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Source/Project.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Source/Type.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/TestUser.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Video/Type.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Video/Video.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Config/Weixin.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Widget/Coin.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/model/Widget/Scheduler.php" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prototype/app/model/Xrace/User.php" afterPath="$PROJECT_DIR$/prototype/app/model/Xrace/User.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prototype/app/project/admin/controller/Xrace/UserController.php" afterPath="$PROJECT_DIR$/prototype/app/project/admin/controller/Xrace/UserController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prototype/app/project/admin/tpl/Index/home.tpl" afterPath="$PROJECT_DIR$/prototype/app/project/admin/tpl/Index/home.tpl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prototype/app/project/admin/var/tpl_cache/Index_home_63ba057536753594c3b4e95940473fc4.php" afterPath="$PROJECT_DIR$/prototype/app/project/admin/var/tpl_cache/Index_home_63ba057536753594c3b4e95940473fc4.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prototype/app/project/admin/etc/database.php" afterPath="$PROJECT_DIR$/prototype/app/project/admin/etc/database.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prototype/app/project/admin/etc/table.php" afterPath="$PROJECT_DIR$/prototype/app/project/admin/etc/table.php" />
     </list>
     <ignored path="xrace_main.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -28,11 +69,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
-      <file leaf-file-name="UserController.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="UserController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/controller/Xrace/UserController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5909713">
-              <caret line="175" column="16" selection-start-line="175" selection-start-column="16" selection-end-line="175" selection-end-column="16" />
+            <state vertical-scroll-proportion="-4.8050847">
+              <caret line="63" column="24" selection-start-line="63" selection-start-column="24" selection-end-line="63" selection-end-column="24" />
               <folding>
                 <marker date="1455535516608" expanded="true" signature="13525:13577" placeholder="..." />
               </folding>
@@ -40,26 +81,86 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="table.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/etc/table.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-10.5">
+              <caret line="17" column="39" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="database.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/etc/database.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-5.4">
+              <caret line="15" column="24" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="User.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/prototype/app/model/Xrace/User.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.34177214">
-              <caret line="20" column="41" selection-start-line="20" selection-start-column="41" selection-end-line="20" selection-end-column="41" />
+            <state vertical-scroll-proportion="-1.161017">
+              <caret line="117" column="42" selection-start-line="117" selection-start-column="42" selection-end-line="117" selection-end-column="42" />
               <folding>
-                <marker date="1455535503512" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
-                <marker date="1455535503512" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
-                <marker date="1455535503512" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
-                <marker date="1455535503512" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
-                <marker date="1455535503512" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
-                <marker date="1455535503512" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
-                <marker date="1455535503512" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
-                <marker date="1455535503512" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
-                <marker date="1455535503512" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
-                <marker date="1455535503512" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
-                <marker date="1455535503512" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
-                <marker date="1455535503512" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
-                <marker date="1455535503512" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
+                <marker date="1455538377985" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
+                <marker date="1455538377985" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
+                <marker date="1455538377985" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
+                <marker date="1455538377985" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
+                <marker date="1455538377985" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
+                <marker date="1455538377985" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
+                <marker date="1455538377985" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
+                <marker date="1455538377985" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
+                <marker date="1455538377985" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
+                <marker date="1455538377985" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
+                <marker date="1455538377985" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
+                <marker date="1455538377985" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
+                <marker date="1455538377985" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Task.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/prototype/app/model/Widget/Task.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.398524">
+              <caret line="20" column="17" selection-start-line="20" selection-start-column="17" selection-end-line="20" selection-end-column="17" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="User.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/prototype/app/model/Widget/User.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-8.333333">
+              <caret line="35" column="13" selection-start-line="34" selection-start-column="33" selection-end-line="34" selection-end-column="36" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Widget.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/prototype/lib/Base/Widget.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-9.361111">
+              <caret line="49" column="51" selection-start-line="49" selection-start-column="51" selection-end-line="49" selection-end-column="51" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Hash.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/prototype/lib/Base/Db/Hash.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-5.611111">
+              <caret line="52" column="20" selection-start-line="52" selection-start-column="20" selection-end-line="52" selection-end-column="20" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -77,8 +178,10 @@
         <option value="$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/AuthLog.tpl" />
         <option value="$PROJECT_DIR$/prototype/app/project/admin/tpl/Index/home2.tpl" />
         <option value="$PROJECT_DIR$/prototype/app/project/admin/tpl/Index/home.tpl" />
-        <option value="$PROJECT_DIR$/prototype/app/model/Xrace/User.php" />
         <option value="$PROJECT_DIR$/prototype/app/project/admin/controller/Xrace/UserController.php" />
+        <option value="$PROJECT_DIR$/prototype/app/project/admin/etc/table.php" />
+        <option value="$PROJECT_DIR$/prototype/app/project/admin/etc/database.php" />
+        <option value="$PROJECT_DIR$/prototype/app/model/Xrace/User.php" />
       </list>
     </option>
   </component>
@@ -94,7 +197,7 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="-11" />
     <option name="y" value="-11" />
-    <option name="width" value="1924" />
+    <option name="width" value="1942" />
     <option name="height" value="1042" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
@@ -167,6 +270,36 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="xrace_main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="xrace_main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="prototype" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="project" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="etc" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -330,10 +463,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-11" y="-11" width="1924" height="1042" extended-state="0" />
+    <frame x="-11" y="-11" width="1942" height="1042" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24973711" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24739583" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -441,19 +574,19 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="302" column="0" selection-start-line="302" selection-start-column="0" selection-end-line="302" selection-end-column="0" />
           <folding>
-            <marker date="1455535503512" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
-            <marker date="1455535503512" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455535503512" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455535503512" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455535503512" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
+            <marker date="1455538377985" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455538377985" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455538377985" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455538377985" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
           </folding>
         </state>
       </provider>
@@ -545,19 +678,19 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="302" column="0" selection-start-line="302" selection-start-column="0" selection-end-line="302" selection-end-column="0" />
           <folding>
-            <marker date="1455535503512" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
-            <marker date="1455535503512" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455535503512" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455535503512" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455535503512" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
+            <marker date="1455538377985" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455538377985" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455538377985" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455538377985" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
           </folding>
         </state>
       </provider>
@@ -625,19 +758,19 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="261" column="96" selection-start-line="261" selection-start-column="96" selection-end-line="261" selection-end-column="96" />
           <folding>
-            <marker date="1455535503512" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
-            <marker date="1455535503512" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455535503512" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455535503512" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455535503512" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
+            <marker date="1455538377985" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455538377985" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455538377985" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455538377985" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
           </folding>
         </state>
       </provider>
@@ -752,35 +885,83 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/prototype/app/model/Xrace/User.php">
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/etc/table.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.34177214">
-          <caret line="20" column="41" selection-start-line="20" selection-start-column="41" selection-end-line="20" selection-end-column="41" />
-          <folding>
-            <marker date="1455535503512" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
-            <marker date="1455535503512" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455535503512" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455535503512" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455535503512" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455535503512" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
-          </folding>
+        <state vertical-scroll-proportion="-10.5">
+          <caret line="17" column="39" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/etc/database.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.4">
+          <caret line="15" column="24" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/controller/Xrace/UserController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5909713">
-          <caret line="175" column="16" selection-start-line="175" selection-start-column="16" selection-end-line="175" selection-end-column="16" />
+        <state vertical-scroll-proportion="-4.8050847">
+          <caret line="63" column="24" selection-start-line="63" selection-start-column="24" selection-end-line="63" selection-end-column="24" />
           <folding>
             <marker date="1455535516608" expanded="true" signature="13525:13577" placeholder="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/lib/Base/Widget.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-9.361111">
+          <caret line="49" column="51" selection-start-line="49" selection-start-column="51" selection-end-line="49" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/lib/Base/Db/Hash.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.611111">
+          <caret line="52" column="20" selection-start-line="52" selection-start-column="20" selection-end-line="52" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/model/Widget/User.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.333333">
+          <caret line="35" column="13" selection-start-line="34" selection-start-column="33" selection-end-line="34" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/model/Xrace/User.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.161017">
+          <caret line="117" column="42" selection-start-line="117" selection-start-column="42" selection-end-line="117" selection-end-column="42" />
+          <folding>
+            <marker date="1455538377985" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
+            <marker date="1455538377985" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455538377985" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455538377985" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455538377985" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455538377985" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/model/Widget/Task.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.398524">
+          <caret line="20" column="17" selection-start-line="20" selection-start-column="17" selection-end-line="20" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>

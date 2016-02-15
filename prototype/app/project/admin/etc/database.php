@@ -8,6 +8,13 @@ include dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))."/CommonC
 $db = array();
 $db['isPersistent'] = 0;
 
+$db['xrace'][0] = array(
+	'host' => HOST_LOCAL,
+	'user' => USER_LOCAL,
+	'password' => PASSWORD_LOCAL,
+	'port' => PORT_LOCAL,
+	'database' => 'xrace',
+);
 $db['prototype_global'][0] = array(
 	'host' => HOST_LOCAL,
 	'user' => USER_LOCAL,
