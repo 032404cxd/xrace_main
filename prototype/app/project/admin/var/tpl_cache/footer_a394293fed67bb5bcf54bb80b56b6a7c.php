@@ -58,7 +58,7 @@
 		
     });
     
-    getRightHtml('?ctl=index&ac=home','','');
+    getRightHtml('?ctl=index&ac=home','','','750');
     
     function getMenu(menu_id){        
         $.ajax
@@ -74,9 +74,15 @@
     	});    
     }
     
-    function getRightHtml(url,id,type){
+    function getRightHtml(url,id,type,height){
         $("#main_content").remove();
-        $(".main_content").html('<iframe id="main_content" name="left" frameBorder="0" scrolling="no" onload="IFrameReSize(\'main_content\');" src="'+url+'" width="100%"></iframe>');
+        var text;
+        if(!arguments[3]){
+            text = "IFrameReSize(\'main_content\')";
+        }else{
+            text = "IFrameReSize(\'main_content\',"+height+")";
+        }
+        $(".main_content").html('<iframe id="main_content" name="left" frameBorder="0" scrolling="no" onload="'+text+'" src="'+url+'" width="100%"></iframe>');
         if(id){
             if(type == 'li'){
                 $(".nav > li").attr("class","");
@@ -91,10 +97,13 @@
         }
     }
     
-    function IFrameReSize(iframename) {
+    function IFrameReSize(iframename,height) {
         var pTar = document.getElementById(iframename);
         if (pTar) { //ff
-            if (pTar.contentDocument && pTar.contentDocument.body.offsetHeight) {
+            if(arguments[1]){
+                pTar.height = arguments[1];
+            }
+            else if (pTar.contentDocument && pTar.contentDocument.body.offsetHeight) {
                 pTar.height = pTar.contentDocument.body.offsetHeight+10;
             } //ie
             else if (pTar.Document && pTar.Document.body.scrollHeight) {

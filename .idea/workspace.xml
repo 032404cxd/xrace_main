@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="69647171-536b-4395-bf05-d9681e9d8e8d" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/project/admin/etc/App.php" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/project/admin/etc/Partner.php" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/project/admin/etc/PartnerApp.php" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/project/admin/etc/Server.php" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/prototype/app/project/admin/etc/httpsqs.php" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="xrace_main.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -422,7 +418,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-11" y="-11" width="1942" height="1042" extended-state="7" />
+    <frame x="-11" y="-11" width="1942" height="1042" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24739583" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
