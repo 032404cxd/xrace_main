@@ -40,10 +40,10 @@ class Xrace_UserController extends AbstractController
 			$AuthIdTypesList = $this->oUser->getAuthIdType();
 
 			//页面参数预处理
-			$params['Sex'] = isset($SexList[strtoupper(trim($this->request->Sex))])?substr(strtoupper(trim($this->request->Sex)),0,8):"";
+			$params['Sex'] = isset($SexList[intval($this->request->Sex)])?intval($this->request->Sex):0;
 			$params['Name'] = urldecode(trim($this->request->Name))?substr(urldecode(trim($this->request->Name)),0,8):"";
 			$params['NickName'] = urldecode(trim($this->request->NickName))?substr(urldecode(trim($this->request->NickName)),0,8):"";
-			$params['AuthStatus'] = isset($AuthStatusList[strtoupper(trim($this->request->AuthStatus))])?substr(strtoupper(trim($this->request->AuthStatus)),0,8):"";
+			$params['AuthStatus'] = isset($AuthStatusList[intval($this->request->AuthStatus)])?intval($this->request->AuthStatus):0;
 
 			//分页参数
 			$params['Page'] = abs(intval($this->request->Page))?abs(intval($this->request->Page)):1;
@@ -64,7 +64,7 @@ class Xrace_UserController extends AbstractController
 				//实名认证状态
 				$UserList['UserList'][$UserId]['AuthStatus'] = isset($AuthStatusList[$UserInfo['auth_state']])?$AuthStatusList[$UserInfo['auth_state']]:"未知";
 				//如果当前已经认证，则同时拼接上认证的证件类型
-				$UserList['UserList'][$UserId]['AuthStatus'] = ($UserInfo['auth_state'] == "AUTHED" && isset($AuthIdTypesList[strtoupper(trim($UserInfo['id_type']))]))?$UserList['UserList'][$UserId]['AuthStatus']."/".$AuthIdTypesList[strtoupper(trim($UserInfo['id_type']))]:$UserList['UserList'][$UserId]['AuthStatus'];
+				$UserList['UserList'][$UserId]['AuthStatus'] = ($UserInfo['auth_state'] == 2 && isset($AuthIdTypesList[intval($UserInfo['id_type'])]))?$UserList['UserList'][$UserId]['AuthStatus']."/".$AuthIdTypesList[intval($UserInfo['id_type'])]:$UserList['UserList'][$UserId]['AuthStatus'];
 				//用户生日
 				$UserList['UserList'][$UserId]['Birthday'] = is_null($UserInfo['birth_day'])?"未知":$UserInfo['birth_day'];
 			}
@@ -92,10 +92,10 @@ class Xrace_UserController extends AbstractController
 			$AuthIdTypesList = $this->oUser->getAuthIdType();
 
 			//页面参数预处理
-			$params['Sex'] = isset($SexList[strtoupper(trim($this->request->Sex))])?substr(strtoupper(trim($this->request->Sex)),0,8):"";
+			$params['Sex'] = isset($SexList[intval($this->request->Sex)])?intval($this->request->Sex):0;
 			$params['Name'] = urldecode(trim($this->request->Name))?substr(urldecode(trim($this->request->Name)),0,8):"";
 			$params['NickName'] = urldecode(trim($this->request->NickName))?substr(urldecode(trim($this->request->NickName)),0,8):"";
-			$params['AuthStatus'] = isset($AuthStatusList[strtoupper(trim($this->request->AuthStatus))])?substr(strtoupper(trim($this->request->AuthStatus)),0,8):"";
+			$params['AuthStatus'] = isset($AuthStatusList[intval($this->request->AuthStatus)])?intval($this->request->AuthStatus):0;
 
 			//分页参数
 			$params['PageSize'] = 500;
@@ -164,7 +164,7 @@ class Xrace_UserController extends AbstractController
 			//用户头像
 			$UserInfo['thumb'] = urldecode($UserInfo['thumb']);
 			//实名认证证件类型
-			$UserInfo['AuthIdType'] = isset($AuthIdTypesList[strtoupper(trim($UserInfo['id_type']))])?$AuthIdTypesList[strtoupper(trim($UserInfo['id_type']))]:"未知";
+			$UserInfo['AuthIdType'] = isset($AuthIdTypesList[intval($UserInfo['id_type'])])?$AuthIdTypesList[intval($UserInfo['id_type'])]:"未知";
 			//获取用户实名认证记录
 			$UserInfo['UserAuthLog'] = $this->oUser->getUserAuthLog($UserId,'submit_time,op_time,op_uid,auth_result,auth_resp');
 			if(count($UserInfo['UserAuthLog']))
@@ -286,9 +286,9 @@ class Xrace_UserController extends AbstractController
 			$AuthInfo=$this->request->from('UserId','UserRealName','UserSex','UserAuthStatus','UserAuthIdType','UserAuthIdNo','UserBirthDay','UserAuthReason','UserAuthExpireDay');
 			$UserId = trim($this->request->UserId);
 			//页面参数预处理
-			$UserInfo['sex'] = isset($SexList[strtoupper(trim($AuthInfo['UserSex']))])?substr(strtoupper(trim($AuthInfo['UserSex'])),0,8):"";
-			$UserInfo['id_type'] = isset($AuthIdTypesList[strtoupper(trim($AuthInfo['UserAuthIdType']))])?substr(strtoupper(trim($AuthInfo['UserAuthIdType'])),0,8):"";
-			$UserInfo['auth_state'] = isset($AuthStatusList[strtoupper(trim($AuthInfo['UserAuthStatus']))])?substr(strtoupper(trim($AuthInfo['UserAuthStatus'])),0,8):"";
+			$UserInfo['sex'] = isset($SexList[intval($AuthInfo['UserSex'])])?intval($AuthInfo['UserSex']):0;
+			$UserInfo['id_type'] = isset($AuthIdTypesList[intval($AuthInfo['UserAuthIdType'])])?intval($AuthInfo['UserAuthIdType']):0;
+			$UserInfo['auth_state'] = isset($AuthStatusList[intval($AuthInfo['UserAuthStatus'])])?intval($AuthInfo['UserAuthStatus']):0;
 			$UserInfo['id_number'] = substr(strtoupper(trim($AuthInfo['UserAuthIdNo'])),0,30);
 			$UserInfo['birth_day'] = $AuthInfo['UserBirthDay'];
 			$UserInfo['expire_day'] = $AuthInfo['UserAuthExpireDay'];
@@ -296,12 +296,12 @@ class Xrace_UserController extends AbstractController
 			//执行操作的管理员ID
 			$UserAuthInfo['op_uid'] = $this->manager->id;
 			//通过认证要求选择性别
-			if($UserInfo['auth_state'] == "AUTHED" && $UserInfo['sex']=="")
+			if($UserInfo['auth_state'] == 2 && $UserInfo['sex']== 0)
 			{
 				$response = array('errno' => 2);
 			}
 			//通过认证要求选择证件类型
-			elseif($UserInfo['auth_state'] == "AUTHED" && $UserInfo['id_type']=="")
+			elseif($UserInfo['auth_state'] == 2 && $UserInfo['id_type']== 0)
 			{
 				$response = array('errno' => 3);
 			}
@@ -311,22 +311,22 @@ class Xrace_UserController extends AbstractController
 				$response = array('errno' => 4);
 			}
 			//通过认证要求填写证件号码
-			elseif($UserInfo['auth_state'] == "AUTHED" && $UserInfo['id_number']=="" )
+			elseif($UserInfo['auth_state'] == 2 && $UserInfo['id_number']=="" )
 			{
 				$response = array('errno' => 5);
 			}
 			//通过认证要求填写有效的生日 不小于 今天
-			elseif($UserInfo['auth_state'] == "AUTHED" && strtotime($UserInfo['birth_day']) < time())
+			elseif($UserInfo['auth_state'] == 2 && strtotime($UserInfo['birth_day']) < time())
 			{
 				$response = array('errno' => 6);
 			}
 			//通过认证要求填写有效的证件有效期 不小于 今天
-			elseif($UserInfo['auth_state'] == "AUTHED" && strtotime($UserInfo['expire_day']) < time())
+			elseif($UserInfo['auth_state'] == 2 && strtotime($UserInfo['expire_day']) < time())
 			{
 				$response = array('errno' => 7);
 			}
 			//拒绝认证需要填写理由
-			elseif($UserInfo['auth_state'] == "UNAUTH" && $UserAuthInfo['auth_resp'] == "")
+			elseif($UserInfo['auth_state'] == 2 && $UserAuthInfo['auth_resp'] == "")
 			{
 				$response = array('errno' => 8);
 			}
@@ -340,20 +340,20 @@ class Xrace_UserController extends AbstractController
 					$response = array('errno' => 1);
 				}
 				//如果用户已经被实名认证
-				elseif($User['auth_state'] == "AUTHED")
+				elseif($User['auth_state'] == 2)
 				{
 					$response = array('errno' => 10);
 				}
 				else
 				{
 					//执行认证操作
-					if($UserInfo['auth_state'] == "AUTHED")
+					if($UserInfo['auth_state'] == 2)
 					{
 						$Auth = $this->oUser->UserAuth($UserId,$UserInfo,$UserAuthInfo);
 						$response = $Auth ? array('errno' => 0) : array('errno' => 9);
 					}
 					//执行认证拒绝操作
-					elseif($UserInfo['auth_state'] == "UNAUTH")
+					elseif($UserInfo['auth_state'] == 0)
 					{
 						//只保存认证状态
 						$UInfo = array('auth_state'=>$UserInfo['auth_state']);

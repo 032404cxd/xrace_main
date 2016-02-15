@@ -12,15 +12,15 @@ class Xrace_User extends Base_Widget
 	protected $table_auth = 'user_auth';
 	protected $table_auth_log = 'user_auth_log';
 	//性别列表
-	protected $sex = array('MALE'=>"男","FEMALE"=>"女");
+	protected $sex = array('1'=>"男","2"=>"女");
 	//实名认证状态
-	protected $auth_status = array('UNAUTH'=>"未审核","AUTHING"=>"审核中","AUTHED"=>"已审核");
+	protected $auth_status = array('0'=>"未审核",'1'=>"审核中",'2'=>"已审核");
 	//提交时对应的实名认证状态名
-	protected $auth_status_submit = array('UNAUTH'=>"不通过","AUTHED"=>"审核通过");
+	protected $auth_status_submit = array('0'=>"不通过",'2'=>"审核通过");
 	//认证记录中对应的实名认证状态名
-	protected $auth_status_log = array('DENY'=>"拒绝","ALLOWED"=>"通过");
+	protected $auth_status_log = array('0'=>"拒绝","2"=>"通过");
 	//实名认证用到的证件类型列表
-	protected $auth_id_type = array('IDCARD'=>"身份证","PASSPORT"=>"护照");
+	protected $auth_id_type = array('1'=>"身份证","2"=>"护照");
 	//获取性别列表
 	public function getSexList()
 	{
@@ -120,9 +120,9 @@ class Xrace_User extends Base_Widget
 		//获取需要用到的表名
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		//性别判断
-		$whereSex = isset($this->sex[$params['Sex']])?" sex = '".$params['Sex']."' ":"";
+		$whereSex = isset($this->sex[$params['Sex']])?" sex = ".$params['Sex']." ":"";
 		//实名认证判断
-		$whereAuth = isset($this->auth_status[$params['AuthStatus']])?" auth_state = '".$params['AuthStatus']."' ":"";
+		$whereAuth = isset($this->auth_status[$params['AuthStatus']])?" auth_state = ".$params['AuthStatus']." ":"";
 		//姓名
 		$whereName = (isset($params['Name']) && trim($params['Name']))?" name like '%".$params['Name']."%' ":"";
 		//昵称
@@ -172,9 +172,9 @@ class Xrace_User extends Base_Widget
 		//获取需要用到的表名
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		//性别判断
-		$whereSex = isset($this->sex[$params['Sex']])?" sex = '".$params['Sex']."' ":"";
+		$whereSex = isset($this->sex[$params['Sex']])?" sex = ".$params['Sex']." ":"";
 		//实名认证判断
-		$whereAuth = isset($this->auth_status[$params['AuthStatus']])?" auth_state = '".$params['AuthStatus']."' ":"";
+		$whereAuth = isset($this->auth_status[$params['AuthStatus']])?" auth_state = ".$params['AuthStatus']." ":"";
 		//姓名
 		$whereName = (isset($params['Name']) && trim($params['Name']))?" name like '%".$params['Name']."%' ":"";
 		//昵称
@@ -281,7 +281,7 @@ class Xrace_User extends Base_Widget
 		//开始时间
 		$whereEndDate = isset($params['EndDate'])?" op_time <= '".date("Y-m-d",strtotime($params['EndDate'])+86400)."' ":"";
 		//审核结果
-		$whereAuthResult = isset($this->auth_status_log[$params['AuthResult']])?" auth_result = '".$params['AuthResult']."' ":"";
+		$whereAuthResult = isset($this->auth_status_log[$params['AuthResult']])?" auth_result = ".$params['AuthResult']." ":"";
 		//操作人
 		$whereManager = $params['ManagerId']?" op_uid = ".$params['ManagerId']." ":"";
 		//所有查询条件置入数组
@@ -329,7 +329,7 @@ class Xrace_User extends Base_Widget
 		//开始时间
 		$whereEndDate = isset($params['EndDate'])?" op_time <= '".date("Y-m-d",strtotime($params['EndDate'])+86400)."' ":"";
 		//审核结果
-		$whereAuthResult = isset($this->auth_status_log[$params['AuthResult']])?" auth_result = '".$params['AuthResult']."' ":"";
+		$whereAuthResult = isset($this->auth_status_log[$params['AuthResult']])?" auth_result = ".$params['AuthResult']." ":"";
 		//操作人
 		$whereManager = $params['ManagerId']?" op_uid = ".$params['ManagerId']." ":"";
 		//所有查询条件置入数组

@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="69647171-536b-4395-bf05-d9681e9d8e8d" name="Default" comment="" />
+    <list default="true" id="69647171-536b-4395-bf05-d9681e9d8e8d" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prototype/app/model/Xrace/User.php" afterPath="$PROJECT_DIR$/prototype/app/model/Xrace/User.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prototype/app/project/admin/controller/Xrace/UserController.php" afterPath="$PROJECT_DIR$/prototype/app/project/admin/controller/Xrace/UserController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prototype/app/project/admin/tpl/Index/home.tpl" afterPath="$PROJECT_DIR$/prototype/app/project/admin/tpl/Index/home.tpl" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/prototype/app/project/admin/var/tpl_cache/Index_home_63ba057536753594c3b4e95940473fc4.php" afterPath="$PROJECT_DIR$/prototype/app/project/admin/var/tpl_cache/Index_home_63ba057536753594c3b4e95940473fc4.php" />
+    </list>
     <ignored path="xrace_main.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -25,81 +31,11 @@
       <file leaf-file-name="UserController.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/controller/Xrace/UserController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.59507525">
-              <caret line="401" column="69" selection-start-line="401" selection-start-column="69" selection-end-line="401" selection-end-column="69" />
+            <state vertical-scroll-proportion="0.5909713">
+              <caret line="175" column="16" selection-start-line="175" selection-start-column="16" selection-end-line="175" selection-end-column="16" />
               <folding>
-                <marker date="1455447116638" expanded="true" signature="13866:13918" placeholder="..." />
+                <marker date="1455535516608" expanded="true" signature="13525:13577" placeholder="..." />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RaceStageModify.tpl" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/Race/RaceStageModify.tpl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.0">
-              <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="24" selection-end-column="98" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Manager.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/prototype/app/model/Widget/Manager.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.316456">
-              <caret line="285" column="28" selection-start-line="285" selection-start-column="28" selection-end-line="285" selection-end-column="28" />
-              <folding>
-                <marker date="1455445583257" expanded="true" signature="6674:6723" placeholder="SELECT ${$fi... $" />
-                <marker date="1455445583257" expanded="true" signature="6855:6906" placeholder="SELECT ${$fi... $" />
-                <marker date="1455445583257" expanded="true" signature="7704:7745" placeholder="SELECT ${$fi... $" />
-                <marker date="1455445583257" expanded="true" signature="7901:7949" placeholder="SELECT ${$fi... $" />
-                <marker date="1455445583257" expanded="true" signature="8075:8125" placeholder="SELECT ${$fi... $" />
-                <marker date="1455445583257" expanded="true" signature="8328:8348" placeholder="SELECT ${$fi... $" />
-                <marker date="1455445583257" expanded="true" signature="8732:8782" placeholder="SELECT `id` ${{$this-&gt;table}}" />
-                <marker date="1455445583257" expanded="true" signature="14158:14207" placeholder="SELECT ${$fi... $" />
-                <marker date="1455445583257" expanded="true" signature="14318:14369" placeholder="SELECT ${$fi... $" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="UserDetail.tpl" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserDetail.tpl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.493671">
-              <caret line="37" column="52" selection-start-line="37" selection-start-column="52" selection-end-line="37" selection-end-column="52" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="UserList.tpl" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserList.tpl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.333333">
-              <caret line="13" column="26" selection-start-line="13" selection-start-column="26" selection-end-line="13" selection-end-column="39" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AuthLog.tpl" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/AuthLog.tpl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.25">
-              <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="UserAuth.tpl" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserAuth.tpl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.3333335">
-              <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="41" selection-end-column="29" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -107,38 +43,22 @@
       <file leaf-file-name="User.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/prototype/app/model/Xrace/User.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.737288">
-              <caret line="302" column="0" selection-start-line="302" selection-start-column="0" selection-end-line="302" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.34177214">
+              <caret line="20" column="41" selection-start-line="20" selection-start-column="41" selection-end-line="20" selection-end-column="41" />
               <folding>
-                <marker date="1455445715161" expanded="true" signature="3951:4019" placeholder="SELECT ${$fi... ${$table_to_process}" />
-                <marker date="1455445715161" expanded="true" signature="5265:5311" placeholder="SELECT ${$fi... ${$table_to_process}" />
-                <marker date="1455445715161" expanded="true" signature="7412:7431" placeholder="select ${$fi... " />
-                <marker date="1455445715161" expanded="true" signature="7412:7432" placeholder="select ${$fi... ${$tabe}" />
-                <marker date="1455445715161" expanded="true" signature="7412:7435" placeholder="select ${$fi... ${$tab}" />
-                <marker date="1455445715161" expanded="true" signature="7412:7455" placeholder="select $fiel... $table_to_process" />
-                <marker date="1455445715161" expanded="true" signature="7412:7470" placeholder="select ${$fi... ${$table_to_process}" />
-                <marker date="1455445715161" expanded="true" signature="7412:7487" placeholder="select $fiel... $table_to_process" />
-                <marker date="1455445715161" expanded="true" signature="7412:7492" placeholder="select ${$fi... ${$table_to_process}" />
-                <marker date="1455445715161" expanded="true" signature="7412:7526" placeholder="select $fiel... $table_to_process" />
-                <marker date="1455445715161" expanded="true" signature="7412:7537" placeholder="select ${$fi... ${$table_to_process}" />
-                <marker date="1455445715161" expanded="true" signature="8810:8878" placeholder="SELECT ${$fi... ${$table_to_process}" />
-                <marker date="1455445715161" expanded="true" signature="10106:10152" placeholder="SELECT ${$fi... ${$table_to_process}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Db.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/prototype/lib/Base/Db.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="226" column="26" selection-start-line="226" selection-start-column="20" selection-end-line="226" selection-end-column="26" />
-              <folding>
-                <marker date="1454599315115" expanded="true" signature="4671:4704" placeholder="SELECT ${$fi... ${$table}" />
-                <marker date="1454599315115" expanded="true" signature="6290:6322" placeholder="SELECT ${$fi... ${$table}" />
-                <marker date="1454599315115" expanded="true" signature="7011:7058" placeholder="SELECT ${$fi... ${$table}" />
-                <marker date="1454599315115" expanded="true" signature="7489:7524" placeholder="DELETE FROM " />
-                <marker date="1454599315115" expanded="true" signature="12388:12410" placeholder="UPDATE `${{$... " />
+                <marker date="1455535503512" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
+                <marker date="1455535503512" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
+                <marker date="1455535503512" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
+                <marker date="1455535503512" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
+                <marker date="1455535503512" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
+                <marker date="1455535503512" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
+                <marker date="1455535503512" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
+                <marker date="1455535503512" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
+                <marker date="1455535503512" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
+                <marker date="1455535503512" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
+                <marker date="1455535503512" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
+                <marker date="1455535503512" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
+                <marker date="1455535503512" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
               </folding>
             </state>
           </provider>
@@ -154,8 +74,10 @@
       <list>
         <option value="$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserDetail.tpl" />
         <option value="$PROJECT_DIR$/prototype/app/model/Widget/Manager.php" />
-        <option value="$PROJECT_DIR$/prototype/app/model/Xrace/User.php" />
         <option value="$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/AuthLog.tpl" />
+        <option value="$PROJECT_DIR$/prototype/app/project/admin/tpl/Index/home2.tpl" />
+        <option value="$PROJECT_DIR$/prototype/app/project/admin/tpl/Index/home.tpl" />
+        <option value="$PROJECT_DIR$/prototype/app/model/Xrace/User.php" />
         <option value="$PROJECT_DIR$/prototype/app/project/admin/controller/Xrace/UserController.php" />
       </list>
     </option>
@@ -172,7 +94,7 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="-11" />
     <option name="y" value="-11" />
-    <option name="width" value="1934" />
+    <option name="width" value="1924" />
     <option name="height" value="1042" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
@@ -200,7 +122,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -275,109 +196,55 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="tpl" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="xrace_main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="xrace_main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="prototype" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="project" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="admin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tpl" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Xrace" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="User" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="xrace_main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="xrace_main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="prototype" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="project" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="admin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tpl" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Xrace" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="xrace_main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="xrace_main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="prototype" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="project" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="admin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="controller" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="xrace_main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="xrace_main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="prototype" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="model" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Xrace" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="xrace_main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="xrace_main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="prototype" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="model" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -412,6 +279,7 @@
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -462,13 +330,14 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-11" y="-11" width="1934" height="1042" extended-state="0" />
-    <editor active="false" />
+    <frame x="-11" y="-11" width="1924" height="1042" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24973711" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3299435" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -479,7 +348,6 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -503,9 +371,217 @@
     <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/controller/Xrace/UserController.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1455535516608" expanded="true" signature="13525:13577" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/Race/RaceStageModify.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="24" selection-end-column="98" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/model/Widget/Manager.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="285" column="28" selection-start-line="285" selection-start-column="28" selection-end-line="285" selection-end-column="28" />
+          <folding>
+            <marker date="1455445583257" expanded="true" signature="6674:6723" placeholder="SELECT ${$fi... $" />
+            <marker date="1455445583257" expanded="true" signature="6855:6906" placeholder="SELECT ${$fi... $" />
+            <marker date="1455445583257" expanded="true" signature="7704:7745" placeholder="SELECT ${$fi... $" />
+            <marker date="1455445583257" expanded="true" signature="7901:7949" placeholder="SELECT ${$fi... $" />
+            <marker date="1455445583257" expanded="true" signature="8075:8125" placeholder="SELECT ${$fi... $" />
+            <marker date="1455445583257" expanded="true" signature="8328:8348" placeholder="SELECT ${$fi... $" />
+            <marker date="1455445583257" expanded="true" signature="8732:8782" placeholder="SELECT `id` ${{$this-&gt;table}}" />
+            <marker date="1455445583257" expanded="true" signature="14158:14207" placeholder="SELECT ${$fi... $" />
+            <marker date="1455445583257" expanded="true" signature="14318:14369" placeholder="SELECT ${$fi... $" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserDetail.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="37" column="52" selection-start-line="37" selection-start-column="52" selection-end-line="37" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserList.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="13" column="26" selection-start-line="13" selection-start-column="26" selection-end-line="13" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/AuthLog.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserAuth.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="41" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/model/Xrace/User.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="302" column="0" selection-start-line="302" selection-start-column="0" selection-end-line="302" selection-end-column="0" />
+          <folding>
+            <marker date="1455535503512" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
+            <marker date="1455535503512" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455535503512" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455535503512" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455535503512" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/lib/Base/Db.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="226" column="26" selection-start-line="226" selection-start-column="20" selection-end-line="226" selection-end-column="26" />
+          <folding>
+            <marker date="1454599315115" expanded="true" signature="4671:4704" placeholder="SELECT ${$fi... ${$table}" />
+            <marker date="1454599315115" expanded="true" signature="6290:6322" placeholder="SELECT ${$fi... ${$table}" />
+            <marker date="1454599315115" expanded="true" signature="7011:7058" placeholder="SELECT ${$fi... ${$table}" />
+            <marker date="1454599315115" expanded="true" signature="7489:7524" placeholder="DELETE FROM " />
+            <marker date="1454599315115" expanded="true" signature="12388:12410" placeholder="UPDATE `${{$... " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/controller/Xrace/UserController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1455535516608" expanded="true" signature="13525:13577" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/Race/RaceStageModify.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="24" selection-end-column="98" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/model/Widget/Manager.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="285" column="28" selection-start-line="285" selection-start-column="28" selection-end-line="285" selection-end-column="28" />
+          <folding>
+            <marker date="1455445583257" expanded="true" signature="6674:6723" placeholder="SELECT ${$fi... $" />
+            <marker date="1455445583257" expanded="true" signature="6855:6906" placeholder="SELECT ${$fi... $" />
+            <marker date="1455445583257" expanded="true" signature="7704:7745" placeholder="SELECT ${$fi... $" />
+            <marker date="1455445583257" expanded="true" signature="7901:7949" placeholder="SELECT ${$fi... $" />
+            <marker date="1455445583257" expanded="true" signature="8075:8125" placeholder="SELECT ${$fi... $" />
+            <marker date="1455445583257" expanded="true" signature="8328:8348" placeholder="SELECT ${$fi... $" />
+            <marker date="1455445583257" expanded="true" signature="8732:8782" placeholder="SELECT `id` ${{$this-&gt;table}}" />
+            <marker date="1455445583257" expanded="true" signature="14158:14207" placeholder="SELECT ${$fi... $" />
+            <marker date="1455445583257" expanded="true" signature="14318:14369" placeholder="SELECT ${$fi... $" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserDetail.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="37" column="52" selection-start-line="37" selection-start-column="52" selection-end-line="37" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserList.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="13" column="26" selection-start-line="13" selection-start-column="26" selection-end-line="13" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/AuthLog.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserAuth.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="41" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/model/Xrace/User.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="302" column="0" selection-start-line="302" selection-start-column="0" selection-end-line="302" selection-end-column="0" />
+          <folding>
+            <marker date="1455535503512" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
+            <marker date="1455535503512" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455535503512" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455535503512" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455535503512" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/lib/Base/Db.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="226" column="26" selection-start-line="226" selection-start-column="20" selection-end-line="226" selection-end-column="26" />
+          <folding>
+            <marker date="1454599315115" expanded="true" signature="4671:4704" placeholder="SELECT ${$fi... ${$table}" />
+            <marker date="1454599315115" expanded="true" signature="6290:6322" placeholder="SELECT ${$fi... ${$table}" />
+            <marker date="1454599315115" expanded="true" signature="7011:7058" placeholder="SELECT ${$fi... ${$table}" />
+            <marker date="1454599315115" expanded="true" signature="7489:7524" placeholder="DELETE FROM " />
+            <marker date="1454599315115" expanded="true" signature="12388:12410" placeholder="UPDATE `${{$... " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/controller/Xrace/UserController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
           <caret line="162" column="23" selection-start-line="162" selection-start-column="23" selection-end-line="162" selection-end-column="31" />
           <folding>
-            <marker date="1455447116638" expanded="true" signature="13866:13918" placeholder="..." />
+            <marker date="1455535516608" expanded="true" signature="13525:13577" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -549,19 +625,19 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="261" column="96" selection-start-line="261" selection-start-column="96" selection-end-line="261" selection-end-column="96" />
           <folding>
-            <marker date="1455445715161" expanded="true" signature="3951:4019" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455445715161" expanded="true" signature="5265:5311" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455445715161" expanded="true" signature="7412:7431" placeholder="select ${$fi... " />
-            <marker date="1455445715161" expanded="true" signature="7412:7432" placeholder="select ${$fi... ${$tabe}" />
-            <marker date="1455445715161" expanded="true" signature="7412:7435" placeholder="select ${$fi... ${$tab}" />
-            <marker date="1455445715161" expanded="true" signature="7412:7455" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455445715161" expanded="true" signature="7412:7470" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455445715161" expanded="true" signature="7412:7487" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455445715161" expanded="true" signature="7412:7492" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455445715161" expanded="true" signature="7412:7526" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455445715161" expanded="true" signature="7412:7537" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455445715161" expanded="true" signature="8810:8878" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455445715161" expanded="true" signature="10106:10152" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
+            <marker date="1455535503512" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455535503512" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455535503512" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455535503512" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
           </folding>
         </state>
       </provider>
@@ -596,15 +672,47 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/Race/RaceStageModify.tpl">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.0">
+        <state vertical-scroll-proportion="0.0">
           <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="24" selection-end-column="98" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserAuth.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="41" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/AuthLog.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserList.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.051823415">
+          <caret line="13" column="26" selection-start-line="13" selection-start-column="26" selection-end-line="13" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserDetail.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.051823415">
+          <caret line="37" column="52" selection-start-line="37" selection-start-column="52" selection-end-line="37" selection-end-column="52" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/prototype/app/model/Widget/Manager.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.316456">
+        <state vertical-scroll-proportion="0.051823415">
           <caret line="285" column="28" selection-start-line="285" selection-start-column="28" selection-end-line="285" selection-end-column="28" />
           <folding>
             <marker date="1455445583257" expanded="true" signature="6674:6723" placeholder="SELECT ${$fi... $" />
@@ -620,66 +728,58 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/prototype/app/model/Xrace/User.php">
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Index/home.tpl.bak">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.737288">
-          <caret line="302" column="0" selection-start-line="302" selection-start-column="0" selection-end-line="302" selection-end-column="0" />
-          <folding>
-            <marker date="1455445715161" expanded="true" signature="3951:4019" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455445715161" expanded="true" signature="5265:5311" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455445715161" expanded="true" signature="7412:7431" placeholder="select ${$fi... " />
-            <marker date="1455445715161" expanded="true" signature="7412:7432" placeholder="select ${$fi... ${$tabe}" />
-            <marker date="1455445715161" expanded="true" signature="7412:7435" placeholder="select ${$fi... ${$tab}" />
-            <marker date="1455445715161" expanded="true" signature="7412:7455" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455445715161" expanded="true" signature="7412:7470" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455445715161" expanded="true" signature="7412:7487" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455445715161" expanded="true" signature="7412:7492" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455445715161" expanded="true" signature="7412:7526" placeholder="select $fiel... $table_to_process" />
-            <marker date="1455445715161" expanded="true" signature="7412:7537" placeholder="select ${$fi... ${$table_to_process}" />
-            <marker date="1455445715161" expanded="true" signature="8810:8878" placeholder="SELECT ${$fi... ${$table_to_process}" />
-            <marker date="1455445715161" expanded="true" signature="10106:10152" placeholder="SELECT ${$fi... ${$table_to_process}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserList.tpl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.333333">
-          <caret line="13" column="26" selection-start-line="13" selection-start-column="26" selection-end-line="13" selection-end-column="39" />
+        <state vertical-scroll-proportion="0.04847397">
+          <caret line="1" column="6" selection-start-line="1" selection-start-column="6" selection-end-line="1" selection-end-column="38" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserDetail.tpl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.493671">
-          <caret line="37" column="52" selection-start-line="37" selection-start-column="52" selection-end-line="37" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/UserAuth.tpl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.3333335">
-          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="41" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Xrace/User/AuthLog.tpl">
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/controller/IndexController.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-8.25">
-          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <caret line="14" column="35" selection-start-line="14" selection-start-column="35" selection-end-line="14" selection-end-column="35" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/tpl/Index/home.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.9746835">
+          <caret line="18" column="110" selection-start-line="18" selection-start-column="110" selection-end-line="18" selection-end-column="110" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prototype/app/model/Xrace/User.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.34177214">
+          <caret line="20" column="41" selection-start-line="20" selection-start-column="41" selection-end-line="20" selection-end-column="41" />
+          <folding>
+            <marker date="1455535503512" expanded="true" signature="3892:3960" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="5202:5248" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7368" placeholder="select ${$fi... " />
+            <marker date="1455535503512" expanded="true" signature="7349:7369" placeholder="select ${$fi... ${$tabe}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7372" placeholder="select ${$fi... ${$tab}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7392" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455535503512" expanded="true" signature="7349:7407" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7424" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455535503512" expanded="true" signature="7349:7429" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="7349:7463" placeholder="select $fiel... $table_to_process" />
+            <marker date="1455535503512" expanded="true" signature="7349:7474" placeholder="select ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="8745:8813" placeholder="SELECT ${$fi... ${$table_to_process}" />
+            <marker date="1455535503512" expanded="true" signature="10039:10085" placeholder="SELECT ${$fi... ${$table_to_process}" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/prototype/app/project/admin/controller/Xrace/UserController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.59507525">
-          <caret line="401" column="69" selection-start-line="401" selection-start-column="69" selection-end-line="401" selection-end-column="69" />
+        <state vertical-scroll-proportion="0.5909713">
+          <caret line="175" column="16" selection-start-line="175" selection-start-column="16" selection-end-line="175" selection-end-column="16" />
           <folding>
-            <marker date="1455447116638" expanded="true" signature="13866:13918" placeholder="..." />
+            <marker date="1455535516608" expanded="true" signature="13525:13577" placeholder="..." />
           </folding>
         </state>
       </provider>
