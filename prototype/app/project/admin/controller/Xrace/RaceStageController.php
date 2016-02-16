@@ -420,7 +420,105 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceGroupId = intval($this->request->RaceGroupId);
 			$SportsTypeId = intval($this->request->SportsTypeId);
 			$After = isset($this->request->After)?intval($this->request->After):0;
-			echo "After:".$After;
+			//获取当前分站信息
+			$oRaceStage = $this->oRace->getRaceStage($RaceStageId,'*');
+			//解包压缩数组
+			$oRaceStage['comment'] = json_decode($oRaceStage['comment'],true);
+			//如果当前分站未配置了当前分组
+			if(!isset($oRaceStage['comment']['SelectedRaceGroup'][$RaceGroupId]))
+			{
+				$response = array('errno' => 1);
+			}
+			else
+			{
+				//获取赛事分组信息
+				$oRaceGroup = $this->oRace->getRaceGroup($RaceGroupId,'*');
+				//如果赛事分组尚未配置
+				if(!$oRaceGroup['RaceGroupId'])
+				{
+					$response = array('errno' => 2);
+				}
+				else
+				{
+					$this->oSports = new Xrace_Sports();
+					$oSportsType = $this->oSports->getSportsType($SportsTypeId,'*');
+					if(!isset($oSportsType['SportsTypeId']))
+					{
+						$response = array('errno' => 3);
+					}
+					else
+					{
+						//获取分站分组配置详情
+						$RaceStageGroupInfo = $this->oRace->getRaceStageGroup($RaceStageId,$RaceGroupId);
+						//默认开始时间
+						$StartTime = date("Y-m-d H:i:s",time()+86400);
+						//默认结束时间
+						$EndTime = date("Y-m-d H:i:s",time()+86400*2);
+						//如果尚未配置分站分组详情，则用默认空数组替代
+						if(!is_array($RaceStageGroupInfo))
+						{
+							$RaceStageGroupInfo = array('PriceList'=>0,'SingleUser'=>1,'TeamUser'=>1,'StartTime'=>$StartTime,'EndTime'=>$EndTime,'comment'=>"");
+							$NewDetail = 1;
+						}
+						$RaceStageGroupInfo['comment'] = json_decode($RaceStageGroupInfo['comment'],true);
+						$RaceStageGroupInfo['comment']['DetailList'] = isset($RaceStageGroupInfo['comment']['DetailList'])?$RaceStageGroupInfo['comment']['DetailList']:array();
+						ksort($RaceStageGroupInfo['comment']['DetailList']);
+						//如果添加在某个元素之后 且 元素下标不越界
+						if($After>=0 && $After <= count($RaceStageGroupInfo['comment']['DetailList']))
+						{
+							//添加元素
+							$RaceStageGroupInfo['comment']['DetailList'] = Base_Common::array_insert($RaceStageGroupInfo['comment']['DetailList'],array('SportsTypeId' => $SportsTypeId),$After+1);
+						}
+						//如果在头部添加
+						elseif($After == -1)
+						{
+							//添加元素
+							$RaceStageGroupInfo['comment']['DetailList'] = Base_Common::array_insert($RaceStageGroupInfo['comment']['DetailList'],array('SportsTypeId' => $SportsTypeId),$After+1);
+						}
+						else
+						{
+							//默认为在表尾部添加元素
+							$RaceStageGroupInfo['comment']['DetailList'][count($RaceStageGroupInfo['comment']['DetailList'])] = array('SportsTypeId' => $SportsTypeId);
+						}
+						//生成修改后的元素列表
+						$RaceStageGroupInfo['RaceStageId'] = $RaceStageId;
+						$RaceStageGroupInfo['RaceGroupId'] = $RaceGroupId;
+						$RaceStageGroupInfo['comment'] = json_encode($RaceStageGroupInfo['comment']);
+						//如果认为需要新建数据
+						if(isset($NewDetail))
+						{
+							//插入新的数据
+							$res = $this->oRace->insertRaceStageGroup($RaceStageGroupInfo);
+						}
+						else
+						{
+							//更新数据
+							$res = $this->oRace->updateRaceStageGroup($RaceStageId,$RaceGroupId,$RaceStageGroupInfo);
+						}
+						$response = $res ? array('errno' => 0) : array('errno' => 9);
+					}
+				}
+			}
+			echo json_encode($response);
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//添加分站-分组的运动类型分段提交页面
+	public function raceStageGroupSportsTypeAddSubmitAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		if($PermissionCheck['return'])
+		{
+			$RaceStageId = intval($this->request->RaceStageId);
+			$RaceGroupId = intval($this->request->RaceGroupId);
+			//$SportsTypeId = intval($this->request->SportsTypeId);
+			$After = isset($this->request->After)?intval($this->request->After):-1;
+			echo "after:".$After."<br>";
 			//获取当前分站信息
 			$oRaceStage = $this->oRace->getRaceStage($RaceStageId,'*');
 			//解包压缩数组
@@ -440,12 +538,7 @@ class Xrace_RaceStageController extends AbstractController
 				$this->response->redirect($this->sign);
 			}
 			$this->oSports = new Xrace_Sports();
-			$oSportsType = $this->oSports->getSportsType($SportsTypeId,'*');
-			if(!isset($oSportsType['SportsTypeId']))
-			{
-				$url = Base_Common::getUrl('','xrace/race.stage','race.stage.group.detail',array('RaceStageId'=>$RaceStageId,'RaceGroupId'=>$RaceGroupId));
-				$this->response->redirect($url);
-			}
+			$SportsTypeList = $this->oSports->getAllSportsTypeList('SportsTypeId,SportsTypeName');
 			//获取分站分组配置详情
 			$RaceStageGroupInfo = $this->oRace->getRaceStageGroup($RaceStageId,$RaceGroupId);
 			//默认开始时间
@@ -461,35 +554,20 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceStageGroupInfo['comment'] = json_decode($RaceStageGroupInfo['comment'],true);
 			$RaceStageGroupInfo['comment']['DetailList'] = isset($RaceStageGroupInfo['comment']['DetailList'])?$RaceStageGroupInfo['comment']['DetailList']:array();
 			ksort($RaceStageGroupInfo['comment']['DetailList']);
+			foreach($RaceStageGroupInfo['comment']['DetailList'] as $Key => $SportsTypeInfo)
+			{
+				$RaceStageGroupInfo['comment']['DetailList'][$Key]['SportsTypeName'] = $SportsTypeList[$SportsTypeInfo['SportsTypeId']]['SportsTypeName'];
+			}
 			//如果添加在某个元素之后 且 元素下标不越界
-			if($After>=0 && $After < count(count($RaceStageGroupInfo['comment']['DetailList'])))
+			if($After<0)
 			{
-				//添加元素
-				$RaceStageGroupInfo['comment']['DetailList'] = Base_Common::array_insert($RaceStageGroupInfo['comment']['DetailList'],array('SportsTypeId' => $SportsTypeId),$After+1);
+				$After = -1;
 			}
-			else
+			elseif( $After >= count($RaceStageGroupInfo['comment']['DetailList']))
 			{
-				//默认为在表尾部添加元素
-				$RaceStageGroupInfo['comment']['DetailList'][count($RaceStageGroupInfo['comment']['DetailList'])] = array('SportsTypeId' => $SportsTypeId);
+				$After = count($RaceStageGroupInfo['comment']['DetailList'])-1;
 			}
-			//生成修改后的元素列表
-			$RaceStageGroupInfo['RaceStageId'] = $RaceStageId;
-			$RaceStageGroupInfo['RaceGroupId'] = $RaceGroupId;
-			$RaceStageGroupInfo['comment'] = json_encode($RaceStageGroupInfo['comment']);
-			//如果认为需要新建数据
-			if(isset($NewDetail))
-			{
-				//插入新的数据
-				$res = $this->oRace->insertRaceStageGroup($RaceStageGroupInfo);
-			}
-			else
-			{
-				//更新数据
-				$res = $this->oRace->updateRaceStageGroup($RaceStageId,$RaceGroupId,$RaceStageGroupInfo);
-			}
-			$url = Base_Common::getUrl('','xrace/race.stage','race.stage.group.detail',array('RaceStageId'=>$RaceStageId,'RaceGroupId'=>$RaceGroupId));
-			$this->response->redirect($url);
-
+			include $this->tpl('Xrace_Race_RaceStageGroupSportsTypeAdd');
 		}
 		else
 		{

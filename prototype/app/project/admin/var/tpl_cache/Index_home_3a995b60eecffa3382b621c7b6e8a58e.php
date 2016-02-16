@@ -1,32 +1,42 @@
-<!--  Wc8mVltjVceMFvNhHRemytGf -->
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>按起终点名称规划路线</title>
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css"/>
     <style type="text/css">
-        body, html {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
-        #map1_container,#map2_container {width:100%;height:300px;float:left;overflow: hidden;margin:0;}
-        #allmap1{margin:0 0 3px;height:3000px;}
-        #allmap2{margin:3px 0 0;height:3000px;}
+        #panel {
+            position: fixed;
+            background-color: white;
+            max-height: 90%;
+            overflow-y: auto;
+            top: 10px;
+            right: 10px;
+            width: 280px;
+        }
     </style>
-    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=Wc8mVltjVceMFvNhHRemytGf"></script>
-    <title>同时加载两个地图</title>
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=b7f58d830a5598f3c16a7a61325d56b1&plugin=AMap.Walking"></script>
+    <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
 </head>
 <body>
-<div id="map1_container"><div id="allmap1"></div></div>
-<div id="map2_container"><div id="allmap2"></div></div>
+<div id="container"></div>
+<div id="panel"></div>
+<script type="text/javascript">
+    var map = new AMap.Map("container", {
+        resizeEnable: true,
+        center: [116.397428, 39.90923],//地图中心点
+        zoom: 13 //地图显示的缩放级别
+    });
+    //步行导航
+    var walking = new AMap.Walking({
+        map: map,
+        panel: "panel"
+    });
+    walking.search([
+        {keyword: '北京市地震局(公交站)'},
+        {keyword: '亦庄文化园(地铁站)'}
+    ]);
+</script>
 </body>
 </html>
-<script type="text/javascript">
-    //百度地图API功能
-    //加载第一张地图
-    var map1 = new BMap.Map("allmap1");            // 创建Map实例
-    var point1 = new BMap.Point(116.404, 39.915);
-    map1.centerAndZoom(point1,15);
-    map1.enableScrollWheelZoom();                  //启用滚轮放大缩小
-    //加载第二张地图
-    var map2 = new BMap.Map("allmap2");            // 创建Map实例
-    var point2 = new BMap.Point(116.404, 39.915);
-    map2.centerAndZoom(point2,15);
-    map2.enableScrollWheelZoom();                  //启用滚轮放大缩小
-</script>

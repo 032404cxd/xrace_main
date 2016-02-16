@@ -6,7 +6,9 @@
     SportsType=$("#SportsTypeSelect");
     After=$("#After");
       location.href = '{tpl:$this.sign/}&ac=race.stage.group.sports.type.add&RaceGroupId=' + RaceGroupId.val() + '&RaceStageId=' + RaceStageId.val() + '&SportsTypeId=' + SportsType.val() + '&After=' + After.val();
-
+  }
+  function SportsTypeInsert(sid,gid,after){
+    SportsTypeAddBox = divBox.showBox('{tpl:$this.sign/}&ac=race.stage.group.sports.type.add.submit&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&After=' + after, {title:'添加运动分段',width:350,height:250});
   }
 </script>
 
@@ -40,27 +42,16 @@
 <table width="99%" align="center" class="table table-bordered table-striped">
   {tpl:if(count($RaceStageGroupInfo.comment.DetailList))}
   <tr>
-  {tpl:loop $RaceStageGroupInfo.comment.DetailList $SportsTypeId $SportsTypeInfo}
-  <tr>
-  <th align="center" class="rowtip">{tpl:$SportsTypeInfo.SportsTypeName/}</th>
-  </tr>
-  {/tpl:loop}
-  <tr>
-    <th align="center" class="rowtip">继续在
-      <select name="After" id="After" size="1">
-        <option value="-1" >尾部</option>
-        {tpl:loop $RaceStageGroupInfo.comment.DetailList $STypeId $STypeInfo}
-        <option value="{tpl:$STypeId/}" >{tpl:$STypeInfo.SportsTypeName/} 之后</option>
-        {/tpl:loop}
-      </select>
-      <button type="button" onclick="SportsTypeAdd()">添加</button>
-      <select name="SportsTypeSelect" id="SportsTypeSelect" size="1">
-        {tpl:loop $SportTypeArr  $SportsType}
-        <option value="{tpl:$SportsType.SportsTypeId/}" >{tpl:$SportsType.SportsTypeName/}</option>
-        {/tpl:loop}
-      </select>
+    <th align="center" class="rowtip"><a href="javascript:;" onclick="SportsTypeInsert('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','-1')">在头部添加</a>
     </th>
   </tr>
+  <tr>
+  {tpl:loop $RaceStageGroupInfo.comment.DetailList $SportsTypeId $SportsTypeInfo}
+  <tr>
+  <th align="center" class="rowtip">{tpl:$SportsTypeInfo.SportsTypeName/} <a href="javascript:;" onclick="SportsTypeInsert('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$SportsTypeId/}')">在此之后添加</a></th>
+  </tr>
+  {/tpl:loop}
+
   {tpl:else}
   <tr>
     <th align="center" class="rowtip" colspan="4">尚未配置任何赛段计时点数据
