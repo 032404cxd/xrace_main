@@ -57,11 +57,27 @@
     <a href="javascript:;" onclick="SportsTypeDelete('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$SportsTypeId/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">删除</a>
   </th>
   </tr>
+    {tpl:if(count($SportsTypeInfo.TimingDetailList))}
+  <tr><th colspan = 10>
+  <table width="99%" align="center">
+  {tpl:loop $SportsTypeInfo.TimingDetailList $Tid $TimingInfo}
+      <tr>
+        <td>┠&nbsp;&nbsp;{tpl:$TimingInfo.TName/}</td><td>计时芯片序列号：{tpl:$TimingInfo.ChipId/}</td><td>距离下一计时点：{tpl:$TimingInfo.ToNext/}米</td><td>经过{tpl:$TimingInfo.Round/}次</td><td>海拔上升{tpl:$TimingInfo.AltAsc/}米</td><td>海拔下降{tpl:$TimingInfo.AltDec/}米</td>
+      </tr>
+    {/tpl:loop}
+  </th>
+  </table>
+    </tr>
+    {tpl:else}
+      <tr>
+      <th align="center" class="rowtip">尚未配置任何计时点信息</th>
+      </tr>
+    {/tpl:if}
   {/tpl:loop}
 
   {tpl:else}
   <tr>
-    <th align="center" class="rowtip" colspan="4">尚未配置任何赛段计时点数据
+    <th align="center" class="rowtip" colspan="4">尚未配置任何分段数据
       <a href="javascript:;" onclick="SportsTypeInsert('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','-1')">在头部添加</a>
     </th>
   </tr>

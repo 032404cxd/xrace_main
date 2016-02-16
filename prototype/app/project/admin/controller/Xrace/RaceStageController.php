@@ -385,17 +385,22 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceStageGroupInfo['comment']['DetailList'] = isset($RaceStageGroupInfo['comment']['DetailList'])?$RaceStageGroupInfo['comment']['DetailList']:array();
 			$this->oSports = new Xrace_Sports();
 			$SportTypeArr = $this->oSports->getAllSportsTypeList();
+			$testArray = array('0'=>array('TName'=>"起点",'ToNext'=>'1000','AltAsc'=>100,'AltDec'=>200,'ChipId'=>'abc','Round'=>10),'1'=>array('TName'=>"计时点1",'ToNext'=>'2000','AltAsc'=>100,'AltDec'=>200,'ChipId'=>'abc','Round'=>10));
 			foreach($RaceStageGroupInfo['comment']['DetailList'] as $Key => $RaceSportsInfo)
 			{
 				if(isset($SportTypeArr[$RaceSportsInfo['SportsTypeId']]))
 				{
 					$RaceStageGroupInfo['comment']['DetailList'][$Key]['SportsTypeName'] = $SportTypeArr[$RaceSportsInfo['SportsTypeId']]['SportsTypeName'];
+					//$RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingDetailList'] = isset($RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingId'])?$this->oRace->getTimingDetail($RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingId']):array();
+					$RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingDetailList'] = isset($RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingId'])?$this->oRace->getTimingDetail($RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingId']):$testArray;
 				}
 				else
 				{
 					unset($RaceStageGroupInfo['comment']['DetailList'][$Key]);
 				}
+
 			}
+			//print_r($RaceStageGroupInfo['comment']['DetailList']);
 			include $this->tpl('Xrace_Race_RaceStageGroupDetail');
 		}
 		else
