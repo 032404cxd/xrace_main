@@ -6,7 +6,7 @@
 
 <table width="99%" align="center" class="table table-bordered table-striped">
   <tr>
-    <th align="center" class="rowtip">继续在</th>
+    <th align="center" class="rowtip">在</th>
     </tr>
   <tr>
     <th align="center" class="rowtip">

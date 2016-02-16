@@ -25,16 +25,16 @@
     <th align="center" class="rowtip">起止时间</th>
   </tr>
   <tr>
-    <th align="center" class="rowtip"><input name="RaceStageGroupInfo[PriceList]" type="text" class="span2" id="RaceStageGroupInfo[PriceList]" value="<?php echo $RaceStageGroupInfo['PriceList']; ?>" size="50" /></th>
-    <th align="center" class="rowtip"><input type="radio" name="RaceStageGroupInfo[SingleUser]" id="RaceStageGroupInfo[SingleUser]" value="1" <?php if($RaceStageGroupInfo['SingleUser']=="1") { ?>checked<?php } ?>>接受
-      <input type="radio" name="RaceStageGroupInfo[SingleUser]" id="RaceStageGroupInfo[SingleUser]"  value="0" <?php if($RaceStageGroupInfo['SingleUser']=="0") { ?>checked<?php } ?>>不接受</th>
-    <th align="center" class="rowtip"><input type="radio" name="RaceStageGroupInfo[TeamUser]" id="RaceStageGroupInfo[TeamUser]" value="1" <?php if($RaceStageGroupInfo['TeamUser']=="1") { ?>checked<?php } ?>>接受
-      <input type="radio" name="RaceStageGroupInfo[TeamUser]" id="RaceStageGroupInfo[TeamUser]" value="0" <?php if($RaceStageGroupInfo['TeamUser']=="0") { ?>checked<?php } ?>>不接受</th>
+    <th align="center" class="rowtip"><input name="PriceList" type="text" class="span2" id="PriceList" value="<?php echo $RaceStageGroupInfo['PriceList']; ?>" size="50" /></th>
+    <th align="center" class="rowtip"><input type="radio" name="SingleUser" id="SingleUser" value="1" <?php if($RaceStageGroupInfo['SingleUser']=="1") { ?>checked<?php } ?>>接受
+      <input type="radio" name="SingleUser" id="SingleUser"  value="0" <?php if($RaceStageGroupInfo['SingleUser']=="0") { ?>checked<?php } ?>>不接受</th>
+    <th align="center" class="rowtip"><input type="radio" name="TeamUser" id="TeamUser" value="1" <?php if($RaceStageGroupInfo['TeamUser']=="1") { ?>checked<?php } ?>>接受
+      <input type="radio" name="TeamUser" id="TeamUser" value="0" <?php if($RaceStageGroupInfo['TeamUser']=="0") { ?>checked<?php } ?>>不接受</th>
     <th align="center" class="rowtip">
-      <input type="text" name="RaceStageGroupInfo[StartTime]" value="<?php echo $RaceStageGroupInfo['StartTime']; ?>" class="input-medium"
+      <input type="text" name="StartTime" value="<?php echo $RaceStageGroupInfo['StartTime']; ?>" class="input-medium"
              onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >
       ---
-      <input type="text" name="RaceStageGroupInfo[EndTime]" value="<?php echo $RaceStageGroupInfo['EndTime']; ?>" value="" class="input-medium"
+      <input type="text" name="EndTime" value="<?php echo $RaceStageGroupInfo['EndTime']; ?>" value="" class="input-medium"
              onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >
     </th>
   </tr>
@@ -55,13 +55,7 @@
   <?php } else { ?>
   <tr>
     <th align="center" class="rowtip" colspan="4">尚未配置任何赛段计时点数据
-      <input type="hidden" name="After" id="After" value="-1" />
-      <select name="SportsTypeSelect" id="SportsTypeSelect" size="1">
-      <?php if (is_array($SportTypeArr)) { foreach ($SportTypeArr as $SportsType) { ?>
-      <option value="<?php echo $SportsType['SportsTypeId']; ?>" ><?php echo $SportsType['SportsTypeName']; ?></option>
-      <?php } } ?>
-      </select>
-      <button type="button" onclick="SportsTypeAdd()">添加</button>
+      <a href="javascript:;" onclick="SportsTypeInsert('<?php echo $oRaceStage['RaceStageId']; ?>','<?php echo $oRaceGroup['RaceGroupId']; ?>','-1')">在头部添加</a>
     </th>
   </tr>
   <?php } ?>
