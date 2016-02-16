@@ -559,4 +559,63 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+	//添加分站-分组的运动类型分段提交页面
+	public function raceStageGroupSportsTypeDeleteAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		if($PermissionCheck['return'])
+		{
+			$RaceStageId = intval($this->request->RaceStageId);
+			$RaceGroupId = intval($this->request->RaceGroupId);
+			$SportsTypeId = intval($this->request->SportsTypeId);
+			//获取当前分站信息
+			$oRaceStage = $this->oRace->getRaceStage($RaceStageId,'*');
+			//解包压缩数组
+			$oRaceStage['comment'] = json_decode($oRaceStage['comment'],true);
+			//如果当前分站未配置了当前分组
+			if(!isset($oRaceStage['comment']['SelectedRaceGroup'][$RaceGroupId]))
+			{
+				//跳转到分站列表页面
+				$this->response->redirect($this->sign);
+			}
+			//获取赛事分组信息
+			$oRaceGroup = $this->oRace->getRaceGroup($RaceGroupId,'*');
+			//如果赛事分组尚未配置
+			if(!$oRaceGroup['RaceGroupId'])
+			{
+				//跳转到分站列表页面
+				$this->response->redirect($this->sign);
+			}
+			//获取分站分组配置详情
+			$RaceStageGroupInfo = $this->oRace->getRaceStageGroup($RaceStageId,$RaceGroupId);
+			$RaceStageGroupInfo['comment'] = isset($RaceStageGroupInfo['comment'])?json_decode($RaceStageGroupInfo['comment'],true):array();
+			$RaceStageGroupInfo['comment']['DetailList'] = isset($RaceStageGroupInfo['comment']['DetailList'])?$RaceStageGroupInfo['comment']['DetailList']:array();
+			ksort($RaceStageGroupInfo['comment']['DetailList']);
+			print_R($RaceStageGroupInfo['comment']['DetailList']);
+			$deleted = 0;
+			foreach($RaceStageGroupInfo['comment']['DetailList'] as $Key => $SportsTypeInfo)
+			{
+				if($Key == $SportsTypeId)
+				{
+					unset($RaceStageGroupInfo['comment']['DetailList'][$Key]);
+					$deleted = 1;
+				}
+				if($deleted == 1 && isset($RaceStageGroupInfo['comment']['DetailList'][$Key+1]))
+				{
+					$RaceStageGroupInfo['comment']['DetailList'][($Key)] = $RaceStageGroupInfo['comment']['DetailList'][$Key+1];
+					unset($RaceStageGroupInfo['comment']['DetailList'][$Key+1]);
+				}
+			}
+			$RaceStageGroupInfo['comment'] = json_encode($RaceStageGroupInfo['comment']);
+			//更新数据
+			$res = $this->oRace->updateRaceStageGroup($RaceStageId,$RaceGroupId,$RaceStageGroupInfo);
+			$this->response->goBack();
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
 }

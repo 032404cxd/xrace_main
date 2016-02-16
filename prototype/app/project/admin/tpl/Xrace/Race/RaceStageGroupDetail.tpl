@@ -10,6 +10,9 @@
   function SportsTypeInsert(sid,gid,after){
     SportsTypeAddBox = divBox.showBox('{tpl:$this.sign/}&ac=race.stage.group.sports.type.add.submit&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&After=' + after, {title:'添加运动分段',width:350,height:250});
   }
+  function  SportsTypeDelete(sid,gid,tid, p_name){
+    deleteSportsTypeBox= divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.stage.group.sports.type.delete&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&SportsTypeId=' + tid ;}});
+  }
 </script>
 
 <form action="{tpl:$this.sign/}&ac=race.stage.group.update" name="form" id="form" method="post">
@@ -48,7 +51,11 @@
   <tr>
   {tpl:loop $RaceStageGroupInfo.comment.DetailList $SportsTypeId $SportsTypeInfo}
   <tr>
-  <th align="center" class="rowtip">{tpl:$SportsTypeInfo.SportsTypeName/} <a href="javascript:;" onclick="SportsTypeInsert('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$SportsTypeId/}')">在此之后添加</a></th>
+  <th align="center" class="rowtip">{tpl:$SportsTypeInfo.SportsTypeName/}
+    <a href="javascript:;" onclick="SportsTypeInsert('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$SportsTypeId/}')">在此之后添加</a>
+     |
+    <a href="javascript:;" onclick="SportsTypeDelete('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$SportsTypeId/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">删除</a>
+  </th>
   </tr>
   {/tpl:loop}
 
