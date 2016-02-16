@@ -15,33 +15,19 @@ $db['xrace'][0] = array(
 	'port' => PORT_LOCAL,
 	'database' => 'xrace',
 );
-$db['prototype_global'][0] = array(
+$db['xrace_config'][0] = array(
 	'host' => HOST_LOCAL,
 	'user' => USER_LOCAL,
 	'password' => PASSWORD_LOCAL,
 	'port' => PORT_LOCAL,
-	'database' => 'prototype_global',
+	'database' => 'xrace_config',
 );
-$db['prototype_global'][1] = array(
+$db['xrace_config'][1] = array(
 	'host' => HOST_LOCAL,
 	'user' => USER_LOCAL,
 	'password' => PASSWORD_LOCAL,
 	'port' => PORT_LOCAL,
-	'database' => 'prototype_global',
-);
-$db['lm_config_game'][0] = array(
-	'host' => HOST_M4,
-	'user' => USER_M4,
-	'password' => PASSWORD_M4,
-	'port' => PORT_M4,
-	'database' => 'lm_config_game',
-);
-$db['lm_config_game'][1] = array(
-	'host' => HOST_S4,
-	'user' => USER_S4,
-	'password' => PASSWORD_S4,
-	'port' => PORT_S4,
-	'database' => 'lm_config_game',
+	'database' => 'xrace_config',
 );
 return $db;
 ?>
