@@ -18,6 +18,10 @@ $table['user_auth_log']['num'] = 1;
 $table['user_profile']['db'] = 'xrace';
 $table['user_profile']['num'] = 1;
 
+#计时点
+$table['config_timing_point']['db'] = 'xrace_config';
+$table['config_timing_point']['num'] = 1;
+
 #运动类型
 $table['config_sports_type']['db'] = 'xrace_config';
 $table['config_sports_type']['num'] = 1;
