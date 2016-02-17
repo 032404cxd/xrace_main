@@ -585,4 +585,92 @@ class Xrace_Race extends Base_Widget
 			}
 		}
 	}
+	//更新计时点数据
+	public function deleteTimingPoint($RaceStageId,$RaceGroupId,$SportsTypeId,$TimingId)
+	{
+		//获取当前分站信息
+		$oRaceStage = $this->getRaceStage($RaceStageId,'*');
+		//解包压缩数组
+		$oRaceStage['comment'] = json_decode($oRaceStage['comment'],true);
+		//如果当前分站未配置了当前分组
+		if(!isset($oRaceStage['comment']['SelectedRaceGroup'][$RaceGroupId]))
+		{
+			return false;
+		}
+		else
+		{
+			//获取赛事分组信息
+			$oRaceGroup = $this->getRaceGroup($RaceGroupId,'*');
+			//如果赛事分组尚未配置
+			if(!$oRaceGroup['RaceGroupId'])
+			{
+				return false;
+			}
+			else
+			{
+				//获取分站分组配置详情
+				$RaceStageGroupInfo = $this->getRaceStageGroup($RaceStageId,$RaceGroupId);
+				//获取分站分组配置详情
+				$RaceStageGroupInfo = $this->getRaceStageGroup($RaceStageId,$RaceGroupId);
+				//压缩数组解包
+				$RaceStageGroupInfo['comment'] = json_decode($RaceStageGroupInfo['comment'],true);
+				//获取运动分段的数据
+				$SportsTypeInfo = $RaceStageGroupInfo['comment']['DetailList'][$SportsTypeId];
+				//如果有存储对应计时点信息
+				if(isset($SportsTypeInfo['TimingId']) && ($SportsTypeInfo['TimingId']>0))
+				{
+					//获取计时点数据
+					$SportsTypeInfo['TimingDetailList'] = $this->getTimingDetail($SportsTypeInfo['TimingId']);
+					//如果有获取到计时点数据
+					if(is_array($SportsTypeInfo['TimingDetailList']))
+					{
+						//解包数据
+						$SportsTypeInfo['TimingDetailList']['comment'] = json_decode($SportsTypeInfo['TimingDetailList']['comment'],true);
+						//如果需要被更新的计时点数据存在
+						if(isset($SportsTypeInfo['TimingDetailList']['comment'][$TimingId]))
+						{
+							$deleted = 0;
+							//循环检查数据
+							foreach($SportsTypeInfo['TimingDetailList']['comment'] as $Key => $TimingPointInfo)
+							{
+								//如果遇到需要被删除的数据
+								if($Key == $TimingId)
+								{
+									//删除
+									unset($SportsTypeInfo['TimingDetailList']['comment'][$Key]);
+									//标记为已删除
+									$deleted = 1;
+								}
+								//如果已删除 且 后面的数据存在
+								if($deleted == 1 && isset($SportsTypeInfo['TimingDetailList']['comment'][$Key+1]))
+								{
+									//数据向前复制
+									$SportsTypeInfo['TimingDetailList']['comment'][($Key)] = $SportsTypeInfo['TimingDetailList']['comment'][$Key+1];
+									//删除后面的数据
+									unset($SportsTypeInfo['TimingDetailList']['comment'][$Key+1]);
+								}
+							}
+							//重新打包计时点数据
+							$updateBind = array('comment' => json_encode($SportsTypeInfo['TimingDetailList']['comment']));
+							//更新计时点数据
+							$TimingDetailUpdate = $this->updateTimingDetail($SportsTypeInfo['TimingId'],$updateBind);
+							return $TimingDetailUpdate;
+						}
+						else
+						{
+							return false;
+						}
+					}
+					else
+					{
+						return false;
+					}
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+	}
 }

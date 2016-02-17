@@ -600,7 +600,6 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceStageGroupInfo['comment'] = isset($RaceStageGroupInfo['comment'])?json_decode($RaceStageGroupInfo['comment'],true):array();
 			$RaceStageGroupInfo['comment']['DetailList'] = isset($RaceStageGroupInfo['comment']['DetailList'])?$RaceStageGroupInfo['comment']['DetailList']:array();
 			ksort($RaceStageGroupInfo['comment']['DetailList']);
-			print_R($RaceStageGroupInfo['comment']['DetailList']);
 			$deleted = 0;
 			foreach($RaceStageGroupInfo['comment']['DetailList'] as $Key => $SportsTypeInfo)
 			{
@@ -778,6 +777,27 @@ class Xrace_RaceStageController extends AbstractController
 			$UpdateTimingPoint = $this->oRace->updateTimingPoint($RaceStageId,$RaceGroupId,$SportsTypeId,$TimingId,$bind);
 			$response = $UpdateTimingPoint ? array('errno' => 0) : array('errno' => $UpdateTimingPoint);
 			echo json_encode($response);
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//删除计时点数据
+	public function timingPointDeleteAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		if($PermissionCheck['return'])
+		{
+			$RaceStageId = intval($this->request->RaceStageId);
+			$RaceGroupId = intval($this->request->RaceGroupId);
+			$SportsTypeId = intval($this->request->SportsTypeId);
+			$TimingId = isset($this->request->TimingId)?intval($this->request->TimingId):0;
+
+			$DeleteTimingPoint = $this->oRace->deleteTimingPoint($RaceStageId,$RaceGroupId,$SportsTypeId,$TimingId);
+			$this->response->goBack();
 		}
 		else
 		{

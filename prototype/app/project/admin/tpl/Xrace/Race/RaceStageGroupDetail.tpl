@@ -1,12 +1,5 @@
 {tpl:tpl contentHeader/}
 <script type="text/javascript">
-  function SportsTypeAdd(){
-    RaceStageId=$("#RaceStageId");
-    RaceGroupId=$("#RaceGroupId");
-    SportsType=$("#SportsTypeSelect");
-    After=$("#After");
-      location.href = '{tpl:$this.sign/}&ac=race.stage.group.sports.type.add&RaceGroupId=' + RaceGroupId.val() + '&RaceStageId=' + RaceStageId.val() + '&SportsTypeId=' + SportsType.val() + '&After=' + After.val();
-  }
   function SportsTypeAdd(sid,gid,after){
     SportsTypeAddBox = divBox.showBox('{tpl:$this.sign/}&ac=race.stage.group.sports.type.add&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&After=' + after, {title:'添加运动分段',width:350,height:250});
   }
@@ -15,6 +8,9 @@
   }
   function TimingPointModify(sid,gid,tid,pid,tname){
     TimingPointModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=timing.point.modify&RaceGroupId=' + gid + '&RaceStageId=' + sid +  '&SportsTypeId=' + tid + '&TimingId=' + pid, {title:'修改计时点-'+tname,width:400,height:400});
+  }
+  function TimingPointDelete(sid,gid,tid,pid,tname){
+    deleteTimingPointBox= divBox.confirmBox({content:'是否删除 ' + tname + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=timing.point.delete&RaceGroupId=' + gid + '&RaceStageId=' + sid +  '&SportsTypeId=' + tid + '&TimingId=' + pid;}});
   }
   function  SportsTypeDelete(sid,gid,tid, p_name){
     deleteSportsTypeBox= divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.stage.group.sports.type.delete&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&SportsTypeId=' + tid ;}});
@@ -70,7 +66,9 @@
       <tr>
         <td>┠&nbsp;&nbsp;{tpl:$TimingInfo.TName/}</td><td>计时芯片序列号：{tpl:$TimingInfo.ChipId/}</td><td>距离下一计时点：{tpl:$TimingInfo.ToNext/}米</td><td>经过{tpl:$TimingInfo.Round/}次</td><td>海拔上升{tpl:$TimingInfo.AltAsc/}米</td><td>海拔下降{tpl:$TimingInfo.AltDec/}米</td>
         <td><a href="javascript:;" onclick="TimingPointModify('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$TimingInfo.TName/}')">修改</a> |
-          <a href="javascript:;" onclick="TimingPointAdd('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">在此之后添加</a></td>
+          <a href="javascript:;" onclick="TimingPointDelete('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$TimingInfo.TName/}')">删除</a> |
+          <a href="javascript:;" onclick="TimingPointAdd('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">在此之后添加</a>
+        </td>
       </tr>
     {/tpl:loop}
   </th>
