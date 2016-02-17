@@ -10,6 +10,9 @@
   function SportsTypeInsert(sid,gid,after){
     SportsTypeAddBox = divBox.showBox('{tpl:$this.sign/}&ac=race.stage.group.sports.type.add.submit&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&After=' + after, {title:'添加运动分段',width:350,height:250});
   }
+  function TimingPointInsert(sid,gid,tid,after){
+    TimingPointAddBox = divBox.showBox('{tpl:$this.sign/}&ac=race.stage.group.sports.type.add.submit&RaceGroupId=' + gid + '&RaceStageId=' + sid +  '&SportsTypeId=' + tid + '&After=' + after, {title:'添加运动计时点',width:350,height:250});
+  }
   function  SportsTypeDelete(sid,gid,tid, p_name){
     deleteSportsTypeBox= divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.stage.group.sports.type.delete&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&SportsTypeId=' + tid ;}});
   }
@@ -63,6 +66,7 @@
   {tpl:loop $SportsTypeInfo.TimingDetailList $Tid $TimingInfo}
       <tr>
         <td>┠&nbsp;&nbsp;{tpl:$TimingInfo.TName/}</td><td>计时芯片序列号：{tpl:$TimingInfo.ChipId/}</td><td>距离下一计时点：{tpl:$TimingInfo.ToNext/}米</td><td>经过{tpl:$TimingInfo.Round/}次</td><td>海拔上升{tpl:$TimingInfo.AltAsc/}米</td><td>海拔下降{tpl:$TimingInfo.AltDec/}米</td>
+        <td><a href="javascript:;" onclick="TimingPointInsert('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}')">在此之后添加</a></td>
       </tr>
     {/tpl:loop}
   </th>
@@ -70,7 +74,7 @@
     </tr>
     {tpl:else}
       <tr>
-      <th align="center" class="rowtip">尚未配置任何计时点信息</th>
+      <th align="center" class="rowtip">尚未配置任何计时点信息<a href="javascript:;" onclick="TimingPointInsert('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$SportsTypeId/}','-1')">在头部添加</a></th>
       </tr>
     {/tpl:if}
   {/tpl:loop}
