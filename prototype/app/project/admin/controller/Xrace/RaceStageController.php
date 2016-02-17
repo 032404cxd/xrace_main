@@ -385,25 +385,32 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceStageGroupInfo['comment']['DetailList'] = isset($RaceStageGroupInfo['comment']['DetailList'])?$RaceStageGroupInfo['comment']['DetailList']:array();
 			$this->oSports = new Xrace_Sports();
 			$SportTypeArr = $this->oSports->getAllSportsTypeList();
-			$testArray = array('0'=>array('TName'=>"起点",'ToNext'=>'1000','AltAsc'=>100,'AltDec'=>200,'ChipId'=>'abc','Round'=>10),'1'=>array('TName'=>"计时点1",'ToNext'=>'2000','AltAsc'=>100,'AltDec'=>200,'ChipId'=>'abc','Round'=>10));
-			//echo json_encode($testArray);
 			foreach($RaceStageGroupInfo['comment']['DetailList'] as $Key => $RaceSportsInfo)
 			{
 				if(isset($SportTypeArr[$RaceSportsInfo['SportsTypeId']]))
 				{
+					$RaceStageGroupInfo['comment']['DetailList'][$Key]['Total'] = array('Distence'=>0,'ChipCount'=>0,'AltAsc'=>0,'AltDec'=>0);
 					$RaceStageGroupInfo['comment']['DetailList'][$Key]['SportsTypeName'] = $SportTypeArr[$RaceSportsInfo['SportsTypeId']]['SportsTypeName'];
 					$RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingDetailList'] = isset($RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingId'])?$this->oRace->getTimingDetail($RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingId']):array();
 					$RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'] = isset($RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'])?json_decode($RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'],true):array();
 					ksort($RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment']);
-					//$RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingDetailList'] = isset($RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingId'])?$this->oRace->getTimingDetail($RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingId']):$testArray;
+					foreach($RaceStageGroupInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'] as $tid => $tinfo)
+					{
+						//累加里程
+						$RaceStageGroupInfo['comment']['DetailList'][$Key]['Total']['Distence'] += $tinfo['ToNext']*	$tinfo['Round'];
+						//累加计时点数量
+						$RaceStageGroupInfo['comment']['DetailList'][$Key]['Total']['ChipCount'] += $tinfo['Round'];
+						//累加海拔上升
+						$RaceStageGroupInfo['comment']['DetailList'][$Key]['Total']['AltAsc'] += $tinfo['AltAsc']*	$tinfo['Round'];
+						//累加海拔下降
+						$RaceStageGroupInfo['comment']['DetailList'][$Key]['Total']['AltDec'] += $tinfo['AltDec']*	$tinfo['Round'];
+					}
 				}
 				else
 				{
 					unset($RaceStageGroupInfo['comment']['DetailList'][$Key]);
 				}
-
 			}
-			//print_r($RaceStageGroupInfo['comment']['DetailList']);
 			include $this->tpl('Xrace_Race_RaceStageGroupDetail');
 		}
 		else

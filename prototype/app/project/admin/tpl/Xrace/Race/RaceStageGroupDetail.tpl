@@ -58,6 +58,22 @@
      |
     <a href="javascript:;" onclick="SportsTypeDelete('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$SportsTypeId/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">删除</a>
   </th>
+
+    {tpl:if(count($SportsTypeInfo.TimingDetailList.comment))}
+  <tr>
+    <th align="center" class="rowtip">
+    <table width="99%" align="center"  class="table table-bordered table-striped">
+    <tr>
+      <td>总距离：{tpl:$SportsTypeInfo.Total.Distence/}</td>
+      <td>计时点：{tpl:$SportsTypeInfo.Total.ChipCount/}</td>
+      <td>海拔上升：{tpl:$SportsTypeInfo.Total.AltAsc/}</td>
+      <td>海拔下降：{tpl:$SportsTypeInfo.Total.AltDec/}</td>
+    </tr>
+    </table>
+  </th>
+  </tr>
+
+  {/tpl:if}
   </tr>
     {tpl:if(count($SportsTypeInfo.TimingDetailList.comment))}
   <tr><th colspan = 10>
