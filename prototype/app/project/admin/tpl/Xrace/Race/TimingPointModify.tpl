@@ -34,7 +34,7 @@
   </tr>
   <tr>
     <th align="center" class="rowtip">
-      海拔下降：<input type="text" name="AltAsc" id="AltAsc" value="{tpl:$TimingInfo.AltDec/}" />米
+      海拔下降：<input type="text" name="AltDec" id="AltDec" value="{tpl:$TimingInfo.AltDec/}" />米
     </th>
   </tr>
   <tr><th align="center" class="rowtip">
