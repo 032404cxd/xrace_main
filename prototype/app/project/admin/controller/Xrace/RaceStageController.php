@@ -962,10 +962,11 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			$RaceStageId = intval($this->request->RaceStageId);
 			$RaceGroupId = intval($this->request->RaceGroupId);
+			$RaceId = intval($this->request->RaceId);
 			$SportsTypeId = intval($this->request->SportsTypeId);
 			$TimingId = isset($this->request->TimingId)?intval($this->request->TimingId):0;
 
-			$DeleteTimingPoint = $this->oRace->deleteTimingPoint($RaceStageId,$RaceGroupId,$SportsTypeId,$TimingId);
+			$DeleteTimingPoint = $this->oRace->deleteTimingPoint($RaceStageId,$RaceGroupId,$RaceId,$SportsTypeId,$TimingId);
 			$this->response->goBack();
 		}
 		else

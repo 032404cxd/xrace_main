@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- 主机: 127.0.0.1
--- 生成日期: 2016-02-16 20:54:49
+-- 生成日期: 2016-02-19 15:56:56
 -- 服务器版本: 5.6.11
 -- PHP 版本: 5.5.1
 
@@ -243,7 +243,7 @@ CREATE TABLE IF NOT EXISTS `config_manager` (
 --
 
 INSERT INTO `config_manager` (`id`, `name`, `password`, `menu_group_id`, `data_groups`, `is_partner`, `last_login`, `last_active`, `last_ip`, `reg_ip`, `reg_time`, `reset_password`, `machine_show_list`) VALUES
-(2, 'scadmin', '3e4c853a030f8adb8ad7beb22655b5c2', 40, '10', 1, 1455612300, 1455626826, '127.0.0.1', '', 2011, 0, ''),
+(2, 'scadmin', '3e4c853a030f8adb8ad7beb22655b5c2', 40, '10', 1, 1455867624, 1455868519, '127.0.0.1', '', 2011, 0, ''),
 (26, '陈光明', 'e10adc3949ba59abbe56e057f20f883e', 34, '10', 0, 1381738898, 1381738898, '180.172.94.74', '58.247.169.182', 1357368334, 1, '');
 
 -- --------------------------------------------------------
@@ -504,6 +504,40 @@ INSERT INTO `config_menu_purview` (`group_id`, `menu_id`, `purview`) VALUES
 -- --------------------------------------------------------
 
 --
+-- 表的结构 `config_race`
+--
+
+CREATE TABLE IF NOT EXISTS `config_race` (
+  `RaceId` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '比赛ID',
+  `RaceStageId` int(10) unsigned NOT NULL COMMENT '赛事分站ID',
+  `RaceGroupId` int(10) unsigned NOT NULL COMMENT '赛事分组ID',
+  `RaceName` varchar(32) NOT NULL COMMENT '比赛名称',
+  `PriceList` varchar(100) NOT NULL COMMENT '价格规范|人数:价格|人数:价格',
+  `SingleUser` enum('0','1') NOT NULL DEFAULT '0' COMMENT '是否接受单人报名',
+  `TeamUser` enum('0','1') NOT NULL DEFAULT '0' COMMENT '是否接受团队报名',
+  `StartTime` datetime NOT NULL COMMENT '比赛开始时间',
+  `EndTime` datetime NOT NULL COMMENT '比赛结束时间',
+  `comment` varchar(1024) CHARACTER SET utf8 COLLATE utf8_estonian_ci NOT NULL,
+  PRIMARY KEY (`RaceId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='比赛详情' AUTO_INCREMENT=14 ;
+
+--
+-- 转存表中的数据 `config_race`
+--
+
+INSERT INTO `config_race` (`RaceId`, `RaceStageId`, `RaceGroupId`, `RaceName`, `PriceList`, `SingleUser`, `TeamUser`, `StartTime`, `EndTime`, `comment`) VALUES
+(6, 1, 1, 'aa11', '111111', '0', '1', '2016-02-26 17:42:21', '2016-02-29 17:42:21', '{"DetailList":[{"SportsTypeId":1,"TimingId":"26"},{"SportsTypeId":3,"TimingId":"27"},{"SportsTypeId":2}]}'),
+(7, 1, 1, 'bb', '1111', '1', '1', '2016-02-19 17:42:21', '2016-02-20 17:42:21', ''),
+(8, 1, 1, '111', '222', '1', '0', '2016-02-19 18:05:15', '2016-02-20 18:05:15', ''),
+(9, 1, 1, '111', '22', '1', '0', '2016-02-19 18:05:47', '2016-02-20 18:05:47', ''),
+(10, 1, 1, 'aa', '11111', '0', '1', '2016-02-19 17:42:21', '2016-02-20 17:42:21', ''),
+(11, 1, 3, '个人计时赛', '100', '1', '1', '2016-02-20 11:16:26', '2016-02-21 11:16:26', ''),
+(12, 1, 3, '团队计时赛', '11', '1', '1', '2016-02-20 11:18:36', '2016-02-21 11:18:36', ''),
+(13, 1, 3, '大组赛', '11', '1', '1', '2016-02-20 11:20:41', '2016-02-21 11:20:41', '');
+
+-- --------------------------------------------------------
+
+--
 -- 表的结构 `config_race_catalog`
 --
 
@@ -520,7 +554,7 @@ CREATE TABLE IF NOT EXISTS `config_race_catalog` (
 --
 
 INSERT INTO `config_race_catalog` (`RaceCatalogId`, `RaceCatalogName`, `comment`) VALUES
-(1, 'Heros上海联赛', '{"GameCatalogIcon":"D:\\\\xampp\\\\htdocs\\\\tipask\\\\prototype\\\\app\\\\project\\\\admin\\/html\\/upload\\/GameCatalogIcon\\/ironman vineman 230x120 1.png","GameCatalogIcon_root":"\\/upload\\/GameCatalogIcon\\/ironman vineman 230x120 1.png","RaceCatalogIcon":"D:\\\\xampp\\\\htdocs\\\\tipask\\\\prototype\\\\app\\\\project\\\\admin\\/html\\/upload\\/RaceCatalogIcon\\/79228797gw1em2ejx8xktj20w01kw4fe.jpg","RaceCatalogIcon_root":"\\/upload\\/RaceCatalogIcon\\/79228797gw1em2ejx8xktj20w01kw4fe.jpg"}'),
+(1, 'Heros环上海联赛', '{"GameCatalogIcon":"D:\\\\xampp\\\\htdocs\\\\tipask\\\\prototype\\\\app\\\\project\\\\admin\\/html\\/upload\\/GameCatalogIcon\\/ironman vineman 230x120 1.png","GameCatalogIcon_root":"\\/upload\\/GameCatalogIcon\\/ironman vineman 230x120 1.png","RaceCatalogIcon":"D:\\\\xampp\\\\htdocs\\\\tipask\\\\prototype\\\\app\\\\project\\\\admin\\/html\\/upload\\/RaceCatalogIcon\\/79228797gw1em2ejx8xktj20w01kw4fe.jpg","RaceCatalogIcon_root":"\\/upload\\/RaceCatalogIcon\\/79228797gw1em2ejx8xktj20w01kw4fe.jpg"}'),
 (2, '中铁协系列赛', '{"GameCatalogIcon":"D:\\\\xampp\\\\htdocs\\\\tipask\\\\prototype\\\\app\\\\project\\\\admin\\/html\\/upload\\/GameCatalogIcon\\/79228797gw1em2ek0ux5wj21kw0w07hg.jpg","GameCatalogIcon_root":"\\/upload\\/GameCatalogIcon\\/79228797gw1em2ek0ux5wj21kw0w07hg.jpg","RaceCatalogIcon":"D:\\\\xampp\\\\htdocs\\\\tipask\\\\prototype\\\\app\\\\project\\\\admin\\/html\\/upload\\/RaceCatalogIcon\\/79228797gw1em2ek0ux5wj21kw0w07hg.jpg","RaceCatalogIcon_root":"\\/upload\\/RaceCatalogIcon\\/79228797gw1em2ek0ux5wj21kw0w07hg.jpg"}'),
 (3, '上海自行车联赛', '{"GameCatalogIcon":"D:\\\\xampp\\\\htdocs\\\\tipask\\\\prototype\\\\app\\\\project\\\\admin\\/html\\/upload\\/GameCatalogIcon\\/79228797gw1em2ek4dr5qj21kw16odws.jpg","GameCatalogIcon_root":"\\/upload\\/GameCatalogIcon\\/79228797gw1em2ek4dr5qj21kw16odws.jpg","RaceCatalogIcon":"D:\\\\xampp\\\\htdocs\\\\tipask\\\\prototype\\\\app\\\\project\\\\admin\\/html\\/upload\\/RaceCatalogIcon\\/ironman vineman 230x120 1.png","RaceCatalogIcon_root":"\\/upload\\/RaceCatalogIcon\\/ironman vineman 230x120 1.png"}'),
 (4, '测试赛事', '{"RaceCatalogIcon":"D:\\\\xampp\\\\htdocs\\\\tipask\\\\prototype\\\\app\\\\project\\\\admin\\/html\\/upload\\/RaceCatalogIcon\\/79228797gw1em2ejx8xktj20w01kw4fe.jpg","RaceCatalogIcon_root":"\\/upload\\/RaceCatalogIcon\\/79228797gw1em2ejx8xktj20w01kw4fe.jpg"}');
@@ -547,11 +581,11 @@ CREATE TABLE IF NOT EXISTS `config_race_group` (
 INSERT INTO `config_race_group` (`RaceGroupId`, `RaceGroupName`, `comment`, `RaceCatalogId`) VALUES
 (1, '精英组', '', 1),
 (2, '大众组', '{"GameCatalogIcon":"D:\\\\xampp\\\\htdocs\\\\tipask\\\\prototype\\\\app\\\\project\\\\admin\\/html\\/upload\\/GameCatalogIcon\\/ironman vineman 230x120 1.png","GameCatalogIcon_root":"\\/upload\\/GameCatalogIcon\\/ironman vineman 230x120 1.png"}', 3),
-(3, '大众组', '{"GameCatalogIcon":"D:\\\\xampp\\\\htdocs\\\\tipask\\\\prototype\\\\app\\\\project\\\\admin\\/html\\/upload\\/GameCatalogIcon\\/79228797gw1em2ek0ux5wj21kw0w07hg.jpg","GameCatalogIcon_root":"\\/upload\\/GameCatalogIcon\\/79228797gw1em2ek0ux5wj21kw0w07hg.jpg"}', 1),
+(3, 'U25组', '{"GameCatalogIcon":"D:\\\\xampp\\\\htdocs\\\\tipask\\\\prototype\\\\app\\\\project\\\\admin\\/html\\/upload\\/GameCatalogIcon\\/79228797gw1em2ek0ux5wj21kw0w07hg.jpg","GameCatalogIcon_root":"\\/upload\\/GameCatalogIcon\\/79228797gw1em2ek0ux5wj21kw0w07hg.jpg"}', 1),
 (4, '群众组', '', 3),
 (9, '精英组', '', 3),
 (10, '40-50组', '', 2),
-(11, '群众组', '', 1),
+(11, 'U35组', '', 1),
 (12, '30-40组', '', 2),
 (13, '20-30组', '', 2),
 (14, '50-60组', '', 2),
@@ -579,14 +613,12 @@ CREATE TABLE IF NOT EXISTS `config_race_stage` (
 --
 
 INSERT INTO `config_race_stage` (`RaceStageId`, `RaceStageName`, `comment`, `RaceCatalogId`, `StageStartDate`, `StageEndDate`) VALUES
-(1, '测试组别1111', '{"SelectedRaceGroup":{"1":"1","11":"11"}}', 1, '2016-02-10', '2016-02-16'),
+(1, '安亭站', '{"SelectedRaceGroup":{"1":"1","3":"3","11":"11"}}', 1, '2016-02-10', '2016-02-16'),
 (2, '30-40年龄组', '{"SelectedRaceGroup":{"10":"10","12":"12"}}', 2, '2016-02-03', '2016-02-18'),
 (3, '中铁协系列赛', '{"SelectedRaceGroup":{"10":"10","12":"12","13":"13"}}', 2, '2016-02-01', '2016-02-03'),
-(8, '11111111111111', '{"SelectedRaceGroup":{"10":"10","12":"12","13":"13","14":"14"}}', 2, '2016-02-01', '2016-02-23'),
-(9, '上海站', '{"SelectedRaceGroup":{"1":"1"}}', 1, '2016-02-03', '2016-02-29'),
-(10, '测试分组', '{"SelectedRaceGroup":{"1":"1","3":"3"}}', 1, '2016-02-03', '2016-02-17'),
-(13, '测试分站', '{"SelectedRaceGroup":{"10":"10","12":"12","13":"13"}}', 2, '2016-02-01', '2016-02-29'),
-(15, '奉贤分站', '{"SelectedRaceGroup":{"1":"1","3":"3"}}', 1, '2016-02-01', '2016-03-02');
+(9, '金山站', '{"SelectedRaceGroup":{"1":"1","3":"3","11":"11"}}', 1, '2016-02-03', '2016-02-29'),
+(10, '南汇站', '{"SelectedRaceGroup":{"1":"1","3":"3","11":"11"}}', 1, '2016-02-03', '2016-02-17'),
+(15, '奉贤站', '{"SelectedRaceGroup":{"1":"1","3":"3","11":"11"}}', 1, '2016-02-01', '2016-03-02');
 
 -- --------------------------------------------------------
 
@@ -597,11 +629,6 @@ INSERT INTO `config_race_stage` (`RaceStageId`, `RaceStageName`, `comment`, `Rac
 CREATE TABLE IF NOT EXISTS `config_race_stage_group` (
   `RaceStageId` int(10) unsigned NOT NULL COMMENT '赛事分站ID',
   `RaceGroupId` int(10) unsigned NOT NULL COMMENT '赛事分组ID',
-  `PriceList` varchar(100) NOT NULL COMMENT '价格规范|人数:价格|人数:价格',
-  `SingleUser` enum('0','1') NOT NULL DEFAULT '0' COMMENT '是否接受单人报名',
-  `TeamUser` enum('0','1') NOT NULL DEFAULT '0' COMMENT '是否接受团队报名',
-  `StartTime` datetime NOT NULL COMMENT '比赛开始时间',
-  `EndTime` datetime NOT NULL COMMENT '比赛结束时间',
   `comment` varchar(1024) CHARACTER SET utf8 COLLATE utf8_estonian_ci NOT NULL,
   PRIMARY KEY (`RaceStageId`,`RaceGroupId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='运动类型配置表';
@@ -610,11 +637,8 @@ CREATE TABLE IF NOT EXISTS `config_race_stage_group` (
 -- 转存表中的数据 `config_race_stage_group`
 --
 
-INSERT INTO `config_race_stage_group` (`RaceStageId`, `RaceGroupId`, `PriceList`, `SingleUser`, `TeamUser`, `StartTime`, `EndTime`, `comment`) VALUES
-(1, 1, '200', '0', '0', '2016-02-08 15:42:46', '2016-02-16 15:42:46', '{"DetailList":[{"SportsTypeId":3},{"SportsTypeId":4},{"SportsTypeId":2},{"SportsTypeId":3},{"SportsTypeId":1},{"SportsTypeId":3},{"SportsTypeId":4}]}'),
-(1, 11, '200', '1', '1', '2016-02-07 15:42:46', '2016-02-08 15:42:46', '{"DetailList":[]}'),
-(10, 1, '0', '1', '1', '2016-02-09 00:11:13', '2016-02-10 00:11:13', '{"DetailList":[{"SportsTypeId":2},{"SportsTypeId":4},{"SportsTypeId":3},{"SportsTypeId":4},{"SportsTypeId":2},{"SportsTypeId":3},{"SportsTypeId":1},{"SportsTypeId":4},{"SportsTypeId":6}]}'),
-(15, 3, '0', '1', '1', '2016-02-17 17:34:35', '2016-02-18 17:34:35', '{"DetailList":[]}');
+INSERT INTO `config_race_stage_group` (`RaceStageId`, `RaceGroupId`, `comment`) VALUES
+(1, 1, '{"DetailList":{"2":{"TimingId":"17"}}}');
 
 -- --------------------------------------------------------
 
@@ -665,6 +689,32 @@ INSERT INTO `config_sports_type` (`SportsTypeId`, `SportsTypeName`, `comment`) V
 (3, '公路自行车', ''),
 (4, '跑步', ''),
 (6, '泳池游泳', '{"params":{"1":{"paramName":"","param":""},"2":{"paramName":"","param":""},"3":{"paramName":"","param":""},"4":{"paramName":"","param":""},"5":{"paramName":"","param":""}}}');
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `config_timing_point`
+--
+
+CREATE TABLE IF NOT EXISTS `config_timing_point` (
+  `TimingId` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '计时点ID',
+  `TimingChipId` varchar(32) NOT NULL COMMENT '计时芯片ID',
+  `comment` varchar(2048) NOT NULL COMMENT '压缩数组',
+  PRIMARY KEY (`TimingId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='计时芯片配置表' AUTO_INCREMENT=28 ;
+
+--
+-- 转存表中的数据 `config_timing_point`
+--
+
+INSERT INTO `config_timing_point` (`TimingId`, `TimingChipId`, `comment`) VALUES
+(1, '', '[{"TName":"\\u8d77\\u70b9","ToNext":"1000","AltAsc":100,"AltDec":200,"ChipId":"abc","Round":10},{"TName":"\\u8ba1\\u65f6\\u70b92","ToNext":150,"AltAsc":200,"AltDec":0,"Round":10,"ChipId":"100"},{"TName":"\\u8ba1\\u65f6\\u70b93","ToNext":150,"AltAsc":200,"AltDec":0,"Round":10,"ChipId":"100"},{"TName":"\\u8ba1\\u65f6\\u70b91","ToNext":"2000","AltAsc":100,"AltDec":200,"ChipId":"abc","Round":10}]'),
+(16, '', '[{"TName":"\\u8ba1\\u65f6\\u70b912","ToNext":1000,"AltAsc":0,"AltDec":0,"Round":0,"ChipId":"111"},{"TName":"\\u8ba1\\u65f6\\u70b913","ToNext":125,"AltAsc":15,"AltDec":0,"Round":15,"ChipId":"100"}]'),
+(17, '', '[{"TName":"\\u8ba1\\u65f6\\u70b999","ToNext":100,"AltAsc":0,"AltDec":0,"Round":10,"ChipId":"100"}]'),
+(24, '', '[{"TName":"\\u8ba1\\u65f6\\u70b999","ToNext":15,"AltAsc":0,"AltDec":15,"Round":15,"ChipId":"1"}]'),
+(25, '', '[{"TName":"\\u8ba1\\u65f6\\u70b999","ToNext":15,"AltAsc":0,"AltDec":15,"Round":15,"ChipId":"1"}]'),
+(26, '', '[{"TName":"\\u8ba1\\u65f6\\u70b91","ToNext":1001,"AltAsc":1001,"AltDec":1,"Round":101,"ChipId":"111"},{"TName":"\\u8ba1\\u65f6\\u70b91.1","ToNext":15,"AltAsc":1,"AltDec":1,"Round":10,"ChipId":""},{"TName":"\\u8ba1\\u65f6\\u70b91.1.1","ToNext":15,"AltAsc":10,"AltDec":1,"Round":15,"ChipId":"15"},{"TName":"\\u8ba1\\u65f6\\u70b91.1.1.1","ToNext":100,"AltAsc":15,"AltDec":10,"Round":15,"ChipId":"abcdef"},{"TName":"\\u8ba1\\u65f6\\u70b92","ToNext":15,"AltAsc":1,"AltDec":2,"Round":10,"ChipId":"100"}]'),
+(27, '', '[{"TName":"\\u8ba1\\u65f6\\u70b92","ToNext":15,"AltAsc":10,"AltDec":10,"Round":10,"ChipId":"\\u8ba1\\u65f6\\u70b92"}]');
 
 -- --------------------------------------------------------
 
