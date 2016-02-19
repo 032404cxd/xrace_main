@@ -131,7 +131,7 @@ class Xrace_RaceCatalogController extends AbstractController
 			$oUpload = new Base_Upload('RaceCatalogIcon');
 			$upload = $oUpload->upload('RaceCatalogIcon');
 			$res[1] = $upload->resultArr;
-			$path = $res[1][1];
+			$path = isset( $res[1][1] ) ? $res[1][1]:array('path'=>"");
 			//如果正确上传，就保存文件路径
 			if(strlen($path['path'])>2)
 			{

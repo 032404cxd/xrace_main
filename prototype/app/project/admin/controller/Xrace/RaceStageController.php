@@ -1,14 +1,8 @@
 <?php
-/**
- * 任务管理
- * @author Chen<cxd032404@hotmail.com>
- * $Id: LotoController.php 15195 2014-07-23 07:18:26Z 334746 $
- */
-
 class Xrace_RaceStageController extends AbstractController
 {
-	/**运动类型列表:RaceStageList
-	 * 权限限制  ?ctl=xrace/sports&ac=sports.type
+	/**赛事分站:
+	 * 权限限制  ?ctl=xrace/sports&ac=sports.stage
 	 * @var string
 	 */
 	protected $sign = '?ctl=xrace/race.stage';
@@ -16,8 +10,7 @@ class Xrace_RaceStageController extends AbstractController
 	 * race对象
 	 * @var object
 	 */
-	protected $oRaceStage;
-
+	protected $oRace;
 	/**
 	 * 初始化
 	 * (non-PHPdoc)
@@ -36,61 +29,79 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
+			//赛事ID
 			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
+			//赛事列表
 			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
+			//赛事分站列表
 			$RaceStageArr = $this->oRace->getAllRaceStageList($RaceCatalogId);
+			//赛事分组列表
 			$RaceGroupArr = $this->oRace->getAllRaceGroupList($RaceCatalogId,'RaceGroupId,RaceGroupName');
+			//初始化一个空的赛事分站列表
 			$RaceStageList = array();
+			//循环赛事分站列表
 			foreach($RaceStageArr as $key => $value)
 			{
 				$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key] = $value;
+				//计算分站数量，用于页面跨行显示
 				$RaceStageList[$value['RaceCatalogId']]['RaceStageCount'] = isset($RaceStageList[$value['RaceCatalogId']]['RaceStageCount'])?$RaceStageList[$value['RaceCatalogId']]['RaceStageCount']+1:1;
 				$RaceStageList[$value['RaceCatalogId']]['RowCount'] = $RaceStageList[$value['RaceCatalogId']]['RaceStageCount']+1;
-
+				//如果相关赛事ID有效
 				if(isset($RaceCatalogArr[$value['RaceCatalogId']]))
 				{
+					//获取赛事ID
 					$RaceStageList[$value['RaceCatalogId']]['RaceCatalogName'] = isset($RaceStageList[$value['RaceCatalogId']]['RaceCatalogName'])?$RaceStageList[$value['RaceCatalogId']]['RaceCatalogName']:$RaceCatalogArr[$value['RaceCatalogId']]['RaceCatalogName'];
-
-				}
-				else
-				{
-					$RaceStageList[$value['RaceCatalogId']]['RaceCatalogName'] = 	"未定义";
-				}
-
-				if(isset($RaceCatalogArr[$value['RaceCatalogId']]))
-				{
+					//解包压缩数组
 					$value['comment'] = json_decode($value['comment'],true);
 					$t = array();
+					//如果有已经选择的赛事组别
 					if(isset($value['comment']['SelectedRaceGroup']) && is_array($value['comment']['SelectedRaceGroup']))
 					{
+						//循环各个组别
 						foreach($value['comment']['SelectedRaceGroup'] as $k => $v)
 						{
+							//获取各个组别的比赛场次数量
+							$RaceCount = $this->oRace->getRaceCount($value['RaceStageId'],$v);
+							//如果有配置比赛场次
+							if($RaceCount>0)
+							{
+								//添加场次数量
+								$Suffix = "(".$RaceCount.")";
+							}
+							else
+							{
+								$Suffix = "";
+							}
+							//如果赛事组别配置有效
 							if(isset($RaceGroupArr[$v]))
 							{
-								$t[$k] = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.list',array('RaceStageId'=>$value['RaceStageId'],'RaceGroupId'=>$v)) ."'>".$RaceGroupArr[$v]['RaceGroupName']."</a>";
+								//生成到比赛详情页面的链接
+								$t[$k] = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.list',array('RaceStageId'=>$value['RaceStageId'],'RaceGroupId'=>$v)) ."'>".$RaceGroupArr[$v]['RaceGroupName'].$Suffix."</a>";
 							}
 						}
 					}
+					//如果检查后有至少一个有效的赛事组别配置
 					if(count($t))
 					{
+						//生成页面显示的数组
 						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['SelectedGroupList'] = implode("/",$t);
-						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceDetail'] = 1;
 						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['GroupCount'] = count($t);
 						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RowCount'] = $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['GroupCount']+1;
 					}
 					else
 					{
-						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['SelectedGroupList'] = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.stage.group.list',array('RaceStageId'=>$key)) ."'>尚未配置</a>";
-						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceDetail'] = 0;
+						//生成默认的入口
+						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['SelectedGroupList'] = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.list',array('RaceStageId'=>$key)) ."'>尚未配置</a>";
 						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['GroupCount'] = 0;
 						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RowCount'] = 1;
 					}
 				}
 				else
 				{
-					$RaceStageArr[$key]['RaceCatalogName'] = 	"未定义";
+					$RaceStageList[$value['RaceCatalogId']]['RaceCatalogName'] = 	"未定义";
 				}
 			}
+			//渲染模板
 			include $this->tpl('Xrace_Race_RaceStageList');
 		}
 		else

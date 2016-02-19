@@ -66,7 +66,7 @@ class Base_Upload
 		$this->fileDir = Base_Common::$config['file_dir'];
 		$this->fileUrl = Base_Common::$config['file_url'];
 		$noFileArr = array();
-		if (is_array($_FILES[$name]))
+		if (isset($_FILES[$name]) && is_array($_FILES[$name]))
 		{		 
 			foreach ($_FILES[$name] as $key => $val) 
 			{
@@ -81,6 +81,12 @@ class Base_Upload
 				}
 			}
 		}
+		else
+		{
+			$this->fileArr = array();
+		}
+
+
 		foreach ($noFileArr as $k) {
 			unset($this->fileArr[$k]);
 		}

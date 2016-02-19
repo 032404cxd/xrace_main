@@ -346,6 +346,19 @@ class Xrace_Race extends Base_Widget
 		return $this->db->select($table_to_process, $fields, '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
 	}
 	/**
+	 * 获取单条记录
+	 * @param integer $AppId
+	 * @param string $fields
+	 * @return array
+	 */
+	public function getRaceCount($RaceStageId,$RaceGroupId)
+	{
+		$RaceStageId = intval($RaceStageId);
+		$RaceGroupId = intval($RaceGroupId);
+		$table_to_process = Base_Widget::getDbTable($this->table_race);
+		return $this->db->selectOne($table_to_process, "count(RaceId) as RaceCount", '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
+	}
+	/**
 	 * 插入
 	 * @param array $bind
 	 * @return boolean
