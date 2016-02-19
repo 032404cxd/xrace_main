@@ -19,6 +19,10 @@ $table['user_profile']['db'] = 'xrace';
 $table['user_profile']['num'] = 1;
 
 #计时点
+$table['config_race']['db'] = 'xrace_config';
+$table['config_race']['num'] = 1;
+
+#计时点
 $table['config_timing_point']['db'] = 'xrace_config';
 $table['config_timing_point']['num'] = 1;
 

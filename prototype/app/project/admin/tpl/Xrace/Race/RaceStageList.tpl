@@ -50,7 +50,7 @@
     <th align="center" class="rowtip" >{tpl:$oRaceStage.StageStartDate/}</th>
     <th align="center" class="rowtip" >{tpl:$oRaceStage.StageEndDate/}</th>
     <td align="center" class="rowtip" >{tpl:$oRaceStage.SelectedGroupList/}</td>
-    <th align="center" class="rowtip" ><a  href="javascript:;" onclick="RaceGroupDelete('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceStageName/}')">删除</a> |  <a href="javascript:;" onclick="RaceStageModify('{tpl:$oRaceStage.RaceStageId/}');">修改</a></th></tr>
+    <th align="center" class="rowtip" ><a  href="javascript:;" onclick="RaceStageDelete('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceStage.RaceStageName/}');">删除</a> |  <a href="javascript:;" onclick="RaceStageModify('{tpl:$oRaceStage.RaceStageId/}');">修改</a></th></tr>
   </tr>
   {/tpl:loop}
   {/tpl:loop}

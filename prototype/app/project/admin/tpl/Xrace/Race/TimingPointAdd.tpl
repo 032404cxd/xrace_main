@@ -3,6 +3,7 @@
 <form action="{tpl:$this.sign/}&ac=timing.point.insert" name="timing_point_add_form" id="timing_point_add_form" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$oRaceStage.RaceStageId/}" />
   <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$oRaceGroup.RaceGroupId/}" />
+  <input type="hidden" name="RaceId" id="RaceId" value="{tpl:$RaceId/}" />
   <input type="hidden" name="SportsTypeId" id="SportsTypeId" value="{tpl:$SportsTypeId/}" />
 
 <table width="99%" align="center" class="table table-bordered table-striped">
@@ -77,7 +78,8 @@
           var message = '计时点添加成功';
           RaceStageId=$("#RaceStageId");
           RaceGroupId=$("#RaceGroupId");
-          divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=race.stage.group.detail&RaceStageId=' + RaceStageId.val() + '&RaceGroupId=' + RaceGroupId.val());}});
+          RaceId=$("#RaceId");
+          divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=race.detail&RaceStageId=' + RaceStageId.val() + '&RaceGroupId=' + RaceGroupId.val() + '&RaceId=' + RaceId.val());}});
         }
       }
     };
