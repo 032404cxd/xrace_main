@@ -27,6 +27,7 @@ class Widget_Manager extends Base_Widget
 	 */
     protected $table = 'config_manager';
 
+    protected $operation_table = 'user_menu_operation';
     /**
      * cookie名称
      * @var string
@@ -414,44 +415,59 @@ class Widget_Manager extends Base_Widget
      */
     public function checkMenuPermission($operation, $return = false)
     {
-		$oMenu = new Widget_Menu();
-		$oMenuPurview = new Widget_Menu_Permission();
+        $oMenu = new Widget_Menu();
+        $oMenuPurview = new Widget_Menu_Permission();
         $t = explode("&",$_SERVER['QUERY_STRING']);
         foreach($t as $key => $value)
-		{
-			$t2 = explode("=",$value);
-			if(trim($t2[0])=="ctl")
-			{
-				$ctl = $value;
+        {
+            $t2 = explode("=",$value);
+            if(trim($t2[0])=="ctl")
+            {
+                $ctl = $value;
                 break;
-			}
-		}
+            }
+        }
         $link = $ctl;
-		//获取页面ID
-		$MenuInfo = $oMenu->getOneBylink("?".$link, "name,menu_id,parent,permission_list");
-		//获取当前用户组在当前页面的所有权限
+        //获取页面ID
+        $MenuInfo = $oMenu->getOneBylink("?".$link, "name,menu_id,parent,permission_list");
+        //获取当前用户组在当前页面的所有权限
         $purview = $oMenuPurview->getPermission($MenuInfo['menu_id'], $this->menu_group_id);
-		//如果只是进入页面,不执行操作
-		if($operation == "0")
-		{
-			//当前页面有任何权限
-			if(count($purview)>0)
-			{
-				$return = array('return'=>1);
-			}
-			else
-			{
-				$return = array('return'=>0,'message'=>"对不起,您没有进入 ".$MenuInfo['name']." 的权限!");
-			}
-		}
-		else
-		{
+        $bind = array(
+            'user_name' => $this->name,
+            'menu_group_id' => $this->menu_group_id,
+            'menu_id' => $MenuInfo['menu_id'],
+            'parent_menu_id' => $MenuInfo['parent'],
+            
+        );
+        //如果只是进入页面,不执行操作
+        if($operation == "0")
+        {
+            $bind['operation_name'] = $MenuInfo['name'];
+            //当前页面有任何权限
+            if(count($purview)>0)
+            {
+                    $bind['operation_flag'] = 1;
+                    $this->logUserMenuOperation($bind);
+                    $return = array('return'=>1);
+            }
+            else
+            {       
+                    $bind['operation_flag'] = 0;
+                    $this->logUserMenuOperation($bind);
+                    $return = array('return'=>0,'message'=>"对不起,您没有进入 ".$MenuInfo['name']." 的权限!");
+            }
+        }
+        else
+        {
+            $bind['operation_name'] = $operation;
             if(strpos($MenuInfo['permission_list'],$operation))
 			{
                 foreach($purview as $key => $value)
 				{
                     if($value['permission'] == $operation)
 					{
+                                                $bind['operation_flag'] = 1;
+                                                $this->logUserMenuOperation($bind);
 						$return = array('return'=>1);
 						return $return;
 					}
@@ -466,15 +482,34 @@ class Widget_Manager extends Base_Widget
 						break;
 					}
 				}
+                                $bind['operation_flag'] = 0;
+                                $this->logUserMenuOperation($bind);
 				$return = array('return'=>0,'message'=>"对不起,您没有执行 ".$action." 的权限!");
 			}
 			else
 			{
+                                $bind['operation_flag'] = 0;
+                                $this->logUserMenuOperation($bind);
 				$return = array('return'=>0,'message'=>"无此权限!");
 			}
 		}
 		return $return;
 		
+    }
+    /**
+     * 记录用户操作菜单操作
+     * @param integer $menu_id
+     */    
+    public function logUserMenuOperation($bind) {
+        $insertStruct = array(
+            'user_name' => $bind['user_name'],
+            'menu_group_id' => $bind['menu_group_id'],
+            'menu_id' => $bind['menu_id'],
+            'parent_menu_id' => $bind['parent_menu_id'],
+            'operation_name' => $bind['operation_name'],
+            'operation_flag' => $bind['operation_flag'],3
+        );
+        return $this->db->insert($this->operation_table, $insertStruct);
     }
 
     /**
