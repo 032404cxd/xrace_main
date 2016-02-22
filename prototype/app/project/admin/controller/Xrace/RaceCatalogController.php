@@ -16,7 +16,7 @@ class Xrace_RaceCatalogController extends AbstractController
 	 * race对象
 	 * @var object
 	 */
-	protected $oRaceCatalog;
+	protected $oRace;
 
 	/**
 	 * 初始化
@@ -26,7 +26,7 @@ class Xrace_RaceCatalogController extends AbstractController
 	public function init()
 	{
 		parent::init();
-		$this->oRaceCatalog = new Xrace_Race();
+		$this->oRace = new Xrace_Race();
 
 	}
 	//任务配置列表页面
@@ -37,7 +37,7 @@ class Xrace_RaceCatalogController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			$RootUrl = "http://".$_SERVER['HTTP_HOST'];
-			$RaceCatalogArr  = $this->oRaceCatalog->getAllRaceCatalogList();
+			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
 			include $this->tpl('Xrace_Race_RaceCatalogList');
 		}
 		else
@@ -85,7 +85,7 @@ class Xrace_RaceCatalogController extends AbstractController
 				$bind['comment']['RaceCatalogIcon_root'] = $path['path_root'];
 			}
 			$bind['comment'] = json_encode($bind['comment']);
-			$res = $this->oRaceCatalog->insertRaceCatalog($bind);
+			$res = $this->oRace->insertRaceCatalog($bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
 		}
 		echo json_encode($response);
@@ -100,7 +100,7 @@ class Xrace_RaceCatalogController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			$raceCatalogId = trim($this->request->raceCatalogId);
-			$oRaceCatalog = $this->oRaceCatalog->getRaceCatalog($raceCatalogId,'*');
+			$oRaceCatalog = $this->oRace->getRaceCatalog($raceCatalogId,'*');
 			include $this->tpl('Xrace_Race_RaceCatalogModify');
 		}
 		else
@@ -125,7 +125,7 @@ class Xrace_RaceCatalogController extends AbstractController
 		else
 		{
 			//获取原有数据
-			$oRaceCatalog = $this->oRaceCatalog->getRaceCatalog($bind['RaceCatalogId'],'*');
+			$oRaceCatalog = $this->oRace->getRaceCatalog($bind['RaceCatalogId'],'*');
 			$bind['comment'] = json_decode($oRaceCatalog['comment'],true);
 			//文件上传
 			$oUpload = new Base_Upload('RaceCatalogIcon');
@@ -139,7 +139,7 @@ class Xrace_RaceCatalogController extends AbstractController
 				$bind['comment']['RaceCatalogIcon_root'] = $path['path_root'];
 			}
 			$bind['comment'] = json_encode($bind['comment']);
-			$res = $this->oRaceCatalog->updateRaceCatalog($bind['RaceCatalogId'],$bind);
+			$res = $this->oRace->updateRaceCatalog($bind['RaceCatalogId'],$bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
 		}
 		echo json_encode($response);
@@ -154,7 +154,7 @@ class Xrace_RaceCatalogController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			$RaceCatalogId = intval($this->request->RaceCatalogId);
-			$this->oRaceCatalog->deleteRaceCatalog($RaceCatalogId);
+			$this->oRace->deleteRaceCatalog($RaceCatalogId);
 			$this->response->goBack();
 		}
 		else

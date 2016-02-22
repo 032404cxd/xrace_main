@@ -22,8 +22,8 @@ function RaceGroupModify(mid){
 <form action="{tpl:$this.sign/}" name="form" id="form" method="post">
   <select name="RaceCatalogId" size="1">
     <option value="0">全部</option>
-    {tpl:loop $RaceCatalogArr $oRaceCatalog}
-    <option value="{tpl:$oRaceCatalog.RaceCatalogId/}" {tpl:if($oRaceCatalog.RaceCatalogId==$RaceCatalogId)}selected="selected"{/tpl:if}>{tpl:$oRaceCatalog.RaceCatalogName/}</option>
+    {tpl:loop $RaceCatalogArr $RaceCatalogInfo}
+    <option value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" {tpl:if($RaceCatalogInfo.RaceCatalogId==$RaceCatalogId)}selected="selected"{/tpl:if}>{tpl:$RaceCatalogInfo.RaceCatalogName/}</option>
     {/tpl:loop}
   </select>
   <input type="submit" name="Submit" value="查询" />
@@ -37,15 +37,15 @@ function RaceGroupModify(mid){
     <th align="center" class="rowtip">操作</th>
   </tr>
 
-{tpl:loop $RaceGroupList $RaceCatalogId $oRaceCatalogInfo}
+{tpl:loop $RaceGroupList $RaceCatalogId $RaceCatalogInfo}
   <tr>
-    <th align="center" class="rowtip"  rowspan = {tpl:$oRaceCatalogInfo.RowCount /}>{tpl:$oRaceCatalogInfo.RaceCatalogName/}</th>
+    <th align="center" class="rowtip"  rowspan = {tpl:$RaceCatalogInfo.RowCount /}>{tpl:$RaceCatalogInfo.RaceCatalogName/}</th>
   </tr>
-  {tpl:loop $oRaceCatalogInfo.RaceGroupList $RaceGroupId $oRaceGroup}
+  {tpl:loop $RaceCatalogInfo.RaceGroupList $RaceGroupId $RaceGroupInfo}
   <tr>
-    <th align="center" class="rowtip" >{tpl:$oRaceGroup.RaceGroupId/}</th>
-    <th align="center" class="rowtip" >{tpl:$oRaceGroup.RaceGroupName/}</th>
-    <th align="center" class="rowtip" ><a  href="javascript:;" onclick="RaceGroupDelete('{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$oRaceGroup.RaceGroupName/}')">删除</a> |  <a href="javascript:;" onclick="RaceGroupModify('{tpl:$oRaceGroup.RaceGroupId/}');">修改</a></th>
+    <th align="center" class="rowtip" >{tpl:$RaceGroupInfo.RaceGroupId/}</th>
+    <th align="center" class="rowtip" >{tpl:$RaceGroupInfo.RaceGroupName/}</th>
+    <th align="center" class="rowtip" ><a  href="javascript:;" onclick="RaceGroupDelete('{tpl:$RaceGroupInfo.RaceGroupId/}','{tpl:$RaceGroupInfo.RaceGroupName/}')">删除</a> |  <a href="javascript:;" onclick="RaceGroupModify('{tpl:$RaceGroupInfo.RaceGroupId/}');">修改</a></th>
   </tr>
   {/tpl:loop}
 {/tpl:loop}

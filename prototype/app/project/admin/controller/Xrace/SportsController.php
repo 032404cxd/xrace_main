@@ -16,7 +16,7 @@ class Xrace_SportsController extends AbstractController
 	 * game对象
 	 * @var object
 	 */
-	protected $oSportsType;
+	protected $oSports;
 
 	/**
 	 * 初始化

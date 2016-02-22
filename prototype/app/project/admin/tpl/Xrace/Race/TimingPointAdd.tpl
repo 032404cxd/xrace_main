@@ -1,8 +1,8 @@
 {tpl:tpl contentHeader/}
 
 <form action="{tpl:$this.sign/}&ac=timing.point.insert" name="timing_point_add_form" id="timing_point_add_form" method="post">
-<input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$oRaceStage.RaceStageId/}" />
-  <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$oRaceGroup.RaceGroupId/}" />
+<input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
+  <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupInfo.RaceGroupId/}" />
   <input type="hidden" name="RaceId" id="RaceId" value="{tpl:$RaceId/}" />
   <input type="hidden" name="SportsTypeId" id="SportsTypeId" value="{tpl:$SportsTypeId/}" />
 

@@ -1,17 +1,17 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
 <form id="race_group_update_form" name="race_group_update_form" action="{tpl:$this.sign/}&ac=race.group.update" metdod="post">
-<input type="hidden" name="RaceGroupId" value="{tpl:$oRaceGroup.RaceGroupId/}" />
+<input type="hidden" name="RaceGroupId" value="{tpl:$RaceGroupInfo.RaceGroupId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">
 <td>赛事组别名称</td>
-<td align="left"><input name="RaceGroupName" type="text" class="span4" id="RaceGroupName" value="{tpl:$oRaceGroup.RaceGroupName/}" size="50" /></td>
+<td align="left"><input name="RaceGroupName" type="text" class="span4" id="RaceGroupName" value="{tpl:$RaceGroupInfo.RaceGroupName/}" size="50" /></td>
 </tr>
 <tr class="hover"><td>所属赛事</td>
 <td align="left">	<select name="RaceCatalogId" size="1">
 <option value="0">全部</option>
-{tpl:loop $RaceCatalogArr $oRaceCatalog}
-<option value="{tpl:$oRaceCatalog.RaceCatalogId/}" {tpl:if($oRaceCatalog.RaceCatalogId==$oRaceGroup.RaceCatalogId)}selected="selected"{/tpl:if}>{tpl:$oRaceCatalog.RaceCatalogName/}</option>
+{tpl:loop $RaceCatalogArr $RaceCatalogInfo}
+<option value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" {tpl:if($RaceCatalogInfo.RaceCatalogId==$RaceGroupInfo.RaceCatalogId)}selected="selected"{/tpl:if}>{tpl:$RaceCatalogInfo.RaceCatalogName/}</option>
 {/tpl:loop}
 </select></td>
 </tr>

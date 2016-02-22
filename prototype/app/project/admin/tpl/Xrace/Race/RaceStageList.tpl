@@ -21,8 +21,8 @@
 <form action="{tpl:$this.sign/}" name="form" id="form" method="post">
   <select name="RaceCatalogId" size="1">
     <option value="0">全部</option>
-    {tpl:loop $RaceCatalogArr $oRaceCatalog}
-    <option value="{tpl:$oRaceCatalog.RaceCatalogId/}" {tpl:if($oRaceCatalog.RaceCatalogId==$RaceCatalogId)}selected="selected"{/tpl:if}>{tpl:$oRaceCatalog.RaceCatalogName/}</option>
+    {tpl:loop $RaceCatalogArr $RaceCatalogInfo}
+    <option value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" {tpl:if($RaceCatalogInfo.RaceCatalogId==$RaceCatalogId)}selected="selected"{/tpl:if}>{tpl:$RaceCatalogInfo.RaceCatalogName/}</option>
     {/tpl:loop}
   </select>
   <input type="submit" name="Submit" value="查询" />
@@ -39,11 +39,11 @@
     <th align="center" class="rowtip">操作</th>
   </tr>
 
-  {tpl:loop $RaceStageList $RaceCatalogId $oRaceCatalogInfo}
+  {tpl:loop $RaceStageList $RaceCatalogId $RaceCatalogInfoInfo}
   <tr>
-    <th align="center" class="rowtip"  rowspan = {tpl:$oRaceCatalogInfo.RowCount /}>{tpl:$oRaceCatalogInfo.RaceCatalogName/}</th>
+    <th align="center" class="rowtip"  rowspan = {tpl:$RaceCatalogInfoInfo.RowCount /}>{tpl:$RaceCatalogInfoInfo.RaceCatalogName/}</th>
   </tr>
-  {tpl:loop $oRaceCatalogInfo.RaceStageList $RaceStageId $oRaceStage}
+  {tpl:loop $RaceCatalogInfoInfo.RaceStageList $RaceStageId $oRaceStage}
   <tr>
     <th align="center" class="rowtip" >{tpl:$oRaceStage.RaceStageId/}</th>
     <th align="center" class="rowtip" >{tpl:$oRaceStage.RaceStageName/}</th>

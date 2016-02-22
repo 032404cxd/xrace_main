@@ -1,38 +1,38 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
 <form id="race_stage_update_form" name="race_stage_update_form" action="{tpl:$this.sign/}&ac=race.stage.update" metdod="post">
-<input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$oRaceStage.RaceStageId/}" />
+<input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">
 <td>赛事分站名称</td>
-<td align="left"><input name="RaceStageName" type="text" class="span4" id="RaceStageName" value="{tpl:$oRaceStage.RaceStageName/}" size="50" /></td>
+<td align="left"><input name="RaceStageName" type="text" class="span4" id="RaceStageName" value="{tpl:$RaceStageInfo.RaceStageName/}" size="50" /></td>
 </tr>
 <tr class="hover"><td>赛事分站Id</td>
-<td align="left">{tpl:$oRaceStage.RaceStageId/}</td>
+<td align="left">{tpl:$RaceStageInfo.RaceStageId/}</td>
 </tr>
 <tr class="hover"><td>所属赛事</td>
 	<td align="left">	<select name="RaceCatalogId"  id="RaceCatalogId" size="1"  onchange='getGroupList()'>
 			<option value="0">全部</option>
-			{tpl:loop $RaceCatalogArr $oRaceCatalog}
-			<option value="{tpl:$oRaceCatalog.RaceCatalogId/}" {tpl:if($oRaceCatalog.RaceCatalogId==$oRaceStage.RaceCatalogId)}selected="selected"{/tpl:if}>{tpl:$oRaceCatalog.RaceCatalogName/}</option>
+			{tpl:loop $RaceCatalogArr $RaceCatalogInfo}
+			<option value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" {tpl:if($RaceCatalogInfo.RaceCatalogId==$RaceStageInfo.RaceCatalogId)}selected="selected"{/tpl:if}>{tpl:$RaceCatalogInfo.RaceCatalogName/}</option>
 			{/tpl:loop}
 		</select></td>
 </tr>
 	<tr>
 		<th><label >开始结止时间</label></th>
 		<td>
-			<input type="text" name="StageStartDate" value="{tpl:$oRaceStage.StageStartDate/}" class="input-medium"
+			<input type="text" name="StageStartDate" value="{tpl:$RaceStageInfo.StageStartDate/}" class="input-medium"
 				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd'})" >
 			---
-			<input type="text" name="StageEndDate" value="{tpl:$oRaceStage.StageEndDate/}" value="" class="input-medium"
+			<input type="text" name="StageEndDate" value="{tpl:$RaceStageInfo.StageEndDate/}" value="" class="input-medium"
 				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd'})" >
 		</td>
 	</tr>
 	<tr>
 	<td>赛事分组列表</td>
 	<td align="left"><div id = "SelectedGroupList">
-			{tpl:loop $RaceGroupArr $oRaceGroup}
-			<input type="checkbox"  name="SelectedRaceGroup[{tpl:$oRaceGroup.RaceGroupId/}]" value="{tpl:$oRaceGroup.RaceGroupId/}" {tpl:if($oRaceGroup.selected == 1)}checked{/tpl:if} /> {tpl:$oRaceGroup.RaceGroupName/}
+			{tpl:loop $RaceGroupArr $RaceGroupInfo}
+			<input type="checkbox"  name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}]" value="{tpl:$RaceGroupInfo.RaceGroupId/}" {tpl:if($RaceGroupInfo.selected == 1)}checked{/tpl:if} /> {tpl:$RaceGroupInfo.RaceGroupName/}
 			{/tpl:loop}
 		</div></td>
 	</tr>

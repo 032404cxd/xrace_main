@@ -16,7 +16,7 @@ class Xrace_RaceTypeController extends AbstractController
 	 * race对象
 	 * @var object
 	 */
-	protected $oRaceType;
+	protected $oRace;
 
 	/**
 	 * 初始化

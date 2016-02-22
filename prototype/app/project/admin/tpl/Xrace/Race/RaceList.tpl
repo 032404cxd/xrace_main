@@ -7,10 +7,10 @@
     RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.modify&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&RaceId=' + rid, {title:'修改比赛-'+rname,width:400,height:400});
   }
 </script>
-<form action="{tpl:$this.sign/}&ac=race.stage.group.update" name="form" id="form" method="post">
-<input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$oRaceStage.RaceStageId/}" />
-  <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$oRaceGroup.RaceGroupId/}" />
-  <fieldset><legend>{tpl:$oRaceStage.RaceStageName/}-{tpl:$oRaceGroup.RaceGroupName/} 赛段详情配置 </legend>
+<form action="{tpl:$this.sign/}&ac=race.update" name="form" id="form" method="post">
+<input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
+  <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupInfo.RaceGroupId/}" />
+  <fieldset><legend>{tpl:$RaceStageInfo.RaceStageName/}-{tpl:$RaceGroupInfo.RaceGroupName/} 赛段详情配置 </legend>
 <table width="99%" align="center" class="table table-bordered table-striped">
   {tpl:if(count($RaceList))}
   <tr>
@@ -30,18 +30,18 @@
     <th align="center" class="rowtip">{tpl:if($RaceInfo.TeamUser==1)}接受{tpl:else}不接受{/tpl:if}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.StartTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.EndTime/}</th>
-    <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceModify('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">修改</a>
-     | <a href="{tpl:$this.sign/}&ac=race.detail&RaceStageId={tpl:$oRaceStage.RaceStageId/}&RaceGroupId={tpl:$oRaceGroup.RaceGroupId/}&RaceId={tpl:$RaceInfo.RaceId/}">计时点详情</a></th>
+    <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceModify('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}','{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">修改</a>
+     | <a href="{tpl:$this.sign/}&ac=race.detail&RaceStageId={tpl:$RaceStageInfo.RaceStageId/}&RaceGroupId={tpl:$RaceGroupInfo.RaceGroupId/}&RaceId={tpl:$RaceInfo.RaceId/}">计时点详情</a></th>
     </th>
   </tr>
   {/tpl:loop}
   <tr>
-    <th align="center" class="rowtip" colspan="10">  <a href="javascript:;" onclick="RaceAdd('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}')">点此添加</a>
+    <th align="center" class="rowtip" colspan="10">  <a href="javascript:;" onclick="RaceAdd('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}')">点此添加</a>
     </th>
   </tr>
   {tpl:else}
   <tr>
-    <th align="center" class="rowtip">本站尚未配置任何比赛  <a href="javascript:;" onclick="RaceAdd('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}')">点此添加</a>
+    <th align="center" class="rowtip">本站尚未配置任何比赛  <a href="javascript:;" onclick="RaceAdd('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}')">点此添加</a>
     </th>
     </th>
   </tr>

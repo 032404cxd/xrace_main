@@ -16,7 +16,7 @@ class Xrace_RaceGroupController extends AbstractController
 	 * race对象
 	 * @var object
 	 */
-	protected $oRaceGroup;
+	protected $oRace;
 
 	/**
 	 * 初始化
@@ -26,7 +26,7 @@ class Xrace_RaceGroupController extends AbstractController
 	public function init()
 	{
 		parent::init();
-		$this->oRaceGroup = new Xrace_Race();
+		$this->oRace = new Xrace_Race();
 
 	}
 	//任务配置列表页面
@@ -37,8 +37,8 @@ class Xrace_RaceGroupController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
-			$RaceCatalogArr  = $this->oRaceGroup->getAllRaceCatalogList();
-			$RaceGroupArr = $this->oRaceGroup->getAllRaceGroupList($RaceCatalogId);
+			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
+			$RaceGroupArr = $this->oRace->getAllRaceGroupList($RaceCatalogId);
 			$RaceGroupList = array();
 			foreach($RaceGroupArr as $key => $value)
 			{
@@ -53,7 +53,6 @@ class Xrace_RaceGroupController extends AbstractController
 				{
 					$RaceGroupList[$value['RaceCatalogId']]['RaceCatalogName'] = 	"未定义";
 				}
-
 			}
 			include $this->tpl('Xrace_Race_RaceGroupList');
 		}
@@ -70,7 +69,7 @@ class Xrace_RaceGroupController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceGroupInsert");
 		if($PermissionCheck['return'])
 		{
-			$RaceCatalogArr  = $this->oRaceGroup->getAllRaceCatalogList();
+			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
 			include $this->tpl('Xrace_Race_RaceGroupAdd');
 		}
 		else
@@ -85,7 +84,7 @@ class Xrace_RaceGroupController extends AbstractController
 	{
 		//检查权限
 		$bind=$this->request->from('RaceGroupName','RaceCatalogId');
-		$RaceCatalogArr  = $this->oRaceGroup->getAllRaceCatalogList();
+		$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
 		if(trim($bind['RaceGroupName'])=="")
 		{
 			$response = array('errno' => 1);
@@ -96,7 +95,7 @@ class Xrace_RaceGroupController extends AbstractController
 		}
 		else
 		{
-			$res = $this->oRaceGroup->insertRaceGroup($bind);
+			$res = $this->oRace->insertRaceGroup($bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
 		}
 		echo json_encode($response);
@@ -111,8 +110,8 @@ class Xrace_RaceGroupController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			$raceGroupId = trim($this->request->raceGroupId);
-			$RaceCatalogArr  = $this->oRaceGroup->getAllRaceCatalogList();
-			$oRaceGroup = $this->oRaceGroup->getRaceGroup($raceGroupId,'*');
+			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
+			$RaceGroupInfo = $this->oRace->getRaceGroup($raceGroupId,'*');
 			include $this->tpl('Xrace_Race_RaceGroupModify');
 		}
 		else
@@ -126,7 +125,7 @@ class Xrace_RaceGroupController extends AbstractController
 	public function raceGroupUpdateAction()
 	{
 		$bind=$this->request->from('RaceGroupId','RaceGroupName','RaceCatalogId');
-		$RaceCatalogArr  = $this->oRaceGroup->getAllRaceCatalogList();
+		$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
 		if(trim($bind['RaceGroupName'])=="")
 		{
 			$response = array('errno' => 1);
@@ -141,7 +140,7 @@ class Xrace_RaceGroupController extends AbstractController
 		}
 		else
 		{
-			$res = $this->oRaceGroup->updateRaceGroup($bind['RaceGroupId'],$bind);
+			$res = $this->oRace->updateRaceGroup($bind['RaceGroupId'],$bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
 		}
 		echo json_encode($response);
@@ -156,7 +155,7 @@ class Xrace_RaceGroupController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			$raceGroupId = intval($this->request->raceGroupId);
-			$this->oRaceGroup->deleteRaceGroup($raceGroupId);
+			$this->oRace->deleteRaceGroup($raceGroupId);
 			$this->response->goBack();
 		}
 		else

@@ -29,12 +29,12 @@ function RaceCatalogModify(mid){
     <th align="center" class="rowtip">操作</th>
   </tr>
 
-{tpl:loop $RaceCatalogArr $oRaceCatalog}
+{tpl:loop $RaceCatalogArr $RaceCatalogInfo}
   <tr class="hover">
-    <td align="center">{tpl:$oRaceCatalog.RaceCatalogId/}</td>
-    <td align="center">{tpl:$oRaceCatalog.RaceCatalogName/}</td>
-    <td align="center">{tpl:if($oRaceCatalog.comment.RaceCatalogIcon_root=="")}未定义{tpl:else}<img src="{tpl:$RootUrl/}{tpl:$oRaceCatalog.comment.RaceCatalogIcon_root/}" width='150' height='130'/>{/tpl:if}</td>    </td>
-    <td align="center"><a  href="javascript:;" onclick="RaceCatalogDelete('{tpl:$oRaceCatalog.RaceCatalogId/}','{tpl:$oRaceCatalog.RaceCatalogName/}')">删除</a> |  <a href="javascript:;" onclick="RaceCatalogModify('{tpl:$oRaceCatalog.RaceCatalogId/}');">修改</a></td>
+    <td align="center">{tpl:$RaceCatalogInfo.RaceCatalogId/}</td>
+    <td align="center">{tpl:$RaceCatalogInfo.RaceCatalogName/}</td>
+    <td align="center">{tpl:if($RaceCatalogInfo.comment.RaceCatalogIcon_root=="")}未定义{tpl:else}<img src="{tpl:$RootUrl/}{tpl:$RaceCatalogInfo.comment.RaceCatalogIcon_root/}" width='150' height='130'/>{/tpl:if}</td>    </td>
+    <td align="center"><a  href="javascript:;" onclick="RaceCatalogDelete('{tpl:$RaceCatalogInfo.RaceCatalogId/}','{tpl:$RaceCatalogInfo.RaceCatalogName/}')">删除</a> |  <a href="javascript:;" onclick="RaceCatalogModify('{tpl:$RaceCatalogInfo.RaceCatalogId/}');">修改</a></td>
   </tr>
 {/tpl:loop}
 </table>

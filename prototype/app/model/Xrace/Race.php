@@ -27,11 +27,7 @@ class Xrace_Race extends Base_Widget
 	{
 		return $this->maxRaceDetail;
 	}
-	/**
-	 * 查询全部
-	 * @param $fields
-	 * @return array
-	 */
+	//获取所有赛事的列表
 	public function getAllRaceCatalogList($fields = "*")
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table);
@@ -47,67 +43,43 @@ class Xrace_Race extends Base_Widget
 		}
 		return $AllRaceCatalog;
 	}
-	/**
-	 * 获取单条记录
-	 * @param integer $AppId
-	 * @param string $fields
-	 * @return array
-	 */
+	//获取单个赛事信息
 	public function getRaceCatalog($RaceCatalogId, $fields = '*')
 	{
 		$RaceCatalogId = intval($RaceCatalogId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		return $this->db->selectRow($table_to_process, $fields, '`RaceCatalogId` = ?', $RaceCatalogId);
 	}
-	/**
-	 * 更新
-	 * @param integer $AppId
-	 * @param array $bind
-	 * @return boolean
-	 */
+	//更新单个赛事信息
 	public function updateRaceCatalog($RaceCatalogId, array $bind)
 	{
 		$RaceCatalogId = intval($RaceCatalogId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		return $this->db->update($table_to_process, $bind, '`RaceCatalogId` = ?', $RaceCatalogId);
 	}
-	/**
-	 * 插入
-	 * @param array $bind
-	 * @return boolean
-	 */
+	//添加单个赛事
 	public function insertRaceCatalog(array $bind)
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		return $this->db->insert($table_to_process, $bind);
 	}
-
-	/**
-	 * 删除
-	 * @param integer $AppId
-	 * @return boolean
-	 */
+	//删除单个赛事
 	public function deleteRaceCatalog($RaceCatalogId)
 	{
 		$RaceCatalogId = intval($RaceCatalogId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		return $this->db->delete($table_to_process, '`RaceCatalogId` = ?', $RaceCatalogId);
 	}
-	/**
-	 * 查询全部
-	 * @param $fields
-	 * @return array
-	 */
+	//根据赛事获取所有组别列表
+	//赛事ID为0则获取全部组别
 	public function getAllRaceGroupList($RaceCatalogId,$fields = "*")
 	{
 		$RaceCatalogId = intval($RaceCatalogId);
 		//初始化查询条件
 		$whereCatalog = ($RaceCatalogId != 0)?" RaceCatalogId = $RaceCatalogId":"";
 		$whereCondition = array($whereCatalog);
-
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
-
 		$table_to_process = Base_Widget::getDbTable($this->table_group);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceCatalogId desc,RaceGroupId asc";
 		$return = $this->db->getAll($sql);
@@ -121,67 +93,43 @@ class Xrace_Race extends Base_Widget
 		}
 		return $AllRaceGroup;
 	}
-	/**
-	 * 获取单条记录
-	 * @param integer $AppId
-	 * @param string $fields
-	 * @return array
-	 */
+	//获取单个赛事组别的信息
 	public function getRaceGroup($RaceGroupId, $fields = '*')
 	{
 		$RaceGroupId = intval($RaceGroupId);
 		$table_to_process = Base_Widget::getDbTable($this->table_group);
 		return $this->db->selectRow($table_to_process, $fields, '`RaceGroupId` = ?', $RaceGroupId);
 	}
-	/**
-	 * 更新
-	 * @param integer $AppId
-	 * @param array $bind
-	 * @return boolean
-	 */
+	//更新单个赛事组别
 	public function updateRaceGroup($RaceGroupId, array $bind)
 	{
 		$RaceGroupId = intval($RaceGroupId);
 		$table_to_process = Base_Widget::getDbTable($this->table_group);
 		return $this->db->update($table_to_process, $bind, '`RaceGroupId` = ?', $RaceGroupId);
 	}
-	/**
-	 * 插入
-	 * @param array $bind
-	 * @return boolean
-	 */
+	//添加单个赛事组别
 	public function insertRaceGroup(array $bind)
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table_group);
 		return $this->db->insert($table_to_process, $bind);
 	}
-
-	/**
-	 * 删除
-	 * @param integer $AppId
-	 * @return boolean
-	 */
+	//删除单个赛事组别
 	public function deleteRaceGroup($RaceGroupId)
 	{
 		$RaceGroupId = intval($RaceGroupId);
 		$table_to_process = Base_Widget::getDbTable($this->table_group);
 		return $this->db->delete($table_to_process, '`RaceGroupId` = ?', $RaceGroupId);
 	}
-	/**
-	 * 查询全部
-	 * @param $fields
-	 * @return array
-	 */
+	//根据赛事获取所有分站列表
+	//赛事ID为0则获取全部分站
 	public function getAllRaceStageList($RaceCatalogId,$fields = "*")
 	{
 		$RaceCatalogId = trim($RaceCatalogId);
 		//初始化查询条件
 		$whereCatalog = ($RaceCatalogId != 0)?" RaceCatalogId = $RaceCatalogId":"";
 		$whereCondition = array($whereCatalog);
-
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
-
 		$table_to_process = Base_Widget::getDbTable($this->table_stage);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceCatalogId,RaceStageId ASC";
 		$return = $this->db->getAll($sql);
@@ -195,57 +143,34 @@ class Xrace_Race extends Base_Widget
 		}
 		return $AllRaceStage;
 	}
-	/**
-	 * 获取单条记录
-	 * @param integer $AppId
-	 * @param string $fields
-	 * @return array
-	 */
+	//获取单个赛事分站信息
 	public function getRaceStage($RaceStageId, $fields = '*')
 	{
 		$RaceStageId = intval($RaceStageId);
 		$table_to_process = Base_Widget::getDbTable($this->table_stage);
 		return $this->db->selectRow($table_to_process, $fields, '`RaceStageId` = ?', $RaceStageId);
 	}
-	/**
-	 * 更新
-	 * @param integer $AppId
-	 * @param array $bind
-	 * @return boolean
-	 */
+	//更新单个赛事分站
 	public function updateRaceStage($RaceStageId, array $bind)
 	{
 		$RaceStageId = intval($RaceStageId);
 		$table_to_process = Base_Widget::getDbTable($this->table_stage);
 		return $this->db->update($table_to_process, $bind, '`RaceStageId` = ?', $RaceStageId);
 	}
-	/**
-	 * 插入
-	 * @param array $bind
-	 * @return boolean
-	 */
+	//新增单个赛事分站
 	public function insertRaceStage(array $bind)
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table_stage);
 		return $this->db->insert($table_to_process, $bind);
 	}
-
-	/**
-	 * 删除
-	 * @param integer $AppId
-	 * @return boolean
-	 */
+	//删除单个赛事分站
 	public function deleteRaceStage($RaceStageId)
 	{
 		$RaceStageId = intval($RaceStageId);
 		$table_to_process = Base_Widget::getDbTable($this->table_stage);
 		return $this->db->delete($table_to_process, '`RaceStageId` = ?', $RaceStageId);
 	}
-	/**
-	 * 查询全部
-	 * @param $fields
-	 * @return array
-	 */
+	//获取所有比赛类型信息
 	public function getAllRaceTypeList($fields = "*")
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table_type);
@@ -261,83 +186,41 @@ class Xrace_Race extends Base_Widget
 		}
 		return $AllRaceType;
 	}
-	/**
-	 * 获取单条记录
-	 * @param integer $AppId
-	 * @param string $fields
-	 * @return array
-	 */
+	//获取单个比赛类型信息
 	public function getRaceType($RaceTypeId, $fields = '*')
 	{
 		$RaceTypeId = intval($RaceTypeId);
 		$table_to_process = Base_Widget::getDbTable($this->table_type);
 		return $this->db->selectRow($table_to_process, $fields, '`RaceTypeId` = ?', $RaceTypeId);
 	}
-	/**
-	 * 更新
-	 * @param integer $AppId
-	 * @param array $bind
-	 * @return boolean
-	 */
+	//更新单个比赛类型信息
 	public function updateRaceType($RaceTypeId, array $bind)
 	{
 		$RaceTypeId = intval($RaceTypeId);
 		$table_to_process = Base_Widget::getDbTable($this->table_type);
 		return $this->db->update($table_to_process, $bind, '`RaceTypeId` = ?', $RaceTypeId);
 	}
-	/**
-	 * 插入
-	 * @param array $bind
-	 * @return boolean
-	 */
+	//新增单个比赛类型信息
 	public function insertRaceType(array $bind)
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table_type);
 		return $this->db->insert($table_to_process, $bind);
 	}
-
-	/**
-	 * 删除
-	 * @param integer $AppId
-	 * @return boolean
-	 */
+	//删除单个比赛类型信息
 	public function deleteRaceType($RaceTypeId)
 	{
 		$RaceTypeId = intval($RaceTypeId);
 		$table_to_process = Base_Widget::getDbTable($this->table_type);
 		return $this->db->delete($table_to_process, '`RaceTypeId` = ?', $RaceTypeId);
 	}
-	/**
-	 * 获取单条记录
-	 * @param integer $AppId
-	 * @param string $fields
-	 * @return array
-	 */
-	public function getRaceStageGroupInfo($RaceStageId,$RaceGroupId,$fields = '*')
-	{
-		$RaceStageId = intval($RaceStageId);
-		$RaceGroupId = intval($RaceGroupId);
-		$table_to_process = Base_Widget::getDbTable($this->table_stage_group);
-		return $this->db->selectRow($table_to_process, $fields, '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
-	}
-	/**
-	 * 获取单条记录
-	 * @param integer $AppId
-	 * @param string $fields
-	 * @return array
-	 */
+	//获取单个比赛信息
 	public function getRaceInfo($RaceId,$fields = '*')
 	{
 		$RaceId = intval($RaceId);
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
 		return $this->db->selectRow($table_to_process, $fields, '`RaceId` = ?', $RaceId);
 	}
-	/**
-	 * 获取单条记录
-	 * @param integer $AppId
-	 * @param string $fields
-	 * @return array
-	 */
+	//获取赛事分站和赛事组别获取比赛列表
 	public function getRaceList($RaceStageId,$RaceGroupId,$fields = '*')
 	{
 		$RaceStageId = intval($RaceStageId);
@@ -345,12 +228,7 @@ class Xrace_Race extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
 		return $this->db->select($table_to_process, $fields, '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
 	}
-	/**
-	 * 获取单条记录
-	 * @param integer $AppId
-	 * @param string $fields
-	 * @return array
-	 */
+	//获取赛事分站和赛事组别获取比赛数量
 	public function getRaceCount($RaceStageId,$RaceGroupId)
 	{
 		$RaceStageId = intval($RaceStageId);
@@ -358,69 +236,27 @@ class Xrace_Race extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
 		return $this->db->selectOne($table_to_process, "count(RaceId) as RaceCount", '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
 	}
-	/**
-	 * 插入
-	 * @param array $bind
-	 * @return boolean
-	 */
+	//新增单个比赛信息
 	public function insertRace(array $bind)
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
 		return $this->db->insert($table_to_process, $bind);
 	}
-	/**
-	 * 更新
-	 * @param integer $AppId
-	 * @param array $bind
-	 * @return boolean
-	 */
+	//更新单个比赛信息
 	public function updateRace($RaceId, array $bind)
 	{
 		$RaceId = intval($RaceId);
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
 		return $this->db->update($table_to_process, $bind, '`RaceId` = ?', $RaceId);
 	}
-	/**
-	 * 更新
-	 * @param integer $AppId
-	 * @param array $bind
-	 * @return boolean
-	 */
-	public function updateRaceStageGroup($RaceStageId,$RaceGroupId,array $bind)
-	{
-		$RaceStageId = intval($RaceStageId);
-		$RaceGroupId = intval($RaceGroupId);
-		$table_to_process = Base_Widget::getDbTable($this->table_stage_group);
-		return $this->db->update($table_to_process, $bind, '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
-	}
-	/**
-	 * 插入
-	 * @param array $bind
-	 * @return boolean
-	 */
-	public function insertRaceStageGroup(array $bind)
-	{
-		$table_to_process = Base_Widget::getDbTable($this->table_stage_group);
-		return $this->db->insert($table_to_process, $bind);
-	}
-	/**
-	 * 获取单条记录
-	 * @param integer $AppId
-	 * @param string $fields
-	 * @return array
-	 */
+	//根据赛事分站获取开设比赛的组别列表
 	public function getRaceStageGroupByStage($RaceStageId,$fields = '*')
 	{
 		$RaceStageId = intval($RaceStageId);
 		$table_to_process = Base_Widget::getDbTable($this->table_stage_group);
 		return $this->db->select($table_to_process, $fields, '`RaceStageId` = ?', $RaceStageId);
 	}
-	/**
-	 * 获取单条记录
-	 * @param integer $AppId
-	 * @param string $fields
-	 * @return array
-	 */
+	//删除单个分站的单个组别信息
 	public function deleteRaceStageGroup($RaceStageId,$RaceGroupId)
 	{
 		$RaceStageId = intval($RaceStageId);
@@ -428,68 +264,57 @@ class Xrace_Race extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_stage_group);
 		return $this->db->delete($table_to_process, '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
 	}
-	/**
-	 * 获取单条记录
-	 * @param integer $AppId
-	 * @param string $fields
-	 * @return array
-	 */
+	//获取单个计时点信息
 	public function getTimingDetail($TimingId, $fields = '*')
 	{
 		$TimingId = intval($TimingId);
 		$table_to_process = Base_Widget::getDbTable($this->table_timing);
 		return $this->db->selectRow($table_to_process, $fields, '`TimingId` = ?', $TimingId);
 	}
-	/**
-	 * 插入
-	 * @param array $bind
-	 * @return boolean
-	 */
+	//新增单个计时点信息
 	public function insertTimingDetail(array $bind)
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table_timing);
 		return $this->db->insert($table_to_process, $bind);
 	}
-	/**
-	 * 更新计时点详情数据
-	 * @param integer $TimingId
-	 * @param array $bind
-	 * @return boolean
-	 */
+	//更新单个计时点信息
 	public function updateTimingDetail($TimingId,array $bind)
 	{
 		$TimingId = intval($TimingId);
 		$table_to_process = Base_Widget::getDbTable($this->table_timing);
 		return $this->db->update($table_to_process, $bind,'`TimingId` = ?', $TimingId);
 	}
-
+	//添加单个计时点信息
 	public function addTimingPoint($RaceStageId,$RaceGroupId,$RaceId,$SportsTypeId,$After,$bind)
 	{
 		//获取当前分站信息
-		$oRaceStage = $this->getRaceStage($RaceStageId,'*');
+		$RaceStageInfo = $this->getRaceStage($RaceStageId,'*');
 		//解包压缩数组
-		$oRaceStage['comment'] = json_decode($oRaceStage['comment'],true);
+		$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
 		//如果当前分站未配置了当前分组
-		if(!isset($oRaceStage['comment']['SelectedRaceGroup'][$RaceGroupId]))
+		if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
 		{
 			return false;
 		}
 		else
 		{
 			//获取赛事分组信息
-			$oRaceGroup = $this->getRaceGroup($RaceGroupId,'*');
+			$RaceGroupInfo = $this->getRaceGroup($RaceGroupId,'*');
 			//如果赛事分组尚未配置
-			if(!$oRaceGroup['RaceGroupId'])
+			if(!$RaceGroupInfo['RaceGroupId'])
 			{
 				return false;
 			}
 			else
 			{
+				//获取比赛信息
 				$RaceInfo = $this->getRaceInfo($RaceId);
+				//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
 				if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
 				{
+					//数据解包
 					$RaceInfo['comment'] = isset($RaceInfo['comment']) ? json_decode($RaceInfo['comment'], true) : array();
-					//获取运动分段的数据
+					//获取运动类型的数据
 					$SportsTypeInfo = $RaceInfo['comment']['DetailList'][$SportsTypeId];
 					//默认不新建数据
 					$NewDetail = 0;
@@ -506,9 +331,10 @@ class Xrace_Race extends Base_Widget
 					{
 						$NewDetail = 1;
 					}
+					//初始化运动类型下的计时点列表
 					$SportsTypeInfo['TimingDetailList']['comment'] = isset($SportsTypeInfo['TimingDetailList']['comment'])?json_decode($SportsTypeInfo['TimingDetailList']['comment'],true):array();
-					$RaceStageGroupInfo['comment']['DetailList'] = isset($RaceStageGroupInfo['comment']['DetailList'])?$RaceStageGroupInfo['comment']['DetailList']:array();
-					ksort($RaceStageGroupInfo['comment']['DetailList']);
+					$RaceInfo['comment']['DetailList'] = isset($RaceInfo['comment']['DetailList'])?$RaceInfo['comment']['DetailList']:array();
+					ksort($RaceInfo['comment']['DetailList']);
 					//如果添加在某个元素之后 且 元素下标不越界
 					if($After>=0 && $After <= count($SportsTypeInfo['TimingDetailList']['comment']))
 					{
@@ -582,26 +408,28 @@ class Xrace_Race extends Base_Widget
 	public function updateTimingPoint($RaceStageId,$RaceGroupId,$RaceId,$SportsTypeId,$TimingId,$bind)
 	{
 		//获取当前分站信息
-		$oRaceStage = $this->getRaceStage($RaceStageId,'*');
+		$RaceStageInfo = $this->getRaceStage($RaceStageId,'*');
 		//解包压缩数组
-		$oRaceStage['comment'] = json_decode($oRaceStage['comment'],true);
+		$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
 		//如果当前分站未配置了当前分组
-		if(!isset($oRaceStage['comment']['SelectedRaceGroup'][$RaceGroupId]))
+		if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
 		{
 			return false;
 		}
 		else
 		{
 			//获取赛事分组信息
-			$oRaceGroup = $this->getRaceGroup($RaceGroupId,'*');
+			$RaceGroupInfo = $this->getRaceGroup($RaceGroupId,'*');
 			//如果赛事分组尚未配置
-			if(!$oRaceGroup['RaceGroupId'])
+			if(!$RaceGroupInfo['RaceGroupId'])
 			{
 				return false;
 			}
 			else
 			{
+				//获取比赛信息
 				$RaceInfo = $this->getRaceInfo($RaceId);
+				//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
 				if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
 				{
 					$RaceInfo['comment'] = isset($RaceInfo['comment']) ? json_decode($RaceInfo['comment'], true) : array();
@@ -655,26 +483,28 @@ class Xrace_Race extends Base_Widget
 	public function deleteTimingPoint($RaceStageId,$RaceGroupId,$RaceId,$SportsTypeId,$TimingId)
 	{
 		//获取当前分站信息
-		$oRaceStage = $this->getRaceStage($RaceStageId,'*');
+		$RaceStageInfo = $this->getRaceStage($RaceStageId,'*');
 		//解包压缩数组
-		$oRaceStage['comment'] = json_decode($oRaceStage['comment'],true);
+		$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
 		//如果当前分站未配置了当前分组
-		if(!isset($oRaceStage['comment']['SelectedRaceGroup'][$RaceGroupId]))
+		if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
 		{
 			return false;
 		}
 		else
 		{
 			//获取赛事分组信息
-			$oRaceGroup = $this->getRaceGroup($RaceGroupId,'*');
+			$RaceGroupInfo = $this->getRaceGroup($RaceGroupId,'*');
 			//如果赛事分组尚未配置
-			if(!$oRaceGroup['RaceGroupId'])
+			if(!$RaceGroupInfo['RaceGroupId'])
 			{
 				return false;
 			}
 			else
 			{
+				//获取比赛信息
 				$RaceInfo = $this->getRaceInfo($RaceId);
+				//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
 				if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
 				{
 					$RaceInfo['comment'] = isset($RaceInfo['comment']) ? json_decode($RaceInfo['comment'], true) : array();
@@ -741,20 +571,20 @@ class Xrace_Race extends Base_Widget
 	public function addRace($RaceInfo)
 	{
 		//获取当前分站信息
-		$oRaceStage = $this->getRaceStage($RaceInfo['RaceStageId'],'*');
+		$RaceStageInfo = $this->getRaceStage($RaceInfo['RaceStageId'],'*');
 		//解包压缩数组
-		$oRaceStage['comment'] = json_decode($oRaceStage['comment'],true);
+		$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
 		//如果当前分站未配置了当前分组
-		if(!isset($oRaceStage['comment']['SelectedRaceGroup'][$RaceInfo['RaceGroupId']]))
+		if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceInfo['RaceGroupId']]))
 		{
 			return false;
 		}
 		else
 		{
 			//获取赛事分组信息
-			$oRaceGroup = $this->getRaceGroup($RaceInfo['RaceGroupId'],'*');
+			$RaceGroupInfo = $this->getRaceGroup($RaceInfo['RaceGroupId'],'*');
 			//如果赛事分组尚未配置
-			if(!$oRaceGroup['RaceGroupId'])
+			if(!$RaceGroupInfo['RaceGroupId'])
 			{
 				return false;
 			}

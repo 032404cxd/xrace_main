@@ -1,14 +1,14 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
 <form id="race_catalog_update_form" name="race_catalog_update_form" action="{tpl:$this.sign/}&ac=race.catalog.update" metdod="post">
-<input type="hidden" name="RaceCatalogId" value="{tpl:$oRaceCatalog.RaceCatalogId/}" />
+<input type="hidden" name="RaceCatalogId" value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">
 <td>赛事名称</td>
-<td align="left"><input name="RaceCatalogName" type="text" class="span4" id="RaceCatalogName" value="{tpl:$oRaceCatalog.RaceCatalogName/}" size="50" /></td>
+<td align="left"><input name="RaceCatalogName" type="text" class="span4" id="RaceCatalogName" value="{tpl:$RaceCatalogInfo.RaceCatalogName/}" size="50" /></td>
 </tr>
 <tr class="hover"><td>赛事ID</td>
-<td align="left">{tpl:$oRaceCatalog.RaceCatalogId/}</td>
+<td align="left">{tpl:$RaceCatalogInfo.RaceCatalogId/}</td>
 </tr>
 	<tr class="hover"><td>赛事图标</td>
 		<td align="left"><input name="RaceCatalogIcon[1]" type="file" class="span4" id="RaceCatalogIcon[1]" /></td>

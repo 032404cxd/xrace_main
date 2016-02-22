@@ -34,7 +34,7 @@
 </table>
 </form>
 <script type="text/javascript">
-  $('#race_sports_type_add').click(function(){
+    $('#race_sports_type_add').click(function(){
     var options = {
       dataType:'json',
       beforeSubmit:function(formData, jqForm, options) {

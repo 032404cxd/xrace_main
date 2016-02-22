@@ -9,8 +9,8 @@
 <tr class="hover"><td>所属赛事</td>
 	<td align="left">	<select name="RaceCatalogId" id="RaceCatalogId" size="1" onchange="getGroupList()">
 			<option value="0">全部</option>
-			{tpl:loop $RaceCatalogArr $oRaceCatalog}
-			<option value="{tpl:$oRaceCatalog.RaceCatalogId/}" >{tpl:$oRaceCatalog.RaceCatalogName/}</option>
+			{tpl:loop $RaceCatalogArr $RaceCatalogInfo}
+			<option value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" >{tpl:$RaceCatalogInfo.RaceCatalogName/}</option>
 			{/tpl:loop}
 		</select></td>
 </tr>

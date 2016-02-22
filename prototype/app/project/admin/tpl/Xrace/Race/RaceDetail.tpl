@@ -12,14 +12,14 @@
   function TimingPointDelete(sid,gid,rid,tid,pid,tname){
     deleteTimingPointBox= divBox.confirmBox({content:'是否删除 ' + tname + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=timing.point.delete&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&RaceId=' + rid +  '&SportsTypeId=' + tid + '&TimingId=' + pid;}});
   }
-  function  SportsTypeDelete(sid,gid,tid, p_name){
-    deleteSportsTypeBox= divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.stage.group.sports.type.delete&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&SportsTypeId=' + tid ;}});
+  function SportsTypeDelete(sid,gid,rid,tid, p_name){
+    deleteSportsTypeBox= divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.sports.type.delete&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&SportsTypeId=' + tid + '&RaceId=' + rid;}});
   }
 </script>
 
-<input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$oRaceStage.RaceStageId/}" />
-  <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$oRaceGroup.RaceGroupId/}" />
-  <fieldset><legend>{tpl:$oRaceStage.RaceStageName/}-{tpl:$oRaceGroup.RaceGroupName/}-{tpl:$RaceInfo.RaceName/}详情配置 </legend>
+<input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
+  <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupInfo.RaceGroupId/}" />
+  <fieldset><legend>{tpl:$RaceStageInfo.RaceStageName/}-{tpl:$RaceGroupInfo.RaceGroupName/}-{tpl:$RaceInfo.RaceName/}详情配置 </legend>
 <table width="99%" align="center" class="table table-bordered table-striped">
   {tpl:if(count($RaceInfo.comment.DetailList))}
   <tr>
@@ -32,17 +32,17 @@
   <th align="center" class="rowtip">{tpl:$SportsTypeInfo.SportsTypeName/}
     <a href="javascript:;" onclick="SportsTypeAdd('{tpl:$RaceStageId/}','{tpl:$RaceGroupId/}','{tpl:$RaceId/}','{tpl:$SportsTypeId/}')">在此之后添加</a>
      |
-    <a href="javascript:;" onclick="SportsTypeDelete('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$SportsTypeId/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">删除</a>
+    <a href="javascript:;" onclick="SportsTypeDelete('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}','{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">删除</a>
   </th>
     {tpl:if(count($SportsTypeInfo.TimingDetailList.comment))}
   <tr>
     <th align="center" class="rowtip">
       <table width="99%" align="center"  class="table table-bordered table-striped">
         <tr>
-          <td>总距离：{tpl:$SportsTypeInfo.Total.Distence/}</td>
-          <td>计时点：{tpl:$SportsTypeInfo.Total.ChipCount/}</td>
-          <td>海拔上升：{tpl:$SportsTypeInfo.Total.AltAsc/}</td>
-          <td>海拔下降：{tpl:$SportsTypeInfo.Total.AltDec/}</td>
+          <td>总距离：{tpl:$SportsTypeInfo.Total.Distence/}米</td>
+          <td>计时点：{tpl:$SportsTypeInfo.Total.ChipCount/}个</td>
+          <td>海拔上升：{tpl:$SportsTypeInfo.Total.AltAsc/}米</td>
+          <td>海拔下降：{tpl:$SportsTypeInfo.Total.AltDec/}米</td>
         </tr>
       </table>
     </th>
@@ -55,10 +55,10 @@
       <table width="99%" align="center"  class="table table-bordered table-striped">
         {tpl:loop $SportsTypeInfo.TimingDetailList.comment $Tid $TimingInfo}
         <tr>
-          <td>┠&nbsp;&nbsp;{tpl:$TimingInfo.TName/}</td><td>计时芯片序列号：{tpl:$TimingInfo.ChipId/}</td><td>距离下一计时点：{tpl:$TimingInfo.ToNext/}米</td><td>经过{tpl:$TimingInfo.Round/}次</td><td>海拔上升{tpl:$TimingInfo.AltAsc/}米</td><td>海拔下降{tpl:$TimingInfo.AltDec/}米</td>
-          <td><a href="javascript:;" onclick="TimingPointModify('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$TimingInfo.TName/}')">修改</a> |
-            <a href="javascript:;" onclick="TimingPointDelete('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$TimingInfo.TName/}')">删除</a> |
-            <a href="javascript:;" onclick="TimingPointAdd('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">在此之后添加</a>
+          <td>┠&nbsp;&nbsp;{tpl:$TimingInfo.TName/}</td><td>计时芯片序列号：{tpl:$TimingInfo.ChipId/}</td><td>距离下一计时点：{tpl:$TimingInfo.ToNext/}米</td><td>经过: {tpl:$TimingInfo.Round/} 次</td><td>海拔上升:{tpl:$TimingInfo.AltAsc/}米</td><td>海拔下降:{tpl:$TimingInfo.AltDec/}米</td>
+          <td><a href="javascript:;" onclick="TimingPointModify('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}','{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$TimingInfo.TName/}')">修改</a> |
+            <a href="javascript:;" onclick="TimingPointDelete('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}','{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$TimingInfo.TName/}')">删除</a> |
+            <a href="javascript:;" onclick="TimingPointAdd('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}','{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">在此之后添加</a>
           </td>
         </tr>
         {/tpl:loop}
@@ -67,7 +67,7 @@
   </tr>
     {tpl:else}
   <tr>
-    <th align="center" class="rowtip">┠&nbsp;&nbsp;尚未配置任何计时点信息<a href="javascript:;" onclick="TimingPointAdd('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceGroup.RaceGroupId/}','{tpl:$RaceId/}','{tpl:$SportsTypeId/}','-1','{tpl:$SportsTypeInfo.SportsTypeName/}')">在头部添加</a></th>
+    <th align="center" class="rowtip">┠&nbsp;&nbsp;尚未配置任何计时点信息<a href="javascript:;" onclick="TimingPointAdd('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}','{tpl:$RaceId/}','{tpl:$SportsTypeId/}','-1','{tpl:$SportsTypeInfo.SportsTypeName/}')">在头部添加计时点</a></th>
   </tr>
   {/tpl:if}
     {/tpl:loop}
