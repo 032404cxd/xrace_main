@@ -37,9 +37,14 @@ class XraceConfigController extends AbstractController
         echo json_encode($result);
     }
     
-    public function functionName($param) {
+    /*
+     * 获得单条RaceCatalog
+     */
+    public function getRaceCatalogAction() {
+        $RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
+        $raceCatalog = $this->oRace->getRaceCatalog($RaceCatalogId);
         
-        
+        echo json_encode($result);       
     }
 
 }
