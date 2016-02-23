@@ -43,8 +43,7 @@ class Xrace_UserController extends AbstractController
 			$params['Sex'] = isset($SexList[intval($this->request->Sex)])?intval($this->request->Sex):0;
 			$params['Name'] = urldecode(trim($this->request->Name))?substr(urldecode(trim($this->request->Name)),0,8):"";
 			$params['NickName'] = urldecode(trim($this->request->NickName))?substr(urldecode(trim($this->request->NickName)),0,8):"";
-			$params['AuthStatus'] = isset($AuthStatusList[intval($this->request->AuthStatus)])?intval($this->request->AuthStatus):0;
-
+			$params['AuthStatus'] = isset($AuthStatusList[$this->request->AuthStatus])?intval($this->request->AuthStatus):-1;
 			//分页参数
 			$params['Page'] = abs(intval($this->request->Page))?abs(intval($this->request->Page)):1;
 			$params['PageSize'] = 5;
@@ -95,7 +94,7 @@ class Xrace_UserController extends AbstractController
 			$params['Sex'] = isset($SexList[intval($this->request->Sex)])?intval($this->request->Sex):0;
 			$params['Name'] = urldecode(trim($this->request->Name))?substr(urldecode(trim($this->request->Name)),0,8):"";
 			$params['NickName'] = urldecode(trim($this->request->NickName))?substr(urldecode(trim($this->request->NickName)),0,8):"";
-			$params['AuthStatus'] = isset($AuthStatusList[intval($this->request->AuthStatus)])?intval($this->request->AuthStatus):0;
+			$params['AuthStatus'] = isset($AuthStatusList[$this->request->AuthStatus])?intval($this->request->AuthStatus):-1;
 
 			//分页参数
 			$params['PageSize'] = 500;

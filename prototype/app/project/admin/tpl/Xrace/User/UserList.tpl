@@ -20,7 +20,7 @@
         {/tpl:loop}
     </select>
     实名认证状态:<select name="AuthStatus" class="span2" size="1">
-        <option value="">全部</option>
+        <option value="-1">全部</option>
         {tpl:loop $AuthStatusList $AuthStatus $AuthStatusName}
         <option value="{tpl:$AuthStatus/}" {tpl:if($params.AuthStatus==$AuthStatus)}selected="selected"{/tpl:if}>{tpl:$AuthStatusName/}</option>
         {/tpl:loop}

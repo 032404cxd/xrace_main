@@ -507,7 +507,7 @@ class Widget_Manager extends Base_Widget
             'menu_id' => $bind['menu_id'],
             'parent_menu_id' => $bind['parent_menu_id'],
             'operation_name' => $bind['operation_name'],
-            'operation_flag' => $bind['operation_flag'],3
+            'operation_flag' => $bind['operation_flag'],
         );
         return $this->db->insert($this->operation_table, $insertStruct);
     }
