@@ -42,7 +42,7 @@ class XraceConfigController extends AbstractController
      */
     public function getRaceCatalogAction() {
         //格式化赛事ID,默认为0
-        $RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
+        $RaceCatalogId = isset($this->request->RaceCatalogId)?abs(intval($this->request->RaceCatalogId)):0;
         //赛事ID必须大于0
         if($RaceCatalogId)
         {
@@ -71,8 +71,12 @@ class XraceConfigController extends AbstractController
      * 根据赛事获取所有分站列表
      */
     public function getRaceStageListAction() {
-        $RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
+        $RaceCatalogId = isset($this->request->RaceCatalogId)?abs(intval($this->request->RaceCatalogId)):0;
         $raceStageList = $this->oRace->getAllRaceStageList($RaceCatalogId);
+        if(!is_array($raceStageList))
+        {
+            $raceStageList = array();
+        }
 //        foreach ($raceStageList as $key => $value) {
 //            $raceStageList[$key]['comment'] = json_decode($value['comment'],true);
 //        }
@@ -93,7 +97,7 @@ class XraceConfigController extends AbstractController
     /*
      * 根据赛事获取所有赛事组别列表
      */
-    public function getAllRaceGroupListAction() {
+    public function getRaceGroupListAction() {
         $RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
         $raceGroupList = $this->oRace->getAllRaceGroupList($RaceCatalogId);
         $result = array("return"=>0,"raceGroupList"=>$raceGroupList);
