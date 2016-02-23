@@ -41,9 +41,15 @@ class XraceConfigController extends AbstractController
      * 获取单个赛事信息
      */
     public function getRaceCatalogAction() {
-        $RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
+        //abs
+        $RaceCatalogId = isset($this->request->RaceCatalogId)?abs(intval($this->request->RaceCatalogId)):0;
         $raceCatalog = $this->oRace->getRaceCatalog($RaceCatalogId);
         $raceCatalog['comment'] = json_decode($raceCatalog['comment'],true);
+        foreach($raceCatalog['comment']['selectedGroupList'] as $groupId => $groupInfo)
+        {
+            $raceCatalog['comment']['selectedGroupList'][$groupId] = $this->oRace->getRaceGroup($groupId,"RaceGroupId,RaceGroupName");
+            
+        }
         $result = array("return"=>0,"raceCatalog"=>$raceCatalog);
         echo json_encode($result);       
     }
@@ -52,8 +58,12 @@ class XraceConfigController extends AbstractController
      * 根据赛事获取所有分站列表
      */
     public function getRaceStageListAction() {
-        $RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
+        $RaceCatalogId = isset($this->request->RaceCatalogId)?abs(intval($this->request->RaceCatalogId)):0;
         $raceStageList = $this->oRace->getAllRaceStageList($RaceCatalogId);
+        if(!is_array($raceStageList))
+        {
+            $raceStageList = array();
+        }
 //        foreach ($raceStageList as $key => $value) {
 //            $raceStageList[$key]['comment'] = json_decode($value['comment'],true);
 //        }
@@ -74,7 +84,7 @@ class XraceConfigController extends AbstractController
     /*
      * 根据赛事获取所有赛事组别列表
      */
-    public function getAllRaceGroupListAction() {
+    public function getRaceGroupListAction() {
         $RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
         $raceGroupList = $this->oRace->getAllRaceGroupList($RaceCatalogId);
         $result = array("return"=>0,"raceGroupList"=>$raceGroupList);
