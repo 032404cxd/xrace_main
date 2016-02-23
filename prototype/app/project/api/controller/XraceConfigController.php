@@ -33,7 +33,7 @@ class XraceConfigController extends AbstractController
         {
            $raceCatalogList = array();
         }
-        $result = array("return"=>0,"raceCatalogList"=>$raceCatalogList);
+        $result = array("return"=>1,"raceCatalogList"=>$raceCatalogList);
         echo json_encode($result);
     }
     
@@ -41,11 +41,30 @@ class XraceConfigController extends AbstractController
      * 获取单个赛事信息
      */
     public function getRaceCatalogAction() {
+        //格式化赛事ID,默认为0
         $RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
-        $raceCatalog = $this->oRace->getRaceCatalog($RaceCatalogId);
-        $raceCatalog['comment'] = json_decode($raceCatalog['comment'],true);
-        $result = array("return"=>0,"raceCatalog"=>$raceCatalog);
-        echo json_encode($result);       
+        //赛事ID必须大于0
+        if($RaceCatalogId)
+        {
+            //获取赛事信息
+            $raceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId);
+            //检测主键存在,否则值为空
+            $raceCatalogInfo = isset($raceCatalogInfo['RaceCatalogId'])?$raceCatalogInfo:array();
+            //解包数组
+            $raceCatalogInfo['comment'] = isset($raceCatalogInfo['comment'])?json_decode($raceCatalogInfo['comment'],true):array();
+            //根据赛事获取组别列表
+            $raceGroupList = isset($raceCatalogInfo['RaceCatalogId'])?$this->oRace->getAllRaceGroupList($raceCatalogInfo['RaceCatalogId'],"RaceGroupId,RaceGroupName"):array();
+            //根据赛事获取分站列表
+            $raceStageList = isset($raceCatalogInfo['RaceCatalogId'])?$this->oRace->getAllRaceStageList($raceCatalogInfo['RaceCatalogId'],"RaceStageId,RaceStageName"):array();
+            //结果数组
+            $result = array("return"=>1,"raceCatalogInfo"=>$raceCatalogInfo,'raceGroupList'=>$raceGroupList,'raceStageList'=>$raceStageList);
+        }
+        else
+        {
+            //全部置为空
+            $result = array("return"=>0,"raceCatalog"=>array(),'raceGroupList'=>array(),'raceStageList'=>array(),"comment"=>"请指定一个有效的赛事ID");
+        }
+        echo json_encode($result);
     }
     
     /*
