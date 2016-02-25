@@ -7,7 +7,7 @@ include dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))."/CommonC
 
 $db = array();
 $db['isPersistent'] = 0;
-
+/*
 $db['xrace'][0] = array(
 	'host' => HOST_LOCAL,
 	'user' => USER_LOCAL,
@@ -15,6 +15,15 @@ $db['xrace'][0] = array(
 	'port' => PORT_LOCAL,
 	'database' => 'xrace',
 );
+*/
+$db['xrace'][0] = array(
+	'host' => HOST_aliyun,
+	'user' => USER_aliyun,
+	'password' => PASSWORD_aliyun,
+	'port' => PORT_aliyun,
+	'database' => 'xrace',
+);
+
 $db['xrace_config'][0] = array(
 	'host' => HOST_LOCAL,
 	'user' => USER_LOCAL,

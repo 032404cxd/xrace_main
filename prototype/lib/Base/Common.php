@@ -1030,4 +1030,15 @@ EOF;
 		return $ret;
 	}
 
+	/**
+	 * 将一个数组写入配置文件
+	 * @param string $fields
+	 */
+	 function rebuildConfig($filePath,$fileName,$dataArr,$arrName)
+	{
+		//Base_Common::rebuildConfig("../../admin/etc/","allCatalog.php",$AllRaceCatalog,"allCatalog");
+		$var = var_export($dataArr,true);
+		$text ='<?php $'.$arrName.'='.$var.'; return $'.$arrName.';?>';
+		file_put_contents($filePath.$fileName,$text);
+	}
 }
