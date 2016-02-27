@@ -36,6 +36,15 @@
 			{/tpl:loop}
 		</div></td>
 	</tr>
+        <tr class="hover"><td>赛事分组图标1</td>
+                <td align="left"><input name="RaceStageIcon[1]" type="file" class="span4" id="RaceStageIcon[1]" /></td>
+        </tr>
+        <tr class="hover"><td>赛事分组图标2</td>
+                <td align="left"><input name="RaceStageIcon[2]" type="file" class="span4" id="RaceStageIcon[2]" /></td>
+        </tr>
+        <tr class="hover"><td>赛事分组图标3</td>
+                <td align="left"><input name="RaceStageIcon[3]" type="file" class="span4" id="RaceStageIcon[3]" /></td>
+        </tr>        
 	<tr class="noborder"><td></td>
 <td><button type="submit" id="race_stage_update_submit">提交</button></td>
 </tr>

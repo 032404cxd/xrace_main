@@ -29,6 +29,7 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
+                        $RootUrl = "http://".$_SERVER['HTTP_HOST'];
 			//赛事ID
 			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
 			//赛事列表
@@ -52,7 +53,7 @@ class Xrace_RaceStageController extends AbstractController
 					//获取赛事ID
 					$RaceStageList[$value['RaceCatalogId']]['RaceCatalogName'] = isset($RaceStageList[$value['RaceCatalogId']]['RaceCatalogName'])?$RaceStageList[$value['RaceCatalogId']]['RaceCatalogName']:$RaceCatalogArr[$value['RaceCatalogId']]['RaceCatalogName'];
 					//解包压缩数组
-					$value['comment'] = json_decode($value['comment'],true);
+                                        $value['comment'] = json_decode($value['comment'],true);
 					$t = array();
 					//如果有已经选择的赛事组别
 					if(isset($value['comment']['SelectedRaceGroup']) && is_array($value['comment']['SelectedRaceGroup']))
@@ -95,12 +96,29 @@ class Xrace_RaceStageController extends AbstractController
 						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['GroupCount'] = 0;
 						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RowCount'] = 1;
 					}
+                                        
 				}
 				else
 				{
 					$RaceStageList[$value['RaceCatalogId']]['RaceCatalogName'] = 	"未定义";
 				}
+                                
+                                if(isset($value['comment']['RaceStageIcon']) && is_array($value['comment']['RaceStageIcon']))
+                                {
+                                    foreach ($value['comment']['RaceStageIcon'] as $k => $v) {
+                                        $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIcon'][$k] = $v;
+                                    }
+                                    
+                                }
+                                if(isset($value['comment']['RaceStageIcon_root']) && is_array($value['comment']['RaceStageIcon_root']))
+                                {
+                                    foreach ($value['comment']['RaceStageIcon_root'] as $k => $v) {
+                                        $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIcon_root'][$k] = $v;
+                                    }
+                                    
+                                }
 			}
+                        //print_r($RaceStageList);exit;
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceStageList');
 		}
@@ -162,12 +180,26 @@ class Xrace_RaceStageController extends AbstractController
 		}
 		else
 		{
-			$bind['comment']['SelectedRaceGroup'] = $SelectedRaceGroup['SelectedRaceGroup'];
-			//数据压缩
-			$bind['comment'] = json_encode($bind['comment']);
-			//插入数据
-			$res = $this->oRace->insertRaceStage($bind);
-			$response = $res ? array('errno' => 0) : array('errno' => 9);
+                    //记录分组信息
+                    $bind['comment']['SelectedRaceGroup'] = $SelectedRaceGroup['SelectedRaceGroup'];
+                    //文件上传
+                    $oUpload = new Base_Upload('RaceStageIcon');
+                    $upload = $oUpload->upload('RaceStageIcon');
+                    $res = $upload->resultArr;
+                    foreach($upload->resultArr as $iconkey=>$iconvalue){
+                        $path = $iconvalue;
+                        //如果正确上传，就保存文件路径
+                        if(strlen($path['path'])>2)
+                        {
+                            $bind['comment']['RaceStageIcon']['RaceStageIcon_'.$iconkey] = $path['path'];
+                            $bind['comment']['RaceStageIcon_root']['RaceStageIcon_root_'.$iconkey] = $path['path_root'];
+                        }
+                    }
+                    //数据压缩
+                    $bind['comment'] = json_encode($bind['comment']);
+                    //插入数据
+                    $res = $this->oRace->insertRaceStage($bind);
+                    $response = $res ? array('errno' => 0) : array('errno' => 9);
 		}
 		echo json_encode($response);
 		return true;
@@ -257,6 +289,19 @@ class Xrace_RaceStageController extends AbstractController
 					$this->oRace->deleteRaceStageGroup($GroupInfo['RaceStageId'],$GroupInfo['RaceGroupId']);
 				}
 			}
+                        //文件上传
+                        $oUpload = new Base_Upload('RaceStageIcon');
+                        $upload = $oUpload->upload('RaceStageIcon');
+                        $res = $upload->resultArr;
+                        foreach($upload->resultArr as $iconkey=>$iconvalue){
+                            $path = $iconvalue;
+                            //如果正确上传，就保存文件路径
+                            if(strlen($path['path'])>2)
+                            {
+                            $bind['comment']['RaceStageIcon']['RaceStageIcon_'.$iconkey] = $path['path'];
+                            $bind['comment']['RaceStageIcon_root']['RaceStageIcon_root_'.$iconkey] = $path['path_root'];
+                            }
+                        }
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//更新数据
