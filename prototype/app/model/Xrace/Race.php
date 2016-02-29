@@ -603,23 +603,30 @@ class Xrace_Race extends Base_Widget
 			}
 		}
 	}
+	//把执照获得条件转化成HTML
 	public function ParthRaceLicenseListToHtml($RaceLicenseList)
 	{
-
+		//如果已配置执照条件列表
 		if(count($RaceLicenseList))
 		{
+			//获取条件列表
 			$RaceLisenceTypeList = $this->getRaceLicenseType();
+			//初始化空字符串
 			$text = array();
+			//循环条件列表
 			foreach ($RaceLicenseList as $key => $LicenseInfo)
 			{
+				//如果已配置当前条件
 				if(isset($RaceLisenceTypeList[$LicenseInfo['LicenseType']]))
 				{
 					$text[$key] = "<tr><td>".$RaceLisenceTypeList[$LicenseInfo['LicenseType']]."</td>";
+					//根据不同的条件类型拼接不同的字符串
 					$text[$key].= "<td>".$this->$LicenseInfo['LicenseType']($key,$LicenseInfo)."</td>";
 					$text[$key].="</tr>";
 				}
 				else
 				{
+					//删除数据
 					unset($RaceLicenseList[$key]);
 				}
 			}
@@ -630,11 +637,25 @@ class Xrace_Race extends Base_Widget
 			return "";
 		}
 	}
+	//管理员赋予
 	public function manager($key,$LicenseInfo)
 	{
-		$text = '<input type="radio" name="LicenseList['.$key.'][License]" id=LicenseList['.$key.'][License] value="1" '.((isset($LicenseInfo['License'])&&$LicenseInfo['License']==1)?'checked':"").'>是
+		$text = '<input type="hidden" name="LicenseList['.$key.'][LicenseType]" id="LicenseList['.$key.'][LicenseType]" value="manager"><input type="radio" name="LicenseList['.$key.'][License]" id=LicenseList['.$key.'][License] value="1" '.((isset($LicenseInfo['License'])&&$LicenseInfo['License']==1)?'checked':"").'>是
 	<input type="radio" name="LicenseList['.$key.'][License]" id=LicenseList['.$key.'][License] value="0" '.((!isset($LicenseInfo['License'])||$LicenseInfo['License']==0)?'checked':"").'>否';
 		return $text;
-
+	}
+	//生日
+	public function birthday($key,$LicenseInfo)
+	{
+		$text = '<input type="hidden" name="LicenseList['.$key.'][LicenseType]" id="LicenseList['.$key.'][LicenseType]" value="birthday"><select name="LicenseList['.$key.'][eqyal]" size="1" class="span1">';
+		$equalList = Base_common::equalList();
+		foreach($equalList as $value)
+		{
+			$text.= '<option value="'.$value.'" '. ((isset($LicenseInfo['License']['equal'])&&$LicenseInfo['License']['equal']==$value)?'selected':"").'>'.$value.'</option>';
+		}
+		$text.="</select>";
+		$text.='<input type="text" class="span2" name="LicenseList['.$key.'][LicenseType]" value="'.$LicenseInfo['License']['Date'].'" class="input-medium"
+				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'."'yyyy-MM-dd'".'})">';
+		return $text;
 	}
 }

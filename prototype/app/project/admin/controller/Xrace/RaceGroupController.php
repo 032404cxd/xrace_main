@@ -122,24 +122,11 @@ class Xrace_RaceGroupController extends AbstractController
 			$RaceGroupInfo['comment'] = json_decode($RaceGroupInfo['comment'],true);
 			//获取执照审核方式列表
 			//$RaceLisenceTypeList = $this->oRace->getRaceLicenseType();
-			$RaceGroupInfo['comment']['LicenseList'] = array('1'=>array('LicenseType'=>"manager",'License'=>1),'2'=>array('LicenseType'=>"birthday",'License'=>array('equal'=>">=",'Date'=>"2015-01-01")),3=>array("LicenseType"=>"manager"));
+			$RaceGroupInfo['comment']['LicenseList'] = array('1'=>array('LicenseType'=>"manager",'License'=>1),'2'=>array('LicenseType'=>"birthday",'License'=>array('equal'=>'>=','Date'=>"2015-01-01")),3=>array("LicenseType"=>"manager"));
 			if(isset($RaceGroupInfo['comment']['LicenseList']))
 			{
+				//将执照判断条件转化为HTML
 				$RaceLicenseListHtml = $this->oRace->ParthRaceLicenseListToHtml($RaceGroupInfo['comment']['LicenseList']);
-				/*
-				foreach ($RaceGroupInfo['comment']['LicenseList'] as $key => $LicenseInfo)
-				{
-
-					if(isset($RaceLisenceTypeList[$LicenseInfo['LicenseType']]))
-					{
-						$RaceGroupInfo['comment']['LicenseList'][$key]['LicenseTypeName'] = $RaceLisenceTypeList[$LicenseInfo['LicenseType']];
-					}
-					else
-					{
-						unset($RaceGroupInfo['comment']['LicenseList'][$key]);
-					}
-				}
-				*/
 			}
 			//模板渲染
 			include $this->tpl('Xrace_Race_RaceGroupModify');
