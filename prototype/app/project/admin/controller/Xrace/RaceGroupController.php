@@ -53,6 +53,7 @@ class Xrace_RaceGroupController extends AbstractController
 				{
 					$RaceGroupList[$value['RaceCatalogId']]['RaceCatalogName'] = 	"未定义";
 				}
+				$RaceGroupList[$value['RaceCatalogId']]['RaceGroupList'][$key]['comment'] = json_decode($RaceGroupList[$value['RaceCatalogId']]['RaceGroupList'][$key]['comment']);
 			}
 			include $this->tpl('Xrace_Race_RaceGroupList');
 		}
@@ -69,7 +70,9 @@ class Xrace_RaceGroupController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceGroupInsert");
 		if($PermissionCheck['return'])
 		{
+			//赛事列表
 			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
+			//模板渲染
 			include $this->tpl('Xrace_Race_RaceGroupAdd');
 		}
 		else
@@ -109,9 +112,36 @@ class Xrace_RaceGroupController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceGroupModify");
 		if($PermissionCheck['return'])
 		{
+			//赛事分组ID
 			$raceGroupId = trim($this->request->raceGroupId);
+			//赛事列表
 			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
+			//赛事分组信息
 			$RaceGroupInfo = $this->oRace->getRaceGroup($raceGroupId,'*');
+			//数据解包
+			$RaceGroupInfo['comment'] = json_decode($RaceGroupInfo['comment'],true);
+			//获取执照审核方式列表
+			//$RaceLisenceTypeList = $this->oRace->getRaceLicenseType();
+			$RaceGroupInfo['comment']['LicenseList'] = array('1'=>array('LicenseType'=>"manager",'License'=>1),'2'=>array('LicenseType'=>"birthday",'License'=>array('equal'=>">=",'Date'=>"2015-01-01")),3=>array("LicenseType"=>"manager"));
+			if(isset($RaceGroupInfo['comment']['LicenseList']))
+			{
+				$RaceLicenseListHtml = $this->oRace->ParthRaceLicenseListToHtml($RaceGroupInfo['comment']['LicenseList']);
+				/*
+				foreach ($RaceGroupInfo['comment']['LicenseList'] as $key => $LicenseInfo)
+				{
+
+					if(isset($RaceLisenceTypeList[$LicenseInfo['LicenseType']]))
+					{
+						$RaceGroupInfo['comment']['LicenseList'][$key]['LicenseTypeName'] = $RaceLisenceTypeList[$LicenseInfo['LicenseType']];
+					}
+					else
+					{
+						unset($RaceGroupInfo['comment']['LicenseList'][$key]);
+					}
+				}
+				*/
+			}
+			//模板渲染
 			include $this->tpl('Xrace_Race_RaceGroupModify');
 		}
 		else

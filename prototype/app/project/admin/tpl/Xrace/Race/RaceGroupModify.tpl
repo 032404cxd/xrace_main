@@ -15,6 +15,19 @@
 {/tpl:loop}
 </select></td>
 </tr>
+<tr class="hover"><td>执照审核方式</td>
+		<td align="left">
+			{tpl:if(isset($RaceGroupInfo.comment.LicenseList)&&(count($RaceGroupInfo.comment.LicenseList)>=1))}
+			{tpl:$RaceLicenseListHtml/}
+			{tpl:else}
+			<table>
+				<tr><td>
+			无审核条件
+				</td></tr>
+			</table>
+			{/tpl:if}
+		</td>
+</tr>
 <tr class="noborder"><td></td>
 <td><button type="submit" id="race_group_update_submit">提交</button></td>
 </tr>

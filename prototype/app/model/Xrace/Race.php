@@ -18,6 +18,7 @@ class Xrace_Race extends Base_Widget
 	protected $maxRaceDetail = 5;
 
 	protected $raceTimingType = array('chip'=>'芯片计时','gps'=>'gps定位');
+	protected $raceLicenseType = array('manager'=>'管理员赋予','birthday'=>'生日匹配','sex'=>'性别匹配');
 
 	public function getTimingType()
 	{
@@ -26,6 +27,10 @@ class Xrace_Race extends Base_Widget
 	public function getMaxRaceDetail()
 	{
 		return $this->maxRaceDetail;
+	}
+	public function getRaceLicenseType()
+	{
+		return $this->raceLicenseType;
 	}
 	//获取所有赛事的列表
 	public function getAllRaceCatalogList($fields = "*")
@@ -597,5 +602,39 @@ class Xrace_Race extends Base_Widget
 				return $RaceInsert;
 			}
 		}
+	}
+	public function ParthRaceLicenseListToHtml($RaceLicenseList)
+	{
+
+		if(count($RaceLicenseList))
+		{
+			$RaceLisenceTypeList = $this->getRaceLicenseType();
+			$text = array();
+			foreach ($RaceLicenseList as $key => $LicenseInfo)
+			{
+				if(isset($RaceLisenceTypeList[$LicenseInfo['LicenseType']]))
+				{
+					$text[$key] = "<tr><td>".$RaceLisenceTypeList[$LicenseInfo['LicenseType']]."</td>";
+					$text[$key].= "<td>".$this->$LicenseInfo['LicenseType']($key,$LicenseInfo)."</td>";
+					$text[$key].="</tr>";
+				}
+				else
+				{
+					unset($RaceLicenseList[$key]);
+				}
+			}
+			return "<table>".implode("",$text)."</table>";
+		}
+		else
+		{
+			return "";
+		}
+	}
+	public function manager($key,$LicenseInfo)
+	{
+		$text = '<input type="radio" name="LicenseList['.$key.'][License]" id=LicenseList['.$key.'][License] value="1" '.((isset($LicenseInfo['License'])&&$LicenseInfo['License']==1)?'checked':"").'>是
+	<input type="radio" name="LicenseList['.$key.'][License]" id=LicenseList['.$key.'][License] value="0" '.((!isset($LicenseInfo['License'])||$LicenseInfo['License']==0)?'checked':"").'>否';
+		return $text;
+
 	}
 }
