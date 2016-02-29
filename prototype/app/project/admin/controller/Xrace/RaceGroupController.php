@@ -120,9 +120,10 @@ class Xrace_RaceGroupController extends AbstractController
 			$RaceGroupInfo = $this->oRace->getRaceGroup($raceGroupId,'*');
 			//数据解包
 			$RaceGroupInfo['comment'] = json_decode($RaceGroupInfo['comment'],true);
+			//print_R($RaceGroupInfo['comment']);
 			//获取执照审核方式列表
 			//$RaceLisenceTypeList = $this->oRace->getRaceLicenseType();
-			$RaceGroupInfo['comment']['LicenseList'] = array('1'=>array('LicenseType'=>"manager",'License'=>1),'2'=>array('LicenseType'=>"birthday",'License'=>array('equal'=>'>=','Date'=>"2015-01-01")),3=>array("LicenseType"=>"manager"));
+			//$RaceGroupInfo['comment']['LicenseList'] = array('1'=>array('LicenseType'=>"manager",'License'=>1),'2'=>array('LicenseType'=>"birthday",'License'=>array('equal'=>'>=','Date'=>"2015-01-01")),3=>array("LicenseType"=>"manager"));
 			if(isset($RaceGroupInfo['comment']['LicenseList']))
 			{
 				//将执照判断条件转化为HTML
@@ -141,22 +142,63 @@ class Xrace_RaceGroupController extends AbstractController
 	//更新任务信息
 	public function raceGroupUpdateAction()
 	{
-		$bind=$this->request->from('RaceGroupId','RaceGroupName','RaceCatalogId');
+		$bind=$this->request->from('RaceGroupId','RaceGroupName','RaceCatalogId','LicenseList');
+		if(is_array($bind['LicenseList']))
+		{
+			//获取条件列表
+			$RaceLisenceTypeList = $this->oRace->getRaceLicenseType();
+			//循环条件列表
+			foreach($bind['LicenseList'] as $k => $v)
+			{
+				//如果条件类型不符合
+				if(!isset($RaceLisenceTypeList[$v['LicenseType']]))
+				{
+					//删除数据
+					unset($bind['LicenseList'][$k]);
+				}
+				//如果设置为不需要管理员赋予
+				elseif(($v['LicenseType']=="manager") && ($v['License'] == "0"))
+				{
+					//删除数据
+					unset($bind['LicenseList'][$k]);
+				}
+			}
+		}
+		else
+		{
+			//置为空数组
+			$bind['LicenseList'] = array();
+		}
+		//获取赛事列表
 		$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
+		//分组名称不能为空
 		if(trim($bind['RaceGroupName'])=="")
 		{
 			$response = array('errno' => 1);
 		}
-		elseif(intval($bind['RaceGroupId'])=="")
+		//分组ID必须填写
+		elseif(intval($bind['RaceGroupId'])==0)
 		{
 			$response = array('errno' => 2);
 		}
+		//分组必须属于某个已配置的赛事
 		elseif(!isset($RaceCatalogArr[$bind['RaceCatalogId']]))
 		{
 			$response = array('errno' => 3);
 		}
 		else
 		{
+			//赛事分组信息
+			$RaceGroupInfo = $this->oRace->getRaceGroup($bind['RaceGroupId'],'*');
+			//数据解包
+			$bind['comment'] = json_decode($RaceGroupInfo['comment'],true);
+			//移动条件列表到comment数组下
+			$bind['comment']['LicenseList'] = $bind['LicenseList'];
+			//删除原有数组
+			unset($bind['LicenseList']);
+			//数据打包
+			$bind['comment'] = json_encode($bind['comment']);
+			//更新数据
 			$res = $this->oRace->updateRaceGroup($bind['RaceGroupId'],$bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
 		}

@@ -647,14 +647,14 @@ class Xrace_Race extends Base_Widget
 	//生日
 	public function birthday($key,$LicenseInfo)
 	{
-		$text = '<input type="hidden" name="LicenseList['.$key.'][LicenseType]" id="LicenseList['.$key.'][LicenseType]" value="birthday"><select name="LicenseList['.$key.'][eqyal]" size="1" class="span1">';
+		$text = '<input type="hidden" name="LicenseList['.$key.'][LicenseType]" id="LicenseList['.$key.'][LicenseType]" value="birthday"><select name="LicenseList['.$key.'][License][eqyal]" size="1" class="span2">';
 		$equalList = Base_common::equalList();
 		foreach($equalList as $value)
 		{
 			$text.= '<option value="'.$value.'" '. ((isset($LicenseInfo['License']['equal'])&&$LicenseInfo['License']['equal']==$value)?'selected':"").'>'.$value.'</option>';
 		}
 		$text.="</select>";
-		$text.='<input type="text" class="span2" name="LicenseList['.$key.'][LicenseType]" value="'.$LicenseInfo['License']['Date'].'" class="input-medium"
+		$text.='<input type="text" class="span2" name="LicenseList['.$key.'][License][Date]" value="'.$LicenseInfo['License']['Date'].'" class="input-medium"
 				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'."'yyyy-MM-dd'".'})">';
 		return $text;
 	}
