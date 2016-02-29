@@ -250,7 +250,7 @@ class Xrace_Race extends Base_Widget
 		return $this->db->update($table_to_process, $bind, '`RaceId` = ?', $RaceId);
 	}
 	//根据赛事分站获取开设比赛的组别列表
-	public function getRaceStageGroupByStage($RaceStageId,$fields = '*')
+	public function getRaceGroupByStage($RaceStageId,$fields = '*')
 	{
 		$RaceStageId = intval($RaceStageId);
 		$table_to_process = Base_Widget::getDbTable($this->table_stage_group);
