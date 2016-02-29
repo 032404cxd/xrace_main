@@ -638,24 +638,46 @@ class Xrace_Race extends Base_Widget
 		}
 	}
 	//管理员赋予
-	public function manager($key,$LicenseInfo)
+	public function manager($key,$LicenseInfo,$edit = 1)
 	{
-		$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="manager"><input type="radio" name="LicenseList['.$key.'][License]" id=LicenseList['.$key.'][License] value="1" '.((isset($LicenseInfo['License'])&&$LicenseInfo['License']==1)?'checked':"").'>是
+		if(!count($LicenseInfo))
+		{
+			$LicenseInfo  = array("LicenseType"=>"manager","License"=>0);
+		}
+		if($edit==1)
+		{
+			$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="manager"><input type="radio" name="LicenseList['.$key.'][License]" id=LicenseList['.$key.'][License] value="1" '.((isset($LicenseInfo['License'])&&$LicenseInfo['License']==1)?'checked':"").'>是
 	<input type="radio" name="'.$key.'[License]" id="'.$key.'[License]" value="0" '.((!isset($LicenseInfo['License'])||$LicenseInfo['License']==0)?'checked':"").'>否';
+		}
+		else
+		{
+			$text = ((isset($LicenseInfo['License'])&&$LicenseInfo['License']==1)?"是":"否");
+		}
+
 		return $text;
 	}
 	//生日
-	public function birthday($key,$LicenseInfo)
+	public function birthday($key,$LicenseInfo,$edit = 1)
 	{
-		$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="LicenseList['.$key.'][LicenseType]" value="birthday"><select name="'.$key.'[License][equal]" size="1" class="span2">';
-		$equalList = Base_common::equalList();
-		foreach($equalList as $value)
+		if(!count($LicenseInfo))
 		{
-			$text.= '<option value="'.$value.'" '. ((isset($LicenseInfo['License']['equal'])&&$LicenseInfo['License']['equal']==$value)?'selected':"").'>'.$value.'</option>';
+			$LicenseInfo  = array("LicenseType"=>"birthday","License"=>array("equal"=>">=","Date"=>date("Y-m-d",time())));
 		}
-		$text.="</select>";
-		$text.='<input type="text" class="span2" name="'.$key.'[License][Date]" value="'.$LicenseInfo['License']['Date'].'" class="input-medium"
-				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'."'yyyy-MM-dd'".'})">';
+		if($edit==1)
+		{
+			$text = '<input type="hidden" name="' . $key . '[LicenseType]" id="LicenseList[' . $key . '][LicenseType]" value="birthday"><select name="' . $key . '[License][equal]" size="1" class="span2">';
+			$equalList = Base_common::equalList();
+			foreach ($equalList as $value) {
+				$text .= '<option value="' . $value . '" ' . ((isset($LicenseInfo['License']['equal']) && $LicenseInfo['License']['equal'] == $value) ? 'selected' : "") . '>' . $value . '</option>';
+			}
+			$text .= "</select>";
+			$text .= '<input type="text" class="span2" name="' . $key . '[License][Date]" value="' . $LicenseInfo['License']['Date'] . '" class="input-medium"
+				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:' . "'yyyy-MM-dd'" . '})">';
+		}
+		else
+		{
+			$text = $LicenseInfo['License']['equal'].":".$LicenseInfo['License']['Date'];
+		}
 		return $text;
 	}
 }

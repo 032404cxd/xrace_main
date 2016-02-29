@@ -142,7 +142,7 @@ class Xrace_RaceGroupController extends AbstractController
 		$bind=$this->request->from('RaceGroupId','RaceGroupName','RaceCatalogId','LicenseList');
 		if(is_array($bind['LicenseList']))
 		{
-			//获取条件列表
+			//获取条件类型列表
 			$RaceLisenceTypeList = $this->oRace->getRaceLicenseType();
 			//循环条件列表
 			foreach($bind['LicenseList'] as $k => $v)
@@ -220,4 +220,50 @@ class Xrace_RaceGroupController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+	//修改任务信息页面
+	public function groupLicenseAddAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceGroupModify");
+		if($PermissionCheck['return'])
+		{
+			//赛事分组ID
+			$raceGroupId = trim($this->request->raceGroupId);
+			//赛事分组信息
+			$RaceGroupInfo = $this->oRace->getRaceGroup($raceGroupId,'*');
+			//数据解包
+			$RaceGroupInfo['comment'] = json_decode($RaceGroupInfo['comment'],true);
+			//获取条件类型列表
+			$RaceLisenceTypeList = $this->oRace->getRaceLicenseType();
+			//模板渲染
+			include $this->tpl('Xrace_Race_GroupLicenseAdd');
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	public function getLicenseConditionAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceGroupModify");
+		if($PermissionCheck['return'])
+		{
+			//赛事分组ID
+			$LicenseType = trim($this->request->LicenseType);
+			//获取条件类型列表
+			$RaceLisenceTypeList = $this->oRace->getRaceLicenseType();
+			if(isset($RaceLisenceTypeList[$LicenseType]))
+			{
+				echo  $this->oRace->$LicenseType("",array(),$edit = 1);
+			}
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+
 }
