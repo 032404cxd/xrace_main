@@ -120,10 +120,7 @@ class Xrace_RaceGroupController extends AbstractController
 			$RaceGroupInfo = $this->oRace->getRaceGroup($raceGroupId,'*');
 			//数据解包
 			$RaceGroupInfo['comment'] = json_decode($RaceGroupInfo['comment'],true);
-			//print_R($RaceGroupInfo['comment']);
-			//获取执照审核方式列表
-			//$RaceLisenceTypeList = $this->oRace->getRaceLicenseType();
-			//$RaceGroupInfo['comment']['LicenseList'] = array('1'=>array('LicenseType'=>"manager",'License'=>1),'2'=>array('LicenseType'=>"birthday",'License'=>array('equal'=>'>=','Date'=>"2015-01-01")),3=>array("LicenseType"=>"manager"));
+			//如果有填写审核类型列表
 			if(isset($RaceGroupInfo['comment']['LicenseList']))
 			{
 				//将执照判断条件转化为HTML

@@ -13,6 +13,9 @@ function RaceGroupDelete(p_id, p_name){
 function RaceGroupModify(mid){
 	modifyRaceGroupBox = divBox.showBox('{tpl:$this.sign/}&ac=race.group.modify&raceGroupId=' + mid, {title:'修改赛事组别',width:500,height:300});
 }
+function LicenseAdd(mid){
+  modifyRaceGroupBox = divBox.showBox('{tpl:$this.sign/}&ac=group.license.add&raceGroupId=' + mid, {title:'添加审核条件',width:500,height:300});
+}
 
 </script>
 
@@ -45,7 +48,7 @@ function RaceGroupModify(mid){
   <tr>
     <th align="center" class="rowtip" >{tpl:$RaceGroupInfo.RaceGroupId/}</th>
     <th align="center" class="rowtip" >{tpl:$RaceGroupInfo.RaceGroupName/}</th>
-    <th align="center" class="rowtip" ><a  href="javascript:;" onclick="RaceGroupDelete('{tpl:$RaceGroupInfo.RaceGroupId/}','{tpl:$RaceGroupInfo.RaceGroupName/}')">删除</a> |  <a href="javascript:;" onclick="RaceGroupModify('{tpl:$RaceGroupInfo.RaceGroupId/}');">修改</a></th>
+    <th align="center" class="rowtip" ><a  href="javascript:;" onclick="RaceGroupDelete('{tpl:$RaceGroupInfo.RaceGroupId/}','{tpl:$RaceGroupInfo.RaceGroupName/}')">删除</a> |  <a href="javascript:;" onclick="RaceGroupModify('{tpl:$RaceGroupInfo.RaceGroupId/}');">修改</a> |  <a href="javascript:;" onclick="LicenseAdd('{tpl:$RaceGroupInfo.RaceGroupId/}');">添加审核条件</a></th>
   </tr>
   {/tpl:loop}
 {/tpl:loop}
