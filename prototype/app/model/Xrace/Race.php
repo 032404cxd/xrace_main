@@ -18,7 +18,7 @@ class Xrace_Race extends Base_Widget
 	protected $maxRaceDetail = 5;
 
 	protected $raceTimingType = array('chip'=>'芯片计时','gps'=>'gps定位');
-	protected $raceLicenseType = array('manager'=>'管理员赋予','birthday'=>'生日','sex'=>'性别匹配');
+	protected $raceLicenseType = array('manager'=>'管理员赋予','birthday'=>'生日','sex'=>'性别');
 
 	public function getTimingType()
 	{
@@ -621,7 +621,8 @@ class Xrace_Race extends Base_Widget
 				{
 					$text[$key] = "<tr><td>".$RaceLisenceTypeList[$LicenseInfo['LicenseType']]."</td>";
 					//根据不同的条件类型拼接不同的字符串
-					$text[$key].= "<td>".$this->$LicenseInfo['LicenseType']("LicenseList[".$key."]",$LicenseInfo)."</td>";
+					$functionName = $LicenseInfo['LicenseType']."ConditionToHtml";
+					$text[$key].= "<td>".$this->$functionName("LicenseList[".$key."]",$LicenseInfo)."</td>";
 					$text[$key].="</tr>";
 				}
 				else
@@ -638,7 +639,7 @@ class Xrace_Race extends Base_Widget
 		}
 	}
 	//管理员赋予
-	public function manager($key,$LicenseInfo,$edit = 1)
+	public function managerConditionToHtml($key,$LicenseInfo,$edit = 1)
 	{
 		if(!count($LicenseInfo))
 		{
@@ -646,18 +647,18 @@ class Xrace_Race extends Base_Widget
 		}
 		if($edit==1)
 		{
-			$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="manager"><input type="radio" name="LicenseList['.$key.'][License]" id=LicenseList['.$key.'][License] value="1" '.((isset($LicenseInfo['License'])&&$LicenseInfo['License']==1)?'checked':"").'>是
-	<input type="radio" name="'.$key.'[License]" id="'.$key.'[License]" value="0" '.((!isset($LicenseInfo['License'])||$LicenseInfo['License']==0)?'checked':"").'>否';
+			$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="manager">
+			<input type="radio" name="'.$key.'[License]" id="'.$key.'[License]" value="1" '.((isset($LicenseInfo['License'])&&$LicenseInfo['License']==1)?'checked':"").'>是
+			<input type="radio" name="'.$key.'[License]" id="'.$key.'[License]" value="0" '.((!isset($LicenseInfo['License'])||$LicenseInfo['License']==0)?'checked':"").'>否';
 		}
 		else
 		{
 			$text = ((isset($LicenseInfo['License'])&&$LicenseInfo['License']==1)?"是":"否");
 		}
-
 		return $text;
 	}
 	//生日
-	public function birthday($key,$LicenseInfo,$edit = 1)
+	public function birthdayConditionToHtml($key,$LicenseInfo,$edit = 1)
 	{
 		if(!count($LicenseInfo))
 		{
@@ -665,18 +666,37 @@ class Xrace_Race extends Base_Widget
 		}
 		if($edit==1)
 		{
-			$text = '<input type="hidden" name="' . $key . '[LicenseType]" id="LicenseList[' . $key . '][LicenseType]" value="birthday"><select name="' . $key . '[License][equal]" size="1" class="span2">';
+			$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="birthday"><select name="'.$key.'[License][equal]" size="1" class="span2">';
 			$equalList = Base_common::equalList();
 			foreach ($equalList as $value) {
 				$text .= '<option value="' . $value . '" ' . ((isset($LicenseInfo['License']['equal']) && $LicenseInfo['License']['equal'] == $value) ? 'selected' : "") . '>' . $value . '</option>';
 			}
 			$text .= "</select>";
-			$text .= '<input type="text" class="span2" name="' . $key . '[License][Date]" value="' . $LicenseInfo['License']['Date'] . '" class="input-medium"
+			$text .= '<input type="text" class="span2" name="'.$key.'[License][Date]" value="' . $LicenseInfo['License']['Date'] . '" class="input-medium"
 				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:' . "'yyyy-MM-dd'" . '})">';
 		}
 		else
 		{
 			$text = $LicenseInfo['License']['equal'].":".$LicenseInfo['License']['Date'];
+		}
+		return $text;
+	}
+	//管理员赋予
+	public function sexConditionToHtml($key,$LicenseInfo,$edit = 1)
+	{
+		if(!count($LicenseInfo))
+		{
+			$LicenseInfo  = array("LicenseType"=>"sex","License"=>"Male");
+		}
+		if($edit==1)
+		{
+			$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="sex">
+			<input type="radio" name="'.$key.'[License]" id="'.$key.'[License]" value="Male" '.((isset($LicenseInfo['License'])&&$LicenseInfo['License']=="Male")?'checked':"").'>男
+			<input type="radio" name="'.$key.'[License]" id="'.$key.'[License]" value="Female" '.((!isset($LicenseInfo['License'])||$LicenseInfo['License']=="Female")?'checked':"").'>女';
+		}
+		else
+		{
+			$text = ((isset($LicenseInfo['License'])&&$LicenseInfo['License']=="Male")?"男":"女");
 		}
 		return $text;
 	}

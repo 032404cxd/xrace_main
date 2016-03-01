@@ -244,6 +244,87 @@ class Xrace_RaceGroupController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+	//更新任务信息
+	public function groupLicenseInsertAction()
+	{
+		$bind=$this->request->from('RaceGroupId','LicenseList');
+		if(is_array($bind['LicenseList']))
+		{
+			//获取条件类型列表
+			$RaceLisenceTypeList = $this->oRace->getRaceLicenseType();
+			//如果条件类型不符合
+			if(!isset($RaceLisenceTypeList[$bind['LicenseList']['LicenseType']]))
+			{
+				//置为空数组
+				$bind['LicenseList'] = array();
+			}
+			//如果设置为不需要管理员赋予
+			elseif(($bind['LicenseList']['LicenseType']=="manager") && ($bind['LicenseList']['License'] == "0"))
+			{
+				//置为空数组
+				$bind['LicenseList'] = array();
+			}
+		}
+		else
+		{
+			//置为空数组
+			$bind['LicenseList'] = array();
+		}
+		//分组ID必须填写
+		if(intval($bind['RaceGroupId'])==0)
+		{
+			$response = array('errno' => 1);
+		}
+		else
+		{
+			if(count($bind['LicenseList'])>=1)
+			{
+				//赛事分组信息
+				$RaceGroupInfo = $this->oRace->getRaceGroup($bind['RaceGroupId'],'*');
+				//数据解包
+				$bind['comment'] = json_decode($RaceGroupInfo['comment'],true);
+				$t = array();
+				//如果已经有添加过审核条件
+				if(isset($bind['comment']['LicenseList']))
+				{
+					//初始键值
+					$i = 1;
+					//将数组内的条件循环放到另外的临时数组里面按次序排放
+					foreach($bind['comment']['LicenseList'] as $key => $value)
+					{
+						$t[$i] = $value;
+						if($value['LicenseType']=="manager")
+						{$flag=1;}
+						$i++;
+					}
+				}
+				if($flag==1 && $bind['LicenseList']['LicenseType']=="manager")
+				{
+					$response = array('errno' => 0);
+				}
+				else
+				{
+					//尾部添加新的数据
+					$t[count($t)+1] = $bind['LicenseList'];
+					//移动条件列表到comment数组下
+					$bind['comment']['LicenseList'] = $t;
+					//删除原有数组
+					unset($bind['LicenseList']);
+					//数据打包
+					$bind['comment'] = json_encode($bind['comment']);
+					//更新数据
+					$res = $this->oRace->updateRaceGroup($bind['RaceGroupId'],$bind);
+					$response = $res ? array('errno' => 0) : array('errno' => 9);
+				}
+			}
+			else
+			{
+				$response = array('errno' => 0);
+			}
+		}
+		echo json_encode($response);
+		return true;
+	}
 	public function getLicenseConditionAction()
 	{
 		//检查权限
@@ -256,7 +337,8 @@ class Xrace_RaceGroupController extends AbstractController
 			$RaceLisenceTypeList = $this->oRace->getRaceLicenseType();
 			if(isset($RaceLisenceTypeList[$LicenseType]))
 			{
-				echo  $this->oRace->$LicenseType("",array(),$edit = 1);
+				$functionName = $LicenseType."ConditionToHtml";
+				echo  $this->oRace->$functionName("LicenseList",array(),$edit = 1);
 			}
 		}
 		else

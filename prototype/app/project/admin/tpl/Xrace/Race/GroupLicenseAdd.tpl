@@ -29,9 +29,7 @@ $('#group_license_add_submit').click(function(){
 		success:function(jsonResponse) {
 			if (jsonResponse.errno) {
 				var errors = [];
-				errors[1] = '赛事组别名称不能为空，请修正后再次提交';
-				errors[2] = '赛事组别ID无效，请修正后再次提交';
-				errors[3] = '请选择一个有效的赛事，请修正后再次提交';
+				errors[1] = '赛事组别ID无效，请修正后再次提交';
 				errors[9] = '入库失败，请修正后再次提交';
 				divBox.alertBox(errors[jsonResponse.errno],function(){});
 			} else {
