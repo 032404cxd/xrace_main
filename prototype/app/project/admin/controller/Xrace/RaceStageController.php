@@ -191,8 +191,8 @@ class Xrace_RaceStageController extends AbstractController
                         //如果正确上传，就保存文件路径
                         if(strlen($path['path'])>2)
                         {
-                            $bind['comment']['RaceStageIcon']['RaceStageIcon_'.$iconkey] = $path['path'];
-                            $bind['comment']['RaceStageIcon_root']['RaceStageIcon_root_'.$iconkey] = $path['path_root'];
+                            $bind['comment']['RaceStageIcon'][$iconkey]['RaceStageIcon'] = $path['path'];
+                            $bind['comment']['RaceStageIcon'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
                         }
                     }
                     //数据压缩
