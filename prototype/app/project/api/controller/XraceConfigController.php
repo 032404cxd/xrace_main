@@ -121,11 +121,11 @@ class XraceConfigController extends AbstractController
             //结果数组
             $result = array("return"=>1,"raceStageInfo"=>$raceStageInfo,'raceGroupList'=>$raceGroupList);
         }
-        else {
+        else
+        {
             //全部置为空
             $result = array("return"=>0,"raceStageInfo"=>array(),'raceGroupList'=>array(),"comment"=>"请指定一个有效的分站ID");
         }
-
         echo json_encode($result);
     }
     
