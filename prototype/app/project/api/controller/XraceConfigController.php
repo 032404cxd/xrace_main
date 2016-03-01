@@ -19,10 +19,6 @@ class XraceConfigController extends AbstractController
         parent::init();
         $this->oRace = new Xrace_Race();
     }
-    public function indexAction() {
-        echo 'index';
-    }
-    
     /**
      *获取所有赛事的列表
      */
@@ -34,6 +30,22 @@ class XraceConfigController extends AbstractController
         if(!is_array($raceCatalogList)) 
         {
            $raceCatalogList = array();
+        }
+        //循环赛事列表数组
+        foreach($raceCatalogList as $raceCatalogId => $raceCatalogInfo)
+        {
+            //如果有输出赛事图标的绝对路径
+            if(isset($raceCatalogInfo['comment']['RaceCatalogIcon']))
+            {
+                //删除
+                unset($raceCatalogList[$raceCatalogId]['comment']['RaceCatalogIcon']);
+            }
+            //如果有输出赛事图标的相对路径
+            if(isset($raceCatalogInfo['comment']['RaceCatalogIcon_root']))
+            {
+                //拼接上ADMIN站点的域名
+                $raceCatalogList[$raceCatalogId]['comment']['RaceCatalogIcon_root'] = $this->config->adminUrl.$raceCatalogList[$raceCatalogId]['comment']['RaceCatalogIcon_root'];
+            }
         }
         //结果数组
         $result = array("return"=>1,"raceCatalogList"=>$raceCatalogList);
