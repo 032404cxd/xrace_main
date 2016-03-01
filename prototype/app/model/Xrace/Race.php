@@ -18,7 +18,7 @@ class Xrace_Race extends Base_Widget
 	protected $maxRaceDetail = 5;
 
 	protected $raceTimingType = array('chip'=>'芯片计时','gps'=>'gps定位');
-	protected $raceLicenseType = array('manager'=>'管理员赋予','birthday'=>'生日','sex'=>'性别');
+	protected $raceLicenseType = array('manager'=>'管理员审核','birthday'=>'生日','sex'=>'性别');
 
 	public function getTimingType()
 	{
@@ -604,7 +604,7 @@ class Xrace_Race extends Base_Widget
 		}
 	}
 	//把执照获得条件转化成HTML
-	public function ParthRaceLicenseListToHtml($RaceLicenseList)
+	public function ParthRaceLicenseListToHtml($RaceLicenseList,$edit=1)
 	{
 		//如果已配置执照条件列表
 		if(count($RaceLicenseList))
@@ -622,7 +622,7 @@ class Xrace_Race extends Base_Widget
 					$text[$key] = "<tr><td>".$RaceLisenceTypeList[$LicenseInfo['LicenseType']]."</td>";
 					//根据不同的条件类型拼接不同的字符串
 					$functionName = $LicenseInfo['LicenseType']."ConditionToHtml";
-					$text[$key].= "<td>".$this->$functionName("LicenseList[".$key."]",$LicenseInfo)."</td>";
+					$text[$key].= "<td>".$this->$functionName("LicenseList[".$key."]",$LicenseInfo,$edit)."</td>";
 					$text[$key].="</tr>";
 				}
 				else
@@ -677,7 +677,7 @@ class Xrace_Race extends Base_Widget
 		}
 		else
 		{
-			$text = $LicenseInfo['License']['equal'].":".$LicenseInfo['License']['Date'];
+			$text = $LicenseInfo['License']['equal'].$LicenseInfo['License']['Date'];
 		}
 		return $text;
 	}

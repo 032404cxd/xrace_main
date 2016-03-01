@@ -37,6 +37,7 @@ function LicenseAdd(mid){
     <th align="center" class="rowtip">对应赛事</th>
     <th align="center" class="rowtip">赛事组别ID</th>
     <th align="center" class="rowtip">赛事组别名称</th>
+    <th align="center" class="rowtip">审核条件</th>
     <th align="center" class="rowtip">操作</th>
   </tr>
 
@@ -48,6 +49,7 @@ function LicenseAdd(mid){
   <tr>
     <th align="center" class="rowtip" >{tpl:$RaceGroupInfo.RaceGroupId/}</th>
     <th align="center" class="rowtip" >{tpl:$RaceGroupInfo.RaceGroupName/}</th>
+    <th align="center" class="rowtip" >{tpl:$RaceGroupInfo.LicenseListText/}</th>
     <th align="center" class="rowtip" ><a  href="javascript:;" onclick="RaceGroupDelete('{tpl:$RaceGroupInfo.RaceGroupId/}','{tpl:$RaceGroupInfo.RaceGroupName/}')">删除</a> |  <a href="javascript:;" onclick="RaceGroupModify('{tpl:$RaceGroupInfo.RaceGroupId/}');">修改</a> |  <a href="javascript:;" onclick="LicenseAdd('{tpl:$RaceGroupInfo.RaceGroupId/}');">添加审核条件</a></th>
   </tr>
   {/tpl:loop}
