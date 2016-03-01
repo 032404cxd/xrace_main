@@ -113,11 +113,11 @@ class Xrace_RaceGroupController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事分组ID
-			$raceGroupId = trim($this->request->raceGroupId);
+			$RaceGroupId = trim($this->request->RaceGroupId);
 			//赛事列表
 			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
 			//赛事分组信息
-			$RaceGroupInfo = $this->oRace->getRaceGroup($raceGroupId,'*');
+			$RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,'*');
 			//数据解包
 			$RaceGroupInfo['comment'] = json_decode($RaceGroupInfo['comment'],true);
 			//如果有填写审核类型列表
@@ -210,8 +210,8 @@ class Xrace_RaceGroupController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceGroupDelete");
 		if($PermissionCheck['return'])
 		{
-			$raceGroupId = intval($this->request->raceGroupId);
-			$this->oRace->deleteRaceGroup($raceGroupId);
+			$RaceGroupId = intval($this->request->RaceGroupId);
+			$this->oRace->deleteRaceGroup($RaceGroupId);
 			$this->response->goBack();
 		}
 		else
@@ -228,9 +228,9 @@ class Xrace_RaceGroupController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事分组ID
-			$raceGroupId = trim($this->request->raceGroupId);
+			$RaceGroupId = trim($this->request->RaceGroupId);
 			//赛事分组信息
-			$RaceGroupInfo = $this->oRace->getRaceGroup($raceGroupId,'*');
+			$RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,'*');
 			//数据解包
 			$RaceGroupInfo['comment'] = json_decode($RaceGroupInfo['comment'],true);
 			//获取条件类型列表
@@ -283,22 +283,25 @@ class Xrace_RaceGroupController extends AbstractController
 				$RaceGroupInfo = $this->oRace->getRaceGroup($bind['RaceGroupId'],'*');
 				//数据解包
 				$bind['comment'] = json_decode($RaceGroupInfo['comment'],true);
+				//初始化空数组
 				$t = array();
 				//如果已经有添加过审核条件
 				if(isset($bind['comment']['LicenseList']))
 				{
 					//初始键值
 					$i = 1;
+					//标签表示数组内有重复数据
+					$flag = 0;
 					//将数组内的条件循环放到另外的临时数组里面按次序排放
 					foreach($bind['comment']['LicenseList'] as $key => $value)
 					{
 						$t[$i] = $value;
-						if($value['LicenseType']=="manager")
+						if(($value['LicenseType'] == $bind['LicenseList']['LicenseType']) && (count(array_diff($value['License'],$bind['LicenseList']['License']))==0))
 						{$flag=1;}
 						$i++;
 					}
 				}
-				if($flag==1 && $bind['LicenseList']['LicenseType']=="manager")
+				if($flag==1)
 				{
 					$response = array('errno' => 0);
 				}
@@ -324,6 +327,50 @@ class Xrace_RaceGroupController extends AbstractController
 		}
 		echo json_encode($response);
 		return true;
+	}
+	//更新任务信息
+	public function groupLicenseDeleteAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceGroupModify");
+		if($PermissionCheck['return'])
+		{
+			$RaceGroupId = intval($this->request->RaceGroupId);
+			$LicenseId = intval($this->request->LicenseId);
+			//赛事分组信息
+			$RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,'*');
+			//数据解包
+			$bind['comment'] = json_decode($RaceGroupInfo['comment'],true);
+			//初始化空数组
+			$t = array();
+			//如果已经有添加过审核条件
+			if(isset($bind['comment']['LicenseList'][$LicenseId]))
+			{
+				unset($bind['comment']['LicenseList'][$LicenseId]);
+				//初始键值
+				$i = 1;
+				//标签表示数组内有重复数据
+				$flag = 0;
+				//将数组内的条件循环放到另外的临时数组里面按次序排放
+				foreach($bind['comment']['LicenseList'] as $key => $value)
+				{
+					$t[$i] = $value;
+					$i++;
+				}
+				//移动条件列表到comment数组下
+				$bind['comment']['LicenseList'] = $t;
+				//数据打包
+				$bind['comment'] = json_encode($bind['comment']);
+				//更新数据
+				$res = $this->oRace->updateRaceGroup($RaceGroupId,$bind);
+			}
+			$this->response->goBack();
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
 	}
 	public function getLicenseConditionAction()
 	{

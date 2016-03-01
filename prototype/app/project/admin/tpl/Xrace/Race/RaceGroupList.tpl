@@ -7,14 +7,14 @@ $(document).ready(function(){
 });
 
 function RaceGroupDelete(p_id, p_name){
-	deleteAppBox = divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.group.delete&raceGroupId=' + p_id;}});
+	deleteAppBox = divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.group.delete&RaceGroupId=' + p_id;}});
 }
 
 function RaceGroupModify(mid){
-	modifyRaceGroupBox = divBox.showBox('{tpl:$this.sign/}&ac=race.group.modify&raceGroupId=' + mid, {title:'修改赛事组别',width:500,height:300});
+	modifyRaceGroupBox = divBox.showBox('{tpl:$this.sign/}&ac=race.group.modify&RaceGroupId=' + mid, {title:'修改赛事组别',width:500,height:300});
 }
 function LicenseAdd(mid){
-  modifyRaceGroupBox = divBox.showBox('{tpl:$this.sign/}&ac=group.license.add&raceGroupId=' + mid, {title:'添加审核条件',width:500,height:300});
+  modifyRaceGroupBox = divBox.showBox('{tpl:$this.sign/}&ac=group.license.add&RaceGroupId=' + mid, {title:'添加审核条件',width:500,height:300});
 }
 
 </script>
