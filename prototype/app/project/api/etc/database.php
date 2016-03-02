@@ -22,6 +22,5 @@ $db['xrace_config'][0] = array(
 	'port' => PORT_LOCAL,
 	'database' => 'xrace_config',
 );
-);
 return $db;
 ?>
