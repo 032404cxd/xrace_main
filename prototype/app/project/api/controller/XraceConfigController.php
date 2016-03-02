@@ -46,7 +46,9 @@ class XraceConfigController extends AbstractController
             if(isset($raceCatalogInfo['comment']['RaceCatalogIcon_root']))
             {
                 //拼接上ADMIN站点的域名
-                $raceCatalogList[$raceCatalogId]['comment']['RaceCatalogIcon_root'] = $this->config->adminUrl.$raceCatalogList[$raceCatalogId]['comment']['RaceCatalogIcon_root'];
+                $raceCatalogList[$raceCatalogId]['comment']['RaceCatalogIcon'] = $this->config->adminUrl.$raceCatalogList[$raceCatalogId]['comment']['RaceCatalogIcon_root'];
+                //删除原有数据
+                unset($raceCatalogList[$raceCatalogId]['comment']['RaceCatalogIcon_root']);
             }
         }
         //结果数组 如果列表中有数据则返回成功，否则返回失败
@@ -79,7 +81,9 @@ class XraceConfigController extends AbstractController
             if(isset($raceCatalogInfo['comment']['RaceCatalogIcon_root']))
             {
                 //拼接上ADMIN站点的域名
-                $raceCatalogInfo['comment']['RaceCatalogIcon_root'] = $this->config->adminUrl.$raceCatalogInfo['comment']['RaceCatalogIcon_root'];
+                $raceCatalogInfo['comment']['RaceCatalogIcon'] = $this->config->adminUrl.$raceCatalogInfo['comment']['RaceCatalogIcon_root'];
+                //删除原有数据
+                unset($raceCatalogInfo['comment']['RaceCatalogIcon_root']);
             }
             //根据赛事获取组别列表
             $raceGroupList = isset($raceCatalogInfo['RaceCatalogId'])?$this->oRace->getAllRaceGroupList($raceCatalogInfo['RaceCatalogId'],"RaceGroupId,RaceGroupName"):array();
