@@ -226,7 +226,14 @@ class Xrace_Race extends Base_Widget
 		$RaceStageId = intval($RaceStageId);
 		$RaceGroupId = intval($RaceGroupId);
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
-		return $this->db->select($table_to_process, $fields, '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
+		$return = $this->db->select($table_to_process, $fields, '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
+		$RaceList = array();
+		foreach($return as $key => $value)
+		{
+			$RaceList[$value['RaceId']] = $value;
+			$RaceList[$value['RaceId']]['comment'] = isset($value['comment'])?json_decode($RaceList[$value['RaceId']]['comment'],true):array();
+		}
+		return $RaceList;
 	}
 	//获取赛事分站和赛事组别获取比赛数量
 	public function getRaceCount($RaceStageId,$RaceGroupId)
@@ -475,7 +482,6 @@ class Xrace_Race extends Base_Widget
 				{
 					return false;
 				}
-
 			}
 		}
 	}
