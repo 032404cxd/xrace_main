@@ -34,8 +34,6 @@
     <th align="center" class="rowtip">赛事分站ID</th>
     <th align="center" class="rowtip">赛事分站名称</th>
     <th align="center" class="rowtip">赛事分站图标1</th>
-    <th align="center" class="rowtip">赛事分站图标2</th>
-    <th align="center" class="rowtip">赛事分站图标3</th>
     <th align="center" class="rowtip">开始日期</th>
     <th align="center" class="rowtip">结束日期</th>
     <th align="center" class="rowtip">已开设组别</th>
@@ -50,9 +48,7 @@
   <tr>
     <th align="center" class="rowtip" >{tpl:$oRaceStage.RaceStageId/}</th>
     <th align="center" class="rowtip" >{tpl:$oRaceStage.RaceStageName/}</th>
-    <th align="center">{tpl:if($oRaceStage.RaceStageIcon_root.RaceStageIcon_root_1=="")}未定义{tpl:else}<a href="{tpl:$RootUrl/}{tpl:$oRaceStage.RaceStageIcon_root.RaceStageIcon_root_1/}" target="_blank">图标1</a>{/tpl:if}</th>
-    <th align="center">{tpl:if($oRaceStage.RaceStageIcon_root.RaceStageIcon_root_2=="")}未定义{tpl:else}<a href="{tpl:$RootUrl/}{tpl:$oRaceStage.RaceStageIcon_root.RaceStageIcon_root_2/}" target="_blank">图标2</a>{/tpl:if}</th>
-    <th align="center">{tpl:if($oRaceStage.RaceStageIcon_root.RaceStageIcon_root_3=="")}未定义{tpl:else}<a href="{tpl:$RootUrl/}{tpl:$oRaceStage.RaceStageIcon_root.RaceStageIcon_root_3/}" target="_blank">图标3</a>{/tpl:if}</th> 
+    <th align="center">{tpl:$oRaceStage.RaceStageIconList/}</th>
     <th align="center" class="rowtip" >{tpl:$oRaceStage.StageStartDate/}</th>
     <th align="center" class="rowtip" >{tpl:$oRaceStage.StageEndDate/}</th>
     <td align="center" class="rowtip" >{tpl:$oRaceStage.SelectedGroupList/}</td>

@@ -1,4 +1,10 @@
 {tpl:tpl contentHeader/}
+<script type="text/javascript">
+function RaceStageLogoFileDelete(sid,name,logo_id){
+	deleteStageLogoBox = divBox.confirmBox({content:'是否删除 ' + name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.stage.logo.delete&RaceStageId=' + sid + '&LogoId=' +logo_id;}});
+}
+
+</script>
 <div class="br_bottom"></div>
 <form id="race_stage_update_form" name="race_stage_update_form" action="{tpl:$this.sign/}&ac=race.stage.update" metdod="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
@@ -37,14 +43,32 @@
 		</div></td>
 	</tr>
         <tr class="hover"><td>赛事分组图标1</td>
-                <td align="left"><input name="RaceStageIcon[1]" type="file" class="span4" id="RaceStageIcon[1]" /></td>
+            <td align="left">
+                {tpl:if($RaceStageIconArr.1.RaceStageIcon_root!="")}
+                已选图标:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconArr.1.RaceStageIcon_root/}" width="30px;" height="30px;"/>
+                <a href="javascript:void(0);" onclick="RaceStageLogoFileDelete('{tpl:$RaceStageInfo.RaceStageId/}','图标1','1')">删除</a><br>       
+                {/tpl:if}
+                更改图标:<input name="RaceStageIcon[1]" type="file" class="span4" id="RaceStageIcon[1]"/>
+            </td>
         </tr>
         <tr class="hover"><td>赛事分组图标2</td>
-                <td align="left"><input name="RaceStageIcon[2]" type="file" class="span4" id="RaceStageIcon[2]" /></td>
+            <td align="left">
+                {tpl:if($RaceStageIconArr.2.RaceStageIcon_root!="")}
+                已选图标:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconArr.2.RaceStageIcon_root/}" width="30px;" height="30px;"/>
+                <a href="javascript:void(0);" onclick="RaceStageLogoFileDelete('{tpl:$RaceStageInfo.RaceStageId/}','图标2','2')">删除</a><br>           
+                {/tpl:if}
+                更改图标:<input name="RaceStageIcon[2]" type="file" class="span4" id="RaceStageIcon[2]"/>
+            </td>
         </tr>
         <tr class="hover"><td>赛事分组图标3</td>
-                <td align="left"><input name="RaceStageIcon[3]" type="file" class="span4" id="RaceStageIcon[3]" /></td>
-        </tr>        
+            <td align="left">
+                {tpl:if($RaceStageIconArr.3.RaceStageIcon_root!="")}
+                已选图标:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconArr.3.RaceStageIcon_root/}" width="30px;" height="30px;"/>
+                <a href="javascript:void(0);" onclick="RaceStageLogoFileDelete('{tpl:$RaceStageInfo.RaceStageId/}','图标3','3')">删除</a><br>            
+                {/tpl:if}
+                更改图标:<input name="RaceStageIcon[3]" type="file" class="span4" id="RaceStageIcon[3]"/>
+            </td>
+        </tr>       
 	<tr class="noborder"><td></td>
 <td><button type="submit" id="race_stage_update_submit">提交</button></td>
 </tr>

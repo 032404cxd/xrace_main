@@ -106,19 +106,13 @@ class Xrace_RaceStageController extends AbstractController
                                 if(isset($value['comment']['RaceStageIcon']) && is_array($value['comment']['RaceStageIcon']))
                                 {
                                     foreach ($value['comment']['RaceStageIcon'] as $k => $v) {
-                                        $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIcon'][$k] = $v;
+                                        $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'] .= "<a href='".$RootUrl.$v['RaceStageIcon_root']."' target='_blank'>图标".$k."</a>/";                                       
                                     }
-                                    
-                                }
-                                if(isset($value['comment']['RaceStageIcon_root']) && is_array($value['comment']['RaceStageIcon_root']))
-                                {
-                                    foreach ($value['comment']['RaceStageIcon_root'] as $k => $v) {
-                                        $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIcon_root'][$k] = $v;
-                                    }
-                                    
+                                    $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'] = rtrim($RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'], "/");
+                                }  else {
+                                    $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'] = '未上传';  
                                 }
 			}
-                        //print_r($RaceStageList);exit;
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceStageList');
 		}
@@ -235,6 +229,12 @@ class Xrace_RaceStageController extends AbstractController
 					$RaceGroupArr[$RaceGroupId]['selected'] = 0;
 				}
 			}
+                        //获得赛事分组的图标
+                        $RaceStageIconArr = array();
+                        if(isset($RaceStageInfo['comment']['RaceStageIcon']) && is_array($RaceStageInfo['comment']['RaceStageIcon']))
+                        {
+                            $RaceStageIconArr = $RaceStageInfo['comment']['RaceStageIcon'];
+                        }    
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceStageModify');
 		}
@@ -276,6 +276,9 @@ class Xrace_RaceStageController extends AbstractController
 		}
 		else
 		{
+                        //获取原有数据
+			$oRaceStage = $this->oRace->getRaceStage($bind['RaceStageId']);
+			$bind['comment'] = json_decode($oRaceStage['comment'],true);
 			$bind['comment']['SelectedRaceGroup'] = $SelectedRaceGroup['SelectedRaceGroup'];
 			//获取当前分站已经配置的分组列表
 			$SelectedRacedGroup = $this->oRace->getRaceStageGroupByStage($bind['RaceStageId'],"RaceStageId,RaceGroupId");
@@ -298,8 +301,8 @@ class Xrace_RaceStageController extends AbstractController
                             //如果正确上传，就保存文件路径
                             if(strlen($path['path'])>2)
                             {
-                            $bind['comment']['RaceStageIcon']['RaceStageIcon_'.$iconkey] = $path['path'];
-                            $bind['comment']['RaceStageIcon_root']['RaceStageIcon_root_'.$iconkey] = $path['path_root'];
+                                $bind['comment']['RaceStageIcon'][$iconkey]['RaceStageIcon'] = $path['path'];
+                                $bind['comment']['RaceStageIcon'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
                             }
                         }
 			//数据压缩
@@ -337,6 +340,29 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+        //删除赛事分站图标
+	public function raceStageLogoDeleteAction()
+	{
+            //赛事分站ID
+            $RaceStageId = intval($this->request->RaceStageId);
+            //图标ID
+            $LogoId = intval($this->request->LogoId);
+            //获取原有数据
+            $oRaceStage = $this->oRace->getRaceStage($RaceStageId);
+            $bind['comment'] = json_decode($oRaceStage['comment'],true);
+            foreach($bind['comment']['RaceStageIcon'] as $k => $v)
+            {
+                if($k == $LogoId) {
+                    unset($bind['comment']['RaceStageIcon'][$k]);
+                }
+            }
+            //数据压缩
+            $bind['comment'] = json_encode($bind['comment']);
+            //更新数据
+            $res = $this->oRace->updateRaceStage($RaceStageId,$bind);
+            //返回之前页面
+            $this->response->goBack(); 
+        }
 	//获取赛事分站已经选择的分组列表
 	public function getSelectedGroupAction()
 	{
