@@ -15,6 +15,10 @@
 		<input type="radio" name="TeamUser" id="TeamUser" value="1" {tpl:if($RaceInfo.TeamUser=="1")}checked{/tpl:if}>接受
 		<input type="radio" name="TeamUser" id="TeamUser" value="0" {tpl:if($RaceInfo.TeamUser=="0")}checked{/tpl:if}>不接受</th>
 </tr>
+<tr class="hover"><th align="center" class="rowtip">开始报名时间</th>
+	<th align="center" class="rowtip"><input type="text" name="ApplyStartTime" value="{tpl:$RaceInfo.ApplyStartTime/}" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
+<tr class="hover"><th align="center" class="rowtip">结束报名时间</th>
+	<th align="center" class="rowtip"><input type="text" name="ApplyEndTime" value="{tpl:$RaceInfo.ApplyEndTime/}" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
 <tr class="hover"><th align="center" class="rowtip">开始时间</th>
 	<th align="center" class="rowtip"><input type="text" name="StartTime" value="{tpl:$RaceInfo.StartTime/}" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
 <tr class="hover"><th align="center" class="rowtip">结束时间</th>
@@ -42,6 +46,11 @@ $('#race_add_submit').click(function(){
 				errors[7] = '个人和团体报名至少要开放一个，请修正后再次提交';
 				errors[8] = '比赛ID错误，请修正后再次提交';
 				errors[9] = '入库失败，请修正后再次提交';
+				errors[10] = '结束时间不能早于开始时间,请修正后再次提交';
+				errors[11] = '开始报名时间不能早于当前时间,请修正后再次提交';
+				errors[12] = '结束报名时间不能早于当前时间,请修正后再次提交';
+				errors[13] = '报名结束时间和报名开始时间的时间间隔不能小于7天,请修正后再次提交';
+				errors[14] = '比赛开始时间和报名结束时间的时间间隔不能小于7天,请修正后再次提交';                                   
 				divBox.alertBox(errors[jsonResponse.errno],function(){});
 			} else {
 				var message = '添加比赛成功';
