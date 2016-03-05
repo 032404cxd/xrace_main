@@ -18,8 +18,11 @@
     <th align="center" class="rowtip">人数/价格对应</th>
     <th align="center" class="rowtip">是否接受个人报名</th>
     <th align="center" class="rowtip">是否接受团队报名</th>
+    <th align="center" class="rowtip">开始报名时间</th>
+    <th align="center" class="rowtip">结束报名时间</th>
     <th align="center" class="rowtip">开始时间</th>
     <th align="center" class="rowtip">结束时间</th>
+    <th align="center" class="rowtip">比赛进程</th>
     <th align="center" class="rowtip">操作</th>
   </tr>
   {tpl:loop $RaceList $Rid $RaceInfo}
@@ -28,8 +31,11 @@
     <th align="center" class="rowtip">{tpl:$RaceInfo.PriceList/}</th>
     <th align="center" class="rowtip">{tpl:if($RaceInfo.SingleUser==1)}接受{tpl:else}不接受{/tpl:if}</th>
     <th align="center" class="rowtip">{tpl:if($RaceInfo.TeamUser==1)}接受{tpl:else}不接受{/tpl:if}</th>
+    <th align="center" class="rowtip">{tpl:$RaceInfo.ApplyStartTime/}</th>
+    <th align="center" class="rowtip">{tpl:$RaceInfo.ApplyEndTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.StartTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.EndTime/}</th>
+    <th align="center" class="rowtip">{tpl:$RaceInfo.RaceStatus/}</th>    
     <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceModify('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}','{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">修改</a>
      | <a href="{tpl:$this.sign/}&ac=race.detail&RaceStageId={tpl:$RaceStageInfo.RaceStageId/}&RaceGroupId={tpl:$RaceGroupInfo.RaceGroupId/}&RaceId={tpl:$RaceInfo.RaceId/}">计时点详情</a></th>
     </th>

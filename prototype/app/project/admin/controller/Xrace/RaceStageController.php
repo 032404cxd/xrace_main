@@ -106,19 +106,13 @@ class Xrace_RaceStageController extends AbstractController
                                 if(isset($value['comment']['RaceStageIcon']) && is_array($value['comment']['RaceStageIcon']))
                                 {
                                     foreach ($value['comment']['RaceStageIcon'] as $k => $v) {
-                                        $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIcon'][$k] = $v;
+                                        $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'] .= "<a href='".$RootUrl.$v['RaceStageIcon_root']."' target='_blank'>图标".$k."</a>/";                                       
                                     }
-                                    
-                                }
-                                if(isset($value['comment']['RaceStageIcon_root']) && is_array($value['comment']['RaceStageIcon_root']))
-                                {
-                                    foreach ($value['comment']['RaceStageIcon_root'] as $k => $v) {
-                                        $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIcon_root'][$k] = $v;
-                                    }
-                                    
+                                    $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'] = rtrim($RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'], "/");
+                                }  else {
+                                    $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'] = '未上传';  
                                 }
 			}
-                        //print_r($RaceStageList);exit;
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceStageList');
 		}
@@ -191,8 +185,8 @@ class Xrace_RaceStageController extends AbstractController
                         //如果正确上传，就保存文件路径
                         if(strlen($path['path'])>2)
                         {
-                            $bind['comment']['RaceStageIcon']['RaceStageIcon_'.$iconkey] = $path['path'];
-                            $bind['comment']['RaceStageIcon_root']['RaceStageIcon_root_'.$iconkey] = $path['path_root'];
+                            $bind['comment']['RaceStageIcon'][$iconkey]['RaceStageIcon'] = $path['path'];
+                            $bind['comment']['RaceStageIcon'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
                         }
                     }
                     //数据压缩
@@ -235,6 +229,12 @@ class Xrace_RaceStageController extends AbstractController
 					$RaceGroupArr[$RaceGroupId]['selected'] = 0;
 				}
 			}
+                        //获得赛事分组的图标
+                        $RaceStageIconArr = array();
+                        if(isset($RaceStageInfo['comment']['RaceStageIcon']) && is_array($RaceStageInfo['comment']['RaceStageIcon']))
+                        {
+                            $RaceStageIconArr = $RaceStageInfo['comment']['RaceStageIcon'];
+                        }    
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceStageModify');
 		}
@@ -276,6 +276,9 @@ class Xrace_RaceStageController extends AbstractController
 		}
 		else
 		{
+                        //获取原有数据
+			$oRaceStage = $this->oRace->getRaceStage($bind['RaceStageId']);
+			$bind['comment'] = json_decode($oRaceStage['comment'],true);
 			$bind['comment']['SelectedRaceGroup'] = $SelectedRaceGroup['SelectedRaceGroup'];
 			//获取当前分站已经配置的分组列表
 			$SelectedRacedGroup = $this->oRace->getRaceStageGroupByStage($bind['RaceStageId'],"RaceStageId,RaceGroupId");
@@ -298,8 +301,8 @@ class Xrace_RaceStageController extends AbstractController
                             //如果正确上传，就保存文件路径
                             if(strlen($path['path'])>2)
                             {
-                            $bind['comment']['RaceStageIcon']['RaceStageIcon_'.$iconkey] = $path['path'];
-                            $bind['comment']['RaceStageIcon_root']['RaceStageIcon_root_'.$iconkey] = $path['path_root'];
+                                $bind['comment']['RaceStageIcon'][$iconkey]['RaceStageIcon'] = $path['path'];
+                                $bind['comment']['RaceStageIcon'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
                             }
                         }
 			//数据压缩
@@ -337,6 +340,29 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+        //删除赛事分站图标
+	public function raceStageLogoDeleteAction()
+	{
+            //赛事分站ID
+            $RaceStageId = intval($this->request->RaceStageId);
+            //图标ID
+            $LogoId = intval($this->request->LogoId);
+            //获取原有数据
+            $oRaceStage = $this->oRace->getRaceStage($RaceStageId);
+            $bind['comment'] = json_decode($oRaceStage['comment'],true);
+            foreach($bind['comment']['RaceStageIcon'] as $k => $v)
+            {
+                if($k == $LogoId) {
+                    unset($bind['comment']['RaceStageIcon'][$k]);
+                }
+            }
+            //数据压缩
+            $bind['comment'] = json_encode($bind['comment']);
+            //更新数据
+            $res = $this->oRace->updateRaceStage($RaceStageId,$bind);
+            //返回之前页面
+            $this->response->goBack(); 
+        }
 	//获取赛事分站已经选择的分组列表
 	public function getSelectedGroupAction()
 	{
@@ -412,6 +438,35 @@ class Xrace_RaceStageController extends AbstractController
 			}
 			//获取比赛列表
 			$RaceList = $this->oRace->getRaceList($RaceStageId,$RaceGroupId);
+                        $CurrentTimeStamp = time();
+                        foreach($RaceList as $RaceListKey => $RaceListValue)
+                        {
+                            //转化时间为时间戳
+                            $ApplyStartTimestamp = strtotime(trim($RaceListValue['ApplyStartTime']));
+                            $ApplyEndTimestamp = strtotime(trim($RaceListValue['ApplyEndTime']));
+                            $StartTimestamp = strtotime(trim($RaceListValue['StartTime']));
+                            $EndTimestamp = strtotime(trim($RaceListValue['EndTime']));
+                            if($CurrentTimeStamp < $ApplyStartTimestamp)
+                            {
+                                $RaceList[$RaceListKey]['RaceStatus'] = '未开始报名';
+                            }
+                            elseif ($CurrentTimeStamp >= $ApplyStartTimestamp && $CurrentTimeStamp < $ApplyEndTimestamp) 
+                            {
+                                $RaceList[$RaceListKey]['RaceStatus'] = '报名中';
+                            }
+                            elseif ($CurrentTimeStamp >= $ApplyEndTimestamp && $CurrentTimeStamp < $StartTimestamp) 
+                            {
+                                $RaceList[$RaceListKey]['RaceStatus'] = '报名结束';
+                            }
+                            elseif ($CurrentTimeStamp) 
+                            {
+                                $RaceList[$RaceListKey]['RaceStatus'] = '比赛中';
+                            }
+                            else 
+                            {
+                                $RaceList[$RaceListKey]['RaceStatus'] = '比赛结束';
+                            }
+                        }
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceList');
 		}
@@ -433,8 +488,10 @@ class Xrace_RaceStageController extends AbstractController
 			//赛事分组ID
 			$RaceGroupId = intval($this->request->RaceGroupId);
 			//初始化开始和结束时间
-			$StartTime = date("Y-m-d H:i:s",time()+86400);
-			$EndTime = date("Y-m-d H:i:s",time()+86400*2);
+                        $ApplyStartTime = date("Y-m-d H:i:s",time()+86400);
+                        $ApplyEndTime = date("Y-m-d H:i:s",time()+86400*8);
+                        $StartTime = date("Y-m-d H:i:s",time()+86400*15);
+			$EndTime = date("Y-m-d H:i:s",time()+86400*16);
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceAdd');
 		}
@@ -476,7 +533,18 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','StartTime','EndTime','SingleUser','TeamUser');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser');
+                //转化时间为时间戳
+                $ApplyStartTimestamp = strtotime(trim($bind['ApplyStartTime']));
+                $ApplyEndTimestamp = strtotime(trim($bind['ApplyEndTime']));
+                $StartTimestamp = strtotime(trim($bind['StartTime']));
+                $EndTimestamp = strtotime(trim($bind['EndTime']));
+                //报名结束时间合报名开始时间的时间间隔
+                $FirstTimeSpan = $ApplyEndTimestamp - $ApplyStartTimestamp;
+                //比赛开始时间合报名结束时间的时间间隔
+                $SecondTimeSpan = $StartTimestamp - $ApplyEndTimestamp;
+                //七天的时间长度
+                $SevenDaysTimestamp = 86400*7;
 		//比赛名称不能为空
 		if(trim($bind['RaceName'])=="")
 		{
@@ -498,12 +566,12 @@ class Xrace_RaceStageController extends AbstractController
 			$response = array('errno' => 4);
 		}
 		//开始时间不能早于当前时间
-		elseif(strtotime(trim($bind['StartTime']))<=time())
+		elseif($StartTimestamp<=time())
 		{
 			$response = array('errno' => 5);
 		}
 		//结束时间不能早于当前时间
-		elseif(strtotime(trim($bind['EndTime']))<=time())
+		elseif($EndTimestamp<=time())
 		{
 			$response = array('errno' => 6);
 		}
@@ -512,6 +580,31 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			$response = array('errno' => 7);
 		}
+                //结束时间不能早于开始时间
+                elseif($EndTimestamp<=$StartTimestamp)
+                {
+                        $response = array('errno' => 10);
+                }
+                //开始报名时间不能早于当前时间
+                elseif ($ApplyStartTimestamp<= time()) 
+                {
+                        $response = array('errno' => 11);
+                }
+                //结束报名时间不能早于当前时间
+                elseif ($ApplyEndTimestamp<= time())
+                {
+                        $response = array('errno' => 12);                
+                }
+                //报名结束时间和报名开始时间的时间间隔不能小于7天
+                elseif ($FirstTimeSpan <= $SevenDaysTimestamp) 
+                {
+                        $response = array('errno' => 13);                
+                }
+                //比赛开始时间和报名结束时间的时间间隔不能小于7天
+                elseif ($SecondTimeSpan <= $SevenDaysTimestamp) 
+                {
+                        $response = array('errno' => 14);                
+                }               
 		else
 		{
 			//新增比赛
@@ -525,7 +618,18 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','StartTime','EndTime','SingleUser','TeamUser');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser');
+                //转化时间为时间戳
+                $ApplyStartTimestamp = strtotime(trim($bind['ApplyStartTime']));
+                $ApplyEndTimestamp = strtotime(trim($bind['ApplyEndTime']));
+                $StartTimestamp = strtotime(trim($bind['StartTime']));
+                $EndTimestamp = strtotime(trim($bind['EndTime']));
+                //报名结束时间合报名开始时间的时间间隔
+                $FirstTimeSpan = $ApplyEndTimestamp - $ApplyStartTimestamp;
+                //比赛开始时间合报名结束时间的时间间隔
+                $SecondTimeSpan = $StartTimestamp - $ApplyEndTimestamp;
+                //七天的时间长度
+                $SevenDaysTimestamp = 86400*7;
 		//比赛ID
 		$RaceId = intval($this->request->RaceId);
 		//比赛名称不能为空
@@ -568,6 +672,31 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			$response = array('errno' => 8);
 		}
+                //结束时间不能早于开始时间
+                elseif($EndTimestamp<=$StartTimestamp)
+                {
+                        $response = array('errno' => 10);
+                }
+                //开始报名时间不能早于当前时间
+                elseif ($ApplyStartTimestamp<= time()) 
+                {
+                        $response = array('errno' => 11);
+                }
+                //结束报名时间不能早于当前时间
+                elseif ($ApplyEndTimestamp<= time())
+                {
+                        $response = array('errno' => 12);                
+                }
+                //报名结束时间和报名开始时间的时间间隔不能小于7天
+                elseif ($FirstTimeSpan <= $SevenDaysTimestamp) 
+                {
+                        $response = array('errno' => 13);                
+                }
+                //比赛开始时间和报名结束时间的时间间隔不能小于7天
+                elseif ($SecondTimeSpan <= $SevenDaysTimestamp) 
+                {
+                        $response = array('errno' => 14);                
+                }                    
 		else
 		{
 			//更新比赛
