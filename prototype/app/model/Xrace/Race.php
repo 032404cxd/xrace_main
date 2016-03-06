@@ -14,7 +14,6 @@ class Xrace_Race extends Base_Widget
 	protected $table_group = 'config_race_group';
 	protected $table_stage = 'config_race_stage';
 	protected $table_timing = 'config_timing_point';
-	protected $table_stage_group = 'config_race_stage_group';
 	protected $maxRaceDetail = 5;
 
 	protected $raceTimingType = array('chip'=>'芯片计时','gps'=>'gps定位');
@@ -255,21 +254,6 @@ class Xrace_Race extends Base_Widget
 		$RaceId = intval($RaceId);
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
 		return $this->db->update($table_to_process, $bind, '`RaceId` = ?', $RaceId);
-	}
-	//根据赛事分站获取开设比赛的组别列表
-	public function getRaceStageGroupByStage($RaceStageId,$fields = '*')
-	{
-		$RaceStageId = intval($RaceStageId);
-		$table_to_process = Base_Widget::getDbTable($this->table_stage_group);
-		return $this->db->select($table_to_process, $fields, '`RaceStageId` = ?', $RaceStageId);
-	}
-	//删除单个分站的单个组别信息
-	public function deleteRaceStageGroup($RaceStageId,$RaceGroupId)
-	{
-		$RaceStageId = intval($RaceStageId);
-		$RaceGroupId = intval($RaceGroupId);
-		$table_to_process = Base_Widget::getDbTable($this->table_stage_group);
-		return $this->db->delete($table_to_process, '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
 	}
 	//获取单个计时点信息
 	public function getTimingDetail($TimingId, $fields = '*')
@@ -620,19 +604,19 @@ class Xrace_Race extends Base_Widget
 		}
 		elseif ($CurrentTime >= $ApplyStartTime && $CurrentTime < $ApplyEndTime)
 		{
-			$RaceStatus = array('RaceStatus'=>1,'RaceStatusName'=>'报名中');
+			$RaceStatus = array('RaceStatus'=>2,'RaceStatusName'=>'报名中');
 		}
 		elseif ($CurrentTime >= $ApplyEndTime && $CurrentTime < $StartTime)
 		{
-			$RaceStatus = array('RaceStatus'=>1,'RaceStatusName'=>'报名结束');
+			$RaceStatus = array('RaceStatus'=>3,'RaceStatusName'=>'报名结束');
 		}
 		elseif ($CurrentTime >= $StartTime && $CurrentTime < $EndTime)
 		{
-			$RaceStatus = array('RaceStatus'=>1,'RaceStatusName'=>'比赛中');
+			$RaceStatus = array('RaceStatus'=>4,'RaceStatusName'=>'比赛中');
 		}
 		else
 		{
-			$RaceStatus = array('RaceStatus'=>1,'RaceStatusName'=>'比赛结束');
+			$RaceStatus = array('RaceStatus'=>5,'RaceStatusName'=>'比赛结束');
 		}
 		return $RaceStatus;
 	}

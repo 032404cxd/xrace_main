@@ -42,10 +42,6 @@ $table['config_race_type']['num'] = 1;
 $table['config_race_stage']['db'] = 'xrace_config';
 $table['config_race_stage']['num'] = 1;
 
-#赛事分站-分组
-$table['config_race_stage_group']['db'] = 'xrace_config';
-$table['config_race_stage_group']['num'] = 1;
-
 #赛事分组
 $table['config_race_group']['db'] = 'xrace_config';
 $table['config_race_group']['num'] = 1;

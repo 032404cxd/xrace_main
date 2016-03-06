@@ -102,16 +102,18 @@ class Xrace_RaceStageController extends AbstractController
 				{
 					$RaceStageList[$value['RaceCatalogId']]['RaceCatalogName'] = 	"未定义";
 				}
-                                
-                                if(isset($value['comment']['RaceStageIcon']) && is_array($value['comment']['RaceStageIcon']))
-                                {
-                                    foreach ($value['comment']['RaceStageIcon'] as $k => $v) {
-                                        $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'] .= "<a href='".$RootUrl.$v['RaceStageIcon_root']."' target='_blank'>图标".$k."</a>/";                                       
-                                    }
-                                    $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'] = rtrim($RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'], "/");
-                                }  else {
-                                    $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'] = '未上传';  
-                                }
+				if(isset($value['comment']['RaceStageIconList']) && is_array($value['comment']['RaceStageIconList']))
+				{
+					foreach ($value['comment']['RaceStageIconList'] as $k => $v)
+					{
+						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'] .= "<a href='".$RootUrl.$v['RaceStageIcon_root']."' target='_blank'>图标".$k."</a>/";
+					}
+					$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'] = rtrim($RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'], "/");
+				}
+				else
+				{
+					$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'] = '未上传';
+				}
 			}
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceStageList');
@@ -185,8 +187,8 @@ class Xrace_RaceStageController extends AbstractController
                         //如果正确上传，就保存文件路径
                         if(strlen($path['path'])>2)
                         {
-                            $bind['comment']['RaceStageIcon'][$iconkey]['RaceStageIcon'] = $path['path'];
-                            $bind['comment']['RaceStageIcon'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
+                            $bind['comment']['RaceStageIconList'][$iconkey]['RaceStageIcon'] = $path['path'];
+                            $bind['comment']['RaceStageIconList'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
                         }
                     }
                     //数据压缩
@@ -229,12 +231,12 @@ class Xrace_RaceStageController extends AbstractController
 					$RaceGroupArr[$RaceGroupId]['selected'] = 0;
 				}
 			}
-                        //获得赛事分组的图标
-                        $RaceStageIconArr = array();
-                        if(isset($RaceStageInfo['comment']['RaceStageIcon']) && is_array($RaceStageInfo['comment']['RaceStageIcon']))
-                        {
-                            $RaceStageIconArr = $RaceStageInfo['comment']['RaceStageIcon'];
-                        }    
+			//获得赛事分组的图标
+			$RaceStageIconArr = array();
+			if(isset($RaceStageInfo['comment']['RaceStageIconList']) && is_array($RaceStageInfo['comment']['RaceStageIconList']))
+			{
+				$RaceStageIconArr = $RaceStageInfo['comment']['RaceStageIconList'];
+			}
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceStageModify');
 		}
@@ -280,31 +282,19 @@ class Xrace_RaceStageController extends AbstractController
 			$oRaceStage = $this->oRace->getRaceStage($bind['RaceStageId']);
 			$bind['comment'] = json_decode($oRaceStage['comment'],true);
 			$bind['comment']['SelectedRaceGroup'] = $SelectedRaceGroup['SelectedRaceGroup'];
-			//获取当前分站已经配置的分组列表
-			$SelectedRacedGroup = $this->oRace->getRaceStageGroupByStage($bind['RaceStageId'],"RaceStageId,RaceGroupId");
-			//循环分组列表
-			foreach($SelectedRacedGroup as $key => $GroupInfo)
-			{
-				//如果未在已选择的分组列表中匹配到
-				if(!isset($bind['comment']['SelectedRaceGroup'][$GroupInfo['RaceGroupId']]))
+			//文件上传
+			$oUpload = new Base_Upload('RaceStageIcon');
+			$upload = $oUpload->upload('RaceStageIcon');
+			$res = $upload->resultArr;
+			foreach($upload->resultArr as $iconkey=>$iconvalue){
+				$path = $iconvalue;
+				//如果正确上传，就保存文件路径
+				if(strlen($path['path'])>2)
 				{
-					//删除该数据
-					$this->oRace->deleteRaceStageGroup($GroupInfo['RaceStageId'],$GroupInfo['RaceGroupId']);
+					$bind['comment']['RaceStageIconList'][$iconkey]['RaceStageIcon'] = $path['path'];
+					$bind['comment']['RaceStageIconList'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
 				}
 			}
-                        //文件上传
-                        $oUpload = new Base_Upload('RaceStageIcon');
-                        $upload = $oUpload->upload('RaceStageIcon');
-                        $res = $upload->resultArr;
-                        foreach($upload->resultArr as $iconkey=>$iconvalue){
-                            $path = $iconvalue;
-                            //如果正确上传，就保存文件路径
-                            if(strlen($path['path'])>2)
-                            {
-                                $bind['comment']['RaceStageIcon'][$iconkey]['RaceStageIcon'] = $path['path'];
-                                $bind['comment']['RaceStageIcon'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
-                            }
-                        }
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//更新数据
@@ -350,10 +340,10 @@ class Xrace_RaceStageController extends AbstractController
             //获取原有数据
             $oRaceStage = $this->oRace->getRaceStage($RaceStageId);
             $bind['comment'] = json_decode($oRaceStage['comment'],true);
-            foreach($bind['comment']['RaceStageIcon'] as $k => $v)
+            foreach($bind['comment']['RaceStageIconList'] as $k => $v)
             {
                 if($k == $LogoId) {
-                    unset($bind['comment']['RaceStageIcon'][$k]);
+                    unset($bind['comment']['RaceStageIconList'][$k]);
                 }
             }
             //数据压缩

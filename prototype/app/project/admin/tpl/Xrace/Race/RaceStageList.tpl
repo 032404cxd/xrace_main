@@ -33,7 +33,7 @@
     <th align="center" class="rowtip">对应赛事</th>
     <th align="center" class="rowtip">赛事分站ID</th>
     <th align="center" class="rowtip">赛事分站名称</th>
-    <th align="center" class="rowtip">赛事分站图标1</th>
+    <th align="center" class="rowtip">赛事分站图标</th>
     <th align="center" class="rowtip">开始日期</th>
     <th align="center" class="rowtip">结束日期</th>
     <th align="center" class="rowtip">已开设组别</th>
