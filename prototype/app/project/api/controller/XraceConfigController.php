@@ -194,7 +194,6 @@ class XRaceConfigController extends AbstractController
             //全部置为空
             $result = array("return"=>0,"RaceStageInfo"=>array(),'RaceGroupList'=>array(),"comment"=>"请指定一个有效的分站ID");
         }
-        print_R($result);
         echo json_encode($result);
     }
     /*
