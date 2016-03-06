@@ -604,4 +604,36 @@ class Xrace_Race extends Base_Widget
 			}
 		}
 	}
+	//根据当前时间获取比赛的状态
+	public function getRaceTimeStatus($RaceInfo)
+	{
+		//获取当前时间
+		$CurrentTime = time();
+		//转化时间为时间戳
+		$ApplyStartTime = strtotime(trim($RaceInfo['ApplyStartTime']));
+		$ApplyEndTime = strtotime(trim($RaceInfo['ApplyEndTime']));
+		$StartTime = strtotime(trim($RaceInfo['StartTime']));
+		$EndTime = strtotime(trim($RaceInfo['EndTime']));
+		if($CurrentTime < $ApplyStartTime)
+		{
+			$RaceStatus = array('RaceStatus'=>1,'RaceStatusName'=>'未开始报名');
+		}
+		elseif ($CurrentTime >= $ApplyStartTime && $CurrentTime < $ApplyEndTime)
+		{
+			$RaceStatus = array('RaceStatus'=>1,'RaceStatusName'=>'报名中');
+		}
+		elseif ($CurrentTime >= $ApplyEndTime && $CurrentTime < $StartTime)
+		{
+			$RaceStatus = array('RaceStatus'=>1,'RaceStatusName'=>'报名结束');
+		}
+		elseif ($CurrentTime >= $StartTime && $CurrentTime < $EndTime)
+		{
+			$RaceStatus = array('RaceStatus'=>1,'RaceStatusName'=>'比赛中');
+		}
+		else
+		{
+			$RaceStatus = array('RaceStatus'=>1,'RaceStatusName'=>'比赛结束');
+		}
+		return $RaceStatus;
+	}
 }
