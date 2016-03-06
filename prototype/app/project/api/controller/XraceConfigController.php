@@ -134,7 +134,8 @@ class XRaceConfigController extends AbstractController
     /*
      * 获取单个赛事分站信息
      */
-    public function getRaceStageInfoAction() {
+    public function getRaceStageInfoAction()
+    {
         //格式化赛事分站ID,默认为0
         $RaceStageId = isset($this->request->RaceStageId)?abs(intval($this->request->RaceStageId)):0;
         //赛事分站D必须大于0
@@ -146,13 +147,26 @@ class XRaceConfigController extends AbstractController
             $RaceStageInfo = isset($RaceStageInfo['RaceStageId'])?$RaceStageInfo:array();
             //解包数组
             $RaceStageInfo['comment'] = isset($RaceStageInfo['comment'])?json_decode($RaceStageInfo['comment'],true):array();
-            print_R($RaceStageInfo);
+            if(isset($RaceStageInfo['comment']['RaceStageIconList']))
+            {
+                foreach($RaceStageInfo['comment']['RaceStageIconList'] as $key => $IconInfo)
+                {
+                    if(isset($IconInfo['RaceStageIcon_root']))
+                    {
+                        //拼接上ADMIN站点的域名
+                        $RaceStageInfo['comment']['RaceStageIconList'][$key]['RaceStageIcon'] = $this->config->adminUrl.$IconInfo['RaceStageIcon_root'];
+                        //删除原有数据
+                        unset($RaceStageInfo['comment']['RaceStageIconList'][$key]['RaceStageIcon_root']);
+                    }
+                }
+            }
             //如果有选择组别
             if(isset($RaceStageInfo['comment']['SelectedRaceGroup']))
             {
                 //循环已经选择的组别
                 foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $RaceGroupId)
                 {
+                    echo "here";
                     //获取赛事分组基本信息
                     $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName");
                     //如果有获取到分组信息
@@ -180,6 +194,7 @@ class XRaceConfigController extends AbstractController
             //全部置为空
             $result = array("return"=>0,"RaceStageInfo"=>array(),'RaceGroupList'=>array(),"comment"=>"请指定一个有效的分站ID");
         }
+        print_R($result);
         echo json_encode($result);
     }
     /*
