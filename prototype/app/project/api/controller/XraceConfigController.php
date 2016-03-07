@@ -3,7 +3,7 @@
  *
  * 
  */
-class XRaceConfigController extends AbstractController
+class XraceConfigController extends AbstractController
 {
     /**
      *对象声明
@@ -18,8 +18,8 @@ class XRaceConfigController extends AbstractController
     public function init()
     {
         parent::init();
-        $this->oRace = new XRace_Race();
-        $this->oSports = new XRace_Sports();
+        $this->oRace = new Xrace_Race();
+        $this->oSports = new Xrace_Sports();
     }
     /**
      *获取所有赛事的列表
