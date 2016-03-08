@@ -131,7 +131,6 @@ class XraceConfigController extends AbstractController
             //全部置为空
             $result = array("return"=>0,"RaceStageList"=>array(),"comment"=>"请指定一个有效的赛事ID"); 
         }
-        print_R($result);
         echo json_encode($result);
     }
     /*

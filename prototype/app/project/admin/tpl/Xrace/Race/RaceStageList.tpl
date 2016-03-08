@@ -37,6 +37,7 @@
     <th align="center" class="rowtip">开始日期</th>
     <th align="center" class="rowtip">结束日期</th>
     <th align="center" class="rowtip">已开设组别</th>
+    <th align="center" class="rowtip">当前状态</th>
     <th align="center" class="rowtip">操作</th>
   </tr>
 
@@ -52,6 +53,7 @@
     <th align="center" class="rowtip" >{tpl:$oRaceStage.StageStartDate/}</th>
     <th align="center" class="rowtip" >{tpl:$oRaceStage.StageEndDate/}</th>
     <td align="center" class="rowtip" >{tpl:$oRaceStage.SelectedGroupList/}</td>
+    <td align="center" class="rowtip" >{tpl:$oRaceStage.RaceStageStatus.StageStatusName/}</td>
     <th align="center" class="rowtip" ><a  href="javascript:;" onclick="RaceStageDelete('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceStage.RaceStageName/}');">删除</a> |  <a href="javascript:;" onclick="RaceStageModify('{tpl:$oRaceStage.RaceStageId/}');">修改</a></th></tr>
   </tr>
   {/tpl:loop}

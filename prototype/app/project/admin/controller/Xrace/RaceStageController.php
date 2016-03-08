@@ -114,6 +114,7 @@ class Xrace_RaceStageController extends AbstractController
 				{
 					$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'] = '未上传';
 				}
+				$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($key,0);
 			}
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceStageList');
