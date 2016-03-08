@@ -501,17 +501,11 @@ class Xrace_RaceStageController extends AbstractController
 	{
 		//获取 页面参数
 		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser');
-                //转化时间为时间戳
-                $ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
-                $ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
-                $StartTime = strtotime(trim($bind['StartTime']));
-                $EndTime = strtotime(trim($bind['EndTime']));
-                //报名结束时间合报名开始时间的时间间隔
-                $FirstTimeSpan = $ApplyEndTime - $ApplyStartTime;
-                //比赛开始时间合报名结束时间的时间间隔
-                $SecondTimeSpan = $StartTime - $ApplyEndTime;
-                //七天的时间长度
-                $SevenDaysTime = 86400*7;
+		//转化时间为时间戳
+		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
+		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
+		$StartTime = strtotime(trim($bind['StartTime']));
+		$EndTime = strtotime(trim($bind['EndTime']));
 		//比赛名称不能为空
 		if(trim($bind['RaceName'])=="")
 		{
@@ -547,31 +541,21 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			$response = array('errno' => 7);
 		}
-                //结束时间不能早于开始时间
-                elseif($EndTime<=$StartTime)
-                {
-                        $response = array('errno' => 10);
-                }
-                //开始报名时间不能早于当前时间
-                elseif ($ApplyStartTime<= time()) 
-                {
-                        $response = array('errno' => 11);
-                }
-                //结束报名时间不能早于当前时间
-                elseif ($ApplyEndTime<= time())
-                {
-                        $response = array('errno' => 12);                
-                }
-                //报名结束时间和报名开始时间的时间间隔不能小于7天
-                elseif ($FirstTimeSpan <= $SevenDaysTime) 
-                {
-                        $response = array('errno' => 13);                
-                }
-                //比赛开始时间和报名结束时间的时间间隔不能小于7天
-                elseif ($SecondTimeSpan <= $SevenDaysTime) 
-                {
-                        $response = array('errno' => 14);                
-                }               
+		//结束时间不能早于开始时间
+		elseif($EndTime<=$StartTime)
+		{
+			$response = array('errno' => 10);
+		}
+		//结束报名时间不能早于开始报名时间
+		elseif ($ApplyEndTime<=$ApplyStartTime)
+		{
+			$response = array('errno' => 11);
+		}
+		//结束报名时间不能晚于比赛开始时间
+		elseif ($ApplyEndTime>=$StartTime)
+		{
+			$response = array('errno' => 12);
+		}
 		else
 		{
 			//新增比赛
@@ -586,17 +570,11 @@ class Xrace_RaceStageController extends AbstractController
 	{
 		//获取 页面参数
 		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser');
-                //转化时间为时间戳
-                $ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
-                $ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
-                $StartTime = strtotime(trim($bind['StartTime']));
-                $EndTime = strtotime(trim($bind['EndTime']));
-                //报名结束时间合报名开始时间的时间间隔
-                $FirstTimeSpan = $ApplyEndTime - $ApplyStartTime;
-                //比赛开始时间合报名结束时间的时间间隔
-                $SecondTimeSpan = $StartTime - $ApplyEndTime;
-                //七天的时间长度
-                $SevenDaysTime = 86400*7;
+		//转化时间为时间戳
+		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
+		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
+		$StartTime = strtotime(trim($bind['StartTime']));
+		$EndTime = strtotime(trim($bind['EndTime']));
 		//比赛ID
 		$RaceId = intval($this->request->RaceId);
 		//比赛名称不能为空
@@ -639,31 +617,21 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			$response = array('errno' => 8);
 		}
-                //结束时间不能早于开始时间
-                elseif($EndTime<=$StartTime)
-                {
-                        $response = array('errno' => 10);
-                }
-                //开始报名时间不能早于当前时间
-                elseif ($ApplyStartTime<= time()) 
-                {
-                        $response = array('errno' => 11);
-                }
-                //结束报名时间不能早于当前时间
-                elseif ($ApplyEndTime<= time())
-                {
-                        $response = array('errno' => 12);                
-                }
-                //报名结束时间和报名开始时间的时间间隔不能小于7天
-                elseif ($FirstTimeSpan <= $SevenDaysTime) 
-                {
-                        $response = array('errno' => 13);                
-                }
-                //比赛开始时间和报名结束时间的时间间隔不能小于7天
-                elseif ($SecondTimeSpan <= $SevenDaysTime) 
-                {
-                        $response = array('errno' => 14);                
-                }                    
+		//结束时间不能早于开始时间
+		elseif($EndTime<=$StartTime)
+		{
+			$response = array('errno' => 10);
+		}
+		//结束报名时间不能早于开始报名时间
+		elseif ($ApplyEndTime<=$ApplyStartTime)
+		{
+			$response = array('errno' => 11);
+		}
+		//结束报名时间不能晚于比赛开始时间
+		elseif ($ApplyEndTime>=$StartTime)
+		{
+			$response = array('errno' => 12);
+		}
 		else
 		{
 			//更新比赛
