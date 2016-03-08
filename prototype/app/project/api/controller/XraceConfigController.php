@@ -166,7 +166,6 @@ class XraceConfigController extends AbstractController
                 //循环已经选择的组别
                 foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $RaceGroupId)
                 {
-                    echo "here";
                     //获取赛事分组基本信息
                     $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName");
                     //如果有获取到分组信息
