@@ -1,10 +1,10 @@
 {tpl:tpl contentHeader/}
 <script type="text/javascript">
   function RaceAdd(sid,gid){
-    RaceAddBox = divBox.showBox('{tpl:$this.sign/}&ac=race.add&RaceGroupId=' + gid + '&RaceStageId=' + sid, {title:'添加比赛',width:400,height:400});
+    RaceAddBox = divBox.showBox('{tpl:$this.sign/}&ac=race.add&RaceGroupId=' + gid + '&RaceStageId=' + sid, {title:'添加比赛',width:400,height:750});
   }
   function RaceModify(sid,gid,rid,rname){
-    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.modify&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&RaceId=' + rid, {title:'修改比赛-'+rname,width:400,height:400});
+    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.modify&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&RaceId=' + rid, {title:'修改比赛-'+rname,width:400,height:750});
   }
 </script>
 <form action="{tpl:$this.sign/}&ac=race.update" name="form" id="form" method="post">
@@ -29,8 +29,8 @@
   <tr>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceName/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.PriceList/}</th>
-    <th align="center" class="rowtip">{tpl:if($RaceInfo.SingleUser==1)}接受{tpl:else}不接受{/tpl:if}</th>
-    <th align="center" class="rowtip">{tpl:if($RaceInfo.TeamUser==1)}接受{tpl:else}不接受{/tpl:if}</th>
+    <th align="center" class="rowtip">{tpl:if($RaceInfo.SingleUser==1)}{tpl:$RaceInfo.comment.SingleUserLimit/}人 {tpl:else}不接受{/tpl:if}</th>
+    <th align="center" class="rowtip">{tpl:if($RaceInfo.TeamUser==1)}{tpl:$RaceInfo.comment.TeamLimit/}队/{tpl:$RaceInfo.comment.TeamUserMin/}-{tpl:$RaceInfo.comment.TeamUserMax/}人 {tpl:else}不接受{/tpl:if}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.ApplyStartTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.ApplyEndTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.StartTime/}</th>

@@ -428,12 +428,12 @@ class Xrace_RaceStageController extends AbstractController
 			}
 			//获取比赛列表
 			$RaceList = $this->oRace->getRaceList($RaceStageId,$RaceGroupId);
-                        foreach($RaceList as $RaceId => $RaceInfo)
-                        {
-							$RaceStatus = $this->oRace->getRaceTimeStatus($RaceInfo);
-							$RaceList[$RaceId]['RaceStatus'] = $RaceStatus['RaceStatusName'];
-
-						}
+			foreach($RaceList as $RaceId => $RaceInfo)
+			{
+				//获取比赛当前状态
+				$RaceStatus = $this->oRace->getRaceTimeStatus($RaceInfo);
+				$RaceList[$RaceId]['RaceStatus'] = $RaceStatus['RaceStatusName'];
+			}
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceList');
 		}
@@ -455,9 +455,9 @@ class Xrace_RaceStageController extends AbstractController
 			//赛事分组ID
 			$RaceGroupId = intval($this->request->RaceGroupId);
 			//初始化开始和结束时间
-                        $ApplyStartTime = date("Y-m-d H:i:s",time()+86400);
-                        $ApplyEndTime = date("Y-m-d H:i:s",time()+86400*8);
-                        $StartTime = date("Y-m-d H:i:s",time()+86400*15);
+			$ApplyStartTime = date("Y-m-d H:i:s",time()+86400);
+			$ApplyEndTime = date("Y-m-d H:i:s",time()+86400*8);
+			$StartTime = date("Y-m-d H:i:s",time()+86400*15);
 			$EndTime = date("Y-m-d H:i:s",time()+86400*16);
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceAdd');
@@ -486,6 +486,8 @@ class Xrace_RaceStageController extends AbstractController
 			//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
 			if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
 			{
+				//解包数组
+				$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
 				//渲染模板
 				include $this->tpl('Xrace_Race_RaceModify');
 			}
@@ -500,7 +502,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -556,8 +558,34 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			$response = array('errno' => 12);
 		}
+		//开放个人报名时,最大人数必须大于0
+		elseif($bind['SingleUser'] == 1 && $bind['SingleUserLimit']<=0)
+		{
+			$response = array('errno' => 13);
+		}
+		//开放团队报名时,最大队伍数量必须大于0
+		elseif($bind['TeamUser'] == 1 && $bind['TeamLimit']<=0)
+		{
+			$response = array('errno' => 14);
+		}
+		//开放团队报名时,队伍人数限制(最小人数必须大于0,最大人数必须大于最小人数)
+		elseif($bind['TeamUser'] == 1 && ($bind['TeamUserMin']<=0 || $bind['TeamUserMin'] > $bind['TeamUserMax']))
+		{
+			$response = array('errno' => 15);
+		}
 		else
 		{
+			//将人数限制分别置入压缩数组,并删除原数据
+			$bind['comment']['SingleUserLimit'] = $bind['SingleUserLimit'];
+			unset($bind['SingleUserLimit']);
+			$bind['comment']['TeamLimit'] = $bind['TeamLimit'];
+			unset($bind['TeamLimit']);
+			$bind['comment']['TeamUserMin'] = $bind['TeamUserMin'];
+			unset($bind['TeamUserMin']);
+			$bind['comment']['TeamUserMax'] = $bind['TeamUserMax'];
+			unset($bind['TeamUserMax']);
+			//数据打包
+			$bind['comment'] = json_encode($bind['comment']);
 			//新增比赛
 			$AddRace = $this->oRace->addRace($bind);
 			$response = $AddRace ? array('errno' => 0) : array('errno' => 9);
@@ -569,7 +597,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -598,12 +626,12 @@ class Xrace_RaceStageController extends AbstractController
 			$response = array('errno' => 4);
 		}
 		//开始时间不能早于当前时间
-		elseif(strtotime(trim($bind['StartTime']))<=time())
+		elseif($StartTime<=time())
 		{
 			$response = array('errno' => 5);
 		}
 		//结束时间不能早于当前时间
-		elseif(strtotime(trim($bind['EndTime']))<=time())
+		elseif($EndTime<=time())
 		{
 			$response = array('errno' => 6);
 		}
@@ -632,11 +660,42 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			$response = array('errno' => 12);
 		}
+		//开放个人报名时,最大人数必须大于0
+		elseif($bind['SingleUser'] == 1 && $bind['SingleUserLimit']<=0)
+		{
+			$response = array('errno' => 13);
+		}
+		//开放团队报名时,最大队伍数量必须大于0
+		elseif($bind['TeamUser'] == 1 && $bind['TeamLimit']<=0)
+		{
+			$response = array('errno' => 14);
+		}
+		//开放团队报名时,队伍人数限制(最小人数必须大于0,最大人数必须大于最小人数)
+		elseif($bind['TeamUser'] == 1 && ($bind['TeamUserMin']<=0 || $bind['TeamUserMin'] > $bind['TeamUserMax']))
+		{
+			$response = array('errno' => 15);
+		}
 		else
 		{
+			//获取比赛信息
+			$RaceInfo = $this->oRace->getRaceInfo($RaceId);
+			//解包数组
+			$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+			$bind['comment'] = $RaceInfo['comment'];
+			//将人数限制分别置入压缩数组,并删除原数据
+			$bind['comment']['SingleUserLimit'] = $bind['SingleUserLimit'];
+			unset($bind['SingleUserLimit']);
+			$bind['comment']['TeamLimit'] = $bind['TeamLimit'];
+			unset($bind['TeamLimit']);
+			$bind['comment']['TeamUserMin'] = $bind['TeamUserMin'];
+			unset($bind['TeamUserMin']);
+			$bind['comment']['TeamUserMax'] = $bind['TeamUserMax'];
+			unset($bind['TeamUserMax']);
+			//数据打包
+			$bind['comment'] = json_encode($bind['comment']);
 			//更新比赛
-			$AddRace = $this->oRace->updateRace($RaceId,$bind);
-			$response = $AddRace ? array('errno' => 0) : array('errno' => 9);
+			$UpdateRace = $this->oRace->updateRace($RaceId,$bind);
+			$response = $UpdateRace ? array('errno' => 0) : array('errno' => 9);
 		}
 		echo json_encode($response);
 		return true;
