@@ -225,12 +225,22 @@ class Xrace_Race extends Base_Widget
 		$RaceStageId = intval($RaceStageId);
 		$RaceGroupId = intval($RaceGroupId);
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
-		$return = $this->db->select($table_to_process, $fields, '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
+		if(!$RaceGroupId)
+		{
+			$return = $this->db->select($table_to_process, $fields, '`RaceStageId` = ?', array($RaceStageId));
+		}
+		else
+		{
+			$return = $this->db->select($table_to_process, $fields, '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
+		}
 		$RaceList = array();
 		foreach($return as $key => $value)
 		{
 			$RaceList[$value['RaceId']] = $value;
-			$RaceList[$value['RaceId']]['comment'] = isset($value['comment'])?json_decode($RaceList[$value['RaceId']]['comment'],true):array();
+			if(isset($RaceList[$value['RaceId']]['comment']))
+			{
+				$RaceList[$value['RaceId']]['comment'] = json_decode($RaceList[$value['RaceId']]['comment'],true);
+			}
 		}
 		return $RaceList;
 	}
@@ -619,5 +629,68 @@ class Xrace_Race extends Base_Widget
 			$RaceStatus = array('RaceStatus'=>5,'RaceStatusName'=>'比赛结束');
 		}
 		return $RaceStatus;
+	}
+	//根据当前时间获取比赛的状态
+	public function getRaceStageTimeStatus($RaceStageId,$RaceGroupId)
+	{
+		//获取当前时间
+		$CurrentTime = time();
+		//转化时间为时间戳
+		$RaceList = $this->getRaceList($RaceStageId,$RaceGroupId,$fields = 'RaceId,ApplyStartTime,ApplyEndTime');
+		//最小开始报名时间数组
+		$MinStartTime = array();
+		//最大结束报名时间数组
+		$MaxEndTime = array();
+		//循环比赛列表
+		foreach($RaceList as $RaceId => $RaceInfo)
+		{
+			//如果开始报名时间有效
+			if(strtotime($RaceInfo['ApplyStartTime']))
+			{
+				//放入备选数组
+				$MinStartTime[] = strtotime($RaceInfo['ApplyStartTime']);
+			}
+			//如果结束报名时间有效
+			if(strtotime($RaceInfo['ApplyEndTime']))
+			{
+				//放入备选数组
+				$MaxEndTime[] = strtotime($RaceInfo['ApplyEndTime']);
+			}
+		}
+		if(count($MinStartTime))
+		{
+			//获取最小开始报名时间
+			$MinStartTime = min($MinStartTime);
+		}
+		elseif(count($MaxEndTime))
+		{
+			//获取最大报名时间
+			$MaxEndTime = max($MaxEndTime);
+		}
+		else
+		{
+			$MinStartTime = 0;
+			$MaxEndTime = 0;
+		}
+		if($MinStartTime==0)
+		{
+			$StageTimeStatus = array('StageStatus'=>1,'StageStatusName'=>'报名即将开始');
+		}
+		//如果当前时间早于最小开始报名时间
+		elseif($CurrentTime < $MinStartTime)
+		{
+			$StageTimeStatus = array('StageStatus'=>1,'StageStatusName'=>'报名即将开始');
+		}
+		//如果当前时间早于最大结束报名时间
+		elseif($CurrentTime <= $MaxEndTime)
+		{
+			$StageTimeStatus = array('StageStatus'=>2,'StageStatusName'=>'报名中');
+		}
+		//如果当前时间晚于最大结束报名时间
+		elseif($CurrentTime > $MaxEndTime)
+		{
+			$StageTimeStatus = array('StageStatus'=>3,'StageStatusName'=>'报名结束');
+		}
+		return $StageTimeStatus;
 	}
 }

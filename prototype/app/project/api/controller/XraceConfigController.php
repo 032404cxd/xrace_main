@@ -120,6 +120,8 @@ class XraceConfigController extends AbstractController
             foreach ($RaceStageList as $RaceStageId => $RaceStageValue)
             {
                 $RaceStageList[$RaceStageId]['comment'] = json_decode($RaceStageValue['comment'],true);
+                //获取当前比赛的时间状态信息
+                $RaceStageList[$RaceStageId]['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageId,0);
             }
             //结果数组
             $result = array("return"=>1,"RaceStageList"=>$RaceStageList);            
@@ -129,6 +131,7 @@ class XraceConfigController extends AbstractController
             //全部置为空
             $result = array("return"=>0,"RaceStageList"=>array(),"comment"=>"请指定一个有效的赛事ID"); 
         }
+        print_R($result);
         echo json_encode($result);
     }
     /*
@@ -185,6 +188,8 @@ class XraceConfigController extends AbstractController
             {
                 $RaceStageInfo['comment']['SelectedRaceGroup'] = array();
             }
+            //获取当前比赛的时间状态信息
+            $RaceStageInfo['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageId,0);
             //结果数组
             $result = array("return"=>1,"RaceStageInfo"=>$RaceStageInfo);
         }
@@ -193,6 +198,7 @@ class XraceConfigController extends AbstractController
             //全部置为空
             $result = array("return"=>0,"RaceStageInfo"=>array(),'RaceGroupList'=>array(),"comment"=>"请指定一个有效的分站ID");
         }
+        print_R($result);
         echo json_encode($result);
     }
     /*
