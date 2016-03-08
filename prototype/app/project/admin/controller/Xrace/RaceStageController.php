@@ -1235,3 +1235,6 @@ class Xrace_RaceStageController extends AbstractController
 		}
 	}
 }
+
+//ALTER TABLE `config_race` ADD `ApplyStartTime` DATETIME NOT NULL COMMENT '开始报名时间' AFTER `StartTime` ,
+//ADD `ApplyEndTime` DATETIME NOT NULL COMMENT '结束报名时间' AFTER `ApplyStartTime` ;
