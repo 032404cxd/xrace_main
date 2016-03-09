@@ -132,13 +132,8 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageInsert");
 		if($PermissionCheck['return'])
 		{
-			//富文本编辑器
-			include('Third/ckeditor/ckeditor.php');
-			$editor =  new CKEditor();
-			$editor->BasePath = '/js/ckeditor/';
-			$editor->config['height'] = "50%";
-			$editor->config['width'] ="80%";
-
+			$StageStartDate = date("Y-m-d",time()+30*86400);
+			$StageEndDate = date("Y-m-d",time()+32*86400);
 			//赛事列表
 			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
 			//渲染模板
@@ -154,7 +149,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceStageName','RaceCatalogId');
+		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -176,26 +171,26 @@ class Xrace_RaceStageController extends AbstractController
 		}
 		else
 		{
-                    //记录分组信息
-                    $bind['comment']['SelectedRaceGroup'] = $SelectedRaceGroup['SelectedRaceGroup'];
-                    //文件上传
-                    $oUpload = new Base_Upload('RaceStageIcon');
-                    $upload = $oUpload->upload('RaceStageIcon');
-                    $res = $upload->resultArr;
-                    foreach($upload->resultArr as $iconkey=>$iconvalue){
-                        $path = $iconvalue;
-                        //如果正确上传，就保存文件路径
-                        if(strlen($path['path'])>2)
-                        {
-                            $bind['comment']['RaceStageIconList'][$iconkey]['RaceStageIcon'] = $path['path'];
-                            $bind['comment']['RaceStageIconList'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
-                        }
-                    }
-                    //数据压缩
-                    $bind['comment'] = json_encode($bind['comment']);
-                    //插入数据
-                    $res = $this->oRace->insertRaceStage($bind);
-                    $response = $res ? array('errno' => 0) : array('errno' => 9);
+			//记录分组信息
+			$bind['comment']['SelectedRaceGroup'] = $SelectedRaceGroup['SelectedRaceGroup'];
+			//文件上传
+			$oUpload = new Base_Upload('RaceStageIcon');
+			$upload = $oUpload->upload('RaceStageIcon');
+			$res = $upload->resultArr;
+			foreach($upload->resultArr as $iconkey=>$iconvalue){
+				$path = $iconvalue;
+				//如果正确上传，就保存文件路径
+				if(strlen($path['path'])>2)
+				{
+					$bind['comment']['RaceStageIconList'][$iconkey]['RaceStageIcon'] = $path['path'];
+					$bind['comment']['RaceStageIconList'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
+				}
+			}
+			//数据压缩
+			$bind['comment'] = json_encode($bind['comment']);
+			//插入数据
+			$res = $this->oRace->insertRaceStage($bind);
+			$response = $res ? array('errno' => 0) : array('errno' => 9);
 		}
 		echo json_encode($response);
 		return true;

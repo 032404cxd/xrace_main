@@ -17,8 +17,15 @@
 	<td>赛事分组列表</td>
 	<td align="left"><div id = "SelectedGroupList"></div></td>
 	</tr>
-	<td>赛事分组列表</td>
-	<td align="left"><?php echo $editor->editor("Answer",""); ?></td>
+	<tr>
+		<th><label >开始结止时间</label></th>
+		<td>
+			<input type="text" name="StageStartDate" value="{tpl:$StageStartDate/}" class="input-medium"
+				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd'})" >
+			---
+			<input type="text" name="StageEndDate" value="{tpl:$StageEndDate/}" value="" class="input-medium"
+				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd'})" >
+		</td>
 	</tr>
         <tr class="hover"><td>赛事分组图标1</td>
                 <td align="left"><input name="RaceStageIcon[1]" type="file" class="span4" id="RaceStageIcon[1]" /></td>
