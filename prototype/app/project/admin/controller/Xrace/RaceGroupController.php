@@ -45,7 +45,7 @@ class Xrace_RaceGroupController extends AbstractController
 				//数据解包
 				$value['comment'] = json_decode($value['comment'],true);
 				//拼接权限审核条件
-				$value['LicenseListText'] = isset($value['comment']['LicenseList'])? $this->oRace->ParthRaceLicenseListToHtml($value['comment']['LicenseList'],0):"";
+				$value['LicenseListText'] = isset($value['comment']['LicenseList'])? $this->oRace->ParthRaceLicenseListToHtml($value['comment']['LicenseList'],0,$key):"";
 
 				$RaceGroupList[$value['RaceCatalogId']]['RaceGroupList'][$key] = $value;
 				$RaceGroupList[$value['RaceCatalogId']]['RaceGroupCount'] = isset($RaceGroupList[$value['RaceCatalogId']]['RaceGroupCount'])?$RaceGroupList[$value['RaceCatalogId']]['RaceGroupCount']+1:1;

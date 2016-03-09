@@ -684,7 +684,7 @@ class Xrace_Race extends Base_Widget
 		return $StageTimeStatus;
 	}
 	//把执照获得条件转化成HTML
-	public function ParthRaceLicenseListToHtml($RaceLicenseList,$edit=1)
+	public function ParthRaceLicenseListToHtml($RaceLicenseList,$edit=1,$delete=0)
 	{
 		//如果已配置执照条件列表
 		if(count($RaceLicenseList))
@@ -703,6 +703,10 @@ class Xrace_Race extends Base_Widget
 					//根据不同的条件类型拼接不同的字符串
 					$functionName = $LicenseInfo['LicenseType']."ConditionToHtml";
 					$text[$key].= "<td>".$this->$functionName("LicenseList[".$key."]",$LicenseInfo,$edit)."</td>";
+					if($delete)
+					{
+						$text[$key].= '<td><a href="javascript:void(0);" onclick="LicenseDelete('."'".$delete."'".','."'".$key."'".')">删除</a></td>';
+					}
 					$text[$key].="</tr>";
 				}
 				else
