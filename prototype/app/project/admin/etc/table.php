@@ -38,6 +38,10 @@ $table['config_race_catalog']['num'] = 1;
 $table['config_race_type']['db'] = 'xrace_config';
 $table['config_race_type']['num'] = 1;
 
+#商品类型
+$table['config_product_type']['db'] = 'xrace_config';
+$table['config_product_type']['num'] = 1;
+
 #赛事分站
 $table['config_race_stage']['db'] = 'xrace_config';
 $table['config_race_stage']['num'] = 1;
