@@ -768,19 +768,24 @@ class Xrace_Race extends Base_Widget
 	//管理员赋予
 	public function sexConditionToHtml($key,$LicenseInfo,$edit = 1)
 	{
+		$oUser = new Xrace_User();
+		$sexList = $oUser -> getSexList();
 		if(!count($LicenseInfo))
 		{
-			$LicenseInfo  = array("LicenseType"=>"sex","License"=>"Male");
+			$LicenseInfo  = array("LicenseType"=>"sex","License"=>array_pop(array_keys($sexList)));
 		}
 		if($edit==1)
 		{
-			$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="sex">
-			<input type="radio" name="'.$key.'[License]" id="'.$key.'[License]" value="Male" '.((isset($LicenseInfo['License'])&&$LicenseInfo['License']=="Male")?'checked':"").'>男
-			<input type="radio" name="'.$key.'[License]" id="'.$key.'[License]" value="Female" '.((!isset($LicenseInfo['License'])||$LicenseInfo['License']=="Female")?'checked':"").'>女';
+
+			$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="sex">';
+			foreach($sexList as $sex => $sex_name)
+			{
+				$text.='<input type="radio" name="'.$key.'[License]" id="'.$key.'[License]" value="'.$sex.'" '.((isset($LicenseInfo['License'])&&intval($LicenseInfo['License'])==$sex)?'checked':"").'>'.$sex_name;
+			}
 		}
 		else
 		{
-			$text = ((isset($LicenseInfo['License'])&&$LicenseInfo['License']=="Male")?"男":"女");
+			$text = isset($sexList[$LicenseInfo['License']])?$sexList[$LicenseInfo['License']]:$sexList[array_pop(array_keys($sexList))];
 		}
 		return $text;
 	}
