@@ -45,16 +45,16 @@
   <tr>
     <th align="center" class="rowtip"  rowspan = {tpl:$RaceCatalogInfoInfo.RowCount /}>{tpl:$RaceCatalogInfoInfo.RaceCatalogName/}</th>
   </tr>
-  {tpl:loop $RaceCatalogInfoInfo.RaceStageList $RaceStageId $oRaceStage}
+  {tpl:loop $RaceCatalogInfoInfo.RaceStageList $RaceStageId $RaceStageInfo}
   <tr>
-    <th align="center" class="rowtip" >{tpl:$oRaceStage.RaceStageId/}</th>
-    <th align="center" class="rowtip" >{tpl:$oRaceStage.RaceStageName/}</th>
-    <th align="center">{tpl:$oRaceStage.RaceStageIconList/}</th>
-    <th align="center" class="rowtip" >{tpl:$oRaceStage.StageStartDate/}</th>
-    <th align="center" class="rowtip" >{tpl:$oRaceStage.StageEndDate/}</th>
-    <td align="center" class="rowtip" >{tpl:$oRaceStage.SelectedGroupList/}</td>
-    <td align="center" class="rowtip" >{tpl:$oRaceStage.RaceStageStatus.StageStatusName/}</td>
-    <th align="center" class="rowtip" ><a  href="javascript:;" onclick="RaceStageDelete('{tpl:$oRaceStage.RaceStageId/}','{tpl:$oRaceStage.RaceStageName/}');">删除</a> |  <a href="javascript:;" onclick="RaceStageModify('{tpl:$oRaceStage.RaceStageId/}');">修改</a></th></tr>
+    <th align="center" class="rowtip" >{tpl:$RaceStageInfo.RaceStageId/}</th>
+    <th align="center" class="rowtip" >{tpl:$RaceStageInfo.RaceStageName/}</th>
+    <th align="center">{tpl:$RaceStageInfo.RaceStageIconList/}</th>
+    <th align="center" class="rowtip" >{tpl:$RaceStageInfo.StageStartDate/}</th>
+    <th align="center" class="rowtip" >{tpl:$RaceStageInfo.StageEndDate/}</th>
+    <td align="center" class="rowtip" >{tpl:$RaceStageInfo.SelectedGroupList/}</td>
+    <td align="center" class="rowtip" >{tpl:$RaceStageInfo.RaceStageStatus.StageStatusName/}</td>
+    <th align="center" class="rowtip" ><a  href="javascript:;" onclick="RaceStageDelete('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceStageInfo.RaceStageName/}');">删除</a> |  <a href="javascript:;" onclick="RaceStageModify('{tpl:$RaceStageInfo.RaceStageId/}');">修改</a></th></tr>
   </tr>
   {/tpl:loop}
   {/tpl:loop}

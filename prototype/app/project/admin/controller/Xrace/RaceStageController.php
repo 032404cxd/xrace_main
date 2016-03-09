@@ -150,7 +150,6 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	
 	//添加新赛事分站
 	public function raceStageInsertAction()
 	{
@@ -201,7 +200,6 @@ class Xrace_RaceStageController extends AbstractController
 		echo json_encode($response);
 		return true;
 	}
-
 	//修改赛事分站填写配置页面
 	public function raceStageModifyAction()
 	{
@@ -247,7 +245,6 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	
 	//更新赛事分站
 	public function raceStageUpdateAction()
 	{
@@ -279,7 +276,7 @@ class Xrace_RaceStageController extends AbstractController
 		}
 		else
 		{
-                        //获取原有数据
+			//获取原有数据
 			$oRaceStage = $this->oRace->getRaceStage($bind['RaceStageId']);
 			$bind['comment'] = json_decode($oRaceStage['comment'],true);
 			$bind['comment']['SelectedRaceGroup'] = $SelectedRaceGroup['SelectedRaceGroup'];
@@ -287,7 +284,8 @@ class Xrace_RaceStageController extends AbstractController
 			$oUpload = new Base_Upload('RaceStageIcon');
 			$upload = $oUpload->upload('RaceStageIcon');
 			$res = $upload->resultArr;
-			foreach($upload->resultArr as $iconkey=>$iconvalue){
+			foreach($upload->resultArr as $iconkey=>$iconvalue)
+			{
 				$path = $iconvalue;
 				//如果正确上传，就保存文件路径
 				if(strlen($path['path'])>2)

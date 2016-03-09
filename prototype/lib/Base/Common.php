@@ -1041,4 +1041,13 @@ EOF;
 		$text ='<?php $'.$arrName.'='.$var.'; return $'.$arrName.';?>';
 		file_put_contents($filePath.$fileName,$text);
 	}
+	/**
+	 * 将一个数组写入配置文件
+	 * @param string $fields
+	 */
+	function equalList()
+	{
+		$return = array("!=","=",">",">=","<=","<");
+		return $return;
+	}
 }

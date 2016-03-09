@@ -78,6 +78,7 @@ class Xrace_RaceCatalogController extends AbstractController
 			$upload = $oUpload->upload('RaceCatalogIcon');
 			$res[1] = $upload->resultArr;
 			$path = $res[1][1];
+
 			//如果正确上传，就保存文件路径
 			if(strlen($path['path'])>2)
 			{
@@ -100,7 +101,7 @@ class Xrace_RaceCatalogController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			$raceCatalogId = trim($this->request->raceCatalogId);
-			$oRaceCatalog = $this->oRace->getRaceCatalog($raceCatalogId,'*');
+			$RaceCatalogInfo = $this->oRace->getRaceCatalog($raceCatalogId,'*');
 			include $this->tpl('Xrace_Race_RaceCatalogModify');
 		}
 		else

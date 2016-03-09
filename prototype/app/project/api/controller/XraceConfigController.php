@@ -148,10 +148,35 @@ class XraceConfigController extends AbstractController
             //检测主键存在,否则值为空
             $RaceStageInfo = isset($RaceStageInfo['RaceStageId'])?$RaceStageInfo:array();
             //解包数组
-            $RaceStageInfo['comment'] = isset($RaceStageInfo['comment'])?json_decode($RaceStageInfo['comment'],true):array();
-            if(isset($RaceStageInfo['comment']['RaceStageIconList']))
+            $raceStageInfo['comment'] = isset($raceStageInfo['comment'])?json_decode($raceStageInfo['comment'],true):array();
+            //根据赛事获取组别列表
+            $raceGroupList = isset($raceStageInfo['RaceCatalogId'])?$this->oRace->getAllRaceGroupList($raceStageInfo['RaceCatalogId'],"RaceGroupId,RaceGroupName"):array();
+            //结果数组
+            $result = array("return"=>1,"raceStageInfo"=>$raceStageInfo,'raceGroupList'=>$raceGroupList);
+        }
+        else
+        {
+            //全部置为空
+            $result = array("return"=>0,"raceStageInfo"=>array(),'raceGroupList'=>array(),"comment"=>"请指定一个有效的分站ID");
+        }
+        echo json_encode($result);
+    }
+    
+    /*
+     * 根据赛事获取所有赛事组别列表
+     */
+    public function getRaceGroupListAction()
+    {
+        //格式化赛事ID,默认为0
+        $RaceCatalogId = isset($this->request->RaceCatalogId)?abs(intval($this->request->RaceCatalogId)):0;
+        //赛事ID必须大于0
+        if($RaceCatalogId)
+        {
+            //获得赛事组别列表
+            $raceGroupList = $this->oRace->getAllRaceGroupList($RaceCatalogId);
+            if(!is_array($raceGroupList))
             {
-                foreach($RaceStageInfo['comment']['RaceStageIconList'] as $key => $IconInfo)
+                foreach($raceGroupList['comment']['RaceStageIconList'] as $key => $IconInfo)
                 {
                     if(isset($IconInfo['RaceStageIcon_root']))
                     {
@@ -188,7 +213,7 @@ class XraceConfigController extends AbstractController
                 $RaceStageInfo['comment']['SelectedRaceGroup'] = array();
             }
             //获取当前比赛的时间状态信息
-            $RaceStageInfo['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageId,0);
+            $RaceStageInfo['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageInfo['RaceStageId'],0);
             //结果数组
             $result = array("return"=>1,"RaceStageInfo"=>$RaceStageInfo);
         }

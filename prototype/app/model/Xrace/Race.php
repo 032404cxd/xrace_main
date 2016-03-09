@@ -17,6 +17,7 @@ class Xrace_Race extends Base_Widget
 	protected $maxRaceDetail = 5;
 
 	protected $raceTimingType = array('chip'=>'芯片计时','gps'=>'gps定位');
+	protected $raceLicenseType = array('manager'=>'管理员审核','birthday'=>'生日','sex'=>'性别');
 
 	public function getTimingType()
 	{
@@ -25,6 +26,10 @@ class Xrace_Race extends Base_Widget
 	public function getMaxRaceDetail()
 	{
 		return $this->maxRaceDetail;
+	}
+	public function getRaceLicenseType()
+	{
+		return $this->raceLicenseType;
 	}
 	//获取所有赛事的列表
 	public function getAllRaceCatalogList($fields = "*")
@@ -636,61 +641,143 @@ class Xrace_Race extends Base_Widget
 		//获取当前时间
 		$CurrentTime = time();
 		//转化时间为时间戳
-		$RaceList = $this->getRaceList($RaceStageId,$RaceGroupId,$fields = 'RaceId,ApplyStartTime,ApplyEndTime');
+		$RaceList = $this->getRaceList($RaceStageId, $RaceGroupId, $fields = 'RaceId,ApplyStartTime,ApplyEndTime');
 		//最小开始报名时间数组
 		$MinStartTime = array();
 		//最大结束报名时间数组
 		$MaxEndTime = array();
 		//循环比赛列表
-		foreach($RaceList as $RaceId => $RaceInfo)
-		{
+		foreach ($RaceList as $RaceId => $RaceInfo) {
 			//如果开始报名时间有效
-			if(strtotime($RaceInfo['ApplyStartTime']))
-			{
+			if (strtotime($RaceInfo['ApplyStartTime'])) {
 				//放入备选数组
 				$MinStartTime[] = strtotime($RaceInfo['ApplyStartTime']);
 			}
 			//如果结束报名时间有效
-			if(strtotime($RaceInfo['ApplyEndTime']))
-			{
+			if (strtotime($RaceInfo['ApplyEndTime'])) {
 				//放入备选数组
 				$MaxEndTime[] = strtotime($RaceInfo['ApplyEndTime']);
 			}
 		}
-		if(count($MinStartTime))
-		{
+		if (count($MinStartTime)) {
 			//获取最小开始报名时间
 			$MinStartTime = min($MinStartTime);
-		}
-		elseif(count($MaxEndTime))
-		{
+		} elseif (count($MaxEndTime)) {
 			//获取最大报名时间
 			$MaxEndTime = max($MaxEndTime);
-		}
-		else
-		{
+		} else {
 			$MinStartTime = 0;
 			$MaxEndTime = 0;
 		}
-		if($MinStartTime==0)
-		{
-			$StageTimeStatus = array('StageStatus'=>1,'StageStatusName'=>'报名即将开始');
-		}
-		//如果当前时间早于最小开始报名时间
-		elseif($CurrentTime < $MinStartTime)
-		{
-			$StageTimeStatus = array('StageStatus'=>1,'StageStatusName'=>'报名即将开始');
-		}
-		//如果当前时间早于最大结束报名时间
-		elseif($CurrentTime <= $MaxEndTime)
-		{
-			$StageTimeStatus = array('StageStatus'=>2,'StageStatusName'=>'报名中');
-		}
-		//如果当前时间晚于最大结束报名时间
-		elseif($CurrentTime > $MaxEndTime)
-		{
-			$StageTimeStatus = array('StageStatus'=>3,'StageStatusName'=>'报名结束');
+		if ($MinStartTime == 0) {
+			$StageTimeStatus = array('StageStatus' => 1, 'StageStatusName' => '报名即将开始');
+		} //如果当前时间早于最小开始报名时间
+		elseif ($CurrentTime < $MinStartTime) {
+			$StageTimeStatus = array('StageStatus' => 1, 'StageStatusName' => '报名即将开始');
+		} //如果当前时间早于最大结束报名时间
+		elseif ($CurrentTime <= $MaxEndTime) {
+			$StageTimeStatus = array('StageStatus' => 2, 'StageStatusName' => '报名中');
+		} //如果当前时间晚于最大结束报名时间
+		elseif ($CurrentTime > $MaxEndTime) {
+			$StageTimeStatus = array('StageStatus' => 3, 'StageStatusName' => '报名结束');
 		}
 		return $StageTimeStatus;
+	}
+	//把执照获得条件转化成HTML
+	public function ParthRaceLicenseListToHtml($RaceLicenseList,$edit=1)
+	{
+		//如果已配置执照条件列表
+		if(count($RaceLicenseList))
+		{
+			//获取条件列表
+			$RaceLisenceTypeList = $this->getRaceLicenseType();
+			//初始化空字符串
+			$text = array();
+			//循环条件列表
+			foreach ($RaceLicenseList as $key => $LicenseInfo)
+			{
+				//如果已配置当前条件
+				if(isset($RaceLisenceTypeList[$LicenseInfo['LicenseType']]))
+				{
+					$text[$key] = "<tr><td>".$RaceLisenceTypeList[$LicenseInfo['LicenseType']]."</td>";
+					//根据不同的条件类型拼接不同的字符串
+					$functionName = $LicenseInfo['LicenseType']."ConditionToHtml";
+					$text[$key].= "<td>".$this->$functionName("LicenseList[".$key."]",$LicenseInfo,$edit)."</td>";
+					$text[$key].="</tr>";
+				}
+				else
+				{
+					//删除数据
+					unset($RaceLicenseList[$key]);
+				}
+			}
+			return "<table>".implode("",$text)."</table>";
+		}
+		else
+		{
+			return "";
+		}
+	}
+	//管理员赋予
+	public function managerConditionToHtml($key,$LicenseInfo,$edit = 1)
+	{
+		if(!count($LicenseInfo))
+		{
+			$LicenseInfo  = array("LicenseType"=>"manager","License"=>0);
+		}
+		if($edit==1)
+		{
+			$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="manager">
+			<input type="radio" name="'.$key.'[License]" id="'.$key.'[License]" value="1" '.((isset($LicenseInfo['License'])&&$LicenseInfo['License']==1)?'checked':"").'>是
+			<input type="radio" name="'.$key.'[License]" id="'.$key.'[License]" value="0" '.((!isset($LicenseInfo['License'])||$LicenseInfo['License']==0)?'checked':"").'>否';
+		}
+		else
+		{
+			$text = ((isset($LicenseInfo['License'])&&$LicenseInfo['License']==1)?"是":"否");
+		}
+		return $text;
+	}
+	//生日
+	public function birthdayConditionToHtml($key,$LicenseInfo,$edit = 1)
+	{
+		if(!count($LicenseInfo))
+		{
+			$LicenseInfo  = array("LicenseType"=>"birthday","License"=>array("equal"=>">=","Date"=>date("Y-m-d",time())));
+		}
+		if($edit==1)
+		{
+			$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="birthday"><select name="'.$key.'[License][equal]" size="1" class="span2">';
+			$equalList = Base_common::equalList();
+			foreach ($equalList as $value) {
+				$text .= '<option value="' . $value . '" ' . ((isset($LicenseInfo['License']['equal']) && $LicenseInfo['License']['equal'] == $value) ? 'selected' : "") . '>' . $value . '</option>';
+			}
+			$text .= "</select>";
+			$text .= '<input type="text" class="span2" name="'.$key.'[License][Date]" value="' . $LicenseInfo['License']['Date'] . '" class="input-medium"
+				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:' . "'yyyy-MM-dd'" . '})">';
+		}
+		else
+		{
+			$text = $LicenseInfo['License']['equal'].$LicenseInfo['License']['Date'];
+		}
+		return $text;
+	}
+	//管理员赋予
+	public function sexConditionToHtml($key,$LicenseInfo,$edit = 1)
+	{
+		if(!count($LicenseInfo))
+		{
+			$LicenseInfo  = array("LicenseType"=>"sex","License"=>"Male");
+		}
+		if($edit==1)
+		{
+			$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="sex">
+			<input type="radio" name="'.$key.'[License]" id="'.$key.'[License]" value="Male" '.((isset($LicenseInfo['License'])&&$LicenseInfo['License']=="Male")?'checked':"").'>男
+			<input type="radio" name="'.$key.'[License]" id="'.$key.'[License]" value="Female" '.((!isset($LicenseInfo['License'])||$LicenseInfo['License']=="Female")?'checked':"").'>女';
+		}
+		else
+		{
+			$text = ((isset($LicenseInfo['License'])&&$LicenseInfo['License']=="Male")?"男":"女");
+		}
+		return $text;
 	}
 }
