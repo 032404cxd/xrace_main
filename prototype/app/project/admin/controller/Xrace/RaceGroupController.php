@@ -129,7 +129,7 @@ class Xrace_RaceGroupController extends AbstractController
 			if(isset($RaceGroupInfo['comment']['LicenseList']))
 			{
 				//将执照判断条件转化为HTML
-				$RaceLicenseListHtml = $this->oRace->ParthRaceLicenseListToHtml($RaceGroupInfo['comment']['LicenseList']);
+				$RaceLicenseListHtml = $this->oRace->ParthRaceLicenseListToHtml($RaceGroupInfo['comment']['LicenseList'],0,$RaceGroupInfo['RaceGroupId']);
 			}
 			//模板渲染
 			include $this->tpl('Xrace_Race_RaceGroupModify');

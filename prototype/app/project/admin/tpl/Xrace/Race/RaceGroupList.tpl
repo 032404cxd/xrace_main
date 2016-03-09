@@ -16,8 +16,8 @@ function RaceGroupModify(mid){
 function LicenseAdd(mid){
   modifyRaceGroupBox = divBox.showBox('{tpl:$this.sign/}&ac=group.license.add&RaceGroupId=' + mid, {title:'添加审核条件',width:500,height:300});
 }
-function LicenseDelete(g_id, l_id){
-  deleteAppBox = divBox.confirmBox({content:'是否删除?',ok:function(){location.href = '{tpl:$this.sign/}&ac=group.license.delete&RaceGroupId=' + g_id + '&LicenseId=' + l_id;}});
+function LicenseDelete(g_id, l_id, l_name){
+  deleteAppBox = divBox.confirmBox({content:'是否删除 ' + l_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=group.license.delete&RaceGroupId=' + g_id + '&LicenseId=' + l_id;}});
 }
 
 </script>

@@ -705,7 +705,7 @@ class Xrace_Race extends Base_Widget
 					$text[$key].= "<td>".$this->$functionName("LicenseList[".$key."]",$LicenseInfo,$edit)."</td>";
 					if($delete)
 					{
-						$text[$key].= '<td><a href="javascript:void(0);" onclick="LicenseDelete('."'".$delete."'".','."'".$key."'".')">删除</a></td>';
+						$text[$key].= '<td><a href="javascript:void(0);" onclick="LicenseDelete('."'".$delete."'".','."'".$key."'".','."'".$RaceLisenceTypeList[$LicenseInfo['LicenseType']]."'".')">删除</a></td>';
 					}
 					$text[$key].="</tr>";
 				}
