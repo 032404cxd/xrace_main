@@ -46,7 +46,7 @@ function LicenseDelete(g_id, l_id, l_name){
 
 {tpl:loop $RaceGroupList $RaceCatalogId $RaceCatalogInfo}
   <tr>
-    <th align="center" class="rowtip"  rowspan = {tpl:$RaceCatalogInfo.RowCount /}>{tpl:$RaceCatalogInfo.RaceCatalogName/}</th>
+    <th align="center" class="rowtip"  rowspan = {tpl:$RaceCatalogInfo.RaceGroupCount func="@@+1" /}>{tpl:$RaceCatalogInfo.RaceCatalogName/}</th>
   </tr>
   {tpl:loop $RaceCatalogInfo.RaceGroupList $RaceGroupId $RaceGroupInfo}
   <tr>

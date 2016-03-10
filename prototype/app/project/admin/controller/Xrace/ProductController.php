@@ -46,8 +46,6 @@ class Xrace_ProductController extends AbstractController
 			{
 				$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['ProductTypeList'][$ProductTypeId] = $ProductTypeInfo;
 				$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['ProductTypeCount'] = isset($ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['ProductTypeCount'])?$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['ProductTypeCount']+1:1;
-				$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['RowCount'] =$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['ProductTypeCount']+1;
-
 				if(isset($RaceCatalogArr[$ProductTypeInfo['RaceCatalogId']]))
 				{
 					$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['RaceCatalogName'] = $RaceCatalogArr[$ProductTypeInfo['RaceCatalogId']]['RaceCatalogName'];

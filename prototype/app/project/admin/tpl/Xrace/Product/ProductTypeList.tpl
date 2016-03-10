@@ -39,7 +39,7 @@ function productTypeModify(mid){
 
 {tpl:loop $ProductTypeList $RaceCatalogId $RaceCatalogInfo}
   <tr>
-    <th align="center" class="rowtip"  rowspan = {tpl:$RaceCatalogInfo.RowCount /}>{tpl:$RaceCatalogInfo.RaceCatalogName/}</th>
+    <th align="center" class="rowtip"  rowspan = {tpl:$RaceCatalogInfo.ProductTypeCount  func="@@+1" /}>{tpl:$RaceCatalogInfo.RaceCatalogName/}</th>
   </tr>
   {tpl:loop $RaceCatalogInfo.ProductTypeList $ProductTypeInfo}
   <tr class="hover">

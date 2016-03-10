@@ -36,30 +36,39 @@ class Xrace_RaceGroupController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
+			//获取赛事ID
 			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
+			//获取赛事列表
 			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
+			//获取分组列表
 			$RaceGroupArr = $this->oRace->getAllRaceGroupList($RaceCatalogId);
+			//初始化空的分组列表
 			$RaceGroupList = array();
+			//循环分组列表
 			foreach($RaceGroupArr as $key => $value)
 			{
 				//数据解包
 				$value['comment'] = json_decode($value['comment'],true);
 				//拼接权限审核条件
 				$value['LicenseListText'] = isset($value['comment']['LicenseList'])? $this->oRace->ParthRaceLicenseListToHtml($value['comment']['LicenseList'],0,$key):"";
-
+				//将分组分配到赛事下一级
 				$RaceGroupList[$value['RaceCatalogId']]['RaceGroupList'][$key] = $value;
+				//累加赛事下的分组数量
 				$RaceGroupList[$value['RaceCatalogId']]['RaceGroupCount'] = isset($RaceGroupList[$value['RaceCatalogId']]['RaceGroupCount'])?$RaceGroupList[$value['RaceCatalogId']]['RaceGroupCount']+1:1;
-				$RaceGroupList[$value['RaceCatalogId']]['RowCount'] = $RaceGroupList[$value['RaceCatalogId']]['RaceGroupCount']+1;
+				//如果赛事ID有效
 				if(isset($RaceCatalogArr[$value['RaceCatalogId']]))
 				{
+					//获取赛事名称
 					$RaceGroupList[$value['RaceCatalogId']]['RaceCatalogName'] = $RaceCatalogArr[$value['RaceCatalogId']]['RaceCatalogName'];
 				}
 				else
 				{
 					$RaceGroupList[$value['RaceCatalogId']]['RaceCatalogName'] = 	"未定义";
 				}
-				$RaceGroupList[$value['RaceCatalogId']]['RaceGroupList'][$key]['comment'] = json_decode($RaceGroupList[$value['RaceCatalogId']]['RaceGroupList'][$key]['comment']);
+				//数据解包
+				$RaceGroupList[$value['RaceCatalogId']]['RaceGroupList'][$key]['comment'] = json_decode($RaceGroupList[$value['RaceCatalogId']]['RaceGroupList'][$key]['comment'],true);
 			}
+			//渲染模板
 			include $this->tpl('Xrace_Race_RaceGroupList');
 		}
 		else
