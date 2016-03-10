@@ -17,7 +17,7 @@ class Xrace_ProductController extends AbstractController
 	 * @var object
 	 */
 	protected $oProduct;
-
+	protected $oRace;
 	/**
 	 * 初始化
 	 * (non-PHPdoc)
@@ -27,7 +27,7 @@ class Xrace_ProductController extends AbstractController
 	{
 		parent::init();
 		$this->oProduct = new Xrace_Product();
-
+		$this->oRace = new Xrace_Race();
 	}
 	//任务配置列表页面
 	public function indexAction()
@@ -36,7 +36,11 @@ class Xrace_ProductController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
-			$SportTypeArr = $this->oProduct->getAllProductTypeList();
+			//对应赛事ID
+			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
+			//获取赛事列表
+			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
+			$ProductTypeArr = $this->oProduct->getAllProductTypeList();
 			include $this->tpl('Xrace_Product_ProductTypeList');
 		}
 		else

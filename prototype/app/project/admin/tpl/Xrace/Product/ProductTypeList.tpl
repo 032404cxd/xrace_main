@@ -28,11 +28,11 @@ function productTypeModify(mid){
     <th align="center" class="rowtip">操作</th>
   </tr>
 
-{tpl:loop $SportTypeArr $oProductType}
+{tpl:loop $ProductTypeArr $ProductTypeInfo}
   <tr class="hover">
-    <td align="center">{tpl:$oProductType.ProductTypeId/}</td>
-    <td align="center">{tpl:$oProductType.ProductTypeName/}</td>
-    <td align="center"><a  href="javascript:;" onclick="productTypeDelete('{tpl:$oProductType.ProductTypeId/}','{tpl:$oProductType.ProductTypeName/}')">删除</a> |  <a href="javascript:;" onclick="productTypeModify('{tpl:$oProductType.ProductTypeId/}');">修改</a></td>
+    <td align="center">{tpl:$ProductTypeInfo.ProductTypeId/}</td>
+    <td align="center">{tpl:$ProductTypeInfo.ProductTypeName/}</td>
+    <td align="center"><a  href="javascript:;" onclick="productTypeDelete('{tpl:$ProductTypeInfo.ProductTypeId/}','{tpl:$ProductTypeInfo.ProductTypeName/}')">删除</a> |  <a href="javascript:;" onclick="productTypeModify('{tpl:$ProductTypeInfo.ProductTypeId/}');">修改</a></td>
   </tr>
 {/tpl:loop}
 </table>
