@@ -21,10 +21,16 @@ class Xrace_Product extends Base_Widget
 	 * @param $fields
 	 * @return array
 	 */
-	public function getAllProductTypeList($fields = "*")
+	public function getAllProductTypeList($RaceCatalogId = 0,$fields = "*")
 	{
+		$RaceCatalogId = intval($RaceCatalogId);
+		//初始化查询条件
+		$whereCatalog = ($RaceCatalogId != 0)?" RaceCatalogId = $RaceCatalogId":"";
+		$whereCondition = array($whereCatalog);
+		//生成条件列
+		$where = Base_common::getSqlWhere($whereCondition);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		$sql = "SELECT $fields FROM " . $table_to_process . " ORDER BY ProductTypeId ASC";
+		$sql = "SELECT $fields FROM " . $table_to_process . " where 1 ".$where." ORDER BY ProductTypeId ASC";
 		$return = $this->db->getAll($sql);
 		if(count($return))
 		{
