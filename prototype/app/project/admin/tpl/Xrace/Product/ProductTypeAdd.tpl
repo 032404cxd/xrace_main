@@ -6,6 +6,14 @@
 <td>商品类型名称</td>
 	<td align="left"><input type="text" class="span2" name="ProductTypeName"  id="ProductTypeName" value="" size="50" /></td>
 </tr>
+<tr class="hover"><td>所属赛事</td>
+	<td align="left">	<select name="RaceCatalogId" size="1">
+			<option value="0">全部</option>
+			{tpl:loop $RaceCatalogArr $RaceCatalogInfo}
+			<option value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" >{tpl:$RaceCatalogInfo.RaceCatalogName/}</option>
+			{/tpl:loop}
+		</select></td>
+</tr>
 	<tr class="noborder"><td></td>
 <td><button type="submit" id="app_add_submit">提交</button></td>
 </tr>

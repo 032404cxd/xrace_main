@@ -17,7 +17,7 @@ class Xrace_ProductController extends AbstractController
 	 * @var object
 	 */
 	protected $oProduct;
-
+	protected $oRace;
 	/**
 	 * 初始化
 	 * (non-PHPdoc)
@@ -27,7 +27,7 @@ class Xrace_ProductController extends AbstractController
 	{
 		parent::init();
 		$this->oProduct = new Xrace_Product();
-
+		$this->oRace = new Xrace_Race();
 	}
 	//任务配置列表页面
 	public function indexAction()
@@ -36,7 +36,25 @@ class Xrace_ProductController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
-			$SportTypeArr = $this->oProduct->getAllProductTypeList();
+			//对应赛事ID
+			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
+			//获取赛事列表
+			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
+			$ProductTypeArr = $this->oProduct->getAllProductTypeList($RaceCatalogId);
+			$ProductTypeList = array();
+			foreach($ProductTypeArr as $ProductTypeId => $ProductTypeInfo)
+			{
+				$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['ProductTypeList'][$ProductTypeId] = $ProductTypeInfo;
+				$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['ProductTypeCount'] = isset($ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['ProductTypeCount'])?$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['ProductTypeCount']+1:1;
+				if(isset($RaceCatalogArr[$ProductTypeInfo['RaceCatalogId']]))
+				{
+					$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['RaceCatalogName'] = $RaceCatalogArr[$ProductTypeInfo['RaceCatalogId']]['RaceCatalogName'];
+				}
+				else
+				{
+					$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['RaceCatalogName'] = 	"未定义";
+				}
+			}
 			include $this->tpl('Xrace_Product_ProductTypeList');
 		}
 		else
@@ -52,6 +70,9 @@ class Xrace_ProductController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("ProductTypeInsert");
 		if($PermissionCheck['return'])
 		{
+			//赛事列表
+			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
+			//渲染模板
 			include $this->tpl('Xrace_Product_ProductTypeAdd');
 		}
 		else
@@ -65,18 +86,34 @@ class Xrace_ProductController extends AbstractController
 	public function productTypeInsertAction()
 	{
 		//检查权限
-		$bind=$this->request->from('ProductTypeName');
-		if(trim($bind['ProductTypeName'])=="")
+		$PermissionCheck = $this->manager->checkMenuPermission("ProductTypeInsert");
+		if($PermissionCheck['return'])
 		{
-			$response = array('errno' => 1);
+			//获取页面参数
+			$bind=$this->request->from('ProductTypeName','RaceCatalogId');
+			//商品类型名称不能为空
+			if(trim($bind['ProductTypeName'])=="")
+			{
+				$response = array('errno' => 1);
+			}
+			//必须选择一个赛事
+			elseif(intval($bind['RaceCatalogId'])==0)
+			{
+				$response = array('errno' => 2);
+			}
+			else
+			{
+				$res = $this->oProduct->insertProductType($bind);
+				$response = $res ? array('errno' => 0) : array('errno' => 9);
+			}
+			echo json_encode($response);
+			return true;
 		}
 		else
 		{
-			$res = $this->oProduct->insertProductType($bind);
-			$response = $res ? array('errno' => 0) : array('errno' => 9);
+			$home = $this->sign;
+			include $this->tpl('403');
 		}
-		echo json_encode($response);
-		return true;
 	}
 	
 	//修改任务信息页面
@@ -86,8 +123,13 @@ class Xrace_ProductController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("ProductTypeModify");
 		if($PermissionCheck['return'])
 		{
-			$productTypeId = intval($this->request->productTypeId);
-			$oProductType = $this->oProduct->getProductType($productTypeId,'*');
+			//赛事列表
+			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
+			//商品类型ID
+			$ProductTypeId = intval($this->request->ProductTypeId);
+			//获取商品类型信息
+			$ProductTypeInfo = $this->oProduct->getProductType($ProductTypeId,'*');
+			//渲染模板
 			include $this->tpl('Xrace_Product_ProductTypeModify');
 		}
 		else
@@ -100,18 +142,36 @@ class Xrace_ProductController extends AbstractController
 	//更新任务信息
 	public function productTypeUpdateAction()
 	{
-		$bind=$this->request->from('ProductTypeId','ProductTypeName');
-		if(trim($bind['ProductTypeName'])=="")
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("ProductTypeModify");
+		if($PermissionCheck['return'])
 		{
-			$response = array('errno' => 1);
+
+			//获取页面参数
+			$bind=$this->request->from('ProductTypeId','ProductTypeName','RaceCatalogId');
+			//商品类型名称不能为空
+			if(trim($bind['ProductTypeName'])=="")
+			{
+				$response = array('errno' => 1);
+			}
+			//必须选择一个赛事
+			elseif(intval($bind['RaceCatalogId'])==0)
+			{
+				$response = array('errno' => 2);
+			}
+			else
+			{
+				$res = $this->oProduct->updateProductType($bind['ProductTypeId'],$bind);
+				$response = $res ? array('errno' => 0) : array('errno' => 9);
+			}
+			echo json_encode($response);
+			return true;
 		}
 		else
-		{			
-			$res = $this->oProduct->updateProductType($bind['ProductTypeId'],$bind);
-			$response = $res ? array('errno' => 0) : array('errno' => 9);
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
 		}
-		echo json_encode($response);
-		return true;
 	}
 	
 	//删除任务
