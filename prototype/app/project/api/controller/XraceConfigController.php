@@ -55,11 +55,11 @@ class XraceConfigController extends AbstractController
         $result = array("return"=>count($RaceCatalogList)?1:0,"RaceCatalogList"=>$RaceCatalogList);
         echo json_encode($result);
     }
-    
     /*
      * 获取单个赛事信息
      */
-    public function getRaceCatalogInfoAction() {
+    public function getRaceCatalogInfoAction()
+    {
         //格式化赛事ID,默认为0
         $RaceCatalogId = isset($this->request->RaceCatalogId)?abs(intval($this->request->RaceCatalogId)):0;
         //赛事ID必须大于0
@@ -99,7 +99,6 @@ class XraceConfigController extends AbstractController
         }
         echo json_encode($result);
     }
-    
     /*
      * 根据赛事获取所有分站列表
      */
@@ -116,10 +115,44 @@ class XraceConfigController extends AbstractController
             {
                 $RaceStageList = array();
             }
-            //解包数组
-            foreach ($RaceStageList as $RaceStageId => $RaceStageValue)
+            //循环分站数组
+            foreach ($RaceStageList as $RaceStageId => $RaceStageInfo)
             {
-                $RaceStageList[$RaceStageId]['comment'] = json_decode($RaceStageValue['comment'],true);
+                //解包数组
+                $RaceStageList[$RaceStageId]['comment'] = json_decode($RaceStageInfo['comment'],true);
+                //如果有配置分站图片
+                if(isset($RaceStageList[$RaceStageId]['comment']['RaceStageIconList']))
+                {
+                    //循环图片列表
+                    foreach($RaceStageList[$RaceStageId]['comment']['RaceStageIconList'] as $IconId => $IconInfo)
+                    {
+                        //拼接上ADMIN站点的域名
+                        $RaceStageList[$RaceStageId]['comment']['RaceStageIconList'][$IconId]['RaceStageIcon'] = $this->config->adminUrl.$IconInfo['RaceStageIcon_root'];
+                        //删除原有数据
+                        unset($RaceStageList[$RaceStageId]['comment']['RaceStageIconList'][$IconId]['RaceStageIcon_root']);
+                    }
+                }
+                //如果有配置分组信息
+                if(isset($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup']))
+                {
+                    //循环图片列表
+                    foreach($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'] as $RaceGroupId)
+                    {
+                        //获取赛事分组基本信息
+                        $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName");
+                        //如果有获取到分组信息
+                        if($RaceGroupInfo['RaceGroupId'])
+                        {
+                            //提取分组名称
+                            $RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'][$RaceGroupId] = $RaceGroupInfo;
+                        }
+                        else
+                        {
+                            //删除
+                            unset($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'][$RaceGroupId]);
+                        }
+                    }
+                }
                 //获取当前比赛的时间状态信息
                 $RaceStageList[$RaceStageId]['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageId,0);
             }
@@ -148,58 +181,32 @@ class XraceConfigController extends AbstractController
             //检测主键存在,否则值为空
             $RaceStageInfo = isset($RaceStageInfo['RaceStageId'])?$RaceStageInfo:array();
             //解包数组
-            $raceStageInfo['comment'] = isset($raceStageInfo['comment'])?json_decode($raceStageInfo['comment'],true):array();
-            //根据赛事获取组别列表
-            $raceGroupList = isset($raceStageInfo['RaceCatalogId'])?$this->oRace->getAllRaceGroupList($raceStageInfo['RaceCatalogId'],"RaceGroupId,RaceGroupName"):array();
-            //结果数组
-            $result = array("return"=>1,"raceStageInfo"=>$raceStageInfo,'raceGroupList'=>$raceGroupList);
-        }
-        else
-        {
-            //全部置为空
-            $result = array("return"=>0,"raceStageInfo"=>array(),'raceGroupList'=>array(),"comment"=>"请指定一个有效的分站ID");
-        }
-        echo json_encode($result);
-    }
-    
-    /*
-     * 根据赛事获取所有赛事组别列表
-     */
-    public function getRaceGroupListAction()
-    {
-        //格式化赛事ID,默认为0
-        $RaceCatalogId = isset($this->request->RaceCatalogId)?abs(intval($this->request->RaceCatalogId)):0;
-        //赛事ID必须大于0
-        if($RaceCatalogId)
-        {
-            //获得赛事组别列表
-            $raceGroupList = $this->oRace->getAllRaceGroupList($RaceCatalogId);
-            if(!is_array($raceGroupList))
+            $RaceStageInfo['comment'] = isset($RaceStageInfo['comment'])?json_decode($RaceStageInfo['comment'],true):array();
+            //如果有配置分站图片
+            if(isset($RaceStageInfo['comment']['RaceStageIconList']))
             {
-                foreach($raceGroupList['comment']['RaceStageIconList'] as $key => $IconInfo)
+                //循环图片列表
+                foreach($RaceStageInfo['comment']['RaceStageIconList'] as $IconId => $IconInfo)
                 {
-                    if(isset($IconInfo['RaceStageIcon_root']))
-                    {
-                        //拼接上ADMIN站点的域名
-                        $RaceStageInfo['comment']['RaceStageIconList'][$key]['RaceStageIcon'] = $this->config->adminUrl.$IconInfo['RaceStageIcon_root'];
-                        //删除原有数据
-                        unset($RaceStageInfo['comment']['RaceStageIconList'][$key]['RaceStageIcon_root']);
-                    }
+                    //拼接上ADMIN站点的域名
+                    $RaceStageInfo['comment']['RaceStageIconList'][$IconId]['RaceStageIcon'] = $this->config->adminUrl.$IconInfo['RaceStageIcon_root'];
+                    //删除原有数据
+                    unset($RaceStageInfo['comment']['RaceStageIconList'][$IconId]['RaceStageIcon_root']);
                 }
             }
-            //如果有选择组别
+            //如果有配置分组信息
             if(isset($RaceStageInfo['comment']['SelectedRaceGroup']))
             {
-                //循环已经选择的组别
+                //循环图片列表
                 foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $RaceGroupId)
                 {
                     //获取赛事分组基本信息
                     $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName");
                     //如果有获取到分组信息
-                    if($RaceGroupInfo['RaceGroupId'])
+                    if(isset($RaceGroupInfo['RaceGroupId']))
                     {
                         //提取分组名称
-                        $RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId] = $RaceGroupInfo['RaceGroupName'];
+                        $RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId] = $RaceGroupInfo;
                     }
                     else
                     {
@@ -208,26 +215,23 @@ class XraceConfigController extends AbstractController
                     }
                 }
             }
-            else
-            {
-                $RaceStageInfo['comment']['SelectedRaceGroup'] = array();
-            }
             //获取当前比赛的时间状态信息
-            $RaceStageInfo['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageInfo['RaceStageId'],0);
+            $RaceStageInfo['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageId,0);
             //结果数组
             $result = array("return"=>1,"RaceStageInfo"=>$RaceStageInfo);
         }
         else
         {
             //全部置为空
-            $result = array("return"=>0,"RaceStageInfo"=>array(),'RaceGroupList'=>array(),"comment"=>"请指定一个有效的分站ID");
+            $result = array("return"=>0,"RaceStageInfo"=>array(),"comment"=>"请指定一个有效的分站ID");
         }
         echo json_encode($result);
     }
     /*
      * 获取单个赛事组别的信息
      */
-    public function getRaceGroupInfoAction() {
+    public function getRaceGroupInfoAction()
+    {
         //格式化赛事组别ID,默认为0
         $RaceGroupId = isset($this->request->RaceGroupId)?intval($this->request->RaceGroupId):0;
         //赛事组别必须大于0
