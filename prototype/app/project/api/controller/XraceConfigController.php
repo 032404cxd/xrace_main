@@ -276,10 +276,13 @@ class XraceConfigController extends AbstractController
             {
                 $RaceList =array();
             }
+            //获取运动类型类表
             $SportsTypeList = $this->oSports->getAllSportsTypeList("SportsTypeId,SportsTypeName");
             //解包数组
             foreach ($RaceList as $RaceId => $RaceInfo)
             {
+                //处理价格列表
+                $RaceList[$RaceId]['PriceList'] = $this->oRace->getPriceList($RaceInfo['PriceList']);
                 //获取当前比赛的时间状态信息
                 $RaceList[$RaceId]['RaceStatus'] = $this->oRace->getRaceTimeStatus($RaceInfo);
                 //初始化比赛里程
@@ -373,6 +376,70 @@ class XraceConfigController extends AbstractController
                 $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
                 //处理价格列表
                 $RaceInfo['PriceList'] = $this->oRace->getPriceList($RaceInfo['PriceList']);
+                //获取当前比赛的时间状态信息
+                $RaceInfo['RaceStatus'] = $this->oRace->getRaceTimeStatus($RaceInfo);
+                //初始化比赛里程
+                $RaceInfo['Distence'] = 0;
+                //初始化比赛海拔提升
+                $RaceInfo['AltAsc'] = 0;
+                //初始化比赛海拔下降
+                $RaceInfo['AltDec'] = 0;
+                //如果有配置运动分段
+                if(isset($RaceInfo['comment']['DetailList']))
+                {
+                    //获取运动类型类表
+                    $SportsTypeList = $this->oSports->getAllSportsTypeList("SportsTypeId,SportsTypeName");
+                    //循环运动分段
+                    foreach($RaceInfo['comment']['DetailList'] as $detailId => $detailInfo)
+                    {
+                        //如果有配置过该运动分段
+                        if(isset($SportsTypeList[$detailInfo['SportsTypeId']]))
+                        {
+                            //获取运动类型名称
+                            $RaceInfo['comment']['DetailList'][$detailId]['SportsTypeName'] =   $SportsTypeList[$detailInfo['SportsTypeId']]['SportsTypeName'];
+                            //初始化运动分段的长度
+                            $RaceInfo['comment']['DetailList'][$detailId]['Distence'] = 0;
+                            //初始化运动分段的海拔上升
+                            $RaceInfo['comment']['DetailList'][$detailId]['AltAsc'] = 0;
+                            //初始化运动分段的海拔下降
+                            $RaceInfo['comment']['DetailList'][$detailId]['AltDec'] = 0;
+                            //获取计时点信息
+                            $TimingInfo = isset($detailInfo['TimingId'])?$this->oRace->getTimingDetail($detailInfo['TimingId']):array();
+                            //如果获取到计时点信息
+                            if(isset($TimingInfo['TimingId']))
+                            {
+                                //数据解包
+                                $TimingInfo['comment'] = isset($TimingInfo['comment'])?json_decode($TimingInfo['comment'],true):array();
+                                //循环计时点信息
+                                foreach($TimingInfo['comment'] as $tid => $tInfo)
+                                {
+                                    //累加里程到运动分段
+                                    $RaceInfo['comment']['DetailList'][$detailId]['Distence'] += $tInfo['ToNext']*$tInfo['Round'];
+                                    //累加里程到比赛
+                                    $RaceInfo['Distence'] += $tInfo['ToNext']*$tInfo['Round'];
+                                    //累加海拔上升到运动分段
+                                    $RaceInfo['comment']['DetailList'][$detailId]['AltAsc'] += $tInfo['AltAsc']*$tInfo['Round'];
+                                    //累加海拔上升到比赛
+                                    $RaceInfo['AltAsc'] += $tInfo['AltAsc']*$tInfo['Round'];
+                                    //累加海拔下降到运动分段
+                                    $RaceInfo['comment']['DetailList'][$detailId]['AltDec'] += $tInfo['AltDec']*$tInfo['Round'];
+                                    //累加海拔下降到比赛
+                                    $RaceInfo['AltDec'] += $tInfo['AltDec']*$tInfo['Round'];
+                                }
+                            }
+                        }
+                        else
+                        {
+                            unset($RaceInfo['comment']['DetailList'][$detailId]);
+                        }
+                    }
+                }
+                else
+                {
+                    //初始化为空数组
+                    $RaceInfo['comment']['DetailList'] = array();
+                }
+
                 //结果数组
                 $result = array("return"=>1,"RaceInfo"=>$RaceInfo);
             }
@@ -387,7 +454,6 @@ class XraceConfigController extends AbstractController
             //全部置为空
             $result = array("return"=>0,"RaceInfo"=>array(),"comment"=>"请指定一个有效的比赛ID");
         }
-        print_R($result);
         echo json_encode($result);
     }
 
