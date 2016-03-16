@@ -799,18 +799,23 @@ class Xrace_Race extends Base_Widget
 	//处理比赛价格列表
 	public function getPriceList($PriceList)
 	{
+		//首层以|切割
 		$P = explode("|",$PriceList);
+		//初始化空数组
 		$PriceList = array();
 		foreach($P as $key => $value)
 		{
+			//以:切割
 			$T = explode(":",$value);
+			//如果切割数量大于等于2
 			if(count($T)>=2)
 			{
-				$PriceList[abs(intval($T[0]))] = $T[1];
+				$PriceList[abs(intval($T[0]))] = abs(intval($T[1]));
 			}
-			else
+			//如果只有1
+			elseif(count($T)==1)
 			{
-				$PriceList[1] = $T[0];
+				$PriceList[1] = abs(intval($T[0]));
 			}
 		}
 		return  $PriceList;
