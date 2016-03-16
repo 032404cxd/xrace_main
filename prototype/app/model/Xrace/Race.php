@@ -659,26 +659,33 @@ class Xrace_Race extends Base_Widget
 				$MaxEndTime[] = strtotime($RaceInfo['ApplyEndTime']);
 			}
 		}
-		if (count($MinStartTime)) {
+		if (count($MinStartTime))
+		{
 			//获取最小开始报名时间
 			$MinStartTime = min($MinStartTime);
-		} elseif (count($MaxEndTime)) {
+		} elseif (count($MaxEndTime))
+		{
 			//获取最大报名时间
 			$MaxEndTime = max($MaxEndTime);
-		} else {
+		} else
+		{
 			$MinStartTime = 0;
 			$MaxEndTime = 0;
 		}
-		if ($MinStartTime == 0) {
+		if ($MinStartTime == 0)
+		{
 			$StageTimeStatus = array('StageStatus' => 1, 'StageStatusName' => '报名即将开始');
 		} //如果当前时间早于最小开始报名时间
-		elseif ($CurrentTime < $MinStartTime) {
+		elseif ($CurrentTime < $MinStartTime)
+		{
 			$StageTimeStatus = array('StageStatus' => 1, 'StageStatusName' => '报名即将开始');
 		} //如果当前时间早于最大结束报名时间
-		elseif ($CurrentTime <= $MaxEndTime) {
+		elseif ($CurrentTime <= $MaxEndTime)
+		{
 			$StageTimeStatus = array('StageStatus' => 2, 'StageStatusName' => '报名中');
 		} //如果当前时间晚于最大结束报名时间
-		elseif ($CurrentTime > $MaxEndTime) {
+		elseif ($CurrentTime > $MaxEndTime)
+		{
 			$StageTimeStatus = array('StageStatus' => 3, 'StageStatusName' => '报名结束');
 		}
 		return $StageTimeStatus;
@@ -788,5 +795,24 @@ class Xrace_Race extends Base_Widget
 			$text = isset($sexList[$LicenseInfo['License']])?$sexList[$LicenseInfo['License']]:$sexList[array_pop(array_keys($sexList))];
 		}
 		return $text;
+	}
+	//处理比赛价格列表
+	public function getPriceList($PriceList)
+	{
+		$P = explode("|",$PriceList);
+		$PriceList = array();
+		foreach($P as $key => $value)
+		{
+			$T = explode(":",$value);
+			if(count($T)>=2)
+			{
+				$PriceList[abs(intval($T[0]))] = $T[1];
+			}
+			else
+			{
+				$PriceList[1] = $T[0];
+			}
+		}
+		return  $PriceList;
 	}
 }

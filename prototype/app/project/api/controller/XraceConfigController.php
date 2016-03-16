@@ -105,6 +105,7 @@ class XraceConfigController extends AbstractController
     public function getRaceStageListAction() {
         //格式化赛事ID,默认为0
         $RaceCatalogId = isset($this->request->RaceCatalogId)?abs(intval($this->request->RaceCatalogId)):0;
+        $RaceStageStatus = isset($this->request->RaceStageStatus)?abs(intval($this->request->RaceStageStatus)):0;
         //赛事ID必须大于0
         if($RaceCatalogId)
         {
@@ -362,19 +363,31 @@ class XraceConfigController extends AbstractController
             //获取比赛信息
             $RaceInfo = $this->oRace->getRaceInfo($RaceId);
             //检测主键存在,否则值为空
-            $RaceInfo = isset($RaceInfo['RaceId']) ? $RaceInfo : array();
-            //获取当前比赛的时间状态信息
-            $RaceInfo['RaceStatus'] = $this->oRace->getRaceTimeStatus($RaceInfo);
-            //解包数组
-            $RaceInfo['comment'] = isset($RaceInfo['comment']) ? json_decode($RaceInfo['comment']) : array();
-            //结果数组
-            $result = array("return"=>1,"RaceInfo"=>$RaceInfo);
+            if(isset($RaceInfo['RaceId']))
+            {
+                //检测主键存在,否则值为空
+                $RaceInfo = isset($RaceInfo['RaceId']) ? $RaceInfo : array();
+                //获取当前比赛的时间状态信息
+                $RaceInfo['RaceStatus'] = $this->oRace->getRaceTimeStatus($RaceInfo);
+                //解包数组
+                $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+                //处理价格列表
+                $RaceInfo['PriceList'] = $this->oRace->getPriceList($RaceInfo['PriceList']);
+                //结果数组
+                $result = array("return"=>1,"RaceInfo"=>$RaceInfo);
+            }
+            else
+            {
+                //全部置为空
+                $result = array("return"=>0,"RaceInfo"=>array(),"comment"=>"请指定一个有效的比赛ID");
+            }
         }
         else
         {
             //全部置为空
             $result = array("return"=>0,"RaceInfo"=>array(),"comment"=>"请指定一个有效的比赛ID");
         }
+        print_R($result);
         echo json_encode($result);
     }
 
