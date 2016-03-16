@@ -143,7 +143,6 @@ class Xrace_User extends Base_Widget
 		$limit  = isset($params['Page'])&&$params['Page']?" limit ".($params['Page']-1)*$params['PageSize'].",".$params['PageSize']." ":"";
 		$order = " ORDER BY crt_time desc";
 		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." ".$order." ".$limit;
-		echo $sql."<br>";
 		$return = $this->db->getAll($sql);
 		$UserList = array('UserList'=>array(),'UserCount'=>$UserCount);
 		if(count($return))
@@ -200,7 +199,7 @@ class Xrace_User extends Base_Widget
 	{
 		$UserAuthInfo = $this->getUserAuthInfo($UserId);
 		$UserAuthInfo['auth_resp'] = $AuthInfo['auth_resp'];
-		$UserAuthInfo['auth_result'] = "ALLOWED";
+		$UserAuthInfo['auth_result'] = 2;
 		$UserAuthInfo['op_time'] = date("Y-m-d H:i:s",time());
 		$UserAuthInfo['op_uid'] = $AuthInfo['op_uid'];
 		//事务开始
@@ -231,7 +230,7 @@ class Xrace_User extends Base_Widget
 
 		$UserAuthInfo = $this->getUserAuthInfo($UserId);
 		$UserAuthInfo['auth_resp'] = $AuthInfo['auth_resp'];
-		$UserAuthInfo['auth_result'] = "DENY";
+		$UserAuthInfo['auth_result'] = 2;
 		$UserAuthInfo['op_time'] = date("Y-m-d H:i:s",time());
 		$UserAuthInfo['op_uid'] = $AuthInfo['op_uid'];
 		//事务开始

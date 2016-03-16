@@ -48,7 +48,7 @@
                         图片2：无
                     {/tpl:if}
             </td>
-            <th align="center" class="rowtip" colspan = 2>{tpl:if($UserInfo.auth_state=="1")}<a  href="javascript:;" onclick="userAuth('{tpl:$UserInfo.user_id/}')">审核</a>{/tpl:if}</th>
+            <th align="center" class="rowtip" colspan = 2>{tpl:if($UserInfo.auth_state==1)}<a  href="javascript:;" onclick="userAuth('{tpl:$UserInfo.user_id/}')">审核</a>{/tpl:if}</th>
         </tr>
     </table>
 
