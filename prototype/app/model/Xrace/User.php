@@ -143,6 +143,7 @@ class Xrace_User extends Base_Widget
 		$limit  = isset($params['Page'])&&$params['Page']?" limit ".($params['Page']-1)*$params['PageSize'].",".$params['PageSize']." ":"";
 		$order = " ORDER BY crt_time desc";
 		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." ".$order." ".$limit;
+		echo $sql."<br>";
 		$return = $this->db->getAll($sql);
 		$UserList = array('UserList'=>array(),'UserCount'=>$UserCount);
 		if(count($return))
