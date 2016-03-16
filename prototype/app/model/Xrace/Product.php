@@ -9,7 +9,7 @@ class Xrace_Product extends Base_Widget
 {
 	//声明所用到的表
 	protected $table = 'config_product_type';
-
+        protected $table_product = 'config_product';
 	protected $maxParams = 5;
 
 	public function getMaxParmas()
@@ -87,5 +87,78 @@ class Xrace_Product extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		return $this->db->delete($table_to_process, '`ProductTypeId` = ?', $productTypeId);
 	}
+        
+        /**
+	 * 查询全部
+	 * @param $fields
+	 * @return array
+	 */
+	public function getAllProductList($productTypeId = 0,$fields = "*")
+	{
+		$productTypeId = intval($productTypeId);
+		//初始化查询条件
+		$whereCatalog = ($productTypeId != 0)?" ProductTypeId = $productTypeId":"";
+		$whereCondition = array($whereCatalog);
+		//生成条件列
+		$where = Base_common::getSqlWhere($whereCondition);
+		$table_to_process = Base_Widget::getDbTable($this->table_product);
+		$sql = "SELECT $fields FROM " . $table_to_process . " where 1 ".$where." ORDER BY ProductTypeId ASC";
+		$return = $this->db->getAll($sql);
+		if(count($return))
+		{
+			foreach($return as $key => $value)
+			{
+				$AllProduct[$value['ProductTypeId']][] = $value;
+			}
+		}
+		return $AllProduct; 
+        }
+
+        /**
+	 * 获取单条记录
+	 * @param integer $AppId
+	 * @param string $fields
+	 * @return array
+	 */
+	public function getProduct($productId, $fields = '*')
+	{
+		$productId = intval($productId);
+		$table_to_process = Base_Widget::getDbTable($this->table_product);
+		return $this->db->selectRow($table_to_process, $fields, '`ProductId` = ?', $productId);
+	}
+	/**
+	 * 插入
+	 * @param array $bind
+	 * @return boolean
+	 */
+	public function insertProduct(array $bind)
+	{
+		$table_to_process = Base_Widget::getDbTable($this->table_product);
+		return $this->db->insert($table_to_process, $bind);
+	}
+        /**
+	 * 更新
+	 * @param integer $AppId
+	 * @param array $bind
+	 * @return boolean
+	 */
+	public function updateProduct($productId, array $bind)
+	{
+		$productId = intval($productId);
+		$table_to_process = Base_Widget::getDbTable($this->table_product);
+		return $this->db->update($table_to_process, $bind, '`ProductId` = ?', $productId);
+	}
+	/**
+	 * 删除
+	 * @param integer $AppId
+	 * @return boolean
+	 */
+	public function deleteProduct($productId)
+	{
+		$productId = intval($productId);
+		$table_to_process = Base_Widget::getDbTable($this->table_product);
+		return $this->db->delete($table_to_process, '`ProductId` = ?', $productId);
+	}
+        
 
 }
