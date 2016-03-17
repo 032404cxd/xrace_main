@@ -121,41 +121,50 @@ class XraceConfigController extends AbstractController
             {
                 //解包数组
                 $RaceStageList[$RaceStageId]['comment'] = json_decode($RaceStageInfo['comment'],true);
-                //如果有配置分站图片
-                if(isset($RaceStageList[$RaceStageId]['comment']['RaceStageIconList']))
-                {
-                    //循环图片列表
-                    foreach($RaceStageList[$RaceStageId]['comment']['RaceStageIconList'] as $IconId => $IconInfo)
-                    {
-                        //拼接上ADMIN站点的域名
-                        $RaceStageList[$RaceStageId]['comment']['RaceStageIconList'][$IconId]['RaceStageIcon'] = $this->config->adminUrl.$IconInfo['RaceStageIcon_root'];
-                        //删除原有数据
-                        unset($RaceStageList[$RaceStageId]['comment']['RaceStageIconList'][$IconId]['RaceStageIcon_root']);
-                    }
-                }
-                //如果有配置分组信息
-                if(isset($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup']))
-                {
-                    //循环图片列表
-                    foreach($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'] as $RaceGroupId)
-                    {
-                        //获取赛事分组基本信息
-                        $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName");
-                        //如果有获取到分组信息
-                        if($RaceGroupInfo['RaceGroupId'])
-                        {
-                            //提取分组名称
-                            $RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'][$RaceGroupId] = $RaceGroupInfo;
-                        }
-                        else
-                        {
-                            //删除
-                            unset($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'][$RaceGroupId]);
-                        }
-                    }
-                }
                 //获取当前比赛的时间状态信息
                 $RaceStageList[$RaceStageId]['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageId,0);
+                if(($RaceStageStatus>0 && $RaceStageList[$RaceStageId]['RaceStageStatus']['StageStatus']==$RaceStageStatus) || ($RaceStageStatus==0))
+                {
+                    //如果有配置分站图片
+                    if(isset($RaceStageList[$RaceStageId]['comment']['RaceStageIconList']))
+                    {
+                        //循环图片列表
+                        foreach($RaceStageList[$RaceStageId]['comment']['RaceStageIconList'] as $IconId => $IconInfo)
+                        {
+                            //拼接上ADMIN站点的域名
+                            $RaceStageList[$RaceStageId]['comment']['RaceStageIconList'][$IconId]['RaceStageIcon'] = $this->config->adminUrl.$IconInfo['RaceStageIcon_root'];
+                            //删除原有数据
+                            unset($RaceStageList[$RaceStageId]['comment']['RaceStageIconList'][$IconId]['RaceStageIcon_root']);
+                        }
+                    }
+                    //如果有配置分组信息
+                    if(isset($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup']))
+                    {
+                        //循环图片列表
+                        foreach($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'] as $RaceGroupId)
+                        {
+                            //获取赛事分组基本信息
+                            $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName");
+                            //如果有获取到分组信息
+                            if($RaceGroupInfo['RaceGroupId'])
+                            {
+                                //提取分组名称
+                                $RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'][$RaceGroupId] = $RaceGroupInfo;
+                            }
+                            else
+                            {
+                                //删除
+                                unset($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'][$RaceGroupId]);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    unset($RaceStageList[$RaceStageId]);
+                }
+
+
             }
             //结果数组
             $result = array("return"=>1,"RaceStageList"=>$RaceStageList);            
