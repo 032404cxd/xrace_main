@@ -11,6 +11,11 @@ class Xrace_RaceStageController extends AbstractController
 	 * @var object
 	 */
 	protected $oRace;
+        /**
+	 * product对象
+	 * @var object
+	 */
+        protected $oProduct;
 	/**
 	 * 初始化
 	 * (non-PHPdoc)
@@ -20,6 +25,7 @@ class Xrace_RaceStageController extends AbstractController
 	{
 		parent::init();
 		$this->oRace = new Xrace_Race();
+                $this->oProduct = new Xrace_Product();
 
 	}
 	//赛事分站列表页面
@@ -38,6 +44,7 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceStageArr = $this->oRace->getAllRaceStageList($RaceCatalogId);
 			//赛事分组列表
 			$RaceGroupArr = $this->oRace->getAllRaceGroupList($RaceCatalogId,'RaceGroupId,RaceGroupName');
+                        $ProductTypeArr = $this->oProduct->getAllProductTypeList($RaceCatalogId,'ProductTypeId,ProductTypeName');
 			//初始化一个空的赛事分站列表
 			$RaceStageList = array();
 			//循环赛事分站列表
@@ -97,6 +104,34 @@ class Xrace_RaceStageController extends AbstractController
 						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RowCount'] = 1;
 					}
                                         
+                                        $p = array();
+					//如果有已经选择的产品
+					if(isset($value['comment']['SelectedProductList']) && is_array($value['comment']['SelectedProductList']))
+					{
+                                            foreach ($value['comment']['SelectedProductList'] as $k => $v) {
+                                                $ProductCount = count($v);
+                                                //如果有配置产品
+                                                if($ProductCount>0)
+                                                {
+                                                        //添加产品数量
+                                                        $Suffix = "(".$ProductCount.")";
+                                                        $p[$k] = $ProductTypeArr[$k]['ProductTypeName'].$Suffix;
+                                                }
+                                                else
+                                                {
+                                                        $Suffix = "";
+                                                }
+                                                
+                                            }
+                                        } 
+                                        if(count($p)) {
+                                            $SelectedProductText = implode("/", $p);
+                                            $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['SelectedProductList'] = "<a href='".Base_Common::getUrl('','xrace/race.stage','product.modify',array('RaceCatalogId'=>$value['RaceCatalogId'],'RaceStageId'=>$value['RaceStageId'])) ."'>".$SelectedProductText."</a>";
+                                        }
+                                        else
+                                        {
+                                            $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['SelectedProductList'] = "<a href='".Base_Common::getUrl('','xrace/race.stage','product.modify',array('RaceCatalogId'=>$value['RaceCatalogId'],'RaceStageId'=>$value['RaceStageId'])) ."'>尚未配置</a>";
+                                        }
 				}
 				else
 				{
@@ -1255,6 +1290,128 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+        
+        //添加比赛配置信息填写页面
+	public function productModifyAction()
+	{
+            //检查权限
+            $PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+            if($PermissionCheck['return'])
+            {
+                //赛事ID
+                $RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
+                $RaceStageId  = isset($this->request->RaceStageId)?intval($this->request->RaceStageId):0;
+                //获取赛站信息
+                $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId);
+                //解包赛站数组
+                $RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
+                $SelectedProductList = array();
+                if(isset($RaceStageInfo['comment']['SelectedProductList']) && is_array($RaceStageInfo['comment']['SelectedProductList']))
+                {
+                    $SelectedProductList = $RaceStageInfo['comment']['SelectedProductList'];
+                }
+                //echo 'sp';echo '<br>';
+                //print_r($SelectedProductList);echo '<br>';
+                //商品类型列表
+                $ProductTypeList = $this->oProduct->getAllProductTypeList($RaceCatalogId, 'ProductTypeId,ProductTypeName');
+                //商品列表
+                $ProductList = array();
+                foreach ($ProductTypeList as $ProductTypeId => $ProductTypeInfo) {
+                    $ProductInfo =$this->oProduct->getAllProductList($ProductTypeId);
+                    //print_r($ProductInfo);exit;
+                    foreach ($ProductInfo[$ProductTypeId] as $ProductId => $ProductDetailInfo) {
+                        if(isset($SelectedProductList[$ProductTypeInfo['ProductTypeId']][$ProductDetailInfo['ProductId']]))
+                        {
+                            $ProductInfo[$ProductTypeId][$ProductId]['ProductChecked'] = 'checked="checked"';
+                            $ProductInfo[$ProductTypeId][$ProductId]['ProductPrice'] = $SelectedProductList[$ProductTypeInfo['ProductTypeId']][$ProductDetailInfo['ProductId']]['ProductLimit'] . '/' . $SelectedProductList[$ProductTypeInfo['ProductTypeId']][$ProductDetailInfo['ProductId']]['ProductPrice'];
+                        }
+                        else
+                        {
+                            $ProductInfo[$ProductTypeId][$ProductId]['ProductChecked'] = '';
+                            $ProductInfo[$ProductTypeId][$ProductId]['ProductPrice'] = '';
+                        }
+                            
+                    }
+                    $ProductList[$ProductTypeInfo['ProductTypeId']]['ProductTypeName'] = $ProductTypeInfo['ProductTypeName'];
+                    $ProductList[$ProductTypeInfo['ProductTypeId']]['ProductList'] = $ProductInfo;
+                }
+                //print_r($ProductList);exit;
+                //渲染模板
+                include $this->tpl('Xrace_Race_ProductModify');
+            }
+            else
+            {
+                $home = $this->sign;
+                include $this->tpl('403');
+            }
+        }
+        
+        public function productUpdateAction()
+	{
+            //检查权限
+            $PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+            if($PermissionCheck['return'])
+            {
+                //赛事ID
+                $RaceStageId = $this->request->from('RaceStageId');
+                //获取赛站信息
+                $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId);
+                //解包赛站数组
+                $RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
+                //获得赛站产品信息
+                //$SelectedProduct = $RaceStageInfo['comment']['SelectedProduct'];
+                //获取已经选定的商品列表
+		$CheckedProduct = $this->request->from('ProductChecked');
+                //获取已经选定的商品数据
+                $ProductData = $this->request->from('ProductPrice');
+                $SelectedProductList = array();
+                $defaultLimitNum = 1;
+                $maxLimitNum = 3;
+                $defaultProductPrice = 99;
+                $maxProductPrice = 9999;
+                foreach ($CheckedProduct['ProductChecked'] as $ProductTypeId => $ProductList) {
+                    foreach ($ProductList as $ProductId => $Product) {
+                        $SelectedProductList[$ProductTypeId][$Product]['ProductId'] = $Product;
+                        $ProductDataArr = explode('/', trim($ProductData['ProductPrice'][$ProductTypeId][$ProductId]));
+
+                        $ProductLimit = $defaultLimitNum;
+                        $ProductPrice = $defaultProductPrice;
+                        if(is_numeric($ProductDataArr[0]))
+                        {
+                            $ProductLimit = $ProductDataArr[0] < 0 ? $defaultLimitNum : ($ProductDataArr[0] ==0 ? 0 :($ProductDataArr[0] > $maxLimitNum ? $maxLimitNum : $ProductDataArr[0]));
+                        }
+                        else
+                        {
+                            $ProductLimit = $defaultLimitNum;
+                        }
+                        if(is_numeric($ProductDataArr[1]))
+                        {
+                            $ProductPrice = $ProductDataArr[1] < 0 ? $defaultProductPrice : ($ProductDataArr[0] ==0 ? 0 :($ProductDataArr[1] > $maxProductPrice ? $maxProductPrice : $ProductDataArr[1]));
+                        }
+                        else {
+                            $ProductPrice = $defaultProductPrice;
+                        }
+                        
+                        $SelectedProductList[$ProductTypeId][$Product]['ProductLimit'] = $ProductLimit;
+                        $SelectedProductList[$ProductTypeId][$Product]['ProductPrice'] = $ProductPrice;
+                    }
+
+                }
+                $RaceStageInfo['comment']['SelectedProductList'] = $SelectedProductList;
+                //数据打包
+                $bind['comment'] = json_encode($RaceStageInfo['comment']);
+                //更新赛站信息
+                $UpdateRaceStage = $this->oRace->updateRaceStage($RaceStageId, $bind);
+                $response = $UpdateRaceStage ? array('errno' => 0) : array('errno' => 9);
+                echo json_encode($response);
+            }
+            else
+            {
+                $home = $this->sign;
+                include $this->tpl('403');
+            }
+        }
+        
 }
 
 //ALTER TABLE `config_race` ADD `ApplyStartTime` DATETIME NOT NULL COMMENT '开始报名时间' AFTER `StartTime` ,
