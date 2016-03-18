@@ -100,7 +100,7 @@ class Xrace_RaceStageController extends AbstractController
 					else
 					{
 						//生成默认的入口
-						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['SelectedGroupList'] = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.list',array('RaceStageId'=>$key)) ."'>尚未配置</a>";
+						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['SelectedGroupList'] = "尚未配置";
 						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['GroupCount'] = 0;
 						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RowCount'] = 1;
 					}
@@ -148,9 +148,7 @@ class Xrace_RaceStageController extends AbstractController
 						}
 					}
 					//拼接页面显示的数量
-					$SelectedProductText = count($t2)>0?implode("/", $t2):"尚未配置";
-					//拼接跳转参数
-					$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['SelectedProductList'] = "<a href='".Base_Common::getUrl('','xrace/race.stage','product.modify',array('RaceCatalogId'=>$value['RaceCatalogId'],'RaceStageId'=>$value['RaceStageId'])) ."'>".$SelectedProductText."</a>";
+					$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['SelectedProductList'] = count($t2)>0?implode("/", $t2):"尚未配置";
 				}
 				else
 				{
@@ -1318,7 +1316,8 @@ class Xrace_RaceStageController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事ID
-			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
+			//$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
+			//赛事分站ID
 			$RaceStageId  = isset($this->request->RaceStageId)?intval($this->request->RaceStageId):0;
 			//获取赛站信息
 			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId);
@@ -1332,7 +1331,7 @@ class Xrace_RaceStageController extends AbstractController
 				$SelectedProductList = $RaceStageInfo['comment']['SelectedProductList'];
 			}
 			//商品类型列表
-			$ProductTypeList = $this->oProduct->getAllProductTypeList($RaceCatalogId, 'ProductTypeId,ProductTypeName');
+			$ProductTypeList = $this->oProduct->getAllProductTypeList($RaceStageInfo['RaceCatalogId'], 'ProductTypeId,ProductTypeName');
 			//初始化空的商品列表
 			$ProductList = array();
 			//获取所有产品的列表
