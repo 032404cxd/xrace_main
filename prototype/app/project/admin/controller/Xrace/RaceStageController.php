@@ -124,22 +124,26 @@ class Xrace_RaceStageController extends AbstractController
 									//置入缓存
 									$ProductList[$ProductId] = $ProductInfo;
 								}
-								//如果获取到的产品的分类有效
-								if(isset($ProductTypeArr[$ProductInfo['ProductTypeId']]))
+							}
+							else
+							{
+								$ProductInfo = $ProductList[$ProductId];
+							}
+							//如果获取到的产品的分类有效
+							if(isset($ProductTypeArr[$ProductInfo['ProductTypeId']]))
+							{
+								//如果缓存中的产品类型有累加数量
+								if(isset($t[$ProductInfo['ProductTypeId']]))
 								{
-									//如果缓存中的产品类型有累加数量
-									if(isset($t[$ProductInfo['ProductTypeId']]))
-									{
-										//数量累加
-										$t[$ProductInfo['ProductTypeId']]['ProductCount']++;
-									}
-									else
-									{
-										//初始化数量
-										$t[$ProductInfo['ProductTypeId']] = array("ProductCount"=>1,"ProductTypeName"=>$ProductTypeArr[$ProductInfo['ProductTypeId']]['ProductTypeName']);
-									}
-									$t2[$ProductInfo['ProductTypeId']] = $t[$ProductInfo['ProductTypeId']]['ProductTypeName']."(".$t[$ProductInfo['ProductTypeId']]['ProductCount'].")";
+									//数量累加
+									$t[$ProductInfo['ProductTypeId']]['ProductCount']++;
 								}
+								else
+								{
+									//初始化数量
+									$t[$ProductInfo['ProductTypeId']] = array("ProductCount"=>1,"ProductTypeName"=>$ProductTypeArr[$ProductInfo['ProductTypeId']]['ProductTypeName']);
+								}
+								$t2[$ProductInfo['ProductTypeId']] = $t[$ProductInfo['ProductTypeId']]['ProductTypeName']."(".$t[$ProductInfo['ProductTypeId']]['ProductCount'].")";
 							}
 						}
 					}
