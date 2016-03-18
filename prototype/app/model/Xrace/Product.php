@@ -108,11 +108,11 @@ class Xrace_Product extends Base_Widget
 		{
 			foreach($return as $key => $value)
 			{
-				$AllProduct[$value['ProductTypeId']][] = $value;
+				$AllProductList[$value['ProductTypeId']][$value['ProductId']] = $value;
 			}
 		}
-		return $AllProduct; 
-        }
+		return $AllProductList;
+	}
 
         /**
 	 * 获取单条记录
