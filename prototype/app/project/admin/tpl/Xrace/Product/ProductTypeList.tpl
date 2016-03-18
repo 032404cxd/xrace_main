@@ -45,7 +45,7 @@ function productTypeModify(mid){
   <tr class="hover">
     <td align="center">{tpl:$ProductTypeInfo.ProductTypeId/}</td>
     <td align="center">{tpl:$ProductTypeInfo.ProductTypeName/}</td>
-    <td align="center"><a  href="javascript:;" onclick="productTypeDelete('{tpl:$ProductTypeInfo.ProductTypeId/}','{tpl:$ProductTypeInfo.ProductTypeName/}')">删除</a> |  <a href="javascript:;" onclick="productTypeModify('{tpl:$ProductTypeInfo.ProductTypeId/}');">修改</a></td>
+    <td align="center"><a  href="javascript:;" onclick="productTypeDelete('{tpl:$ProductTypeInfo.ProductTypeId/}','{tpl:$ProductTypeInfo.ProductTypeName/}')">删除</a> |  <a href="javascript:;" onclick="productTypeModify('{tpl:$ProductTypeInfo.ProductTypeId/}');">修改</a> |  <a href="?productTypeId={tpl:$ProductTypeInfo.ProductTypeId/}&ctl=xrace/product&ac=product.list">产品配置</a></td>
   </tr>
 {/tpl:loop}
 {/tpl:loop}

@@ -191,4 +191,134 @@ class Xrace_ProductController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+        
+        //商品列表
+        public function productListAction() 
+        {
+                //检查权限
+                $PermissionCheck = $this->manager->checkMenuPermission(0);
+                if($PermissionCheck['return'])
+                {
+                    $productTypeId = trim($this->request->productTypeId);
+                    $ProductList = $this->oProduct->getAllProductList($productTypeId);
+                    //渲染模板
+                    include $this->tpl('Xrace_Product_ProductList');   
+                }
+                else
+                {
+                    $home = $this->sign;
+                    include $this->tpl('403');
+                }
+        }
+        
+        //添加商品界面
+        public function productAddAction() {
+                $productTypeId = trim($this->request->productTypeId);
+                $productSign  = '?productTypeId='.$productTypeId.'&ctl=xrace/product&ac=product.list';
+                //检查权限
+                $PermissionCheck = $this->manager->checkMenuPermission("ProductInsert");
+                if($PermissionCheck['return'])
+                {
+                   //渲染模板
+                    include $this->tpl('Xrace_Product_ProductAdd'); 
+                }
+                else
+                {
+                    $home = $this->sign;
+                    include $this->tpl('403');                
+                }
+            
+        }
+        
+        //添加商品
+        public function productInsertAction() {
+                //检查权限
+                $PermissionCheck = $this->manager->checkMenuPermission("ProductInsert");
+                if($PermissionCheck['return'])
+                {
+                    //获取页面参数
+                    $bind=$this->request->from('ProductName','ProductTypeId');
+                    //商品名称不能为空
+                    if(trim($bind['ProductName'])=="")
+                    {
+                        $response = array('errno' => 1);
+                    }
+                    else
+                    {
+                        $res = $this->oProduct->insertProduct($bind);
+                        $response = $res ? array('errno' => 0) : array('errno' => 9);
+                    }
+                    echo json_encode($response);
+                    return true;
+                }
+                else
+                {
+                    $home = $this->sign;
+                    include $this->tpl('403');                
+                }            
+        }
+        
+        public function productModifyAction() {
+                $productTypeId = trim($this->request->productTypeId);
+                $productSign  = '?productTypeId='.$productTypeId.'&ctl=xrace/product&ac=product.list';
+                //检查权限
+                $PermissionCheck = $this->manager->checkMenuPermission("ProductModify");
+                if($PermissionCheck['return'])
+                {
+                    $productId = trim($this->request->productId);
+                    $ProductInfo = $this->oProduct->getProduct($productId);
+                    //渲染模板
+                    include $this->tpl('Xrace_Product_ProductModify');   
+                }
+                else 
+                {
+                    $home = $this->sign;
+                    include $this->tpl('403');
+                }
+            
+        }
+        
+        public function productUpdateAction() {
+                //检查权限
+                $PermissionCheck = $this->manager->checkMenuPermission("ProductModify");
+                if($PermissionCheck['return'])
+                {
+ 			//获取页面参数
+			$bind=$this->request->from('ProductId','ProductName');
+			//商品类型名称不能为空
+			if(trim($bind['ProductName'])=="")
+			{
+				$response = array('errno' => 1);
+			}
+			else
+			{
+				$res = $this->oProduct->updateProduct($bind['ProductId'], $bind);
+				$response = $res ? array('errno' => 0) : array('errno' => 9);
+			}
+			echo json_encode($response);
+			return true;                   
+                }
+                else 
+                {
+                    $home = $this->sign;
+                    include $this->tpl('403');
+                }            
+            
+        } 
+        
+        public function productDeleteAction() {
+                //检查权限
+                $PermissionCheck = $this->manager->checkMenuPermission("ProductDelete");
+                if($PermissionCheck['return'])
+                {
+                    $productId = trim($this->request->productId);
+                    $this->oProduct->deleteProduct($productId);
+                    $this->response->goBack();
+                }
+                else 
+                {
+                    $home = $this->sign;
+                    include $this->tpl('403');
+                }            
+        }
 }
