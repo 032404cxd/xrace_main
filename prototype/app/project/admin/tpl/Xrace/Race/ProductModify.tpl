@@ -37,7 +37,7 @@ $('#product_update_submit').click(function(){
 				var message = '产品列表更新成功';
 				RaceCatalogId=$("#RaceCatalogId");
 				RaceStageId=$("#RaceStageId");
-				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}&ac=product.modify&RaceCatalogId=' + RaceCatalogId.val() + '&RaceStageId=' + RaceStageId.val());}});
+				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}&ac=index&RaceCatalogId=' + RaceCatalogId.val());}});
 			}
 		}
 	};
