@@ -623,15 +623,15 @@ class Xrace_Race extends Base_Widget
 		}
 		elseif ($CurrentTime >= $ApplyEndTime && $CurrentTime < $StartTime)
 		{
-			$RaceStatus = array('RaceStatus'=>3,'RaceStatusName'=>'报名结束');
+			$RaceStatus = array('RaceStatus'=>4,'RaceStatusName'=>'报名结束');
 		}
 		elseif ($CurrentTime >= $StartTime && $CurrentTime < $EndTime)
 		{
-			$RaceStatus = array('RaceStatus'=>4,'RaceStatusName'=>'比赛中');
+			$RaceStatus = array('RaceStatus'=>8,'RaceStatusName'=>'比赛中');
 		}
 		else
 		{
-			$RaceStatus = array('RaceStatus'=>5,'RaceStatusName'=>'比赛结束');
+			$RaceStatus = array('RaceStatus'=>16,'RaceStatusName'=>'比赛结束');
 		}
 		return $RaceStatus;
 	}
