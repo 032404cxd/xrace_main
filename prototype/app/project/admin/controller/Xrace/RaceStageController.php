@@ -35,7 +35,7 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
-                        $RootUrl = "http://".$_SERVER['HTTP_HOST'];
+			$RootUrl = "http://".$_SERVER['HTTP_HOST'];
 			//赛事ID
 			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
 			//赛事列表
@@ -44,6 +44,7 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceStageArr = $this->oRace->getAllRaceStageList($RaceCatalogId);
 			//赛事分组列表
 			$RaceGroupArr = $this->oRace->getAllRaceGroupList($RaceCatalogId,'RaceGroupId,RaceGroupName');
+			//产品类型列表
 			$ProductTypeArr = $this->oProduct->getAllProductTypeList($RaceCatalogId,'ProductTypeId,ProductTypeName');
 			//初始化一个空的赛事分站列表
 			$RaceStageList = array();
@@ -60,7 +61,7 @@ class Xrace_RaceStageController extends AbstractController
 					//获取赛事ID
 					$RaceStageList[$value['RaceCatalogId']]['RaceCatalogName'] = isset($RaceStageList[$value['RaceCatalogId']]['RaceCatalogName'])?$RaceStageList[$value['RaceCatalogId']]['RaceCatalogName']:$RaceCatalogArr[$value['RaceCatalogId']]['RaceCatalogName'];
 					//解包压缩数组
-                                        $value['comment'] = json_decode($value['comment'],true);
+					$value['comment'] = json_decode($value['comment'],true);
 					$t = array();
 					//如果有已经选择的赛事组别
 					if(isset($value['comment']['SelectedRaceGroup']) && is_array($value['comment']['SelectedRaceGroup']))
@@ -103,35 +104,49 @@ class Xrace_RaceStageController extends AbstractController
 						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['GroupCount'] = 0;
 						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RowCount'] = 1;
 					}
-                                        
-                                        $p = array();
+					// 初始化一个临时数组
+					$t = array();
+					$t2 = array();
 					//如果有已经选择的产品
 					if(isset($value['comment']['SelectedProductList']) && is_array($value['comment']['SelectedProductList']))
 					{
-                                            foreach ($value['comment']['SelectedProductList'] as $k => $v) {
-                                                $ProductCount = count($v);
-                                                //如果有配置产品
-                                                if($ProductCount>0)
-                                                {
-                                                        //添加产品数量
-                                                        $Suffix = "(".$ProductCount.")";
-                                                        $p[$k] = $ProductTypeArr[$k]['ProductTypeName'].$Suffix;
-                                                }
-                                                else
-                                                {
-                                                        $Suffix = "";
-                                                }
-                                                
-                                            }
-                                        } 
-                                        if(count($p)) {
-                                            $SelectedProductText = implode("/", $p);
-                                            $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['SelectedProductList'] = "<a href='".Base_Common::getUrl('','xrace/race.stage','product.modify',array('RaceCatalogId'=>$value['RaceCatalogId'],'RaceStageId'=>$value['RaceStageId'])) ."'>".$SelectedProductText."</a>";
-                                        }
-                                        else
-                                        {
-                                            $RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['SelectedProductList'] = "<a href='".Base_Common::getUrl('','xrace/race.stage','product.modify',array('RaceCatalogId'=>$value['RaceCatalogId'],'RaceStageId'=>$value['RaceStageId'])) ."'>尚未配置</a>";
-                                        }
+						//循环已选择的产品列表
+						foreach ($value['comment']['SelectedProductList'] as $ProductId => $ProductConfig)
+						{
+							//如果缓存中没有产品数据
+							if(!isset($ProductList[$ProductId]))
+							{
+								//获取产品数据
+								$ProductInfo = $this->oProduct->getProduct($ProductId,"ProductId,ProductTypeId");
+								 //如果产品获取有效
+								if(isset($ProductInfo['ProductId']))
+								{
+									//置入缓存
+									$ProductList[$ProductId] = $ProductInfo;
+								}
+								//如果获取到的产品的分类有效
+								if(isset($ProductTypeArr[$ProductInfo['ProductTypeId']]))
+								{
+									//如果缓存中的产品类型有累加数量
+									if(isset($t[$ProductInfo['ProductTypeId']]))
+									{
+										//数量累加
+										$t[$ProductInfo['ProductTypeId']]['ProductCount']++;
+									}
+									else
+									{
+										//初始化数量
+										$t[$ProductInfo['ProductTypeId']] = array("ProductCount"=>1,"ProductTypeName"=>$ProductTypeArr[$ProductInfo['ProductTypeId']]['ProductTypeName']);
+									}
+									$t2[$ProductInfo['ProductTypeId']] = $t[$ProductInfo['ProductTypeId']]['ProductTypeName']."(".$t[$ProductInfo['ProductTypeId']]['ProductCount'].")";
+								}
+							}
+						}
+					}
+					//拼接页面显示的数量
+					$SelectedProductText = count($t2)>0?implode("/", $t2):"尚未配置";
+					//拼接跳转参数
+					$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['SelectedProductList'] = "<a href='".Base_Common::getUrl('','xrace/race.stage','product.modify',array('RaceCatalogId'=>$value['RaceCatalogId'],'RaceStageId'=>$value['RaceStageId'])) ."'>".$SelectedProductText."</a>";
 				}
 				else
 				{
@@ -1370,7 +1385,7 @@ class Xrace_RaceStageController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事ID
-			$RaceStageId = $this->request->from('RaceStageId');
+			$RaceStageId = intval($this->request->RaceStageId);
 			//获取赛站信息
 			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId);
 			//解包数组
