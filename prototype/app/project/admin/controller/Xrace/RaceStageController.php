@@ -62,6 +62,8 @@ class Xrace_RaceStageController extends AbstractController
 					$RaceStageList[$value['RaceCatalogId']]['RaceCatalogName'] = isset($RaceStageList[$value['RaceCatalogId']]['RaceCatalogName'])?$RaceStageList[$value['RaceCatalogId']]['RaceCatalogName']:$RaceCatalogArr[$value['RaceCatalogId']]['RaceCatalogName'];
 					//解包压缩数组
 					$value['comment'] = json_decode($value['comment'],true);
+					//解包压缩数组
+					$value['RaceStageIcon'] = json_decode($value['RaceStageIcon'],true);
 					$t = array();
 					//如果有已经选择的赛事组别
 					if(isset($value['comment']['SelectedRaceGroup']) && is_array($value['comment']['SelectedRaceGroup']))
@@ -154,9 +156,9 @@ class Xrace_RaceStageController extends AbstractController
 				{
 					$RaceStageList[$value['RaceCatalogId']]['RaceCatalogName'] = 	"未定义";
 				}
-				if(isset($value['comment']['RaceStageIconList']) && is_array($value['comment']['RaceStageIconList']))
+				if(isset($value['RaceStageIcon']) && is_array($value['RaceStageIcon']) && count($value['RaceStageIcon']))
 				{
-					foreach ($value['comment']['RaceStageIconList'] as $k => $v)
+					foreach ($value['RaceStageIcon'] as $k => $v)
 					{
 						$RaceStageList[$value['RaceCatalogId']]['RaceStageList'][$key]['RaceStageIconList'] .= "<a href='".$RootUrl.$v['RaceStageIcon_root']."' target='_blank'>图标".$k."</a>/";
 					}
@@ -229,17 +231,20 @@ class Xrace_RaceStageController extends AbstractController
 			$oUpload = new Base_Upload('RaceStageIcon');
 			$upload = $oUpload->upload('RaceStageIcon');
 			$res = $upload->resultArr;
-			foreach($upload->resultArr as $iconkey=>$iconvalue){
+			foreach($upload->resultArr as $iconkey=>$iconvalue)
+			{
 				$path = $iconvalue;
 				//如果正确上传，就保存文件路径
 				if(strlen($path['path'])>2)
 				{
-					$bind['comment']['RaceStageIconList'][$iconkey]['RaceStageIcon'] = $path['path'];
-					$bind['comment']['RaceStageIconList'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
+					$bind['RaceStageIcon'][$iconkey]['RaceStageIcon'] = $path['path'];
+					$bind['RaceStageIcon'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
 				}
 			}
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
+			//图片数据压缩
+			$bind['RaceStageIcon'] = json_encode($bind['RaceStageIcon']);
 			//插入数据
 			$res = $this->oRace->insertRaceStage($bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
@@ -264,6 +269,8 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceGroupArr = $this->oRace->getAllRaceGroupList($RaceStageInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
 			//数据解包
 			$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
+			//图片数据解包
+			$RaceStageInfo['RaceStageIcon'] = json_decode($RaceStageInfo['RaceStageIcon'],true);
 			//循环赛事分组列表
 			foreach($RaceGroupArr as $RaceGroupId => $value)
 			{
@@ -279,9 +286,9 @@ class Xrace_RaceStageController extends AbstractController
 			}
 			//获得赛事分组的图标
 			$RaceStageIconArr = array();
-			if(isset($RaceStageInfo['comment']['RaceStageIconList']) && is_array($RaceStageInfo['comment']['RaceStageIconList']))
+			if(isset($RaceStageInfo['RaceStageIcon']) && is_array($RaceStageInfo['RaceStageIcon']))
 			{
-				$RaceStageIconArr = $RaceStageInfo['comment']['RaceStageIconList'];
+				$RaceStageIconArr = $RaceStageInfo['RaceStageIcon'];
 			}
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceStageModify');
@@ -325,7 +332,10 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			//获取原有数据
 			$oRaceStage = $this->oRace->getRaceStage($bind['RaceStageId']);
+			//数据解包
 			$bind['comment'] = json_decode($oRaceStage['comment'],true);
+			//图片数据解包
+			$bind['RaceStageIcon'] = json_decode($oRaceStage['RaceStageIcon'],true);
 			$bind['comment']['SelectedRaceGroup'] = $SelectedRaceGroup['SelectedRaceGroup'];
 			//文件上传
 			$oUpload = new Base_Upload('RaceStageIcon');
@@ -337,12 +347,14 @@ class Xrace_RaceStageController extends AbstractController
 				//如果正确上传，就保存文件路径
 				if(strlen($path['path'])>2)
 				{
-					$bind['comment']['RaceStageIconList'][$iconkey]['RaceStageIcon'] = $path['path'];
-					$bind['comment']['RaceStageIconList'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
+					$bind['RaceStageIcon'][$iconkey]['RaceStageIcon'] = $path['path'];
+					$bind['RaceStageIcon'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
 				}
 			}
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
+			//图片数据压缩
+			$bind['RaceStageIcon'] = json_encode($bind['RaceStageIcon']);
 			//更新数据
 			$res = $this->oRace->updateRaceStage($bind['RaceStageId'],$bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
@@ -376,26 +388,28 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-        //删除赛事分站图标
-	public function raceStageLogoDeleteAction()
+	//删除赛事分站图标
+	public function raceStageIconDeleteAction()
 	{
 		//赛事分站ID
 		$RaceStageId = intval($this->request->RaceStageId);
 		//图标ID
 		$LogoId = intval($this->request->LogoId);
 		//获取原有数据
-		$oRaceStage = $this->oRace->getRaceStage($RaceStageId);
-		$bind['comment'] = json_decode($oRaceStage['comment'],true);
-		foreach($bind['comment']['RaceStageIconList'] as $k => $v)
+		$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,"RaceStageIcon");
+		//图片数据解包
+		$RaceStageInfo['RaceStageIcon'] = json_decode($RaceStageInfo['RaceStageIcon'],true);
+		foreach($RaceStageInfo['RaceStageIcon'] as $k => $v)
 		{
-			if($k == $LogoId) {
-				unset($bind['comment']['RaceStageIconList'][$k]);
+			if($k == $LogoId)
+			{
+				unset($RaceStageInfo['RaceStageIcon'][$k]);
 			}
 		}
-		//数据压缩
-		$bind['comment'] = json_encode($bind['comment']);
+		//图片数据压缩
+		$RaceStageInfo['RaceStageIcon'] = json_encode($RaceStageInfo['RaceStageIcon']);
 		//更新数据
-		$res = $this->oRace->updateRaceStage($RaceStageId,$bind);
+		$res = $this->oRace->updateRaceStage($RaceStageId,$RaceStageInfo);
 		//返回之前页面
 		$this->response->goBack();
 	}
@@ -1307,7 +1321,6 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-        
 	//更新分站相关的产品列表信息填写页面
 	public function productModifyAction()
 	{

@@ -125,21 +125,23 @@ class XraceConfigController extends AbstractController
             {
                 //解包数组
                 $RaceStageList[$RaceStageId]['comment'] = json_decode($RaceStageInfo['comment'],true);
+                //解包图片数组
+                $RaceStageList[$RaceStageId]['RaceStageIcon'] = json_decode($RaceStageInfo['RaceStageIcon'],true);
                 //获取当前比赛的时间状态信息
                 $RaceStageList[$RaceStageId]['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageId,0);
                 if(($RaceStageStatus>0 && $RaceStageList[$RaceStageId]['RaceStageStatus']['StageStatus']==$RaceStageStatus) || ($RaceStageStatus==0))
                 {
                     //如果有配置分站图片
-                    if(isset($RaceStageList[$RaceStageId]['comment']['RaceStageIconList']))
+                    if(isset($RaceStageList[$RaceStageId]['RaceStageIcon']))
                     {
                         //循环图片列表
-                        foreach($RaceStageList[$RaceStageId]['comment']['RaceStageIconList'] as $IconId => $IconInfo)
+                        foreach($RaceStageList[$RaceStageId]['RaceStageIcon'] as $IconId => $IconInfo)
                         {
                             //拼接上ADMIN站点的域名
                             $RaceStageList[$RaceStageId]['comment']['RaceStageIconList'][$IconId]['RaceStageIcon'] = $this->config->adminUrl.$IconInfo['RaceStageIcon_root'];
-                            //删除原有数据
-                            unset($RaceStageList[$RaceStageId]['comment']['RaceStageIconList'][$IconId]['RaceStageIcon_root']);
                         }
+                        //删除原有数据
+                        unset($RaceStageList[$RaceStageId]['RaceStageIcon']);
                     }
                     //如果有配置分组信息
                     if(isset($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup']))
@@ -224,17 +226,19 @@ class XraceConfigController extends AbstractController
             $RaceStageInfo = isset($RaceStageInfo['RaceStageId'])?$RaceStageInfo:array();
             //解包数组
             $RaceStageInfo['comment'] = isset($RaceStageInfo['comment'])?json_decode($RaceStageInfo['comment'],true):array();
+            //解包图片数组
+            $RaceStageInfo['RaceStageIcon'] = isset($RaceStageInfo['RaceStageIcon'])?json_decode($RaceStageInfo['RaceStageIcon'],true):array();
             //如果有配置分站图片
-            if(isset($RaceStageInfo['comment']['RaceStageIconList']))
+            if(isset($RaceStageInfo['RaceStageIcon']))
             {
                 //循环图片列表
-                foreach($RaceStageInfo['comment']['RaceStageIconList'] as $IconId => $IconInfo)
+                foreach($RaceStageInfo['RaceStageIcon'] as $IconId => $IconInfo)
                 {
                     //拼接上ADMIN站点的域名
                     $RaceStageInfo['comment']['RaceStageIconList'][$IconId]['RaceStageIcon'] = $this->config->adminUrl.$IconInfo['RaceStageIcon_root'];
-                    //删除原有数据
-                    unset($RaceStageInfo['comment']['RaceStageIconList'][$IconId]['RaceStageIcon_root']);
                 }
+                //删除原有数据
+                unset($RaceStageInfo['RaceStageIcon']);
             }
             //如果有配置分组信息
             if(isset($RaceStageInfo['comment']['SelectedRaceGroup']))
