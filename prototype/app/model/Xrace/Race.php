@@ -647,14 +647,17 @@ class Xrace_Race extends Base_Widget
 		//最大结束报名时间数组
 		$MaxEndTime = array();
 		//循环比赛列表
-		foreach ($RaceList as $RaceId => $RaceInfo) {
+		foreach ($RaceList as $RaceId => $RaceInfo)
+		{
 			//如果开始报名时间有效
-			if (strtotime($RaceInfo['ApplyStartTime'])) {
+			if (strtotime($RaceInfo['ApplyStartTime']))
+			{
 				//放入备选数组
 				$MinStartTime[] = strtotime($RaceInfo['ApplyStartTime']);
 			}
 			//如果结束报名时间有效
-			if (strtotime($RaceInfo['ApplyEndTime'])) {
+			if (strtotime($RaceInfo['ApplyEndTime']))
+			{
 				//放入备选数组
 				$MaxEndTime[] = strtotime($RaceInfo['ApplyEndTime']);
 			}
@@ -686,7 +689,7 @@ class Xrace_Race extends Base_Widget
 		} //如果当前时间晚于最大结束报名时间
 		elseif ($CurrentTime > $MaxEndTime)
 		{
-			$StageTimeStatus = array('StageStatus' => 3, 'StageStatusName' => '报名结束');
+			$StageTimeStatus = array('StageStatus' => 4, 'StageStatusName' => '报名结束');
 		}
 		return $StageTimeStatus;
 	}
