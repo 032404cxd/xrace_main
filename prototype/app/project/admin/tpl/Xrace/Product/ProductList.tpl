@@ -15,12 +15,14 @@
 <table width="99%" align="center" class="table table-bordered table-striped">
   {tpl:if(count($ProductList[$productTypeId]))}
   <tr>
+    <th align="center" class="rowtip">产品ID</th>
     <th align="center" class="rowtip">产品名称</th>
     <th align="center" class="rowtip">操作</th>
   </tr>
   {tpl:loop $ProductList[$productTypeId] $Pid $ProductInfo}
   <tr>
-    <td align="center" class="rowtip">{tpl:$ProductInfo.ProductName/}</th> 
+    <td align="center" class="rowtip">{tpl:$ProductInfo.ProductId/}</th>
+    <td align="center" class="rowtip">{tpl:$ProductInfo.ProductName/}</th>
     <td align="center"><a href="javascript:;" onclick="ProductDelete('{tpl:$ProductInfo.ProductId/}','{tpl:$ProductInfo.ProductName/}')">删除</a> |  <a href="javascript:;" onclick="ProductModify('{tpl:$ProductInfo.ProductId/}','{tpl:$productTypeId/}');">修改</a></td>
   </tr>
   {/tpl:loop}

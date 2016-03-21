@@ -74,4 +74,12 @@ $table['config_menu_permission']['num'] = 1;
 $table['config_logs_manager']['db'] = 'xrace_config';
 $table['config_logs_manager']['num'] = 16;
 
+#商品类型
+$table['config_product_type']['db'] = 'xrace_config';
+$table['config_product_type']['num'] = 1;
+
+#商品
+$table['config_product']['db'] = 'xrace_config';
+$table['config_product']['num'] = 1;
+
 return $table;

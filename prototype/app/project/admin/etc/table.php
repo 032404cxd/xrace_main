@@ -41,6 +41,8 @@ $table['config_race_type']['num'] = 1;
 #商品类型
 $table['config_product_type']['db'] = 'xrace_config';
 $table['config_product_type']['num'] = 1;
+
+#商品
 $table['config_product']['db'] = 'xrace_config';
 $table['config_product']['num'] = 1;
 

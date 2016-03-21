@@ -10,6 +10,7 @@ class XraceConfigController extends AbstractController
      */
     protected $oRace;
     protected $oSports;
+    protected $oProduct;
     /**
      * 初始化
      * (non-PHPdoc)
@@ -20,6 +21,7 @@ class XraceConfigController extends AbstractController
         parent::init();
         $this->oRace = new Xrace_Race();
         $this->oSports = new Xrace_Sports();
+        $this->oProduct = new Xrace_Product();
     }
     /**
      *获取所有赛事的列表
@@ -116,6 +118,8 @@ class XraceConfigController extends AbstractController
             {
                 $RaceStageList = array();
             }
+            //初始化一个空的产品列表
+            $ProductList = array();
             //循环分站数组
             foreach ($RaceStageList as $RaceStageId => $RaceStageInfo)
             {
@@ -156,6 +160,34 @@ class XraceConfigController extends AbstractController
                                 //删除
                                 unset($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'][$RaceGroupId]);
                             }
+                        }
+                    }
+                    //如果有配置分组信息
+                    if(isset($RaceStageList[$RaceStageId]['comment']['SelectedProductList']))
+                    {
+                        //循环产品列表
+                        foreach($RaceStageList[$RaceStageId]['comment']['SelectedProductList'] as $ProductId => $Product)
+                        {
+                            //如果产品列表中没有此产品
+                            if(!isset($ProductList[$ProductId]))
+                            {
+                                //获取产品信息
+                                $ProductInfo = $this->oProduct->getProduct($ProductId);
+                                //如果产品信息获取到
+                                if(isset($ProductInfo['ProductId']))
+                                {
+                                    //放入产品列表中
+                                    $ProductList[$ProductId] = $ProductInfo;
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
+                            //从产品列表中取出产品
+                            $ProductInfo = $ProductList[$ProductId];
+                            //存入产品名称
+                            $RaceStageList[$RaceStageId]['comment']['SelectedProductList'][$ProductInfo['ProductId']]['ProductName'] = $ProductInfo['ProductName'];
                         }
                     }
                 }
@@ -225,6 +257,36 @@ class XraceConfigController extends AbstractController
                     }
                 }
             }
+            //如果有配置分组信息
+            if(isset($RaceStageInfo['comment']['SelectedProductList']))
+            {
+                //初始化一个空的产品列表
+                $ProductList = array();
+                //循环产品列表
+                foreach($RaceStageInfo['comment']['SelectedProductList'] as $ProductId => $Product)
+                {
+                    //如果产品列表中没有此产品
+                    if(!isset($ProductList[$ProductId]))
+                    {
+                        //获取产品信息
+                        $ProductInfo = $this->oProduct->getProduct($ProductId,"ProductId,ProductName");
+                        //如果产品信息获取到
+                        if(isset($ProductInfo['ProductId']))
+                        {
+                            //放入产品列表中
+                            $ProductList[$ProductId] = $ProductInfo;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    //从产品列表中取出产品
+                    $ProductInfo = $ProductList[$ProductId];
+                    //存入产品名称
+                    $RaceStageInfo['comment']['SelectedProductList'][$ProductId]['ProductName'] = $ProductInfo['ProductName'];
+                }
+            }
             //获取当前比赛的时间状态信息
             $RaceStageInfo['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageId,0);
             //结果数组
@@ -265,7 +327,7 @@ class XraceConfigController extends AbstractController
         else
         {
             //全部置为空
-            $result = array("return"=>0,"RaceGroupInfo"=>array(),"comment"=>"请指定一个有效的赛事ID");    
+            $result = array("return"=>0,"RaceGroupInfo"=>array(),"comment"=>"请指定一个有效的赛事分组ID");
         }
         echo json_encode($result);
     }
