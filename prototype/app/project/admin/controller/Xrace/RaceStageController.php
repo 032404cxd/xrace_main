@@ -58,7 +58,7 @@ class Xrace_RaceStageController extends AbstractController
 				if(isset($RaceCatalogArr[$RaceStageInfo['RaceCatalogId']]))
 				{
 					//获取赛事ID
-					$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceCatalogName'] = isset($RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceCatalogName'])?$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceCatalogName']:$RaceCatalogArr[$RaceStageInfos['RaceCatalogId']]['RaceCatalogName'];
+					$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceCatalogName'] = isset($RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceCatalogName'])?$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceCatalogName']:$RaceCatalogArr[$RaceStageInfo['RaceCatalogId']]['RaceCatalogName'];
 					//解包压缩数组
 					$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
 					//解包压缩数组
@@ -587,6 +587,7 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			$response = array('errno' => 4);
 		}
+		/*
 		//开始时间不能早于当前时间
 		elseif($StartTime<=time())
 		{
@@ -597,6 +598,7 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			$response = array('errno' => 6);
 		}
+		*/
 		//单人报名和团队报名至少要选择一个
 		elseif((intval($bind['SingleUser'])+intval($bind['TeamUser'])) == 0)
 		{
@@ -684,6 +686,7 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			$response = array('errno' => 4);
 		}
+		/*
 		//开始时间不能早于当前时间
 		elseif($StartTime<=time())
 		{
@@ -694,6 +697,7 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			$response = array('errno' => 6);
 		}
+		*/
 		//单人报名和团队报名至少要选择一个
 		elseif((intval($bind['SingleUser'])+intval($bind['TeamUser'])) == 0)
 		{
