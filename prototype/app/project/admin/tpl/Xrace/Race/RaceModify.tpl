@@ -6,6 +6,7 @@
 <input type="hidden" name="RaceId" id="RaceId" value="{tpl:$RaceId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover"><th align="center" class="rowtip">比赛名称</th><th align="center" class="rowtip"><input name="RaceName" type="text" class="span2" id="RaceName" value = "{tpl:$RaceInfo.RaceName/}" size="50" /></th></tr>
+<tr class="hover"><th align="center" class="rowtip">百度地图路线ID</th><th align="center" class="rowtip"><input name="BaiDuMapID" type="text" class="span2" id="BaiDuMapID" value = "{tpl:$RaceInfo.RouteInfo.BaiDuMapID/}" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">人数/价格对应</th><th align="center" class="rowtip"><input name="PriceList" type="text" class="span2" id="PriceList" value = "{tpl:$RaceInfo.PriceList/}" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">个人报名</th><th align="center" class="rowtip">
 		<input type="radio" name="SingleUser" id="SingleUser" value="1" {tpl:if($RaceInfo.SingleUser=="1")}checked{/tpl:if}>接受

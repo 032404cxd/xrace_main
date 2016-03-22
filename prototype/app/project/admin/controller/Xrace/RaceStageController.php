@@ -547,6 +547,8 @@ class Xrace_RaceStageController extends AbstractController
 			{
 				//解包数组
 				$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+				//解包地图数组
+				$RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
 				//渲染模板
 				include $this->tpl('Xrace_Race_RaceModify');
 			}
@@ -561,7 +563,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -645,8 +647,12 @@ class Xrace_RaceStageController extends AbstractController
 			unset($bind['TeamUserMin']);
 			$bind['comment']['TeamUserMax'] = $bind['TeamUserMax'];
 			unset($bind['TeamUserMax']);
+			$bind['RouteInfo']['BaiDuMapID'] = $bind['BaiDuMapID'];
+			unset($bind['BaiDuMapID']);
 			//数据打包
 			$bind['comment'] = json_encode($bind['comment']);
+			//地图数据打包
+			$bind['RouteInfo'] = json_encode($bind['RouteInfo']);
 			//新增比赛
 			$AddRace = $this->oRace->addRace($bind);
 			$response = $AddRace ? array('errno' => 0) : array('errno' => 9);
@@ -658,7 +664,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -743,8 +749,9 @@ class Xrace_RaceStageController extends AbstractController
 			//获取比赛信息
 			$RaceInfo = $this->oRace->getRaceInfo($RaceId);
 			//解包数组
-			$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
-			$bind['comment'] = $RaceInfo['comment'];
+			$bind['comment'] = json_decode($RaceInfo['comment'],true);
+			//解包地图数组
+			$bind['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
 			//将人数限制分别置入压缩数组,并删除原数据
 			$bind['comment']['SingleUserLimit'] = $bind['SingleUserLimit'];
 			unset($bind['SingleUserLimit']);
@@ -754,8 +761,12 @@ class Xrace_RaceStageController extends AbstractController
 			unset($bind['TeamUserMin']);
 			$bind['comment']['TeamUserMax'] = $bind['TeamUserMax'];
 			unset($bind['TeamUserMax']);
+			$bind['RouteInfo']['BaiDuMapID'] = $bind['BaiDuMapID'];
+			unset($bind['BaiDuMapID']);
 			//数据打包
 			$bind['comment'] = json_encode($bind['comment']);
+			//地图数据打包
+			$bind['RouteInfo'] = json_encode($bind['RouteInfo']);
 			//更新比赛
 			$UpdateRace = $this->oRace->updateRace($RaceId,$bind);
 			$response = $UpdateRace ? array('errno' => 0) : array('errno' => 9);
