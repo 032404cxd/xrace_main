@@ -2,7 +2,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$('#add_app').click(function(){
-		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=race.type.add', {title:'添加比赛分类',width:500,height:200});
+		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=race.type.add', {title:'添加比赛分类',width:500,height:300});
 	});
 });
 
@@ -11,7 +11,7 @@ function RaceTypeDelete(p_id, p_name){
 }
 
 function RaceTypeModify(mid){
-	modifyRaceTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=race.type.modify&RaceTypeId=' + mid, {title:'修改比赛分类',width:500,height:200});
+	modifyRaceTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=race.type.modify&RaceTypeId=' + mid, {title:'修改比赛分类',width:500,height:300});
 }
 
 </script>
@@ -28,11 +28,11 @@ function RaceTypeModify(mid){
     <th align="center" class="rowtip">操作</th>
   </tr>
 
-{tpl:loop $RaceTypeArr $oRaceType}
+{tpl:loop $RaceTypeList $RaceTypeInfo}
   <tr class="hover">
-    <td align="center">{tpl:$oRaceType.RaceTypeId/}</td>
-    <td align="center">{tpl:$oRaceType.RaceTypeName/}</td>
-    <td align="center"><a  href="javascript:;" onclick="RaceTypeDelete('{tpl:$oRaceType.RaceTypeId/}','{tpl:$oRaceType.RaceTypeName/}')">删除</a> |  <a href="javascript:;" onclick="RaceTypeModify('{tpl:$oRaceType.RaceTypeId/}');">修改</a></td>
+    <td align="center">{tpl:$RaceTypeInfo.RaceTypeId/}</td>
+    <td align="center">{tpl:$RaceTypeInfo.RaceTypeName/}</td>
+    <td align="center"><a  href="javascript:;" onclick="RaceTypeDelete('{tpl:$RaceTypeInfo.RaceTypeId/}','{tpl:$RaceTypeInfo.RaceTypeName/}')">删除</a> |  <a href="javascript:;" onclick="RaceTypeModify('{tpl:$RaceTypeInfo.RaceTypeId/}');">修改</a></td>
   </tr>
 {/tpl:loop}
 </table>

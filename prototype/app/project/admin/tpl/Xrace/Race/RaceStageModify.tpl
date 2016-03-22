@@ -1,9 +1,9 @@
 {tpl:tpl contentHeader/}
 <script type="text/javascript">
+
 function RaceStageIconDelete(sid,name,logo_id){
 	deleteStageLogoBox = divBox.confirmBox({content:'是否删除 ' + name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.stage.icon.delete&RaceStageId=' + sid + '&LogoId=' +logo_id;}});
 }
-
 </script>
 <div class="br_bottom"></div>
 <form id="race_stage_update_form" name="race_stage_update_form" action="{tpl:$this.sign/}&ac=race.stage.update" metdod="post">
