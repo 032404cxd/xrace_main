@@ -64,7 +64,7 @@ class Xrace_RaceTypeController extends AbstractController
 		}
 	}
 	
-	//添加新任务
+	//添加新比赛类型
 	public function raceTypeInsertAction()
 	{
 		//检查权限
@@ -95,8 +95,7 @@ class Xrace_RaceTypeController extends AbstractController
 		echo json_encode($response);
 		return true;
 	}
-	
-	//修改任务信息页面
+	//修改比赛类型信息页面
 	public function raceTypeModifyAction()
 	{
 		//检查权限
@@ -119,8 +118,7 @@ class Xrace_RaceTypeController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	
-	//更新任务信息
+	//更新比赛类型
 	public function raceTypeUpdateAction()
 	{
 		$bind=$this->request->from('RaceTypeId','RaceTypeName');

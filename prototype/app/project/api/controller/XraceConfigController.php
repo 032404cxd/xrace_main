@@ -346,7 +346,7 @@ class XraceConfigController extends AbstractController
         if($RaceStageId && $RaceGroupId)
         {
             //获得比赛列表
-            $RaceList = $this->oRace->getRaceList($RaceStageId, $RaceGroupId,"RaceId,RaceName,PriceList,SingleUser,TeamUser,StartTime,EndTime,ApplyStartTime,ApplyEndTime,comment");
+            $RaceList = $this->oRace->getRaceList($RaceStageId, $RaceGroupId,"RaceId,RaceTypeId,RouteInfo,RaceName,PriceList,SingleUser,TeamUser,StartTime,EndTime,ApplyStartTime,ApplyEndTime,comment");
             if(!is_array($RaceList))
             {
                 $RaceList =array();
@@ -356,6 +356,8 @@ class XraceConfigController extends AbstractController
             //解包数组
             foreach ($RaceList as $RaceId => $RaceInfo)
             {
+                //解包地图数据数组
+                $RaceList[$RaceId]['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
                 //处理价格列表
                 $RaceList[$RaceId]['PriceList'] = $this->oRace->getPriceList($RaceInfo['PriceList']);
                 //获取当前比赛的时间状态信息
@@ -366,6 +368,23 @@ class XraceConfigController extends AbstractController
                 $RaceList[$RaceId]['AltAsc'] = 0;
                 //初始化比赛海拔下降
                 $RaceList[$RaceId]['AltDec'] = 0;
+                //获取比赛分类信息
+                $RaceTypeInfo  =  $RaceInfo['RaceTypeId']?$this->oRace->getRaceType($RaceInfo['RaceTypeId'],'*'):array();
+                //如果获取到比赛类型信息
+                if($RaceTypeInfo['RaceTypeId'])
+                {
+                    $RaceTypeInfo['comment'] = json_decode($RaceTypeInfo['comment'],true);
+                    //如果有输比赛类型图标的相对路径
+                    if(isset($RaceTypeInfo['comment']['RaceTypeIcon_root']))
+                    {
+                        //拼接上ADMIN站点的域名
+                        $RaceTypeInfo['RaceTypeIcon'] = $this->config->adminUrl.($RaceTypeInfo['comment']['RaceTypeIcon_root']);
+                    }
+                    //删除原有数据
+                    unset($RaceTypeInfo['comment']);
+                }
+                //存入结果数组
+                $RaceList[$RaceId]['RaceTypeInfo'] = $RaceTypeInfo;
                 //如果有配置运动分段
                 if(isset($RaceInfo['comment']['DetailList']))
                 {
@@ -443,8 +462,8 @@ class XraceConfigController extends AbstractController
             //检测主键存在,否则值为空
             if(isset($RaceInfo['RaceId']))
             {
-                //检测主键存在,否则值为空
-                $RaceInfo = isset($RaceInfo['RaceId']) ? $RaceInfo : array();
+                //解包地图数据数组
+                $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
                 //获取当前比赛的时间状态信息
                 $RaceInfo['RaceStatus'] = $this->oRace->getRaceTimeStatus($RaceInfo);
                 //解包数组
@@ -459,6 +478,23 @@ class XraceConfigController extends AbstractController
                 $RaceInfo['AltAsc'] = 0;
                 //初始化比赛海拔下降
                 $RaceInfo['AltDec'] = 0;
+                //获取比赛分类信息
+                $RaceTypeInfo  =  $RaceInfo['RaceTypeId']?$this->oRace->getRaceType($RaceInfo['RaceTypeId'],'*'):array();
+                //如果获取到比赛类型信息
+                if($RaceTypeInfo['RaceTypeId'])
+                {
+                    $RaceTypeInfo['comment'] = json_decode($RaceTypeInfo['comment'],true);
+                    //如果有输比赛类型图标的相对路径
+                    if(isset($RaceTypeInfo['comment']['RaceTypeIcon_root']))
+                    {
+                        //拼接上ADMIN站点的域名
+                        $RaceTypeInfo['RaceTypeIcon'] = $this->config->adminUrl.($RaceTypeInfo['comment']['RaceTypeIcon_root']);
+                    }
+                    //删除原有数据
+                    unset($RaceTypeInfo['comment']);
+                }
+                //存入结果数组
+                $RaceInfo['RaceTypeInfo'] = $RaceTypeInfo;
                 //如果有配置运动分段
                 if(isset($RaceInfo['comment']['DetailList']))
                 {
