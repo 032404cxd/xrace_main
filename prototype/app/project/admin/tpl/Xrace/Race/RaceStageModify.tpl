@@ -18,8 +18,7 @@ function RaceStageIconDelete(sid,name,logo_id){
 </tr>
 <tr class="hover"><td>所属赛事</td>
 	<td align="left">	<select name="RaceCatalogId"  id="RaceCatalogId" size="1"  onchange='getGroupList()'>
-			<option value="0">全部</option>
-			{tpl:loop $RaceCatalogArr $RaceCatalogInfo}
+			{tpl:loop $RaceCatalogList $RaceCatalogInfo}
 			<option value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" {tpl:if($RaceCatalogInfo.RaceCatalogId==$RaceStageInfo.RaceCatalogId)}selected="selected"{/tpl:if}>{tpl:$RaceCatalogInfo.RaceCatalogName/}</option>
 			{/tpl:loop}
 		</select></td>
@@ -37,15 +36,15 @@ function RaceStageIconDelete(sid,name,logo_id){
 	<tr>
 	<td>赛事分组列表</td>
 	<td align="left"><div id = "SelectedGroupList">
-			{tpl:loop $RaceGroupArr $RaceGroupInfo}
+			{tpl:loop $RaceGroupList $RaceGroupInfo}
 			<input type="checkbox"  name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}]" value="{tpl:$RaceGroupInfo.RaceGroupId/}" {tpl:if($RaceGroupInfo.selected == 1)}checked{/tpl:if} /> {tpl:$RaceGroupInfo.RaceGroupName/}
 			{/tpl:loop}
 		</div></td>
 	</tr>
         <tr class="hover"><td>赛事分组图标1</td>
             <td align="left">
-                {tpl:if($RaceStageIconArr.1.RaceStageIcon_root!="")}
-                已选图标:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconArr.1.RaceStageIcon_root/}" width="30px;" height="30px;"/>
+                {tpl:if($RaceStageIconList.1.RaceStageIcon_root!="")}
+                已选图标:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconList.1.RaceStageIcon_root/}" width="30px;" height="30px;"/>
                 <a href="javascript:void(0);" onclick="RaceStageIconDelete('{tpl:$RaceStageInfo.RaceStageId/}','图标1','1')">删除</a><br>       
                 {/tpl:if}
                 更改图标:<input name="RaceStageIcon[1]" type="file" class="span4" id="RaceStageIcon[1]"/>
@@ -53,8 +52,8 @@ function RaceStageIconDelete(sid,name,logo_id){
         </tr>
         <tr class="hover"><td>赛事分组图标2</td>
             <td align="left">
-                {tpl:if($RaceStageIconArr.2.RaceStageIcon_root!="")}
-                已选图标:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconArr.2.RaceStageIcon_root/}" width="30px;" height="30px;"/>
+                {tpl:if($RaceStageIconList.2.RaceStageIcon_root!="")}
+                已选图标:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconList.2.RaceStageIcon_root/}" width="30px;" height="30px;"/>
                 <a href="javascript:void(0);" onclick="RaceStageIconDelete('{tpl:$RaceStageInfo.RaceStageId/}','图标2','2')">删除</a><br>           
                 {/tpl:if}
                 更改图标:<input name="RaceStageIcon[2]" type="file" class="span4" id="RaceStageIcon[2]"/>
@@ -62,8 +61,8 @@ function RaceStageIconDelete(sid,name,logo_id){
         </tr>
         <tr class="hover"><td>赛事分组图标3</td>
             <td align="left">
-                {tpl:if($RaceStageIconArr.3.RaceStageIcon_root!="")}
-                已选图标:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconArr.3.RaceStageIcon_root/}" width="30px;" height="30px;"/>
+                {tpl:if($RaceStageIconList.3.RaceStageIcon_root!="")}
+                已选图标:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconList.3.RaceStageIcon_root/}" width="30px;" height="30px;"/>
                 <a href="javascript:void(0);" onclick="RaceStageIconDelete('{tpl:$RaceStageInfo.RaceStageId/}','图标3','3')">删除</a><br>            
                 {/tpl:if}
                 更改图标:<input name="RaceStageIcon[3]" type="file" class="span4" id="RaceStageIcon[3]"/>

@@ -5,6 +5,13 @@
 <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover"><th align="center" class="rowtip">比赛名称</th><th align="center" class="rowtip"><input name="RaceName" type="text" class="span2" id="RaceName" size="50" /></th></tr>
+<tr class="hover"><th align="center" class="rowtip">比赛类型</th><th align="center" class="rowtip">
+			<select name="RaceTypeId" size="1">
+				{tpl:loop $RaceTypeList $RaceTypeInfo}
+				<option value="{tpl:$RaceTypeInfo.RaceTypeId/}" >{tpl:$RaceTypeInfo.RaceTypeName/}</option>
+				{/tpl:loop}
+			</select>
+		</th></tr>
 <tr class="hover"><th align="center" class="rowtip">百度地图路线ID</th><th align="center" class="rowtip"><input name="BaiDuMapID" type="text" class="span2" id="BaiDuMapID" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">人数/价格对应</th><th align="center" class="rowtip"><input name="PriceList" type="text" class="span2" id="PriceList" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">个人报名</th><th align="center" class="rowtip"><input type="radio" name="SingleUser" id="SingleUser" value="1" checked>接受<input type="radio" name="SingleUser" id="SingleUser"  value="0" >不接受</th></tr>

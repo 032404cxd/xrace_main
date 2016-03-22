@@ -22,7 +22,7 @@
 <form action="{tpl:$this.sign/}" name="form" id="form" method="post">
   <select name="RaceCatalogId" size="1">
     <option value="0">全部</option>
-    {tpl:loop $RaceCatalogArr $RaceCatalogInfo}
+    {tpl:loop $RaceCatalogList $RaceCatalogInfo}
     <option value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" {tpl:if($RaceCatalogInfo.RaceCatalogId==$RaceCatalogId)}selected="selected"{/tpl:if}>{tpl:$RaceCatalogInfo.RaceCatalogName/}</option>
     {/tpl:loop}
   </select>
