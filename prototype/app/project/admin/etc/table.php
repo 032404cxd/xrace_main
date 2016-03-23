@@ -78,4 +78,8 @@ $table['config_menu_permission']['num'] = 1;
 $table['config_logs_manager']['db'] = 'xrace_config';
 $table['config_logs_manager']['num'] = 16;
 
+//用户执照
+$table['config_license']['db'] = 'xrace_config';
+$table['config_license']['num'] = 1;
+
 return $table;

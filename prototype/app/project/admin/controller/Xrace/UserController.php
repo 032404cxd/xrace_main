@@ -13,8 +13,14 @@ class Xrace_UserController extends AbstractController
 	 * @var object
 	 */
 	protected $oSportsType;
+        
+        protected $oUser;
+        
+        protected $oManager;
+        
+        protected $oRace;
 
-	/**
+        /**
 	 * 初始化
 	 * (non-PHPdoc)
 	 * @see AbstractController#init()
@@ -23,6 +29,8 @@ class Xrace_UserController extends AbstractController
 	{
 		parent::init();
 		$this->oUser = new Xrace_User();
+                $this->oManager = new Widget_Manager();
+                $this->oRace = new Xrace_Race();
 
 	}
 	//用户列表
@@ -66,6 +74,8 @@ class Xrace_UserController extends AbstractController
 				$UserList['UserList'][$UserId]['AuthStatus'] = ($UserInfo['auth_state'] == 2 && isset($AuthIdTypesList[intval($UserInfo['id_type'])]))?$UserList['UserList'][$UserId]['AuthStatus']."/".$AuthIdTypesList[intval($UserInfo['id_type'])]:$UserList['UserList'][$UserId]['AuthStatus'];
 				//用户生日
 				$UserList['UserList'][$UserId]['Birthday'] = is_null($UserInfo['birth_day'])?"未知":$UserInfo['birth_day'];
+                                //用户执照
+				$UserList['UserList'][$UserId]['License'] = "<a href='".Base_Common::getUrl('','xrace/user','license.index',array('UserId'=>$UserId)) ."'>执照</a>";
 			}
 			//模板渲染
 			include $this->tpl('Xrace_User_UserList');
@@ -431,4 +441,56 @@ class Xrace_UserController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+        
+        //执照展示
+        public function licenseIndexAction() {
+            //检查权限
+            $PermissionCheck = $this->manager->checkMenuPermission(0);
+            if($PermissionCheck['return'])
+            {
+                $UserId = trim($this->request->UserId);
+                $params = array('UserId' => $UserId);
+                //获得用户执照列表
+                $UserLicenseList = $this->oUser->getUserLicense($params);
+                foreach($UserLicenseList['UserLicense'] as $UserLicenseId => $UserLicenseInfo)
+                {
+                    //获得赛组信息
+                    $GroupResult = $this->oRace->getRaceGroup($UserLicenseInfo['GroupId'], 'RaceGroupName');
+                    $UserLicenseList['UserLicense'][$UserLicenseId]['GroupName'] = $GroupResult['RaceGroupName'];
+                    //获得管理员信息
+                    $UserLicenseList['UserLicense'][$UserLicenseId]['ManagerName'] = $this->oManager->getOne($UserLicenseInfo['ManagerId'], 'name');
+                    //获得用户执照状态
+                    $UserLicenseList['UserLicense'][$UserLicenseId]['LicenseStatusName'] = $this->oUser->getUserLicenseStatus($UserLicenseInfo);
+                }
+                //模板渲染
+                include $this->tpl('Xrace_User_LicenseList');                
+            }
+            else
+            {
+                $home = $this->sign;
+                include $this->tpl('403');                
+            }
+        }
+        
+        //
+        public function licenseAddAction() {
+            
+        }
+        
+        //
+        public function licenseInsertAction() {
+            
+        }
+        
+        public function licenseModifyAction() {
+            
+        }
+        
+        public function licenseUpdateAction() {
+            
+        }
+
+        public function licenseDeleteAction() {
+            
+        }            
 }

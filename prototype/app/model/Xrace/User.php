@@ -11,7 +11,8 @@ class Xrace_User extends Base_Widget
 	protected $table = 'user_profile';
 	protected $table_auth = 'user_auth';
 	protected $table_auth_log = 'user_auth_log';
-	//性别列表
+        protected $table_license = 'config_license';
+        //性别列表
 	protected $sex = array('1'=>"男","2"=>"女");
 	//实名认证状态
 	protected $auth_status = array('0'=>"未审核",'1'=>"审核中",'2'=>"已审核");
@@ -21,7 +22,9 @@ class Xrace_User extends Base_Widget
 	protected $auth_status_log = array('0'=>"拒绝","2"=>"通过");
 	//实名认证用到的证件类型列表
 	protected $auth_id_type = array('1'=>"身份证","2"=>"护照");
-	//获取性别列表
+        //用户执照状态
+        protected $user_license_status = array('0'=>"生效中",'1'=>"已过期",'2'=>"已删除");
+        //获取性别列表
 	public function getSexList()
 	{
 		return $this->sex;
@@ -341,4 +344,67 @@ class Xrace_User extends Base_Widget
 		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
 		return $this->db->getOne($sql);
 	}
+        
+        /*
+         * 获得用户执照
+         */
+        public function getUserLicense($params,$fields = array("*")) {
+            //生成查询列
+            $fields = Base_common::getSqlFields($fields);
+            //获取需要用到的表名
+            $table_to_process = Base_Widget::getDbTable($this->table_license);
+            $whereUserId = isset($params['UserId'])?" UserId = '".$params['UserId']."' ":"";
+            //所有查询条件置入数组
+            $whereCondition = array($whereUserId);
+            //生成条件列
+            $where = Base_common::getSqlWhere($whereCondition);
+            //获取用户数量
+            if(isset($params['getCount'])&&$params['getCount']==1)
+            {
+                $UserLicenseCount = $this->getUserLicenseCount($params);
+            }
+            else
+            {
+                $UserLicenseCount = 0;
+            }
+            $UserLicense = array('UserLicense'=>array(),'UserLicenseCount'=>$UserLicenseCount);
+            $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
+            $return = $this->db->getAll($sql);
+            if($return)
+            {
+                $UserLicense['UserLicense'] = $return;
+            }
+            return $UserLicense;
+        }
+        
+        /*
+         * 获得用户执照数量
+         */
+        public function getUserLicenseCount($params) {
+            //生成查询列
+            $fields = Base_common::getSqlFields(array("UserLicenseCount"=>"count(LicenseId)"));
+            //获取需要用到的表名
+            $table_to_process = Base_Widget::getDbTable($this->table_license); 
+            $whereUserId = isset($params['UserId'])?" UserId = '".$params['UserId']."' ":"";
+            //所有查询条件置入数组
+            $whereCondition = array($whereUserId);
+            //生成条件列
+            $where = Base_common::getSqlWhere($whereCondition);
+            $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
+            return $this->db->getOne($sql);
+        }
+        
+        /*
+         * 获得用户执照状态
+         */
+        public function getUserLicenseStatus($UserLicenseInfo) {
+            //获取当前时间
+            //$CurrentTime = time();
+            //$UserLicenseInfo['LicenseStatus'];
+            //$UserLicenseInfo['LicenseStartDate'];
+            //$UserLicenseInfo['LicenseEndDate'];
+            //$user_license_status;
+            //print_r($UserLicenseInfo);exit;
+            return $this->user_license_status[$UserLicenseInfo['LicenseStatus']];
+        }
 }
