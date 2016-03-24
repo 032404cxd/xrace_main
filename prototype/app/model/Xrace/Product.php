@@ -26,14 +26,15 @@ class Xrace_Product extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		$sql = "SELECT $fields FROM " . $table_to_process . " where 1 ".$where." ORDER BY ProductTypeId ASC";
 		$return = $this->db->getAll($sql);
+		$ProductTypeList = array();
 		if(count($return))
 		{
 			foreach($return as $key => $value)
 			{
-				$AllProductType[$value['ProductTypeId']] = $value;
+				$ProductTypeList[$value['ProductTypeId']] = $value;
 			}
 		}
-		return $AllProductType;
+		return $ProductTypeList;
 	}
 	/**
 	 * 获取单条记录
@@ -91,21 +92,22 @@ class Xrace_Product extends Base_Widget
 	{
 		$ProductTypeId = intval($ProductTypeId);
 		//初始化查询条件
-		$whereCatalog = ($ProductTypeId != 0)?" ProductTypeId = $ProductTypeId":"";
-		$whereCondition = array($whereCatalog);
+		$whereProductType = ($ProductTypeId != 0)?" ProductTypeId = $ProductTypeId":"";
+		$whereCondition = array($whereProductType);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$table_to_process = Base_Widget::getDbTable($this->table_product);
 		$sql = "SELECT $fields FROM " . $table_to_process . " where 1 ".$where." ORDER BY ProductTypeId ASC";
 		$return = $this->db->getAll($sql);
+		$ProductList = array();
 		if(count($return))
 		{
 			foreach($return as $key => $value)
 			{
-				$AllProductList[$value['ProductTypeId']][$value['ProductId']] = $value;
+				$ProductList[$value['ProductTypeId']][$value['ProductId']] = $value;
 			}
 		}
-		return $AllProductList;
+		return $ProductList;
 	}
 
         /**

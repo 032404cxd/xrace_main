@@ -37,15 +37,16 @@ class Xrace_Race extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		$sql = "SELECT $fields FROM " . $table_to_process . " ORDER BY RaceCatalogId ASC";
 		$return = $this->db->getAll($sql);
+		$RaceCatalogList = array();
 		if(count($return))
 		{
 			foreach($return as $key => $value)
 			{
-				$AllRaceCatalog[$value['RaceCatalogId']] = $value;
-				$AllRaceCatalog[$value['RaceCatalogId']]['comment'] = json_decode($AllRaceCatalog[$value['RaceCatalogId']]['comment'],true);
+				$RaceCatalogList[$value['RaceCatalogId']] = $value;
+				$RaceCatalogList[$value['RaceCatalogId']]['comment'] = json_decode($RaceCatalogList[$value['RaceCatalogId']]['comment'],true);
 			}
 		}
-		return $AllRaceCatalog;
+		return $RaceCatalogList;
 	}
 	//获取单个赛事信息
 	public function getRaceCatalog($RaceCatalogId, $fields = '*')
@@ -87,15 +88,15 @@ class Xrace_Race extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_group);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceCatalogId desc,RaceGroupId asc";
 		$return = $this->db->getAll($sql);
-		$AllRaceGroup = array();
+		$RaceGroupList = array();
 		if(count($return))
 		{
 			foreach($return as $key => $value)
 			{
-				$AllRaceGroup[$value['RaceGroupId']] = $value;
+				$RaceGroupList[$value['RaceGroupId']] = $value;
 			}
 		}
-		return $AllRaceGroup;
+		return $RaceGroupList;
 	}
 	//获取单个赛事组别的信息
 	public function getRaceGroup($RaceGroupId, $fields = '*')
@@ -137,15 +138,15 @@ class Xrace_Race extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_stage);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceCatalogId,RaceStageId ASC";
 		$return = $this->db->getAll($sql);
-		$AllRaceGroup = array();
+		$RaceStageList = array();
 		if(count($return))
 		{
 			foreach($return as $key => $value)
 			{
-				$AllRaceStage[$value['RaceStageId']] = $value;
+				$RaceStageList[$value['RaceStageId']] = $value;
 			}
 		}
-		return $AllRaceStage;
+		return $RaceStageList;
 	}
 	//获取单个赛事分站信息
 	public function getRaceStage($RaceStageId, $fields = '*')
@@ -180,15 +181,16 @@ class Xrace_Race extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_type);
 		$sql = "SELECT $fields FROM " . $table_to_process . " ORDER BY RaceTypeId ASC";
 		$return = $this->db->getAll($sql);
+		$RaceTypeList = array();
 		if(count($return))
 		{
 			foreach($return as $key => $value)
 			{
-				$AllRaceType[$value['RaceTypeId']] = $value;
-				$AllRaceType[$value['RaceTypeId']]['comment'] = json_decode($AllRaceType[$value['RaceTypeId']]['comment'],true);
+				$RaceTypeList[$value['RaceTypeId']] = $value;
+				$RaceTypeList[$value['RaceTypeId']]['comment'] = json_decode($RaceTypeList[$value['RaceTypeId']]['comment'],true);
 			}
 		}
-		return $AllRaceType;
+		return $RaceTypeList;
 	}
 	//获取单个比赛类型信息
 	public function getRaceType($RaceTypeId, $fields = '*')

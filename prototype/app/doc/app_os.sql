@@ -1,41 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 4.0.4.1
--- http://www.phpmyadmin.net
---
--- 主机: 127.0.0.1
--- 生成日期: 2016-03-24 17:05:06
--- 服务器版本: 5.6.11
--- PHP 版本: 5.5.1
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
---
--- 数据库: `xrace_config`
---
-CREATE DATABASE IF NOT EXISTS `xrace_config` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `xrace_config`;
-
-DELIMITER $$
---
--- 存储过程
---
-CREATE DEFINER=`root`@`localhost` PROCEDURE `p_nextval`(
-    in p_name          varchar(30),
-    out p_value        integer)
-begin
-    START TRANSACTION;
-    select value into p_value from id where name=p_name; 
-    if found_rows() = 0 then
-        set p_value = -1;
-    else
-        set p_value = p_value + 1;
-        update id set value = p_value where name = p_name;
-    end if;
-    COMMIT;
-end$$
-
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -95,3 +57,10 @@ CREATE TABLE IF NOT EXISTS `config_app_version` (
   PRIMARY KEY (`VersionId`),
   KEY `AppType` (`AppType`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='APP版本管理' AUTO_INCREMENT=1 ;
+
+ALTER TABLE `config_app_version` ADD `AppOSId` INT( 4 ) UNSIGNED NOT NULL COMMENT 'APP系统类型' AFTER `AppType` ;
+ALTER TABLE `config_app_version` CHANGE `AppType` `AppTypeId` INT( 4 ) UNSIGNED NOT NULL COMMENT 'APP系统类型';
+ALTER TABLE `config_app_version` CHANGE `AppVersion` `AppVersion` VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'APP版本';
+ALTER TABLE `config_app_version` CHANGE `comment` `comment` VARCHAR( 1024 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '压缩数组';
+ALTER TABLE `config_app_version` CHANGE `VersionId` `AppVersionId` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID';
+ALTER TABLE `config_app_version` ADD `AppDownloadUrl` VARCHAR( 256 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'APP下载路径' AFTER `AppOSId` ;

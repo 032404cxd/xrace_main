@@ -20,14 +20,15 @@ class Xrace_Sports extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		$sql = "SELECT $fields FROM " . $table_to_process . " ORDER BY SportsTypeId ASC";
 		$return = $this->db->getAll($sql);
+		$SportsTypeList = array();
 		if(count($return))
 		{
 			foreach($return as $key => $value)
 			{
-				$AllSportsType[$value['SportsTypeId']] = $value;
+				$SportsTypeList[$value['SportsTypeId']] = $value;
 			}
 		}
-		return $AllSportsType;
+		return $SportsTypeList;
 	}
 	/**
 	 * 获取单条记录

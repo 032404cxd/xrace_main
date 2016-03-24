@@ -22,14 +22,15 @@ class Xrace_App extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		$sql = "SELECT $fields FROM " . $table_to_process . " ORDER BY AppTypeId ASC";
 		$return = $this->db->getAll($sql);
+		$AppTypeList = array();
 		if(count($return))
 		{
 			foreach($return as $key => $value)
 			{
-				$AllAppType[$value['AppTypeId']] = $value;
+				$AppTypeList[$value['AppTypeId']] = $value;
 			}
 		}
-		return $AllAppType;
+		return $AppTypeList;
 	}
 	/**
 	 * 获取单条记录
@@ -87,14 +88,15 @@ class Xrace_App extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_os);
 		$sql = "SELECT $fields FROM " . $table_to_process . " ORDER BY AppOSId ASC";
 		$return = $this->db->getAll($sql);
+		$AppOSList = array();
 		if(count($return))
 		{
 			foreach($return as $key => $value)
 			{
-				$AllAppOS[$value['AppOSId']] = $value;
+				$AppOSList[$value['AppOSId']] = $value;
 			}
 		}
-		return $AllAppOS;
+		return $AppOSList;
 	}
 	/**
 	 * 获取单条记录
@@ -140,6 +142,97 @@ class Xrace_App extends Base_Widget
 		$AppOSId = intval($AppOSId);
 		$table_to_process = Base_Widget::getDbTable($this->table_os);
 		return $this->db->delete($table_to_process, '`AppOSId` = ?', $AppOSId);
+	}
+	/**
+	 * 查询全部
+	 * @param $fields
+	 * @return array
+	 */
+	public function getAppVersionList($AppTypeId = 0,$AppOSId = 0,$fields = "*")
+	{
+		//APP类型ID
+		$AppTypeId = intval($AppTypeId);
+		//APP系统ID
+		$AppOSId = intval($AppOSId);
+		//初始化查询条件
+		$whereAppType = ($AppTypeId != 0)?" AppTypeId = $AppTypeId":"";
+		$whereAppOS = ($AppOSId != 0)?" AppOSId = $AppOSId":"";
+		$whereCondition = array($whereAppType,$whereAppOS);
+		//生成条件列
+		$where = Base_common::getSqlWhere($whereCondition);
+		$table_to_process = Base_Widget::getDbTable($this->table_version);
+		$sql = "SELECT $fields FROM " . $table_to_process . " where 1 ".$where." ORDER BY AppVersion,AppTypeId,AppOSId desc";
+		$return = $this->db->getAll($sql);
+		$AppVersionList = array();
+		if(count($return))
+		{
+			foreach($return as $key => $value)
+			{
+				$AppVersionList[$value['AppVersionId']] = $value;
+			}
+		}
+		return $AppVersionList;
+	}
+	/**
+	 * 获取单条记录
+	 * @param integer $AppId
+	 * @param string $fields
+	 * @return array
+	 */
+	public function getAppVersionByVersion($AppVersion, $fields = '*')
+	{
+		//APP版本
+		$AppVersion = trim($AppVersion);
+		$table_to_process = Base_Widget::getDbTable($this->table_version);
+		return $this->db->selectRow($table_to_process, $fields, '`AppVersion` = ?', $AppVersion);
+	}
+	/**
+	 * 插入
+	 * @param array $bind
+	 * @return boolean
+	 */
+	public function insertAppVersion(array $bind)
+	{
+		$table_to_process = Base_Widget::getDbTable($this->table_version);
+		return $this->db->insert($table_to_process, $bind);
+	}
+	/**
+	 * 获取单条记录
+	 * @param integer $AppId
+	 * @param string $fields
+	 * @return array
+	 */
+	public function getAppVersion($AppVersionId, $fields = '*')
+	{
+		//APP版本ID
+		$AppVersionId = intval($AppVersionId);
+		$table_to_process = Base_Widget::getDbTable($this->table_version);
+		return $this->db->selectRow($table_to_process, $fields, '`AppVersionId` = ?', $AppVersionId);
+	}
+	/**
+	 * 更新
+	 * @param integer $AppId
+	 * @param array $bind
+	 * @return boolean
+	 */
+	public function updateAppVersion($AppVersionId, array $bind)
+	{
+		//APP版本ID
+		$AppVersionId = intval($AppVersionId);
+		$table_to_process = Base_Widget::getDbTable($this->table_version);
+		return $this->db->update($table_to_process, $bind, '`AppVersionId` = ?', $AppVersionId);
+	}
+	/**
+	 * 删除
+	 * @param integer $AppId
+	 * @return boolean
+	 */
+	public function deleteAppVersion($AppVersionId)
+	{
+		//APP版本ID
+		$AppVersionId = intval($AppVersionId);
+		$table_to_process = Base_Widget::getDbTable($this->table_version);
+		return $this->db->delete($table_to_process, '`AppVersionId` = ?', $AppVersionId);
 	}
 
 }
