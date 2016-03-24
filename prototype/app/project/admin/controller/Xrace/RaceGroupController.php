@@ -41,7 +41,7 @@ class Xrace_RaceGroupController extends AbstractController
 			//获取赛事列表
 			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 			//获取分组列表
-			$RaceGroupArr = $this->oRace->getAllRaceGroupList($RaceCatalogId);
+			$RaceGroupArr = $this->oRace->getRaceGroupList($RaceCatalogId);
 			//初始化空的分组列表
 			$RaceGroupList = array();
 			//循环分组列表

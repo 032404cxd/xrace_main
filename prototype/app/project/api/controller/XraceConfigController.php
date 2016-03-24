@@ -88,9 +88,9 @@ class XraceConfigController extends AbstractController
                 unset($RaceCatalogInfo['comment']['RaceCatalogIcon_root']);
             }
             //根据赛事获取组别列表
-            $RaceGroupList = isset($RaceCatalogInfo['RaceCatalogId'])?$this->oRace->getAllRaceGroupList($RaceCatalogInfo['RaceCatalogId'],"RaceGroupId,RaceGroupName"):array();
+            $RaceGroupList = isset($RaceCatalogInfo['RaceCatalogId'])?$this->oRace->getRaceGroupList($RaceCatalogInfo['RaceCatalogId'],"RaceGroupId,RaceGroupName"):array();
             //根据赛事获取分站列表
-            $RaceStageList = isset($RaceCatalogInfo['RaceCatalogId'])?$this->oRace->getAllRaceStageList($RaceCatalogInfo['RaceCatalogId'],"RaceStageId,RaceStageName"):array();
+            $RaceStageList = isset($RaceCatalogInfo['RaceCatalogId'])?$this->oRace->getRaceStageList($RaceCatalogInfo['RaceCatalogId'],"RaceStageId,RaceStageName"):array();
             //结果数组
             $result = array("return"=>1,"RaceCatalogInfo"=>$RaceCatalogInfo,'RaceGroupList'=>$RaceGroupList,'RaceStageList'=>$RaceStageList);
         }
@@ -112,7 +112,7 @@ class XraceConfigController extends AbstractController
         if($RaceCatalogId)
         {
             //获得分站列表
-            $RaceStageList = $this->oRace->getAllRaceStageList($RaceCatalogId);
+            $RaceStageList = $this->oRace->getRaceStageList($RaceCatalogId);
             //如果没有返回值,默认为空数组
             if(!is_array($RaceStageList))
             {

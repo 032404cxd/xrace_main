@@ -41,9 +41,9 @@ class Xrace_RaceStageController extends AbstractController
 			//赛事列表
 			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 			//赛事分站列表
-			$RaceStageArr = $this->oRace->getAllRaceStageList($RaceCatalogId);
+			$RaceStageArr = $this->oRace->getRaceStageList($RaceCatalogId);
 			//赛事分组列表
-			$RaceGroupList = $this->oRace->getAllRaceGroupList($RaceCatalogId,'RaceGroupId,RaceGroupName');
+			$RaceGroupList = $this->oRace->getRaceGroupList($RaceCatalogId,'RaceGroupId,RaceGroupName');
 			//产品类型列表
 			$ProductTypeList = $this->oProduct->getProductTypeList($RaceCatalogId,'ProductTypeId,ProductTypeName');
 			//初始化一个空的赛事分站列表
@@ -266,7 +266,7 @@ class Xrace_RaceStageController extends AbstractController
 			//分站数据
 			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'*');
 			//分组列表
-			$RaceGroupList = $this->oRace->getAllRaceGroupList($RaceStageInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
+			$RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
 			//数据解包
 			$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
 			//图片数据解包
@@ -421,7 +421,7 @@ class Xrace_RaceStageController extends AbstractController
 		//赛事分站ID
 		$RaceStageId = intval($this->request->RaceStageId);
 		//所有赛事分组列表
-		$RaceGroupList = $this->oRace->getAllRaceGroupList($RaceCatalogId);
+		$RaceGroupList = $this->oRace->getRaceGroupList($RaceCatalogId);
 		//如果有传赛事分站ID
 		if($RaceStageId)
 		{

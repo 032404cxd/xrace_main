@@ -76,7 +76,7 @@ class Xrace_Race extends Base_Widget
 	}
 	//根据赛事获取所有组别列表
 	//赛事ID为0则获取全部组别
-	public function getAllRaceGroupList($RaceCatalogId,$fields = "*")
+	public function getRaceGroupList($RaceCatalogId,$fields = "*")
 	{
 		$RaceCatalogId = intval($RaceCatalogId);
 		//初始化查询条件
@@ -126,7 +126,7 @@ class Xrace_Race extends Base_Widget
 	}
 	//根据赛事获取所有分站列表
 	//赛事ID为0则获取全部分站
-	public function getAllRaceStageList($RaceCatalogId,$fields = "*")
+	public function getRaceStageList($RaceCatalogId,$fields = "*")
 	{
 		$RaceCatalogId = trim($RaceCatalogId);
 		//初始化查询条件
