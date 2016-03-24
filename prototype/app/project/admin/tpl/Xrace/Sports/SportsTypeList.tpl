@@ -7,15 +7,15 @@ $(document).ready(function(){
 });
 
 function sportsTypeDelete(p_id, p_name){
-	deleteAppBox = divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=sports.type.delete&sportsTypeId=' + p_id;}});
+	deleteAppBox = divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=sports.type.delete&SportsTypeId=' + p_id;}});
 }
 
 function sportsTypeModify(mid){
-	modifySportsTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=sports.type.modify&sportsTypeId=' + mid, {title:'修改运动类型',width:800,height:600});
+	modifySportsTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=sports.type.modify&SportsTypeId=' + mid, {title:'修改运动类型',width:800,height:600});
 }
 
 function sportsTypeParamsModify(mid){
-  modifySportsTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=sports.type.params.modify&sportsTypeId=' + mid, {title:'修改运动类型',width:800,height:600});
+  modifySportsTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=sports.type.params.modify&SportsTypeId=' + mid, {title:'修改运动类型',width:800,height:600});
 }
 
 </script>
@@ -32,11 +32,11 @@ function sportsTypeParamsModify(mid){
     <th align="center" class="rowtip">操作</th>
   </tr>
 
-{tpl:loop $SportTypeArr $oSportsType}
+{tpl:loop $SportTypeList $SportsTypeInfo}
   <tr class="hover">
-    <td align="center">{tpl:$oSportsType.SportsTypeId/}</td>
-    <td align="center">{tpl:$oSportsType.SportsTypeName/}</td>
-    <td align="center"><a  href="javascript:;" onclick="sportsTypeDelete('{tpl:$oSportsType.SportsTypeId/}','{tpl:$oSportsType.SportsTypeName/}')">删除</a> |  <a href="javascript:;" onclick="sportsTypeModify('{tpl:$oSportsType.SportsTypeId/}');">修改</a></td>
+    <td align="center">{tpl:$SportsTypeInfo.SportsTypeId/}</td>
+    <td align="center">{tpl:$SportsTypeInfo.SportsTypeName/}</td>
+    <td align="center"><a  href="javascript:;" onclick="sportsTypeDelete('{tpl:$SportsTypeInfo.SportsTypeId/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">删除</a> |  <a href="javascript:;" onclick="sportsTypeModify('{tpl:$SportsTypeInfo.SportsTypeId/}');">修改</a></td>
   </tr>
 {/tpl:loop}
 </table>

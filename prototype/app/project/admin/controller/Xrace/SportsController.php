@@ -1,6 +1,6 @@
 <?php
 /**
- * 任务管理
+ * 运动类型管理
  * @author Chen<cxd032404@hotmail.com>
  * $Id: LotoController.php 15195 2014-07-23 07:18:26Z 334746 $
  */
@@ -29,14 +29,16 @@ class Xrace_SportsController extends AbstractController
 		$this->oSports = new Xrace_Sports();
 
 	}
-	//任务配置列表页面
+	//运动类型配置列表页面
 	public function indexAction()
 	{
 		//检查权限
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
-			$SportTypeArr = $this->oSports->getAllSportsTypeList();
+			//获取运动类型列表
+			$SportTypeList = $this->oSports->getAllSportsTypeList();
+			//渲染模版
 			include $this->tpl('Xrace_Sports_SportsTypeList');
 		}
 		else
@@ -45,18 +47,14 @@ class Xrace_SportsController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//添加任务填写配置页面
+	//添加运动类型填写配置页面
 	public function sportsTypeAddAction()
 	{
 		//检查权限
 		$PermissionCheck = $this->manager->checkMenuPermission("SportsTypeInsert");
 		if($PermissionCheck['return'])
 		{
-			$maxParams = $this->oSports->getMaxParmas();
-			for($i = 1;$i<=$maxParams;$i++)
-			{
-				$oSportsType['comment']['params'][$i] = array('param'=>'','paramName'=>'');
-			}
+			//渲染模版
 			include $this->tpl('Xrace_Sports_SportsTypeAdd');
 		}
 		else
@@ -66,28 +64,19 @@ class Xrace_SportsController extends AbstractController
 		}
 	}
 	
-	//添加新任务
+	//添加新运动类型
 	public function sportsTypeInsertAction()
 	{
 		//检查权限
-		$bind=$this->request->from('SportsTypeName','ParamsInfo');
+		$bind=$this->request->from('SportsTypeName');
+		//运动类型名称不能为空
 		if(trim($bind['SportsTypeName'])=="")
 		{
 			$response = array('errno' => 1);
 		}
 		else
 		{
-			$maxParams = $this->oSports->getMaxParmas();
-			for($i = 1;$i<=$maxParams;$i++)
-			{
-				if(!isset($bind['ParamsInfo'][$i]))
-				{
-					$bind['ParamsInfo'][$i] = array('param'=>'','paramName'=>'');
-				}
-			}
-			$bind['comment']['params'] = $bind['ParamsInfo'];
-			unset($bind['ParamsInfo']);
-			$bind['comment'] = json_encode($bind['comment']);
+			//添加运动类型
 			$res = $this->oSports->insertSportsType($bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
 		}
@@ -95,34 +84,18 @@ class Xrace_SportsController extends AbstractController
 		return true;
 	}
 	
-	//修改任务信息页面
+	//修改运动类型信息页面
 	public function sportsTypeModifyAction()
 	{
 		//检查权限
 		$PermissionCheck = $this->manager->checkMenuPermission("SportsTypeModify");
 		if($PermissionCheck['return'])
 		{
-			$sportsTypeId = intval($this->request->sportsTypeId);
-			$oSportsType = $this->oSports->getSportsType($sportsTypeId,'*');
-			$oSportsType['comment'] = json_decode($oSportsType['comment'],true);
-			$maxParams = $this->oSports->getMaxParmas();
-			if(isset($oSportsType['comment']['params']) && is_array($oSportsType['comment']['params']))
-			{
-				for($i = 1;$i<=$maxParams;$i++)
-				{
-					if(!isset($oSportsType['comment']['params'][$i]))
-					{
-						$oSportsType['comment']['params'][$i] = array('param'=>'','paramName'=>'');
-					}
-				}
-			}
-			else
-			{
-				for($i = 1;$i<=$maxParams;$i++)
-				{
-					$oSportsType['comment']['params'][$i] = array('param'=>'','paramName'=>'');
-				}
-			}
+			//运动类型ID
+			$SportsTypeId = intval($this->request->SportsTypeId);
+			//获取运动类型信息
+			$SportsTypeInfo = $this->oSports->getSportsType($SportsTypeId,'*');
+			//渲染模版
 			include $this->tpl('Xrace_Sports_SportsTypeModify');
 		}
 		else
@@ -132,33 +105,19 @@ class Xrace_SportsController extends AbstractController
 		}
 	}
 	
-	//更新任务信息
+	//更新运动类型信息
 	public function sportsTypeUpdateAction()
 	{
-		$bind=$this->request->from('SportsTypeId','SportsTypeName','ParamsInfo');
+		//接收页面参数
+		$bind=$this->request->from('SportsTypeId','SportsTypeName');
+		//运动类型名称不能为空
 		if(trim($bind['SportsTypeName'])=="")
 		{
 			$response = array('errno' => 1);
 		}
 		else
 		{
-			$oSportsType = $this->oSports->getSportsType($bind['SportsTypeId'],'*');
-			$bind['comment'] = json_decode($oSportsType['comment'],true);
-			$maxParams = $this->oSports->getMaxParmas();
-			for($i = 1;$i<=$maxParams;$i++)
-			{
-				if(!isset($bind['ParamsInfo'][$i]))
-				{
-					$bind['ParamsInfo'][$i] = array('param'=>'','paramName'=>'');
-				}
-				else
-				{
-					//$bind['ParamsInfo'][$i] =
-				}
-			}
-			$bind['comment']['params'] = $bind['ParamsInfo'];
-			unset($bind['ParamsInfo']);
-			$bind['comment'] = json_encode($bind['comment']);
+			//修改运动类型
 			$res = $this->oSports->updateSportsType($bind['SportsTypeId'],$bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
 		}
@@ -166,15 +125,18 @@ class Xrace_SportsController extends AbstractController
 		return true;
 	}
 	
-	//删除任务
+	//删除运动类型
 	public function sportsTypeDeleteAction()
 	{
 		//检查权限
 		$PermissionCheck = $this->manager->checkMenuPermission("SportsTypeDelete");
 		if($PermissionCheck['return'])
 		{
-			$sportsTypeId = trim($this->request->sportsTypeId);
-			$this->oSports->deleteSportsType($sportsTypeId);
+			//运动类型ID
+			$SportsTypeId = trim($this->request->SportsTypeId);
+			//删除运动类型
+			$this->oSports->deleteSportsType($SportsTypeId);
+			//返回之前的页面
 			$this->response->goBack();
 		}
 		else

@@ -5,35 +5,31 @@
  */
 
 
-class Xrace_Sports extends Base_Widget
+class Xrace_App extends Base_Widget
 {
 	//声明所用到的表
-	protected $table = 'config_sports_type';
+	protected $table = 'config_app_type';
+	protected $table_os = 'config_app_os';
+	protected $table_version = 'config_app_version';
 
-	protected $maxParams = 5;
-
-	public function getMaxParmas()
-	{
-		return $this->maxParams;
-	}
 	/**
 	 * 查询全部
 	 * @param $fields
 	 * @return array
 	 */
-	public function getAllSportsTypeList($fields = "*")
+	public function getAppTypeList($fields = "*")
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		$sql = "SELECT $fields FROM " . $table_to_process . " ORDER BY SportsTypeId ASC";
+		$sql = "SELECT $fields FROM " . $table_to_process . " ORDER BY AppTypeId ASC";
 		$return = $this->db->getAll($sql);
 		if(count($return))
 		{
 			foreach($return as $key => $value)
 			{
-				$AllSportsType[$value['SportsTypeId']] = $value;
+				$AllAppType[$value['AppTypeId']] = $value;
 			}
 		}
-		return $AllSportsType;
+		return $AllAppType;
 	}
 	/**
 	 * 获取单条记录
@@ -41,11 +37,11 @@ class Xrace_Sports extends Base_Widget
 	 * @param string $fields
 	 * @return array
 	 */
-	public function getSportsType($SportsTypeId, $fields = '*')
+	public function getAppType($AppTypeId, $fields = '*')
 	{
-		$SportsTypeId = intval($SportsTypeId);
+		$AppTypeId = intval($AppTypeId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->selectRow($table_to_process, $fields, '`SportsTypeId` = ?', $SportsTypeId);
+		return $this->db->selectRow($table_to_process, $fields, '`AppTypeId` = ?', $AppTypeId);
 	}
 	/**
 	 * 更新
@@ -53,18 +49,18 @@ class Xrace_Sports extends Base_Widget
 	 * @param array $bind
 	 * @return boolean
 	 */
-	public function updateSportsType($SportsTypeId, array $bind)
+	public function updateAppType($AppTypeId, array $bind)
 	{
-		$SportsTypeId = intval($SportsTypeId);
+		$AppTypeId = intval($AppTypeId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->update($table_to_process, $bind, '`SportsTypeId` = ?', $SportsTypeId);
+		return $this->db->update($table_to_process, $bind, '`AppTypeId` = ?', $AppTypeId);
 	}
 	/**
 	 * 插入
 	 * @param array $bind
 	 * @return boolean
 	 */
-	public function insertSportsType(array $bind)
+	public function insertAppType(array $bind)
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		return $this->db->insert($table_to_process, $bind);
@@ -75,11 +71,11 @@ class Xrace_Sports extends Base_Widget
 	 * @param integer $AppId
 	 * @return boolean
 	 */
-	public function deleteSportsType($SportsTypeId)
+	public function deleteAppType($AppTypeId)
 	{
-		$SportsTypeId = intval($SportsTypeId);
+		$AppTypeId = intval($AppTypeId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->delete($table_to_process, '`SportsTypeId` = ?', $SportsTypeId);
+		return $this->db->delete($table_to_process, '`AppTypeId` = ?', $AppTypeId);
 	}
 
 }
