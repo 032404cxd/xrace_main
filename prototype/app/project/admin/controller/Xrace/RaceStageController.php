@@ -489,7 +489,7 @@ class Xrace_RaceStageController extends AbstractController
 			//获取比赛列表
 			$RaceList = $this->oRace->getRaceList($RaceStageId,$RaceGroupId);
 			//获取比赛类型列表
-			$RaceTypeList  = $this->oRace->getAllRaceTypeList("RaceTypeId,RaceTypeName");
+			$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
 			foreach($RaceList as $RaceId => $RaceInfo)
 			{
 				//获取比赛当前状态
@@ -519,7 +519,7 @@ class Xrace_RaceStageController extends AbstractController
 			//赛事分组ID
 			$RaceGroupId = intval($this->request->RaceGroupId);
 			//获取比赛类型列表
-			$RaceTypeList  = $this->oRace->getAllRaceTypeList("RaceTypeId,RaceTypeName");
+			$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
 			//初始化开始和结束时间
 			$ApplyStartTime = date("Y-m-d H:i:s",time()+86400);
 			$ApplyEndTime = date("Y-m-d H:i:s",time()+86400*8);
@@ -553,7 +553,7 @@ class Xrace_RaceStageController extends AbstractController
 			if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
 			{
 				//获取比赛类型列表
-				$RaceTypeList  = $this->oRace->getAllRaceTypeList("RaceTypeId,RaceTypeName");
+				$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
 				//解包数组
 				$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
 				//解包地图数组

@@ -175,7 +175,7 @@ class Xrace_Race extends Base_Widget
 		return $this->db->delete($table_to_process, '`RaceStageId` = ?', $RaceStageId);
 	}
 	//获取所有比赛类型信息
-	public function getAllRaceTypeList($fields = "*")
+	public function getRaceTypeList($fields = "*")
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table_type);
 		$sql = "SELECT $fields FROM " . $table_to_process . " ORDER BY RaceTypeId ASC";

@@ -37,7 +37,7 @@ class Xrace_RaceTypeController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//获取比赛分类列表
-			$RaceTypeList  = $this->oRace->getAllRaceTypeList();
+			$RaceTypeList  = $this->oRace->getRaceTypeList();
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceTypeList');
 		}

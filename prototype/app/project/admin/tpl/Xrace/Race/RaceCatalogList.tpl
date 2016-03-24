@@ -7,11 +7,11 @@ $(document).ready(function(){
 });
 
 function RaceCatalogDelete(p_id, p_name){
-	deleteAppBox = divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.catalog.delete&raceCatalogId=' + p_id;}});
+	deleteAppBox = divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.catalog.delete&RaceCatalogId=' + p_id;}});
 }
 
 function RaceCatalogModify(mid){
-	modifyRaceCatalogBox = divBox.showBox('{tpl:$this.sign/}&ac=race.catalog.modify&raceCatalogId=' + mid, {title:'修改赛事',width:500,height:600});
+	modifyRaceCatalogBox = divBox.showBox('{tpl:$this.sign/}&ac=race.catalog.modify&RaceCatalogId=' + mid, {title:'修改赛事',width:500,height:600});
 }
 
 </script>
