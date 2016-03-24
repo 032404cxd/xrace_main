@@ -9,19 +9,13 @@ class Xrace_Product extends Base_Widget
 {
 	//声明所用到的表
 	protected $table = 'config_product_type';
-        protected $table_product = 'config_product';
-	protected $maxParams = 5;
-
-	public function getMaxParmas()
-	{
-		return $this->maxParams;
-	}
+    protected $table_product = 'config_product';
 	/**
 	 * 查询全部
 	 * @param $fields
 	 * @return array
 	 */
-	public function getAllProductTypeList($RaceCatalogId = 0,$fields = "*")
+	public function getProductTypeList($RaceCatalogId = 0,$fields = "*")
 	{
 		$RaceCatalogId = intval($RaceCatalogId);
 		//初始化查询条件

@@ -37,7 +37,7 @@ class Xrace_RaceCatalogController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			$RootUrl = "http://".$_SERVER['HTTP_HOST'];
-			$RaceCatalogArr  = $this->oRace->getAllRaceCatalogList();
+			$RaceCatalogArr  = $this->oRace->getRaceCatalogList();
 			include $this->tpl('Xrace_Race_RaceCatalogList');
 		}
 		else

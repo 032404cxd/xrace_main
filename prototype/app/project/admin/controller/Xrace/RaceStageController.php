@@ -39,13 +39,13 @@ class Xrace_RaceStageController extends AbstractController
 			//赛事ID
 			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getAllRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 			//赛事分站列表
 			$RaceStageArr = $this->oRace->getAllRaceStageList($RaceCatalogId);
 			//赛事分组列表
 			$RaceGroupList = $this->oRace->getAllRaceGroupList($RaceCatalogId,'RaceGroupId,RaceGroupName');
 			//产品类型列表
-			$ProductTypeList = $this->oProduct->getAllProductTypeList($RaceCatalogId,'ProductTypeId,ProductTypeName');
+			$ProductTypeList = $this->oProduct->getProductTypeList($RaceCatalogId,'ProductTypeId,ProductTypeName');
 			//初始化一个空的赛事分站列表
 			$RaceStageList = array();
 			//循环赛事分站列表
@@ -189,7 +189,7 @@ class Xrace_RaceStageController extends AbstractController
 			$StageStartDate = date("Y-m-d",time()+30*86400);
 			$StageEndDate = date("Y-m-d",time()+32*86400);
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getAllRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceStageAdd');
 		}
@@ -207,7 +207,7 @@ class Xrace_RaceStageController extends AbstractController
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
-		$RaceCatalogList  = $this->oRace->getAllRaceCatalogList();
+		$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 		//分站名称不能为空
 		if(trim($bind['RaceStageName'])=="")
 		{
@@ -262,7 +262,7 @@ class Xrace_RaceStageController extends AbstractController
 			//分站ID
 			$RaceStageId = intval($this->request->RaceStageId);
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getAllRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 			//分站数据
 			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'*');
 			//分组列表
@@ -307,7 +307,7 @@ class Xrace_RaceStageController extends AbstractController
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
-		$RaceCatalogList  = $this->oRace->getAllRaceCatalogList();
+		$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 		//分站名称不能为空
 		if(trim($bind['RaceStageName'])=="")
 		{
@@ -1377,7 +1377,7 @@ class Xrace_RaceStageController extends AbstractController
 				$SelectedProductList = $RaceStageInfo['comment']['SelectedProductList'];
 			}
 			//商品类型列表
-			$ProductTypeList = $this->oProduct->getAllProductTypeList($RaceStageInfo['RaceCatalogId'], 'ProductTypeId,ProductTypeName');
+			$ProductTypeList = $this->oProduct->getProductTypeList($RaceStageInfo['RaceCatalogId'], 'ProductTypeId,ProductTypeName');
 			//初始化空的商品列表
 			$ProductList = array();
 			//获取所有产品的列表

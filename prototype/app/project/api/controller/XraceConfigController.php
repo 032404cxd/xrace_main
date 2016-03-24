@@ -29,7 +29,7 @@ class XraceConfigController extends AbstractController
     public function getRaceCatalogListAction()
     {
         //获得赛事列表
-        $RaceCatalogList = $this->oRace->getAllRaceCatalogList();
+        $RaceCatalogList = $this->oRace->getRaceCatalogList();
         //如果没有返回值,默认为空数组
         if(!is_array($RaceCatalogList)) 
         {

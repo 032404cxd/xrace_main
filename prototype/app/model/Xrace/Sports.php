@@ -10,12 +10,6 @@ class Xrace_Sports extends Base_Widget
 	//声明所用到的表
 	protected $table = 'config_sports_type';
 
-	protected $maxParams = 5;
-
-	public function getMaxParmas()
-	{
-		return $this->maxParams;
-	}
 	/**
 	 * 查询全部
 	 * @param $fields
