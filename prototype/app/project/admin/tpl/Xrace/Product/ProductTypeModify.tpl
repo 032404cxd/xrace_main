@@ -9,7 +9,7 @@
 </tr>
 <tr class="hover"><td>所属赛事</td>
 	<td align="left">	<select name="RaceCatalogId" size="1">
-			{tpl:loop $RaceCatalogArr $RaceCatalogInfo}
+			{tpl:loop $RaceCatalogList $RaceCatalogInfo}
 			<option value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" {tpl:if($RaceCatalogInfo.RaceCatalogId==$ProductTypeInfo.RaceCatalogId)}selected="selected"{/tpl:if}>{tpl:$RaceCatalogInfo.RaceCatalogName/}</option>
 			{/tpl:loop}
 		</select></td>

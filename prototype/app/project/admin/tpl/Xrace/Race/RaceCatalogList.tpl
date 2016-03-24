@@ -29,7 +29,7 @@ function RaceCatalogModify(mid){
     <th align="center" class="rowtip">操作</th>
   </tr>
 
-{tpl:loop $RaceCatalogArr $RaceCatalogInfo}
+{tpl:loop $RaceCatalogList $RaceCatalogInfo}
   <tr class="hover">
     <td align="center">{tpl:$RaceCatalogInfo.RaceCatalogId/}</td>
     <td align="center">{tpl:$RaceCatalogInfo.RaceCatalogName/}</td>

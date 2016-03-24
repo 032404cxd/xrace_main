@@ -39,7 +39,7 @@ class Xrace_RaceGroupController extends AbstractController
 			//获取赛事ID
 			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
 			//获取赛事列表
-			$RaceCatalogArr  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 			//获取分组列表
 			$RaceGroupArr = $this->oRace->getAllRaceGroupList($RaceCatalogId);
 			//初始化空的分组列表
@@ -56,10 +56,10 @@ class Xrace_RaceGroupController extends AbstractController
 				//累加赛事下的分组数量
 				$RaceGroupList[$value['RaceCatalogId']]['RaceGroupCount'] = isset($RaceGroupList[$value['RaceCatalogId']]['RaceGroupCount'])?$RaceGroupList[$value['RaceCatalogId']]['RaceGroupCount']+1:1;
 				//如果赛事ID有效
-				if(isset($RaceCatalogArr[$value['RaceCatalogId']]))
+				if(isset($RaceCatalogList[$value['RaceCatalogId']]))
 				{
 					//获取赛事名称
-					$RaceGroupList[$value['RaceCatalogId']]['RaceCatalogName'] = $RaceCatalogArr[$value['RaceCatalogId']]['RaceCatalogName'];
+					$RaceGroupList[$value['RaceCatalogId']]['RaceCatalogName'] = $RaceCatalogList[$value['RaceCatalogId']]['RaceCatalogName'];
 				}
 				else
 				{
@@ -85,7 +85,7 @@ class Xrace_RaceGroupController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事列表
-			$RaceCatalogArr  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 			//模板渲染
 			include $this->tpl('Xrace_Race_RaceGroupAdd');
 		}
@@ -105,12 +105,12 @@ class Xrace_RaceGroupController extends AbstractController
 		{
 			//检查权限
 			$bind=$this->request->from('RaceGroupName','RaceCatalogId');
-			$RaceCatalogArr  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 			if(trim($bind['RaceGroupName'])=="")
 			{
 				$response = array('errno' => 1);
 			}
-			elseif(!isset($RaceCatalogArr[$bind['RaceCatalogId']]))
+			elseif(!isset($RaceCatalogList[$bind['RaceCatalogId']]))
 			{
 				$response = array('errno' => 3);
 			}
@@ -140,7 +140,7 @@ class Xrace_RaceGroupController extends AbstractController
 			//赛事分组ID
 			$RaceGroupId = trim($this->request->RaceGroupId);
 			//赛事列表
-			$RaceCatalogArr  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 			//赛事分组信息
 			$RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,'*');
 			//数据解包
@@ -196,7 +196,7 @@ class Xrace_RaceGroupController extends AbstractController
 				$bind['LicenseList'] = array();
 			}
 			//获取赛事列表
-			$RaceCatalogArr  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 			//分组名称不能为空
 			if(trim($bind['RaceGroupName'])=="")
 			{
@@ -208,7 +208,7 @@ class Xrace_RaceGroupController extends AbstractController
 				$response = array('errno' => 2);
 			}
 			//分组必须属于某个已配置的赛事
-			elseif(!isset($RaceCatalogArr[$bind['RaceCatalogId']]))
+			elseif(!isset($RaceCatalogList[$bind['RaceCatalogId']]))
 			{
 				$response = array('errno' => 3);
 			}

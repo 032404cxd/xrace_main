@@ -39,16 +39,16 @@ class Xrace_ProductController extends AbstractController
 			//对应赛事ID
 			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
 			//获取赛事列表
-			$RaceCatalogArr  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 			$ProductTypeArr = $this->oProduct->getProductTypeList($RaceCatalogId);
 			$ProductTypeList = array();
 			foreach($ProductTypeArr as $ProductTypeId => $ProductTypeInfo)
 			{
 				$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['ProductTypeList'][$ProductTypeId] = $ProductTypeInfo;
 				$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['ProductTypeCount'] = isset($ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['ProductTypeCount'])?$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['ProductTypeCount']+1:1;
-				if(isset($RaceCatalogArr[$ProductTypeInfo['RaceCatalogId']]))
+				if(isset($RaceCatalogList[$ProductTypeInfo['RaceCatalogId']]))
 				{
-					$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['RaceCatalogName'] = $RaceCatalogArr[$ProductTypeInfo['RaceCatalogId']]['RaceCatalogName'];
+					$ProductTypeList[$ProductTypeInfo['RaceCatalogId']]['RaceCatalogName'] = $RaceCatalogList[$ProductTypeInfo['RaceCatalogId']]['RaceCatalogName'];
 				}
 				else
 				{
@@ -71,7 +71,7 @@ class Xrace_ProductController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事列表
-			$RaceCatalogArr  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 			//渲染模板
 			include $this->tpl('Xrace_Product_ProductTypeAdd');
 		}
@@ -124,7 +124,7 @@ class Xrace_ProductController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事列表
-			$RaceCatalogArr  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
 			//商品类型ID
 			$ProductTypeId = intval($this->request->ProductTypeId);
 			//获取商品类型信息
