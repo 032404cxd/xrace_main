@@ -77,5 +77,69 @@ class Xrace_App extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		return $this->db->delete($table_to_process, '`AppTypeId` = ?', $AppTypeId);
 	}
+	/**
+	 * 查询全部
+	 * @param $fields
+	 * @return array
+	 */
+	public function getAppOsList($fields = "*")
+	{
+		$table_to_process = Base_Widget::getDbTable($this->table_os);
+		$sql = "SELECT $fields FROM " . $table_to_process . " ORDER BY AppOSId ASC";
+		$return = $this->db->getAll($sql);
+		if(count($return))
+		{
+			foreach($return as $key => $value)
+			{
+				$AllAppOS[$value['AppOSId']] = $value;
+			}
+		}
+		return $AllAppOS;
+	}
+	/**
+	 * 获取单条记录
+	 * @param integer $AppId
+	 * @param string $fields
+	 * @return array
+	 */
+	public function getAppOS($AppOSId, $fields = '*')
+	{
+		$AppOSId = intval($AppOSId);
+		$table_to_process = Base_Widget::getDbTable($this->table_os);
+		return $this->db->selectRow($table_to_process, $fields, '`AppOSId` = ?', $AppOSId);
+	}
+	/**
+	 * 更新
+	 * @param integer $AppId
+	 * @param array $bind
+	 * @return boolean
+	 */
+	public function updateAppOS($AppOSId, array $bind)
+	{
+		$AppOSId = intval($AppOSId);
+		$table_to_process = Base_Widget::getDbTable($this->table_os);
+		return $this->db->update($table_to_process, $bind, '`AppOSId` = ?', $AppOSId);
+	}
+	/**
+	 * 插入
+	 * @param array $bind
+	 * @return boolean
+	 */
+	public function insertAppOS(array $bind)
+	{
+		$table_to_process = Base_Widget::getDbTable($this->table_os);
+		return $this->db->insert($table_to_process, $bind);
+	}
+	/**
+	 * 删除
+	 * @param integer $AppId
+	 * @return boolean
+	 */
+	public function deleteAppOS($AppOSId)
+	{
+		$AppOSId = intval($AppOSId);
+		$table_to_process = Base_Widget::getDbTable($this->table_os);
+		return $this->db->delete($table_to_process, '`AppOSId` = ?', $AppOSId);
+	}
 
 }

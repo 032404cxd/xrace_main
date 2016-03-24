@@ -1,8 +1,8 @@
 {tpl:tpl contentHeader/}
 <script type="text/javascript">
 $(document).ready(function(){
-	$('#add_app').click(function(){
-		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=app.type.add', {title:'添加APP类型',width:800,height:600});
+	$('#add_app_type').click(function(){
+		addAppTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=app.type.add', {title:'添加APP类型',width:800,height:600});
 	});
 });
 
@@ -18,7 +18,7 @@ function appTypeModify(mid){
 </script>
 
 <fieldset><legend>操作</legend>
-[ <a href="javascript:;" id="add_app">添加APP类型</a> ]
+[ <a href="javascript:;" id="add_app_type">添加APP类型</a> ]
 </fieldset>
 
 <fieldset><legend>APP类型列表</legend>
