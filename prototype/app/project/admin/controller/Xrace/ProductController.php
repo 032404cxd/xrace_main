@@ -181,8 +181,8 @@ class Xrace_ProductController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("ProductTypeDelete");
 		if($PermissionCheck['return'])
 		{
-			$productTypeId = trim($this->request->productTypeId);
-			$this->oProduct->deleteProductType($productTypeId);
+			$ProductTypeId = trim($this->request->ProductTypeId);
+			$this->oProduct->deleteProductType($ProductTypeId);
 			$this->response->goBack();
 		}
 		else
@@ -195,26 +195,26 @@ class Xrace_ProductController extends AbstractController
         //商品列表
         public function productListAction() 
         {
-                //检查权限
-                $PermissionCheck = $this->manager->checkMenuPermission(0);
-                if($PermissionCheck['return'])
-                {
-                    $productTypeId = trim($this->request->productTypeId);
-                    $ProductList = $this->oProduct->getAllProductList($productTypeId);
-                    //渲染模板
-                    include $this->tpl('Xrace_Product_ProductList');   
-                }
-                else
-                {
-                    $home = $this->sign;
-                    include $this->tpl('403');
-                }
+			//检查权限
+			$PermissionCheck = $this->manager->checkMenuPermission(0);
+			if($PermissionCheck['return'])
+			{
+				$ProductTypeId = trim($this->request->ProductTypeId);
+				$ProductList = $this->oProduct->getAllProductList($ProductTypeId);
+				//渲染模板
+				include $this->tpl('Xrace_Product_ProductList');
+			}
+			else
+			{
+				$home = $this->sign;
+				include $this->tpl('403');
+			}
         }
         
         //添加商品界面
         public function productAddAction() {
-                $productTypeId = trim($this->request->productTypeId);
-                $productSign  = '?productTypeId='.$productTypeId.'&ctl=xrace/product&ac=product.list';
+                $ProductTypeId = trim($this->request->ProductTypeId);
+                $productSign  = '?ProductTypeId='.$ProductTypeId.'&ctl=xrace/product&ac=product.list';
                 //检查权限
                 $PermissionCheck = $this->manager->checkMenuPermission("ProductInsert");
                 if($PermissionCheck['return'])
@@ -259,14 +259,14 @@ class Xrace_ProductController extends AbstractController
         }
         
         public function productModifyAction() {
-                $productTypeId = trim($this->request->productTypeId);
-                $productSign  = '?productTypeId='.$productTypeId.'&ctl=xrace/product&ac=product.list';
+                $ProductTypeId = trim($this->request->ProductTypeId);
+                $productSign  = '?ProductTypeId='.$ProductTypeId.'&ctl=xrace/product&ac=product.list';
                 //检查权限
                 $PermissionCheck = $this->manager->checkMenuPermission("ProductModify");
                 if($PermissionCheck['return'])
                 {
-                    $productId = trim($this->request->productId);
-                    $ProductInfo = $this->oProduct->getProduct($productId);
+                    $ProductId = trim($this->request->ProductId);
+                    $ProductInfo = $this->oProduct->getProduct($ProductId);
                     //渲染模板
                     include $this->tpl('Xrace_Product_ProductModify');   
                 }
@@ -311,8 +311,8 @@ class Xrace_ProductController extends AbstractController
                 $PermissionCheck = $this->manager->checkMenuPermission("ProductDelete");
                 if($PermissionCheck['return'])
                 {
-                    $productId = trim($this->request->productId);
-                    $this->oProduct->deleteProduct($productId);
+                    $ProductId = trim($this->request->ProductId);
+                    $this->oProduct->deleteProduct($ProductId);
                     $this->response->goBack();
                 }
                 else 

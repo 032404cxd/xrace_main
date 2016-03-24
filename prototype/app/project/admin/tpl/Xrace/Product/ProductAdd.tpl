@@ -6,7 +6,7 @@
 <td>商品名称</td>
     <td align="left"><input type="text" class="span2" name="ProductName"  id="ProductName" value="" size="50" /></td>
 </tr>
-<input type="hidden" name="ProductTypeId" id="ProductTypeId" value="{tpl:$productTypeId/}" />
+<input type="hidden" name="ProductTypeId" id="ProductTypeId" value="{tpl:$ProductTypeId/}" />
 <tr class="noborder"><td></td>
 <td><button type="submit" id="product_add_submit">提交</button></td>
 </tr>

@@ -41,11 +41,11 @@ class Xrace_Product extends Base_Widget
 	 * @param string $fields
 	 * @return array
 	 */
-	public function getProductType($productTypeId, $fields = '*')
+	public function getProductType($ProductTypeId, $fields = '*')
 	{
-		$productTypeId = intval($productTypeId);
+		$ProductTypeId = intval($ProductTypeId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->selectRow($table_to_process, $fields, '`ProductTypeId` = ?', $productTypeId);
+		return $this->db->selectRow($table_to_process, $fields, '`ProductTypeId` = ?', $ProductTypeId);
 	}
 	/**
 	 * 更新
@@ -53,11 +53,11 @@ class Xrace_Product extends Base_Widget
 	 * @param array $bind
 	 * @return boolean
 	 */
-	public function updateProductType($productTypeId, array $bind)
+	public function updateProductType($ProductTypeId, array $bind)
 	{
-		$productTypeId = intval($productTypeId);
+		$ProductTypeId = intval($ProductTypeId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->update($table_to_process, $bind, '`ProductTypeId` = ?', $productTypeId);
+		return $this->db->update($table_to_process, $bind, '`ProductTypeId` = ?', $ProductTypeId);
 	}
 	/**
 	 * 插入
@@ -75,11 +75,11 @@ class Xrace_Product extends Base_Widget
 	 * @param integer $AppId
 	 * @return boolean
 	 */
-	public function deleteProductType($productTypeId)
+	public function deleteProductType($ProductTypeId)
 	{
-		$productTypeId = intval($productTypeId);
+		$ProductTypeId = intval($ProductTypeId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->delete($table_to_process, '`ProductTypeId` = ?', $productTypeId);
+		return $this->db->delete($table_to_process, '`ProductTypeId` = ?', $ProductTypeId);
 	}
         
         /**
@@ -87,11 +87,11 @@ class Xrace_Product extends Base_Widget
 	 * @param $fields
 	 * @return array
 	 */
-	public function getAllProductList($productTypeId = 0,$fields = "*")
+	public function getAllProductList($ProductTypeId = 0,$fields = "*")
 	{
-		$productTypeId = intval($productTypeId);
+		$ProductTypeId = intval($ProductTypeId);
 		//初始化查询条件
-		$whereCatalog = ($productTypeId != 0)?" ProductTypeId = $productTypeId":"";
+		$whereCatalog = ($ProductTypeId != 0)?" ProductTypeId = $ProductTypeId":"";
 		$whereCondition = array($whereCatalog);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
@@ -114,11 +114,11 @@ class Xrace_Product extends Base_Widget
 	 * @param string $fields
 	 * @return array
 	 */
-	public function getProduct($productId, $fields = '*')
+	public function getProduct($ProductId, $fields = '*')
 	{
-		$productId = intval($productId);
+		$ProductId = intval($ProductId);
 		$table_to_process = Base_Widget::getDbTable($this->table_product);
-		return $this->db->selectRow($table_to_process, $fields, '`ProductId` = ?', $productId);
+		return $this->db->selectRow($table_to_process, $fields, '`ProductId` = ?', $ProductId);
 	}
 	/**
 	 * 插入
@@ -136,22 +136,22 @@ class Xrace_Product extends Base_Widget
 	 * @param array $bind
 	 * @return boolean
 	 */
-	public function updateProduct($productId, array $bind)
+	public function updateProduct($ProductId, array $bind)
 	{
-		$productId = intval($productId);
+		$ProductId = intval($ProductId);
 		$table_to_process = Base_Widget::getDbTable($this->table_product);
-		return $this->db->update($table_to_process, $bind, '`ProductId` = ?', $productId);
+		return $this->db->update($table_to_process, $bind, '`ProductId` = ?', $ProductId);
 	}
 	/**
 	 * 删除
 	 * @param integer $AppId
 	 * @return boolean
 	 */
-	public function deleteProduct($productId)
+	public function deleteProduct($ProductId)
 	{
-		$productId = intval($productId);
+		$ProductId = intval($ProductId);
 		$table_to_process = Base_Widget::getDbTable($this->table_product);
-		return $this->db->delete($table_to_process, '`ProductId` = ?', $productId);
+		return $this->db->delete($table_to_process, '`ProductId` = ?', $ProductId);
 	}
         
 
