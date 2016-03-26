@@ -353,9 +353,16 @@ class Xrace_User extends Base_Widget
             $fields = Base_common::getSqlFields($fields);
             //获取需要用到的表名
             $table_to_process = Base_Widget::getDbTable($this->table_license);
+            //获得执照ID
+            $whereLicenseId = isset($params['LicenseId'])?" LicenseId = '".$params['LicenseId']."' ":"";  
+            //获得用户ID
             $whereUserId = isset($params['UserId'])?" UserId = '".$params['UserId']."' ":"";
+            //获得赛组ID
+            $whereGroupId = isset($params['GroupId'])?" GroupId = '".$params['GroupId']."' ":"";
+            //获得执照状态
+            $whereLicenseStatus = isset($params['LicenseStatus'])?" LicenseStatus = '".$params['LicenseStatus']."' ":"";
             //所有查询条件置入数组
-            $whereCondition = array($whereUserId);
+            $whereCondition = array($whereLicenseId,$whereUserId,$whereGroupId,$whereLicenseStatus);
             //生成条件列
             $where = Base_common::getSqlWhere($whereCondition);
             //获取用户数量
@@ -367,6 +374,7 @@ class Xrace_User extends Base_Widget
             {
                 $UserLicenseCount = 0;
             }
+            //存储的数据结构
             $UserLicense = array('UserLicense'=>array(),'UserLicenseCount'=>$UserLicenseCount);
             $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
             $return = $this->db->getAll($sql);
@@ -385,9 +393,16 @@ class Xrace_User extends Base_Widget
             $fields = Base_common::getSqlFields(array("UserLicenseCount"=>"count(LicenseId)"));
             //获取需要用到的表名
             $table_to_process = Base_Widget::getDbTable($this->table_license); 
+            //获得执照ID
+            $whereLicenseId = isset($params['LicenseId'])?" LicenseId = '".$params['LicenseId']."' ":"";
+            //获得用户ID
             $whereUserId = isset($params['UserId'])?" UserId = '".$params['UserId']."' ":"";
+            //获得赛组ID
+            $whereGroupId = isset($params['GroupId'])?" GroupId = '".$params['GroupId']."' ":"";
+            //获得执照状态
+            $whereLicenseStatus = isset($params['LicenseStatus'])?" LicenseStatus = '".$params['LicenseStatus']."' ":"";
             //所有查询条件置入数组
-            $whereCondition = array($whereUserId);
+            $whereCondition = array($whereLicenseId,$whereUserId,$whereGroupId,$whereLicenseStatus);
             //生成条件列
             $where = Base_common::getSqlWhere($whereCondition);
             $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
@@ -398,13 +413,20 @@ class Xrace_User extends Base_Widget
          * 获得用户执照状态
          */
         public function getUserLicenseStatus($UserLicenseInfo) {
-            //获取当前时间
-            //$CurrentTime = time();
-            //$UserLicenseInfo['LicenseStatus'];
-            //$UserLicenseInfo['LicenseStartDate'];
-            //$UserLicenseInfo['LicenseEndDate'];
-            //$user_license_status;
-            //print_r($UserLicenseInfo);exit;
             return $this->user_license_status[$UserLicenseInfo['LicenseStatus']];
         }
+        
+        //新增单个用户执照信息
+	public function insertUserLicense(array $bind)
+	{
+		$table_to_process = Base_Widget::getDbTable($this->table_license);
+		return $this->db->insert($table_to_process, $bind);
+	}
+	//更新单个用户执照信息
+	public function updateUserLicense(array $bind,$LicenseId)
+	{
+		$LicenseId = intval($LicenseId);
+		$table_to_process = Base_Widget::getDbTable($this->table_license);
+		return $this->db->update($table_to_process, $bind, '`LicenseId` = ?', $LicenseId);
+	}
 }
