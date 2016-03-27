@@ -6,9 +6,9 @@
 <tr class="hover">
     <td>执照所属赛事</td>
     <td align="left">	
-        <select name="CatalogId"  id="CatalogId" size="1"  onchange='getGroupList()'>
+        <select name="RaceCatalogId"  id="RaceCatalogId" size="1"  onchange='getRaceGroupList()'>
             <option value="0">全部</option>
-            {tpl:loop $RaceCatalogArr $RaceCatalogInfo}
+            {tpl:loop $RaceCatalogList $RaceCatalogInfo}
             <option value="{tpl:$RaceCatalogInfo.RaceCatalogId/}">{tpl:$RaceCatalogInfo.RaceCatalogName/}</option>
             {/tpl:loop}
         </select>
@@ -18,20 +18,20 @@
 <tr class="hover">
     <td>执照所属赛事分组</td>
     <td align="left">
-        <select name="GroupId"  id="GroupId" size="1">
+        <select name="RaceGroupId"  id="RaceGroupId" size="1">
         </select>        
     </td>
 </tr>
 <tr class="hover">
-    <td align="center" class="rowtip">执照生效时间</td>
+    <td align="center" class="rowtip">执照生效日期</td>
     <td align="center" class="rowtip">
-        <input type="text" name="LicenseStartDate" value="" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >
+        <input type="text" name="LicenseStartDate" value="" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd'})" >
     </td>
 </tr>
 <tr class="hover">
-    <td align="center" class="rowtip">执照到期时间</td>
+    <td align="center" class="rowtip">执照结束日期</td>
     <td align="center" class="rowtip">
-        <input type="text" name="LicenseEndDate" value="" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >
+        <input type="text" name="LicenseEndDate" value="" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd'})" >
     </td>
 </tr>
 <tr class="hover">
@@ -69,16 +69,16 @@ $('#license_add_submit').click(function(){
 	};
 	$('#license_add_form').ajaxForm(options);
 });
-function getGroupList()
+function getRaceGroupList()
 {
-	catalog=$("#CatalogId");
+	catalog=$("#RaceCatalogId");
 	$.ajax
 	({
 		type: "GET",
-		url: "?ctl=xrace/user&ac=get.selected.group&RaceCatalogId="+catalog.val(),
+		url: "?ctl=xrace/race.group&ac=get.group.by.catalog&RaceCatalogId="+catalog.val(),
 		success: function(msg)
 		{
-			$("#GroupId").html(msg);
+			$("#RaceGroupId").html(msg);
 		}
 	});
 //*/

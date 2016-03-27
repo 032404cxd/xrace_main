@@ -12,13 +12,11 @@ class Xrace_UserController extends AbstractController
 	 * game对象
 	 * @var object
 	 */
-	protected $oSportsType;
-        
-        protected $oUser;
-        
-        protected $oManager;
-        
-        protected $oRace;
+	protected $oUser;
+
+	protected $oManager;
+
+	protected $oRace;
 
         /**
 	 * 初始化
@@ -29,8 +27,8 @@ class Xrace_UserController extends AbstractController
 	{
 		parent::init();
 		$this->oUser = new Xrace_User();
-                $this->oManager = new Widget_Manager();
-                $this->oRace = new Xrace_Race();
+		$this->oManager = new Widget_Manager();
+		$this->oRace = new Xrace_Race();
 
 	}
 	//用户列表
@@ -46,7 +44,6 @@ class Xrace_UserController extends AbstractController
 			$AuthStatusList = $this->oUser->getAuthStatus();
 			//获取实名认证证件类型列表
 			$AuthIdTypesList = $this->oUser->getAuthIdType();
-
 			//页面参数预处理
 			$params['Sex'] = isset($SexList[intval($this->request->Sex)])?intval($this->request->Sex):0;
 			$params['Name'] = urldecode(trim($this->request->Name))?substr(urldecode(trim($this->request->Name)),0,8):"";
@@ -75,7 +72,7 @@ class Xrace_UserController extends AbstractController
 				//用户生日
 				$UserList['UserList'][$UserId]['Birthday'] = is_null($UserInfo['birth_day'])?"未知":$UserInfo['birth_day'];
                                 //用户执照
-				$UserList['UserList'][$UserId]['License'] = "<a href='".Base_Common::getUrl('','xrace/user','license.index',array('UserId'=>$UserId)) ."'>执照</a>";
+				$UserList['UserList'][$UserId]['License'] = "<a href='".Base_Common::getUrl('','xrace/user','license.list',array('UserId'=>$UserId)) ."'>执照</a>";
 			}
 			//模板渲染
 			include $this->tpl('Xrace_User_UserList');
@@ -443,35 +440,53 @@ class Xrace_UserController extends AbstractController
 	}
         
         //执照展示
-        public function licenseIndexAction() {
+        public function licenseListAction()
+		{
             //检查权限
             $PermissionCheck = $this->manager->checkMenuPermission(0);
             if($PermissionCheck['return'])
             {
                 //获得需要添加执照的用户ID
                 $UserId = trim($this->request->UserId);
-                $params = array('UserId' => $UserId);
+				//获取用户信息
+				$UserInfo = $this->oUser->getUserInfo($UserId,"user_id,name");
+				$params = array('UserId' => $UserId);
                 //获得用户执照列表
-                $UserLicenseList = $this->oUser->getUserLicense($params);
-                //循环拼接用户执照显示数组
-                foreach($UserLicenseList['UserLicense'] as $UserLicenseId => $UserLicenseInfo)
+                $UserLicenseList = $this->oUser->getUserLicenseList($params,array('UserId','RaceCatalogId','RaceGroupId','LicenseId','LicenseStartDate','LicenseEndDate','ManagerId','LicenseAddTime','LastUpdateTime'));
+				//获得用户执照状态列表
+				$UserLicenseStatusList = $this->oUser->getUserLicenseStatusList();
+				//循环拼接用户执照显示数组
+                foreach($UserLicenseList['UserLicenseList'] as $UserLicenseId => $UserLicenseInfo)
                 {
-                    //如果执照结束时间小于当前时间,更新执照状态为过期
-                    if (strtotime(trim($UserLicenseInfo['LicenseEndDate'])) < time())
+					if($UserLicenseInfo['LicenseStatus'] == 4)
+					{
+
+					}
+					//如果执照结束时间小于当前时间,更新执照状态为过期
+                    elseif (strtotime(trim($UserLicenseInfo['LicenseStartDate'])) > time())
                     {
-                        $bind['LicenseStatus'] = 1;
-                        //更新执照数据
-                        $UpdateLicense = $this->oUser->updateUserLicense($bind,$UserLicenseInfo['LicenseId']);
+						$UserLicenseInfo['LicenseStatus'] = 3;
                     }
-                    //获得赛组信息
-                    $GroupResult = $this->oRace->getRaceGroup($UserLicenseInfo['GroupId'], 'RaceGroupName');
+					elseif(strtotime(trim($UserLicenseInfo['LicenseStartDate'])) <= time() && (strtotime(trim($UserLicenseInfo['LicenseEndDate']))+86400) >= time())
+					{
+						$UserLicenseInfo['LicenseStatus'] = 1;
+					}
+					elseif((strtotime(trim($UserLicenseInfo['LicenseEndDate']))+86400) < time())
+					{
+						$UserLicenseInfo['LicenseStatus'] = 2;
+					}
+					$UserLicenseList['UserLicenseList'][$UserLicenseId]['LicenseStatusName'] = $UserLicenseStatusList[$UserLicenseInfo['LicenseStatus']];
+					//获得赛组信息
+                    $RaceGroupInfo = $this->oRace->getRaceGroup($UserLicenseInfo['RaceGroupId'], 'RaceGroupName');
                     //获得赛组名称
-                    $UserLicenseList['UserLicense'][$UserLicenseId]['GroupName'] = $GroupResult['RaceGroupName'];
+                    $UserLicenseList['UserLicenseList'][$UserLicenseId]['RaceGroupName'] = $RaceGroupInfo['RaceGroupName'];
                     //获得管理员信息
-                    $UserLicenseList['UserLicense'][$UserLicenseId]['ManagerName'] = $this->oManager->getOne($UserLicenseInfo['ManagerId'], 'name');
+                    $UserLicenseList['UserLicenseList'][$UserLicenseId]['ManagerName'] = $this->oManager->getOne($UserLicenseInfo['ManagerId'], 'name');
                     //获得用户执照状态名称
-                    $UserLicenseList['UserLicense'][$UserLicenseId]['LicenseStatusName'] = $this->oUser->getUserLicenseStatus($UserLicenseInfo);
-                }
+                    $UserLicenseList['UserLicenseList'][$UserLicenseId]['LicenseStatusName'] = $this->oUser->getUserLicenseStatus($UserLicenseInfo);
+					//复写执照状态
+					$UserLicenseList['UserLicenseList'][$UserLicenseId]['LicenseStatus'] = $UserLicenseInfo['LicenseStatus'];
+				}
                 //模板渲染
                 include $this->tpl('Xrace_User_LicenseList');                
             }
@@ -483,13 +498,14 @@ class Xrace_UserController extends AbstractController
         }
         
         //执照添加页面
-        public function licenseAddAction() {
+        public function licenseAddAction()
+		{
             //检查权限
             $PermissionCheck = $this->manager->checkMenuPermission("LicenseInsert");
             if($PermissionCheck['return'])
             {
                 //赛事列表
-                $RaceCatalogArr  = $this->oRace->getAllRaceCatalogList('RaceCatalogId,RaceCatalogName');
+                $RaceCatalogList  = $this->oRace->getAllRaceCatalogList('RaceCatalogId,RaceCatalogName');
                 //获得需要添加执照的用户ID
                 $UserId = trim($this->request->UserId);
                 //模板渲染
@@ -503,97 +519,74 @@ class Xrace_UserController extends AbstractController
         }
         
         //执照添加操作
-        public function licenseInsertAction() {
+        public function licenseInsertAction()
+		{
             //检查权限
             $PermissionCheck = $this->manager->checkMenuPermission("LicenseInsert");
             if($PermissionCheck['return'])
             {
- 		//获取 页面参数
-		$bind=$this->request->from('UserId','CatalogId','GroupId','LicenseStartDate','LicenseEndDate','comment');
+ 				//获取当前时间
+				$currentTime = time();
+				//获取 页面参数
+				$bind=$this->request->from('UserId','RaceCatalogId','RaceGroupId','LicenseStartDate','LicenseEndDate','comment');
                 //获取管理员ID
                 $bind['ManagerId'] = $this->manager->id;
-                //获取执照状态
-                $bind['LicenseStatus'] = 0;
+
                 //获得执照添加时间
-                $bind['LicenseAddDate'] = date('Y-m-d H:i:s',time()) ;
+                $bind['LicenseAddTime'] = date('Y-m-d H:i:s',$currentTime) ;
                 //获得执照更新时间
-                $bind['LastUpdateDate'] = date('Y-m-d H:i:s',time()) ;
-                //获得执照添加理由
-                $bind['comment'] = array('add' => date('Y-m-d H:i:s',time()).':'.trim($bind['comment']));
-                $bind['comment'] = json_encode($bind['comment']);
+                $bind['LastUpdateTime'] = date('Y-m-d H:i:s',$currentTime) ;
                 //转化时间为时间戳
-		$LicenseStartDate = strtotime(trim($bind['LicenseStartDate']));
+				$LicenseStartDate = strtotime(trim($bind['LicenseStartDate']));
                 $LicenseEndDate = strtotime(trim($bind['LicenseEndDate']));
-                //执照所属赛组不能为空
-                if(intval($bind['GroupId'])<=0)
-		{
-                    $response = array('errno' => 1);
-		}
-		//执照结束时间不能小于当前时间
-		elseif($LicenseEndDate < time())
-		{
-                    $response = array('errno' => 2);
-		}
+                //执照所属分组不能为空
+                if(intval($bind['RaceGroupId'])<=0)
+				{
+					$response = array('errno' => 1);
+				}
+				//执照结束时间不能小于当前时间
+				elseif(strtotime($bind["LicenseEndDate"]) < $currentTime)
+				{
+					$response = array('errno' => 2);
+				}
                 //执照开始时间不能小于执照结束时间
-                elseif($LicenseStartDate > $LicenseEndDate)
+                elseif((strtotime($bind["LicenseStartDate"])+86400)  > strtotime($bind["LicenseEndDate"]) )
                 {
                     $response = array('errno' => 3);                    
                 }
                 //添加的执照的理由不能为空
-                elseif(!$bind['comment'])
+                elseif(trim($bind['comment'])=="")
                 {
-                    $response = array('errno' => 4);  
+					$response = array('errno' => 4);
                 }
                 else 
                 {
-                    //查询同一用户在同赛组是否有重复的有效执照
+					//获取执照状态
+					$bind['LicenseStatus'] = $currentTime > strtotime($bind['LicenseStartDate'])?1:2;
+					//初始化压缩数组
+					$bind['comment'] = array('LicenseUpdateLog'=>array('0' => array("action"=>"add","time" => date('Y-m-d H:i:s',time()),"reason"=>trim($bind['comment']),'manager'=>$this->manager->id)));
+					//数据压缩
+					$bind['comment'] = json_encode($bind['comment']);
+					//查询同一用户在同赛组是否有重复的有效执照
                     $params = array(
                         'UserId' => $bind['UserId'],
                         'GroupId' => $bind['GroupId'],
-                        'getCount' => 1,
-                        'LicenseStatus' => 0,
+                        'LicenseStatus' => 1,
                     );
                     //获得本赛组已经发放的执照
-                    $UserLicense = $this->oUser->getUserLicense($params);
-                    //如果有重复执照
-                    if($UserLicense['UserLicenseCount'])
-                    {
-                        //遍历已经发放的有效执照
-                        foreach ($UserLicense['UserLicense'] as $UserLicenseInfo)
-                        {
-                            //已经发放的有效执照时间转化为时间戳
-                            $UserLicenseStartDate = strtotime(trim($UserLicenseInfo['LicenseStartDate']));
-                            $UserLicenseEndDate = strtotime(trim($UserLicenseInfo['LicenseEndDate']));
-                            //如果存在的执照和新增的有时间冲突 就不能新增执照
-                            if($LicenseStartDate >= $UserLicenseStartDate  && $LicenseStartDate <= $UserLicenseEndDate)
-                            {
-                                $response = array('errno' => 5);
-                                break;
-                            }
-                            elseif($LicenseEndDate >= $UserLicenseStartDate && $LicenseEndDate <=$UserLicenseEndDate)
-                            {
-                                $response = array('errno' => 5);
-                                break;
-                            }
-                            else 
-                            {
-                                //添加执照数据
-                                $AddLicense = $this->oUser->insertUserLicense($bind);
-                                $response = $AddLicense ? array('errno' => 0) : array('errno' => 9);
-                            }
-                        }                         
+                    $UserLicenseCount = $this->oUser->getUserLicenseCount($params);
+					if($UserLicenseCount>=1)
+					{
+						$response = array('errno' => 5);
+					}
+					else
+					{
+						//添加执照数据
+						$AddLicense = $this->oUser->insertUserLicense($bind);
+						$response = $AddLicense ? array('errno' => 0) : array('errno' => 9);
                     }
-                    else
-                    {
-                        //添加执照数据
-                        $AddLicense = $this->oUser->insertUserLicense($bind);
-                        $response = $AddLicense ? array('errno' => 0) : array('errno' => 9);
-                    }
-                    
                 }
-                
                 echo json_encode($response);
-		return true;
             }
             else 
            {
@@ -603,42 +596,26 @@ class Xrace_UserController extends AbstractController
         }
         
         //执照修改页面
-        public function licenseModifyAction() {
+        public function licenseModifyAction()
+		{
             //检查权限
             $PermissionCheck = $this->manager->checkMenuPermission("LicenseModify");
             if($PermissionCheck['return'])
             {
                 //赛事列表
-                $RaceCatalogArr  = $this->oRace->getAllRaceCatalogList('RaceCatalogId,RaceCatalogName');
-                //获得执照的用户ID
-                $UserId = trim($this->request->UserId);
+                $RaceCatalogList  = $this->oRace->getAllRaceCatalogList('RaceCatalogId,RaceCatalogName');
                 //获得执照ID
                 $LicenseId = trim($this->request->LicenseId);
-                $params = array(
-                    'LicenseId' => $LicenseId,
-                );
                 //获得执照信息
-                $UserLicenseInfo = $this->oUser->getUserLicense($params);
-                $UserLicenseInfo = $UserLicenseInfo['UserLicense'][0];
-                //获得执照已添加的理由
-                $UserLicenseComment = json_decode($UserLicenseInfo['comment'],true);
-                //获得执照是否有修改理由
-                $UserLicenseInfo['comment'] = isset($UserLicenseComment['update']) ? $UserLicenseComment['update'] : '';
-                //所有赛事分组列表
-		$RaceGroupArr = $this->oRace->getAllRaceGroupList($UserLicenseInfo['CatalogId'],'RaceGroupId,RaceGroupName');
-                //循环赛事分组列表
-		foreach($RaceGroupArr as $RaceGroupId => $RaceGroupInfo)
-		{
-                    //初始化选择文本
-                    $selected_text = '';
-                    //获得选择的赛组信息文本
-                    if($RaceGroupInfo['RaceGroupId'] == $UserLicenseInfo['GroupId'])
-                    {
-                        $selected_text = 'selected="selected"';
-                    }
-                    //拼接选择赛组的文本
-                    $SelectedGroupText .= '<option value="'.$RaceGroupInfo['RaceGroupId'].'"'.$selected_text.'>'.$RaceGroupInfo['RaceGroupName'].'</option>';
-		}
+                $UserLicenseInfo = $this->oUser->getUserLicense($LicenseId,'*');
+				//数据解包
+				$UserLicenseInfo['comment'] = json_decode($UserLicenseInfo['comment'],true);
+				foreach($UserLicenseInfo['comment']['LicenseUpdateLog'] as $key => $LogInfo)
+				{
+					$UserLicenseInfo['comment']['LicenseUpdateLog'][$key]['LogText'] = $LogInfo['ManagerId']."-".$LogInfo['time']."-".$LogInfo['reason'];
+				}
+				//所有赛事分组列表
+				$RaceGroupList = $this->oRace->getAllRaceGroupList($UserLicenseInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
                 //模板渲染
                 include $this->tpl('Xrace_User_LicenseModify');  
             }
@@ -650,23 +627,23 @@ class Xrace_UserController extends AbstractController
         }
         
         //执照修改操作
-        public function licenseUpdateAction() {
+        public function licenseUpdateAction()
+		{
             //检查权限
             $PermissionCheck = $this->manager->checkMenuPermission("LicenseModify");
             if($PermissionCheck['return'])
             {
- 		//获取 页面参数
-		$bind=$this->request->from('UserId','CatalogId','GroupId','LicenseId','LicenseStartDate','LicenseEndDate','comment');
+				//获取当前时间
+				$currentTime = time();
+				//获取 页面参数
+				$bind=$this->request->from('LicenseId','UserId','RaceCatalogId','RaceGroupId','LicenseStartDate','LicenseEndDate','comment');
                 //获取管理员ID
                 $bind['ManagerId'] = $this->manager->id;
                 //获取执照状态
-                $bind['LicenseStatus'] = 0;
                 //获得执照更新时间
-                $bind['LastUpdateDate'] = date('Y-m-d H:i:s',time()) ;
-                //获得执照修改理由
-                $bind['comment'] = date('Y-m-d H:i:s',time()).':'.trim($bind['comment']);
+                $bind['LastUpdateTime'] = date($currentTime) ;
                 //转化时间为时间戳
-		$LicenseStartDate = strtotime(trim($bind['LicenseStartDate']));
+				$LicenseStartDate = strtotime(trim($bind['LicenseStartDate']));
                 $LicenseEndDate = strtotime(trim($bind['LicenseEndDate']));
                 //获得执照ID
                 $LicenseId = $bind['LicenseId'];
@@ -675,38 +652,39 @@ class Xrace_UserController extends AbstractController
                 //执照ID和用户ID不用存表
                 unset($bind['LicenseId']);
                 unset($bind['UserId']);
-                //执照所属赛组不能为空
-                if(intval($bind['GroupId'])<=0)
-		{
-                    $response = array('errno' => 1);
-		}
-		//执照结束时间不能小于当前时间
-		elseif($LicenseEndDate < time())
-		{
-                    $response = array('errno' => 2);
-		}
-                //执照开始时间不能小于执照结束时间
-                elseif($LicenseStartDate > $LicenseEndDate)
-                {
-                    $response = array('errno' => 3);                    
-                }
-                //修改执照的理由不能为空
-                elseif(!$bind['comment'])
-                {
-                    $response = array('errno' => 4);  
-                }
+				//执照所属分组不能为空
+				if(intval($bind['RaceGroupId'])<=0)
+				{
+					$response = array('errno' => 1);
+				}
+				//执照结束时间不能小于当前时间
+				elseif(strtotime($bind["LicenseEndDate"]) < $currentTime)
+				{
+					$response = array('errno' => 2);
+				}
+				//执照开始时间不能小于执照结束时间
+				elseif((strtotime($bind["LicenseStartDate"])+86400)  > strtotime($bind["LicenseEndDate"]) )
+				{
+					$response = array('errno' => 3);
+				}
+				//添加的执照的理由不能为空
+				elseif(trim($bind['comment'])=="")
+				{
+					$response = array('errno' => 4);
+				}
                 else 
                 {
                     //查询同一用户在同赛组是否有重复的有效执照
                     $params = array(
                         'UserId' => $UserId,
                         'GroupId' => $bind['GroupId'],
-                        'getCount' => 1,
-                        'LicenseStatus' => 0,
+						'ExceptionId' => $bind['LicenseId'],
+						'LicenseStatus' => '1|3',
                     );
                     //获得重复的执照的数量
-                    $UserLicense = $this->oUser->getUserLicense($params);
-                    //如果有重复的执照的数量
+                    $UserLicense = $this->oUser->getUserLicenseList($params);
+                    die();
+					//如果有重复的执照的数量
                     if($UserLicense['UserLicenseCount'])
                     {
                         //初始化冲突的执照数量
@@ -838,25 +816,4 @@ class Xrace_UserController extends AbstractController
                 include $this->tpl('403');
            }                
         }
-        
-        //获取赛事分站已经选择的分组列表
-	public function getSelectedGroupAction($CatalogId = 0,$GroupId = 0)
-	{
-		//赛事ID
-		$RaceCatalogId = $CatalogId ? $CatalogId : intval($this->request->RaceCatalogId);
-		//所有赛事分组列表
-		$RaceGroupArr = $this->oRace->getAllRaceGroupList($RaceCatalogId,'RaceGroupId,RaceGroupName');
-		//循环赛事分组列表
-		foreach($RaceGroupArr as $RaceGroupId => $RaceGroupInfo)
-		{
-                    $selected_text = '';
-                    if($RaceGroupInfo['RaceGroupId'] == $GroupId)
-                    {
-                        $selected_text = 'selected="selected"';
-                    }
-                    $text .= '<option value="'.$RaceGroupInfo['RaceGroupId'].'"'.$selected_text.'>'.$RaceGroupInfo['RaceGroupName'].'</option>';
-		}
-                echo $text;
-		die();
-	}
 }
