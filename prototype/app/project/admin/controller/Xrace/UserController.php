@@ -505,7 +505,7 @@ class Xrace_UserController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getAllRaceCatalogList('RaceCatalogId,RaceCatalogName');
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList('RaceCatalogId,RaceCatalogName');
 			//获得需要添加执照的用户ID
 			$UserId = trim($this->request->UserId);
 			//模板渲染
@@ -601,7 +601,7 @@ class Xrace_UserController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getAllRaceCatalogList('RaceCatalogId,RaceCatalogName');
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList('RaceCatalogId,RaceCatalogName');
 			//获得执照ID
 			$LicenseId = trim($this->request->LicenseId);
 			//获得执照信息
@@ -629,7 +629,7 @@ class Xrace_UserController extends AbstractController
 				$UserLicenseInfo['comment']['LicenseUpdateLog'][$key]['LogText'] = $ManagerInfo['name']." 执行".$LogInfo['actionName']."操作<br>操作理由:".$LogInfo['reason'];
 			}
 			//所有赛事分组列表
-			$RaceGroupList = $this->oRace->getAllRaceGroupList($UserLicenseInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
+			$RaceGroupList = $this->oRace->getRaceGroupList($UserLicenseInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
 			//模板渲染
 			include $this->tpl('Xrace_User_LicenseModify');
 		}
