@@ -43,13 +43,13 @@
     {tpl:loop $UserList.UserList $oUserInfo}
       <tr class="hover">
         <td align="center">{tpl:$oUserInfo.user_id/}</td>
-          <td align="center">{tpl:$oUserInfo.nick_name/}</td>
-          <td align="center">{tpl:$oUserInfo.wx_open_id/}</td>
+        <td align="center">{tpl:$oUserInfo.nick_name/}</td>
+        <td align="center">{tpl:$oUserInfo.wx_open_id/}</td>
         <td align="center">{tpl:$oUserInfo.phone/}</td>
         <td align="center">{tpl:$oUserInfo.sex/}</td>
-          <td align="center">{tpl:$oUserInfo.AuthStatus/}</td>
-          <td align="center">{tpl:$oUserInfo.Birthday/}</td>
-          <td align="center"><a  href="javascript:;" onclick="userDetail('{tpl:$oUserInfo.user_id/}')">详细</a>{tpl:if($oUserInfo.auth_state==1)} | <a  href="javascript:;" onclick="userAuth('{tpl:$oUserInfo.user_id/}')">审核</a>{/tpl:if}</td>
+        <td align="center">{tpl:$oUserInfo.AuthStatus/}</td>
+        <td align="center">{tpl:$oUserInfo.Birthday/}</td>
+        <td align="center"><a  href="javascript:;" onclick="userDetail('{tpl:$oUserInfo.user_id/}')">详细</a>{tpl:if($oUserInfo.auth_state==1)} | <a  href="javascript:;" onclick="userAuth('{tpl:$oUserInfo.user_id/}')">审核</a>{/tpl:if} | {tpl:$oUserInfo.License/}</td>
       </tr>
     {/tpl:loop}
     <tr><th colspan="10" align="center" class="rowtip">{tpl:$page_content/}</th></tr>

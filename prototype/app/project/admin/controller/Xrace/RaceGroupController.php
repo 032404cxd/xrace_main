@@ -95,7 +95,6 @@ class Xrace_RaceGroupController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	
 	//添加新任务
 	public function raceGroupInsertAction()
 	{
@@ -129,7 +128,6 @@ class Xrace_RaceGroupController extends AbstractController
 		}
 
 	}
-	
 	//修改任务信息页面
 	public function raceGroupModifyAction()
 	{
@@ -160,7 +158,6 @@ class Xrace_RaceGroupController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	
 	//更新任务信息
 	public function raceGroupUpdateAction()
 	{
@@ -237,7 +234,6 @@ class Xrace_RaceGroupController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	
 	//删除任务
 	public function raceGroupDeleteAction()
 	{
@@ -429,5 +425,31 @@ class Xrace_RaceGroupController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-
+	//获取赛事分站已经选择的分组列表
+	public function getGroupByCatalogAction()
+	{
+		//赛事ID
+		$RaceCatalogId = intval($this->request->RaceCatalogId);
+		//分组ID
+		$RaceGroupId = intval($this->request->RaceGroupId);
+		//所有赛事分组列表
+		$RaceGroupArr = $this->oRace->getRaceGroupList($RaceCatalogId,'RaceGroupId,RaceGroupName');
+		$text = '';
+		//循环赛事分组列表
+		foreach($RaceGroupArr as $GroupId => $RaceGroupInfo)
+		{
+			//初始化选中状态
+			$selected = "";
+			//如果分组ID与传入的分组ID相符
+			if($RaceGroupInfo['RaceGroupId'] == $GroupId)
+			{
+				//选中拼接
+				$selected = 'selected="selected"';
+			}
+			//字符串拼接
+			$text .= '<option value="'.$RaceGroupInfo['RaceGroupId'].'">'.$RaceGroupInfo['RaceGroupName'].'</option>';
+		}
+		echo $text;
+		die();
+	}
 }

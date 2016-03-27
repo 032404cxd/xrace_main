@@ -78,16 +78,20 @@ $table['config_menu_permission']['num'] = 1;
 $table['config_logs_manager']['db'] = 'xrace_config';
 $table['config_logs_manager']['num'] = 16;
 
-#APP版本
+//APP版本
 $table['config_app_version']['db'] = 'xrace_config';
 $table['config_app_version']['num'] = 1;
 
-#APP系统
+//APP系统
 $table['config_app_os']['db'] = 'xrace_config';
 $table['config_app_os']['num'] = 1;
 
-#APP类型
+//APP类型
 $table['config_app_type']['db'] = 'xrace_config';
 $table['config_app_type']['num'] = 1;
+
+//用户执照
+$table['user_license']['db'] = 'xrace';
+$table['user_license']['num'] = 1;
 
 return $table;

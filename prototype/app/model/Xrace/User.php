@@ -11,7 +11,8 @@ class Xrace_User extends Base_Widget
 	protected $table = 'user_profile';
 	protected $table_auth = 'user_auth';
 	protected $table_auth_log = 'user_auth_log';
-	//性别列表
+	protected $table_license = 'user_license';
+        //性别列表
 	protected $sex = array('1'=>"男","2"=>"女");
 	//实名认证状态
 	protected $auth_status = array('0'=>"未审核",'1'=>"审核中",'2'=>"已审核");
@@ -21,7 +22,9 @@ class Xrace_User extends Base_Widget
 	protected $auth_status_log = array('0'=>"拒绝","2"=>"通过");
 	//实名认证用到的证件类型列表
 	protected $auth_id_type = array('1'=>"身份证","2"=>"护照");
-	//获取性别列表
+        //用户执照状态
+	protected $user_license_status = array('1'=>"生效中",'2'=>"已过期",'3'=>"即将生效",'4'=>"已删除");
+        //获取性别列表
 	public function getSexList()
 	{
 		return $this->sex;
@@ -47,6 +50,12 @@ class Xrace_User extends Base_Widget
 	public function getAuthLogStatusTypeList()
 	{
 		return $this->auth_status_log;
+	}
+
+    //获得用户执照状态
+	public function getUserLicenseStatusList()
+	{
+		return $this->user_license_status;
 	}
 	/**
 	 * 获取单个用户记录
@@ -340,5 +349,206 @@ class Xrace_User extends Base_Widget
 		//生成条件列
 		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
 		return $this->db->getOne($sql);
+	}
+        
+	/*
+	 * 获得用户执照
+	 */
+	public function getUserLicenseList($params,$fields = array("*"))
+	{
+		//生成查询列
+		$fields = Base_common::getSqlFields($fields);
+		//获取需要用到的表名
+		$table_to_process = Base_Widget::getDbTable($this->table_license);
+		//获得执照ID
+		$whereLicenseId = isset($params['LicenseId'])?" LicenseId = '".$params['LicenseId']."' ":"";
+		//获得用户ID
+		$whereUserId = isset($params['UserId'])?" UserId = '".$params['UserId']."' ":"";
+		//获得组别ID
+		$whereGroupId = isset($params['RaceGroupId'])?" RaceGroupId = '".$params['RaceGroupId']."' ":"";
+		//获得执照状态
+		if(isset($params['LicenseStatus']) && $params['LicenseStatus'] != 0)
+		{
+			$currentTime = date("Y-m-d",time());
+			$p = explode("|",$params['LicenseStatus']);
+			foreach($p as $LicenseStatus)
+			{
+				//生效中
+				if($LicenseStatus == 3)
+				{
+					$t[] = "(LicenseStartDate > '$currentTime')";
+				}
+				//失效
+				elseif($LicenseStatus == 1)
+				{
+					$t[] = "(LicenseStartDate <= '$currentTime' and LicenseEndDate >= '$currentTime')";
+				}
+				//已删除
+				elseif($LicenseStatus == 2)
+				{
+					$t[] = "(LicenseEndDate < '$currentTime')";
+				}
+				else
+				{
+					$t[] = "(LicenseStatus = ".$params['LicenseStatus'].")";
+				}
+			}
+			$whereLicenseStatus = implode(" or ",$t);
+		}
+		//需要排除的开始时间
+		if(isset($params['ExceptionDate']['StartDate']))
+		{
+			$whereExceptionDate[0] = "(LicenseStartDate <= '".$params['ExceptionDate']['StartDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['StartDate']."')";
+		}
+		else
+		{
+			$whereExceptionDate[0] = "";
+		}
+		//需要排除的结束时间
+		if(isset($params['ExceptionDate']['EndDate']))
+		{
+			$whereExceptionDate[1] = "(LicenseStartDate <= '".$params['ExceptionDate']['EndDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['EndDate']."')";
+		}
+		else
+		{
+			$whereExceptionDate[1] = "";
+		}
+		$whereExceptionDate = "(".implode(" or ",$whereExceptionDate).")";
+		$whereExceptionDate = $whereExceptionDate = ""?"(".$whereExceptionDate.")":"";
+		//排除数据
+		$whereExceptionId = isset($params['ExceptionId'])?" LicenseId != '".$params['ExceptionId']."' ":"";
+		//排除数据
+		$whereExceptionStatus = isset($params['ExceptionStatus'])?" LicenseStatus != '".$params['ExceptionStatus']."' ":"";
+		//所有查询条件置入数组
+		$whereCondition = array($whereLicenseId,$whereUserId,$whereGroupId,$whereLicenseStatus,$whereExceptionId,$whereExceptionStatus,$whereExceptionDate);
+		//生成条件列
+		$where = Base_common::getSqlWhere($whereCondition);
+		//获取用户数量
+		if(isset($params['getCount'])&&$params['getCount']==1)
+		{
+			$UserLicenseCount = $this->getUserLicenseCount($params);
+		}
+		else
+		{
+			$UserLicenseCount = 0;
+		}
+		//存储的数据结构
+		$UserLicense = array('UserLicenseList'=>array(),'UserLicenseCount'=>$UserLicenseCount);
+		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
+		$return = $this->db->getAll($sql);
+		if($return)
+		{
+			$UserLicense['UserLicenseList'] = $return;
+		}
+		return $UserLicense;
+	}
+        
+        /*
+         * 获得用户执照数量
+         */
+        public function getUserLicenseCount($params)
+		{
+            //生成查询列
+            $fields = Base_common::getSqlFields(array("UserLicenseCount"=>"count(LicenseId)"));
+			//获取需要用到的表名
+			$table_to_process = Base_Widget::getDbTable($this->table_license);
+			//获得执照ID
+			$whereLicenseId = isset($params['LicenseId'])?" LicenseId = '".$params['LicenseId']."' ":"";
+			//获得用户ID
+			$whereUserId = isset($params['UserId'])?" UserId = '".$params['UserId']."' ":"";
+			//获得组别ID
+			$whereGroupId = isset($params['RaceGroupId'])?" RaceGroupId = '".$params['RaceGroupId']."' ":"";
+			//获得执照状态
+			if(isset($params['LicenseStatus']) && $params['LicenseStatus'] != 0)
+			{
+				$currentTime = date("Y-m-d",time());
+				$p = explode("|",$params['LicenseStatus']);
+				foreach($p as $LicenseStatus)
+				{
+					//生效中
+					if($LicenseStatus == 3)
+					{
+						$t[] = "(LicenseStartDate > '$currentTime')";
+					}
+					//失效
+					elseif($LicenseStatus == 1)
+					{
+						$t[] = "(LicenseStartDate <= '$currentTime' and LicenseEndDate >= '$currentTime')";
+					}
+					//已删除
+					elseif($LicenseStatus == 2)
+					{
+						$t[] = "(LicenseEndDate < '$currentTime')";
+					}
+					else
+					{
+						$t[] = "(LicenseStatus = ".$params['LicenseStatus'].")";
+					}
+				}
+				$whereLicenseStatus = implode(" or ",$t);
+			}
+			//需要排除的开始时间
+			if(isset($params['ExceptionDate']['StartDate']))
+			{
+				$whereExceptionDate[0] = "(LicenseStartDate <= '".$params['ExceptionDate']['StartDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['StartDate']."')";
+			}
+			else
+			{
+				$whereExceptionDate[0] = "";
+			}
+			//需要排除的结束时间
+			if(isset($params['ExceptionDate']['EndDate']))
+			{
+				$whereExceptionDate[1] = "(LicenseStartDate <= '".$params['ExceptionDate']['EndDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['EndDate']."')";
+			}
+			else
+			{
+				$whereExceptionDate[1] = "";
+			}
+			$whereExceptionDate = "(".implode(" or ",$whereExceptionDate).")";
+			$whereExceptionDate = $whereExceptionDate = ""?"(".$whereExceptionDate.")":"";
+			//排除数据
+			$whereExceptionId = isset($params['ExceptionId'])?" LicenseId != '".$params['ExceptionId']."' ":"";
+			//排除数据
+			$whereExceptionStatus = isset($params['ExceptionStatus'])?" LicenseStatus != '".$params['ExceptionStatus']."' ":"";
+			//所有查询条件置入数组
+			$whereCondition = array($whereLicenseId,$whereUserId,$whereGroupId,$whereLicenseStatus,$whereExceptionId,$whereExceptionStatus,$whereExceptionDate);
+			//生成条件列
+            $where = Base_common::getSqlWhere($whereCondition);
+			$sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
+			return $this->db->getOne($sql);
+        }
+	/**
+	 * 获取单个用户记录
+	 * @param char $UserId 用户ID
+	 * @param string $fields 所要获取的数据列
+	 * @return array
+	 */
+	public function getUserLicense($LicenseId, $fields = '*')
+	{
+		$LicenseId = trim($LicenseId);
+		$table_to_process = Base_Widget::getDbTable($this->table_license);
+		return $this->db->selectRow($table_to_process, $fields, '`LicenseId` = ?', $LicenseId);
+	}
+        /*
+         * 获得用户执照状态
+         */
+        public function getUserLicenseStatus($UserLicenseInfo)
+		{
+			return $this->user_license_status[$UserLicenseInfo['LicenseStatus']];
+        }
+        
+        //新增单个用户执照信息
+	public function insertUserLicense(array $bind)
+	{
+		$table_to_process = Base_Widget::getDbTable($this->table_license);
+		return $this->db->insert($table_to_process, $bind);
+	}
+	//更新单个用户执照信息
+	public function updateUserLicense($LicenseId,array $bind)
+	{
+		$LicenseId = intval($LicenseId);
+		$table_to_process = Base_Widget::getDbTable($this->table_license);
+		return $this->db->update($table_to_process, $bind, '`LicenseId` = ?', $LicenseId);
 	}
 }
