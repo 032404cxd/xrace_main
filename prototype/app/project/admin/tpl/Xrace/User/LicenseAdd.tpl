@@ -63,7 +63,7 @@ $('#license_add_submit').click(function(){
 			} else {
 				var message = '添加执照成功';
 				UserId=$("#UserId");
-				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=license.index&UserId=' + UserId.val());}});
+				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=license.list&UserId=' + UserId.val());}});
 			}
 		}
 	};
