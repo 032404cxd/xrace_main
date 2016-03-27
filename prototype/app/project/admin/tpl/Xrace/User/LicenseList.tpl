@@ -19,7 +19,8 @@
   {tpl:if(count($UserLicenseList['UserLicenseList']))}
   <tr>
     <th align="center" class="rowtip">执照ID</th>
-    <th align="center" class="rowtip">所属赛事组别</th>
+    <th align="center" class="rowtip">所属赛事</th>
+    <th align="center" class="rowtip">所属组别</th>
     <th align="center" class="rowtip">发放人员</th>
     <th align="center" class="rowtip">执照发放时间</th>
     <th align="center" class="rowtip">最后更新时间</th>
@@ -30,6 +31,7 @@
   {tpl:loop $UserLicenseList['UserLicenseList'] $LicenseId $LicenseInfo}
   <tr>
     <td align="center" class="rowtip">{tpl:$LicenseInfo.LicenseId/}</th>
+    <td align="center" class="rowtip">{tpl:$LicenseInfo.RaceCatalogName/}</th>
     <td align="center" class="rowtip">{tpl:$LicenseInfo.RaceGroupName/}</th>
     <td align="center" class="rowtip">{tpl:$LicenseInfo.ManagerName/}</th>
     <td align="center" class="rowtip">{tpl:$LicenseInfo.LicenseAddTime/}</th>

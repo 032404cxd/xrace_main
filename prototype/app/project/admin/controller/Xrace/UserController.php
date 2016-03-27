@@ -480,6 +480,10 @@ class Xrace_UserController extends AbstractController
 				$RaceGroupInfo = $this->oRace->getRaceGroup($UserLicenseInfo['RaceGroupId'], 'RaceGroupName');
 				//获得赛组名称
 				$UserLicenseList['UserLicenseList'][$UserLicenseId]['RaceGroupName'] = $RaceGroupInfo['RaceGroupName'];
+				//获得赛组信息
+				$RaceCatalogInfo = $this->oRace->getRaceCatalog($UserLicenseInfo['RaceCatalogId'], 'RaceCatalogName');
+				//获得赛组名称
+				$UserLicenseList['UserLicenseList'][$UserLicenseId]['RaceCatalogName'] = $RaceCatalogInfo['RaceCatalogName'];
 				//获得管理员信息
 				$UserLicenseList['UserLicenseList'][$UserLicenseId]['ManagerName'] = $this->oManager->getOne($UserLicenseInfo['ManagerId'], 'name');
 				//获得用户执照状态名称
@@ -696,7 +700,6 @@ class Xrace_UserController extends AbstractController
 				);
 				//获得在目标范围内有冲突的记录
 				$UserLicenseCount = $this->oUser->getUserLicenseCount($params);
-				//$UserLicenseCount = 0;
 				if ($UserLicenseCount >= 1)
 				{
 					$response = array('errno' => 5);
@@ -712,7 +715,7 @@ class Xrace_UserController extends AbstractController
 					//封装理由的数据
 					$bind['comment'] = json_encode($bind['comment']);
 					//更新执照数据
-					$UpdateLicense = $this->oUser->updateUserLicense($bind, $LicenseId);
+					$UpdateLicense = $this->oUser->updateUserLicense($LicenseId,$bind);
 					$response = $UpdateLicense ? array('errno' => 0) : array('errno' => 9);
 				}
 			}

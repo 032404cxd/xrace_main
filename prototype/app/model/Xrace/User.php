@@ -395,26 +395,16 @@ class Xrace_User extends Base_Widget
 			}
 			$whereLicenseStatus = implode(" or ",$t);
 		}
-		//需要排除的开始时间
-		if(isset($params['ExceptionDate']['StartDate']))
+		//需要排除的时间
+		if(isset($params['ExceptionDate']))
 		{
-			$whereExceptionDate[0] = "(LicenseStartDate <= '".$params['ExceptionDate']['StartDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['StartDate']."')";
+			$whereExceptionDate = "((LicenseStartDate <= '".$params['ExceptionDate']['StartDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['StartDate']."')".
+			" or "."(LicenseStartDate <= '".$params['ExceptionDate']['EndDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['EndDate']."'))";
 		}
 		else
 		{
-			$whereExceptionDate[0] = "";
+			$whereExceptionDate = "";
 		}
-		//需要排除的结束时间
-		if(isset($params['ExceptionDate']['EndDate']))
-		{
-			$whereExceptionDate[1] = "(LicenseStartDate <= '".$params['ExceptionDate']['EndDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['EndDate']."')";
-		}
-		else
-		{
-			$whereExceptionDate[1] = "";
-		}
-		$whereExceptionDate = "(".implode(" or ",$whereExceptionDate).")";
-		$whereExceptionDate = $whereExceptionDate = ""?"(".$whereExceptionDate.")":"";
 		//排除数据
 		$whereExceptionId = isset($params['ExceptionId'])?" LicenseId != '".$params['ExceptionId']."' ":"";
 		//排除数据
@@ -487,26 +477,16 @@ class Xrace_User extends Base_Widget
 				}
 				$whereLicenseStatus = implode(" or ",$t);
 			}
-			//需要排除的开始时间
-			if(isset($params['ExceptionDate']['StartDate']))
+			//需要排除的时间
+			if(isset($params['ExceptionDate']))
 			{
-				$whereExceptionDate[0] = "(LicenseStartDate <= '".$params['ExceptionDate']['StartDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['StartDate']."')";
+				$whereExceptionDate = "((LicenseStartDate <= '".$params['ExceptionDate']['StartDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['StartDate']."')".
+					" or "."(LicenseStartDate <= '".$params['ExceptionDate']['EndDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['EndDate']."'))";
 			}
 			else
 			{
-				$whereExceptionDate[0] = "";
+				$whereExceptionDate = "";
 			}
-			//需要排除的结束时间
-			if(isset($params['ExceptionDate']['EndDate']))
-			{
-				$whereExceptionDate[1] = "(LicenseStartDate <= '".$params['ExceptionDate']['EndDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['EndDate']."')";
-			}
-			else
-			{
-				$whereExceptionDate[1] = "";
-			}
-			$whereExceptionDate = "(".implode(" or ",$whereExceptionDate).")";
-			$whereExceptionDate = $whereExceptionDate = ""?"(".$whereExceptionDate.")":"";
 			//排除数据
 			$whereExceptionId = isset($params['ExceptionId'])?" LicenseId != '".$params['ExceptionId']."' ":"";
 			//排除数据
@@ -515,7 +495,7 @@ class Xrace_User extends Base_Widget
 			$whereCondition = array($whereLicenseId,$whereUserId,$whereGroupId,$whereLicenseStatus,$whereExceptionId,$whereExceptionStatus,$whereExceptionDate);
 			//生成条件列
             $where = Base_common::getSqlWhere($whereCondition);
-			$sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
+			$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by RaceLicenseId,RaceGroupId";
 			return $this->db->getOne($sql);
         }
 	/**
