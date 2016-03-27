@@ -1042,7 +1042,7 @@ EOF;
 		file_put_contents($filePath.$fileName,$text);
 	}
 	/**
-	 * 将一个数组写入配置文件
+	 * 返回一个比较符号的数组
 	 * @param string $fields
 	 */
 	function equalList()
@@ -1050,4 +1050,16 @@ EOF;
 		$return = array("!=","=",">",">=","<=","<");
 		return $return;
 	}
+	/**
+	 * 返回一个比较符号的数组
+	 * @param string $fields
+	 */
+	function actionList()
+	{
+		$return = array('add'=>"添加",
+			'update'=>"更新",
+			'delete'=>"删除");
+		return $return;
+	}
+
 }

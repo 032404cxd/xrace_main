@@ -3,7 +3,7 @@
 <form id="license_update_form" name="license_update_form" action="{tpl:$this.sign/}&ac=license.update" metdod="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
 <input type="hidden" name="UserId"  id="UserId" value="{tpl:$UserLicenseInfo.UserId/}" />
-<input type="text" name="LicenseId"  id="LicenseId" value="{tpl:$UserLicenseInfo.LicenseId/}" />
+<input type="hidden" name="LicenseId"  id="LicenseId" value="{tpl:$UserLicenseInfo.LicenseId/}" />
 <tr class="hover">
     <td>执照所属赛事</td>
     <td align="left">	
@@ -49,8 +49,8 @@
 </tr>
     {tpl:loop $UserLicenseInfo.comment.LicenseUpdateLog $UpdateLog}
         <tr class="hover">
-            <td align="center" class="rowtip">{tpl:$UpdateLog.action/}</td>
             <td align="center" class="rowtip">{tpl:$UpdateLog.time/}</td>
+            <td align="center" class="rowtip">{tpl:$UpdateLog.LogText/}</td>
         </tr>
     {/tpl:loop}
 <tr class="noborder">

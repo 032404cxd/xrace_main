@@ -4,10 +4,13 @@
     LicenseAddBox = divBox.showBox('{tpl:$this.sign/}&ac=license.add&UserId=' + uid , {title:'添加执照',width:400,height:350});
   }
   function LicenseModify(lid,uid){
-    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=license.modify&LicenseId=' + lid  , {title:'修改执照',width:400,height:350});
+    LicenseModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=license.modify&LicenseId=' + lid  , {title:'修改执照',width:400,height:350});
   }
   function LicenseDelete(lid,uid){
-    deleteAppBox = divBox.showBox('{tpl:$this.sign/}&ac=license.unset&LicenseId=' + lid+ '&UserId=' + uid, {title:'删除执照',width:400,height:350});
+    LicenseDeleteBox = divBox.showBox('{tpl:$this.sign/}&ac=license.unset&LicenseId=' + lid, {title:'删除执照',width:400,height:350});
+  }
+  function LicenseLog(lid,uid){
+    LicenseLogBox = divBox.showBox('{tpl:$this.sign/}&ac=license.update.log&LicenseId=' + lid, {title:'操作记录',width:400,height:350});
   }
 </script>
 <form action="{tpl:$this.sign/}&ac=license.update" name="form" id="form" method="post">
@@ -33,16 +36,16 @@
     <td align="center" class="rowtip">{tpl:$LicenseInfo.LastUpdateTime/}</th>
     <td align="center" class="rowtip">{tpl:$LicenseInfo.LicenseStartDate/} - {tpl:$LicenseInfo.LicenseEndDate/}</th>
     <td align="center" class="rowtip">{tpl:$LicenseInfo.LicenseStatusName/}</th>        
-    <td align="center" class="rowtip">{tpl:if(in_array($LicenseInfo.LicenseStatus,array(1,3)))}<a href="javascript:;" onclick="LicenseDelete('{tpl:$LicenseInfo.LicenseId/}','{tpl:$UserId/}')">删除</a> | <a href="javascript:;" onclick="LicenseModify('{tpl:$LicenseInfo.LicenseId/}')">修改</a>{/tpl:if}</td>
+    <td align="center" class="rowtip">{tpl:if(in_array($LicenseInfo.LicenseStatus,array(1,3)))}<a href="javascript:;" onclick="LicenseDelete('{tpl:$LicenseInfo.LicenseId/}')">删除</a> | <a href="javascript:;" onclick="LicenseModify('{tpl:$LicenseInfo.LicenseId/}')">修改</a> | {/tpl:if}<a href="javascript:;" onclick="LicenseLog('{tpl:$LicenseInfo.LicenseId/}')">日志</a></td>
   </tr>
   {/tpl:loop}
   <tr>
-    <th align="center" class="rowtip" colspan="7">  <a href="javascript:;" onclick="LicenseAdd('{tpl:$UserId/}')">点此添加</a>
+    <th align="center" class="rowtip" colspan="8">  <a href="javascript:;" onclick="LicenseAdd('{tpl:$UserId/}')">点此添加</a>
     </th>
   </tr>
   {tpl:else}
   <tr>
-    <th align="center" class="rowtip">本用户尚未发放任何执照  <a href="javascript:;" onclick="LicenseAdd('{tpl:$UserId/}')">点此添加</a>
+    <th align="center" class="rowtip">本用户尚未发放任何执照<a href="javascript:;" onclick="LicenseAdd('{tpl:$UserId/}')">点此添加</a>
     </th>
     </th>
   </tr>

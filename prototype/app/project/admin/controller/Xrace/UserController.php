@@ -439,339 +439,426 @@ class Xrace_UserController extends AbstractController
 		}
 	}
         
-        //执照展示
-        public function licenseListAction()
+	//用户执照列表
+	public function licenseListAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission(0);
+		if($PermissionCheck['return'])
 		{
-            //检查权限
-            $PermissionCheck = $this->manager->checkMenuPermission(0);
-            if($PermissionCheck['return'])
-            {
-                //获得需要添加执照的用户ID
-                $UserId = trim($this->request->UserId);
-				//获取用户信息
-				$UserInfo = $this->oUser->getUserInfo($UserId,"user_id,name");
-				$params = array('UserId' => $UserId);
-                //获得用户执照列表
-                $UserLicenseList = $this->oUser->getUserLicenseList($params,array('UserId','RaceCatalogId','RaceGroupId','LicenseId','LicenseStartDate','LicenseEndDate','ManagerId','LicenseAddTime','LastUpdateTime'));
-				//获得用户执照状态列表
-				$UserLicenseStatusList = $this->oUser->getUserLicenseStatusList();
-				//循环拼接用户执照显示数组
-                foreach($UserLicenseList['UserLicenseList'] as $UserLicenseId => $UserLicenseInfo)
-                {
-					if($UserLicenseInfo['LicenseStatus'] == 4)
-					{
-
-					}
-					//如果执照结束时间小于当前时间,更新执照状态为过期
-                    elseif (strtotime(trim($UserLicenseInfo['LicenseStartDate'])) > time())
-                    {
-						$UserLicenseInfo['LicenseStatus'] = 3;
-                    }
-					elseif(strtotime(trim($UserLicenseInfo['LicenseStartDate'])) <= time() && (strtotime(trim($UserLicenseInfo['LicenseEndDate']))+86400) >= time())
-					{
-						$UserLicenseInfo['LicenseStatus'] = 1;
-					}
-					elseif((strtotime(trim($UserLicenseInfo['LicenseEndDate']))+86400) < time())
-					{
-						$UserLicenseInfo['LicenseStatus'] = 2;
-					}
-					$UserLicenseList['UserLicenseList'][$UserLicenseId]['LicenseStatusName'] = $UserLicenseStatusList[$UserLicenseInfo['LicenseStatus']];
-					//获得赛组信息
-                    $RaceGroupInfo = $this->oRace->getRaceGroup($UserLicenseInfo['RaceGroupId'], 'RaceGroupName');
-                    //获得赛组名称
-                    $UserLicenseList['UserLicenseList'][$UserLicenseId]['RaceGroupName'] = $RaceGroupInfo['RaceGroupName'];
-                    //获得管理员信息
-                    $UserLicenseList['UserLicenseList'][$UserLicenseId]['ManagerName'] = $this->oManager->getOne($UserLicenseInfo['ManagerId'], 'name');
-                    //获得用户执照状态名称
-                    $UserLicenseList['UserLicenseList'][$UserLicenseId]['LicenseStatusName'] = $this->oUser->getUserLicenseStatus($UserLicenseInfo);
-					//复写执照状态
-					$UserLicenseList['UserLicenseList'][$UserLicenseId]['LicenseStatus'] = $UserLicenseInfo['LicenseStatus'];
-				}
-                //模板渲染
-                include $this->tpl('Xrace_User_LicenseList');                
-            }
-            else
-            {
-                $home = $this->sign;
-                include $this->tpl('403');                
-            }
-        }
-        
-        //执照添加页面
-        public function licenseAddAction()
-		{
-            //检查权限
-            $PermissionCheck = $this->manager->checkMenuPermission("LicenseInsert");
-            if($PermissionCheck['return'])
-            {
-                //赛事列表
-                $RaceCatalogList  = $this->oRace->getAllRaceCatalogList('RaceCatalogId,RaceCatalogName');
-                //获得需要添加执照的用户ID
-                $UserId = trim($this->request->UserId);
-                //模板渲染
-                include $this->tpl('Xrace_User_LicenseAdd');  
-            }
-            else 
-           {
-                $home = $this->sign;
-                include $this->tpl('403');
-           }  
-        }
-        
-        //执照添加操作
-        public function licenseInsertAction()
-		{
-            //检查权限
-            $PermissionCheck = $this->manager->checkMenuPermission("LicenseInsert");
-            if($PermissionCheck['return'])
-            {
- 				//获取当前时间
-				$currentTime = time();
-				//获取 页面参数
-				$bind=$this->request->from('UserId','RaceCatalogId','RaceGroupId','LicenseStartDate','LicenseEndDate','comment');
-                //获取管理员ID
-                $bind['ManagerId'] = $this->manager->id;
-                //获得执照添加时间
-                $bind['LicenseAddTime'] = date('Y-m-d H:i:s',$currentTime) ;
-                //获得执照更新时间
-                $bind['LastUpdateTime'] = date('Y-m-d H:i:s',$currentTime) ;
-                //转化时间为时间戳
-				$LicenseStartDate = strtotime(trim($bind['LicenseStartDate']));
-                $LicenseEndDate = strtotime(trim($bind['LicenseEndDate']));
-                //执照所属分组不能为空
-                if(intval($bind['RaceGroupId'])<=0)
-				{
-					$response = array('errno' => 1);
-				}
-				//执照结束时间不能小于当前时间
-				elseif(strtotime($bind["LicenseEndDate"]) < $currentTime)
-				{
-					$response = array('errno' => 2);
-				}
-                //执照开始时间不能小于执照结束时间
-                elseif((strtotime($bind["LicenseStartDate"])+86400)  > strtotime($bind["LicenseEndDate"]) )
-                {
-                    $response = array('errno' => 3);                    
-                }
-                //添加的执照的理由不能为空
-                elseif(trim($bind['comment'])=="")
-                {
-					$response = array('errno' => 4);
-                }
-                else 
-                {
-					//获取执照状态
-					$bind['LicenseStatus'] = $currentTime > strtotime($bind['LicenseStartDate'])?1:2;
-					//初始化压缩数组
-					$bind['comment'] = array('LicenseUpdateLog'=>array('0' => array("action"=>"add","time" => date('Y-m-d H:i:s',time()),"reason"=>trim($bind['comment']),'manager'=>$this->manager->id)));
-					//数据压缩
-					$bind['comment'] = json_encode($bind['comment']);
-					//查询同一用户在同赛组是否有重复的有效执照
-                    $params = array(
-                        'UserId' => $bind['UserId'],
-                        'GroupId' => $bind['GroupId'],
-                        'LicenseStatus' => '1|3',
-                    );
-                    //获得在目标范围内有冲突的记录
-                    $UserLicenseCount = $this->oUser->getUserLicenseCount($params);
-					if($UserLicenseCount>=1)
-					{
-						$response = array('errno' => 5);
-					}
-					else
-					{
-						//添加执照数据
-						$AddLicense = $this->oUser->insertUserLicense($bind);
-						$response = $AddLicense ? array('errno' => 0) : array('errno' => 9);
-                    }
-                }
-                echo json_encode($response);
-            }
-            else 
-           {
-                $home = $this->sign;
-                include $this->tpl('403');
-           }  
-        }
-        
-        //执照修改页面
-        public function licenseModifyAction()
-		{
-            //检查权限
-            $PermissionCheck = $this->manager->checkMenuPermission("LicenseModify");
-            if($PermissionCheck['return'])
-            {
-                //赛事列表
-                $RaceCatalogList  = $this->oRace->getAllRaceCatalogList('RaceCatalogId,RaceCatalogName');
-                //获得执照ID
-                $LicenseId = trim($this->request->LicenseId);
-                //获得执照信息
-                $UserLicenseInfo = $this->oUser->getUserLicense($LicenseId,'*');
-				//数据解包
-				$UserLicenseInfo['comment'] = json_decode($UserLicenseInfo['comment'],true);
-				foreach($UserLicenseInfo['comment']['LicenseUpdateLog'] as $key => $LogInfo)
-				{
-					$UserLicenseInfo['comment']['LicenseUpdateLog'][$key]['LogText'] = $LogInfo['ManagerId']."-".$LogInfo['time']."-".$LogInfo['reason'];
-				}
-				//所有赛事分组列表
-				$RaceGroupList = $this->oRace->getAllRaceGroupList($UserLicenseInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
-                //模板渲染
-                include $this->tpl('Xrace_User_LicenseModify');  
-            }
-            else 
-           {
-                $home = $this->sign;
-                include $this->tpl('403');
-           }             
-        }
-        
-        //执照修改操作
-        public function licenseUpdateAction()
-		{
-            //检查权限
-            $PermissionCheck = $this->manager->checkMenuPermission("LicenseModify");
-            if($PermissionCheck['return'])
+			//获得需要添加执照的用户ID
+			$UserId = trim($this->request->UserId);
+			//获取用户信息
+			$UserInfo = $this->oUser->getUserInfo($UserId,"user_id,name");
+			$params = array('UserId' => $UserId);
+			//获得用户执照列表
+			$UserLicenseList = $this->oUser->getUserLicenseList($params,array('UserId','RaceCatalogId','RaceGroupId','LicenseId','LicenseStartDate','LicenseEndDate','ManagerId','LicenseAddTime','LastUpdateTime','LicenseStatus'));
+			//获得用户执照状态列表
+			$UserLicenseStatusList = $this->oUser->getUserLicenseStatusList();
+			//循环拼接用户执照显示数组
+			foreach($UserLicenseList['UserLicenseList'] as $UserLicenseId => $UserLicenseInfo)
 			{
-				//获取当前时间
-				$currentTime = time();
-				//获取 页面参数
-				$bind = $this->request->from('LicenseId', 'UserId', 'RaceCatalogId', 'RaceGroupId', 'LicenseStartDate', 'LicenseEndDate', 'comment');
-				//获取管理员ID
-				$bind['ManagerId'] = $this->manager->id;
+				if($UserLicenseInfo['LicenseStatus'] == 4)
+				{
+
+				}
+				//如果执照结束时间小于当前时间,更新执照状态为过期
+				elseif (strtotime(trim($UserLicenseInfo['LicenseStartDate'])) > time())
+				{
+					$UserLicenseInfo['LicenseStatus'] = 3;
+				}
+				elseif(strtotime(trim($UserLicenseInfo['LicenseStartDate'])) <= time() && (strtotime(trim($UserLicenseInfo['LicenseEndDate']))+86400) >= time())
+				{
+					$UserLicenseInfo['LicenseStatus'] = 1;
+				}
+				elseif((strtotime(trim($UserLicenseInfo['LicenseEndDate']))+86400) < time())
+				{
+					$UserLicenseInfo['LicenseStatus'] = 2;
+				}
+				$UserLicenseList['UserLicenseList'][$UserLicenseId]['LicenseStatusName'] = $UserLicenseStatusList[$UserLicenseInfo['LicenseStatus']];
+				//获得赛组信息
+				$RaceGroupInfo = $this->oRace->getRaceGroup($UserLicenseInfo['RaceGroupId'], 'RaceGroupName');
+				//获得赛组名称
+				$UserLicenseList['UserLicenseList'][$UserLicenseId]['RaceGroupName'] = $RaceGroupInfo['RaceGroupName'];
+				//获得管理员信息
+				$UserLicenseList['UserLicenseList'][$UserLicenseId]['ManagerName'] = $this->oManager->getOne($UserLicenseInfo['ManagerId'], 'name');
+				//获得用户执照状态名称
+				$UserLicenseList['UserLicenseList'][$UserLicenseId]['LicenseStatusName'] = $this->oUser->getUserLicenseStatus($UserLicenseInfo);
+				//复写执照状态
+				$UserLicenseList['UserLicenseList'][$UserLicenseId]['LicenseStatus'] = $UserLicenseInfo['LicenseStatus'];
+			}
+			//模板渲染
+			include $this->tpl('Xrace_User_LicenseList');
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+
+	//执照添加页面
+	public function licenseAddAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("LicenseInsert");
+		if($PermissionCheck['return'])
+		{
+			//赛事列表
+			$RaceCatalogList  = $this->oRace->getAllRaceCatalogList('RaceCatalogId,RaceCatalogName');
+			//获得需要添加执照的用户ID
+			$UserId = trim($this->request->UserId);
+			//模板渲染
+			include $this->tpl('Xrace_User_LicenseAdd');
+		}
+		else
+	   {
+			$home = $this->sign;
+			include $this->tpl('403');
+	   }
+	}
+
+	//执照添加操作
+	public function licenseInsertAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("LicenseInsert");
+		if($PermissionCheck['return'])
+		{
+			//获取当前时间
+			$currentTime = time();
+			//获取 页面参数
+			$bind=$this->request->from('UserId','RaceCatalogId','RaceGroupId','LicenseStartDate','LicenseEndDate','comment');
+			//获取管理员ID
+			$bind['ManagerId'] = $this->manager->id;
+			//获得执照添加时间
+			$bind['LicenseAddTime'] = date('Y-m-d H:i:s',$currentTime) ;
+			//获得执照更新时间
+			$bind['LastUpdateTime'] = date('Y-m-d H:i:s',$currentTime) ;
+			//转化时间为时间戳
+			$LicenseStartDate = strtotime(trim($bind['LicenseStartDate']));
+			$LicenseEndDate = strtotime(trim($bind['LicenseEndDate']));
+			//执照所属分组不能为空
+			if(intval($bind['RaceGroupId'])<=0)
+			{
+				$response = array('errno' => 1);
+			}
+			//执照结束时间不能小于当前时间
+			elseif(strtotime($bind["LicenseEndDate"]) < $currentTime)
+			{
+				$response = array('errno' => 2);
+			}
+			//执照开始时间不能小于执照结束时间
+			elseif((strtotime($bind["LicenseStartDate"])+86400)  > strtotime($bind["LicenseEndDate"]) )
+			{
+				$response = array('errno' => 3);
+			}
+			//添加的执照的理由不能为空
+			elseif(trim($bind['comment'])=="")
+			{
+				$response = array('errno' => 4);
+			}
+			else
+			{
 				//获取执照状态
-				//获得执照更新时间
-				$bind['LastUpdateTime'] = date($currentTime);
-				//转化时间为时间戳
-				$LicenseStartDate = strtotime(trim($bind['LicenseStartDate']));
-				$LicenseEndDate = strtotime(trim($bind['LicenseEndDate']));
-				//获得执照ID
-				$LicenseId = $bind['LicenseId'];
-				//获得用户ID
-				$UserId = $bind['UserId'];
-				//执照ID和用户ID不用存表
-				unset($bind['LicenseId']);
-				unset($bind['UserId']);
-				//执照所属分组不能为空
-				if (intval($bind['RaceGroupId']) <= 0)
+				$bind['LicenseStatus'] = $currentTime > strtotime($bind['LicenseStartDate'])?1:2;
+				//初始化压缩数组
+				$bind['comment'] = array('LicenseUpdateLog'=>array('0' => array("action"=>"add","time" => date('Y-m-d H:i:s',time()),"reason"=>trim($bind['comment']),'manager'=>$this->manager->id)));
+				//数据压缩
+				$bind['comment'] = json_encode($bind['comment']);
+				//查询同一用户在同赛组是否有重复的有效执照
+				$params = array(
+					'UserId' => $bind['UserId'],
+					'GroupId' => $bind['GroupId'],
+					'LicenseStatus' => '1|3',
+				);
+				//获得在目标范围内有冲突的记录
+				$UserLicenseCount = $this->oUser->getUserLicenseCount($params);
+				if($UserLicenseCount>=1)
 				{
-					$response = array('errno' => 1);
-				} //执照结束时间不能小于当前时间
-				elseif (strtotime($bind["LicenseEndDate"]) < $currentTime)
-				{
-					$response = array('errno' => 2);
-				} //执照开始时间不能小于执照结束时间
-				elseif ((strtotime($bind["LicenseStartDate"]) + 86400) > strtotime($bind["LicenseEndDate"]))
-				{
-					$response = array('errno' => 3);
-				} //添加的执照的理由不能为空
-				elseif (trim($bind['comment']) == "")
-				{
-					$response = array('errno' => 4);
+					$response = array('errno' => 5);
 				}
 				else
 				{
-					//查询同一用户在同赛组是否有重复的有效执照
-					$params = array(
-						'UserId' => $UserId,
-						'GroupId' => $bind['RaceGroupId'],
-						'ExceptionId' => $LicenseId,
-						'LicenseStatus' => '1|3',
-					);
-					//获得重复的执照的数量
-					$UserLicenseCount = $this->oUser->getUserLicenseCount($params);
-					//获得在目标范围内有冲突的记录
-					$UserLicenseCount = $this->oUser->getUserLicenseCount($params);
-					if ($UserLicenseCount >= 1)
-					{
-						$response = array('errno' => 5);
-					}
-					else
-					{
-						$bind['comment']['LicenseUpdateLog'][] = array("action" => "add", "time" => date('Y-m-d H:i:s', time()), "reason" => trim($bind['comment']), 'manager' => $this->manager->id);
-						//封装理由的数据
-						$bind['comment'] = json_encode($bind['comment']);
-						//更新执照数据
-						$UpdateLicense = $this->oUser->updateUserLicense($bind, $LicenseId);
-						$response = $UpdateLicense ? array('errno' => 0) : array('errno' => 9);
-					}
+					//添加执照数据
+					$AddLicense = $this->oUser->insertUserLicense($bind);
+					$response = $AddLicense ? array('errno' => 0) : array('errno' => 9);
 				}
-				echo json_encode($response);
 			}
-            else 
-           {
-                $home = $this->sign;
-                include $this->tpl('403');
-           }             
-        }
-
-        //执照删除界面
-        public function licenseUnsetAction() {
-            //检查权限
-            $PermissionCheck = $this->manager->checkMenuPermission("LicenseDelete");
-            if($PermissionCheck['return'])
-            {
-                //获得执照的用户ID
-                $UserId = trim($this->request->UserId);
-                //获得执照ID
-                $LicenseId = trim($this->request->LicenseId);
-                //模板渲染
-                include $this->tpl('Xrace_User_LicenseUnset');  
-            }
-            else 
-           {
-                $home = $this->sign;
-                include $this->tpl('403');
-           }             
-        }
-        
-        //执照删除操作
-        public function licenseDeleteAction() {
-            //检查权限
-            $PermissionCheck = $this->manager->checkMenuPermission("LicenseDelete");
-            if($PermissionCheck['return'])
-            {
- 		//获取 页面参数
-		$bind=$this->request->from('LicenseId','UserId','comment');
-                $bind['comment'] = date('Y-m-d H:i:s',time()).':'.trim($bind['comment']);
-                //获得执照ID
-                $LicenseId = $bind['LicenseId'];
-                //获得用户ID
-                $UserId = $bind['UserId'];
-                //执照ID和用户ID不用存表
-                unset($bind['LicenseId']);
-                unset($bind['UserId']);
-                //删除执照变更执照状态
-                $bind['LicenseStatus'] = 2;
-                //执照删除理由不能为空
-                if(!$bind['comment'])
-		{
-                    $response = array('errno' => 1);
+			echo json_encode($response);
 		}
-                else
-                {
-                    //执照ID
-                    $params = array(
-                        'LicenseId' => $LicenseId,
-                    );
-                    //获得执照信息
-                    $UserLicenseInfo = $this->oUser->getUserLicense($params,array('comment' => 'comment'));
-                    //解析执照已有的理由
-                    $UserLicenseComment = json_decode($UserLicenseInfo['UserLicense'][0]['comment'],true);
-                    //删除执照的删除理由
-                    $UserLicenseComment['delete'] = $bind['comment'];
-                    //封装数据
-                    $bind['comment'] = json_encode($UserLicenseComment);
-                    //删除执照 更新执照数据
-                    $UpdateLicense = $this->oUser->updateUserLicense($bind,$LicenseId);
-                    $response = $UpdateLicense ? array('errno' => 0) : array('errno' => 9);
-                }
-                echo json_encode($response);
-		return true;
-            }
-            else 
-           {
-                $home = $this->sign;
-                include $this->tpl('403');
-           }                
-        }
+		else
+	   {
+			$home = $this->sign;
+			include $this->tpl('403');
+	   }
+	}
+	//执照修改页面
+	public function licenseModifyAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("LicenseModify");
+		if($PermissionCheck['return'])
+		{
+			//赛事列表
+			$RaceCatalogList  = $this->oRace->getAllRaceCatalogList('RaceCatalogId,RaceCatalogName');
+			//获得执照ID
+			$LicenseId = trim($this->request->LicenseId);
+			//获得执照信息
+			$UserLicenseInfo = $this->oUser->getUserLicense($LicenseId,'*');
+			//数据解包
+			$UserLicenseInfo['comment'] = json_decode($UserLicenseInfo['comment'],true);
+			//获得常用的操作符号列表
+			$actionList = Base_Common::actionList();
+			//初始化一个空的管理员列表
+			$ManagerList = array();
+			//循环操作记录
+			foreach($UserLicenseInfo['comment']['LicenseUpdateLog'] as $key => $LogInfo)
+			{
+				$LogInfo['actionName'] = isset($actionList[$LogInfo['action']])?$actionList[$LogInfo['action']]:"未定义";
+				// 如果管理员记录已经获取到
+				if(isset($ManagerList[$LogInfo['ManagerId']]))
+				{
+					$ManagerInfo = $ManagerList[$LogInfo['ManagerId']];
+				}
+				//否则重新获取
+				else
+				{
+					$ManagerInfo = $this->manager->get($LogInfo['ManagerId'], "name");
+				}
+				$UserLicenseInfo['comment']['LicenseUpdateLog'][$key]['LogText'] = $ManagerInfo['name']." 执行".$LogInfo['actionName']."操作<br>操作理由:".$LogInfo['reason'];
+			}
+			//所有赛事分组列表
+			$RaceGroupList = $this->oRace->getAllRaceGroupList($UserLicenseInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
+			//模板渲染
+			include $this->tpl('Xrace_User_LicenseModify');
+		}
+		else
+	   {
+			$home = $this->sign;
+			include $this->tpl('403');
+	   }
+	}
+	//执照修改操作
+	public function licenseUpdateAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("LicenseModify");
+		if($PermissionCheck['return'])
+		{
+			//获取当前时间
+			$currentTime = time();
+			//获取 页面参数
+			$bind = $this->request->from('LicenseId', 'UserId', 'RaceCatalogId', 'RaceGroupId', 'LicenseStartDate', 'LicenseEndDate', 'comment');
+			//获取管理员ID
+			$bind['ManagerId'] = $this->manager->id;
+			//获得执照更新时间
+			$bind['LastUpdateTime'] = date("Y-m-d H:i:s",$currentTime);
+			//转化时间为时间戳
+			$LicenseStartDate = strtotime(trim($bind['LicenseStartDate']));
+			$LicenseEndDate = strtotime(trim($bind['LicenseEndDate']));
+			//获得执照ID
+			$LicenseId = $bind['LicenseId'];
+			//获得用户ID
+			$UserId = $bind['UserId'];
+			//执照ID和用户ID不用存表
+			unset($bind['LicenseId']);
+			unset($bind['UserId']);
+			//执照所属分组不能为空
+			if (intval($bind['RaceGroupId']) <= 0)
+			{
+				$response = array('errno' => 1);
+			}
+			//执照结束时间不能小于当前时间
+			elseif (strtotime($bind["LicenseEndDate"]) < $currentTime)
+			{
+				$response = array('errno' => 2);
+			}
+			//执照开始时间不能小于执照结束时间
+			elseif (strtotime($bind["LicenseStartDate"]) > strtotime($bind["LicenseEndDate"]))
+			{
+				$response = array('errno' => 3);
+			}
+			//修改的执照的理由不能为空
+			elseif (trim($bind['comment']) == "")
+			{
+				$response = array('errno' => 4);
+			}
+			else
+			{
+				//查询同一用户在同赛组是否有重复的有效执照
+				$params = array(
+					'UserId' => $UserId,
+					'GroupId' => $bind['RaceGroupId'],
+					'ExceptionId' => $LicenseId,
+					'ExceptionDate' => array("StartDate"=>$bind['LicenseStartDate'],"EndDate"=>$bind['LicenseEndDate']),
+					'ExceptionStatus' => 4,
+				);
+				//获得在目标范围内有冲突的记录
+				$UserLicenseCount = $this->oUser->getUserLicenseCount($params);
+				//$UserLicenseCount = 0;
+				if ($UserLicenseCount >= 1)
+				{
+					$response = array('errno' => 5);
+				}
+				else
+				{
+					//获得执照信息
+					$UserLicenseInfo = $this->oUser->getUserLicense($LicenseId,'*');
+					//数据解包
+					$UserLicenseInfo['comment'] = json_decode($UserLicenseInfo['comment'],true);
+					$UserLicenseInfo['comment']['LicenseUpdateLog'][count($UserLicenseInfo['comment']['LicenseUpdateLog'])] = array("action" => "update", "time" => date('Y-m-d H:i:s', time()), "reason" => trim($bind['comment']), 'manager' => $this->manager->id);
+					$bind['comment'] = $UserLicenseInfo['comment'];
+					//封装理由的数据
+					$bind['comment'] = json_encode($bind['comment']);
+					//更新执照数据
+					$UpdateLicense = $this->oUser->updateUserLicense($bind, $LicenseId);
+					$response = $UpdateLicense ? array('errno' => 0) : array('errno' => 9);
+				}
+			}
+			echo json_encode($response);
+		}
+		else
+	   {
+			$home = $this->sign;
+			include $this->tpl('403');
+	   }
+	}
+
+	//执照删除界面
+	public function licenseUnsetAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("LicenseDelete");
+		if($PermissionCheck['return'])
+		{
+			//获得执照ID
+			$LicenseId = trim($this->request->LicenseId);
+			//获得执照信息
+			$UserLicenseInfo = $this->oUser->getUserLicense($LicenseId,'*');
+			$RaceCatalogInfo = $this->oRace->getRaceCatalog($UserLicenseInfo['RaceCatalogId'],'RaceCatalogId,RaceCatalogName');
+			$UserLicenseInfo['RaceCatalogName'] = $RaceCatalogInfo['RaceCatalogName'];
+			$RaceGroupInfo = $this->oRace->getRaceGroup($UserLicenseInfo['RaceGroupId'],'RaceGroupId,RaceGroupName');
+			$UserLicenseInfo['RaceGroupName'] = $RaceGroupInfo['RaceGroupName'];
+			//数据解包
+			$UserLicenseInfo['comment'] = json_decode($UserLicenseInfo['comment'],true);
+			//获得常用的操作符号列表
+			$actionList = Base_Common::actionList();
+			//初始化一个空的管理员列表
+			$ManagerList = array();
+			//循环操作记录
+			foreach($UserLicenseInfo['comment']['LicenseUpdateLog'] as $key => $LogInfo)
+			{
+				$LogInfo['actionName'] = isset($actionList[$LogInfo['action']])?$actionList[$LogInfo['action']]:"未定义";
+				// 如果管理员记录已经获取到
+				if(isset($ManagerList[$LogInfo['ManagerId']]))
+				{
+					$ManagerInfo = $ManagerList[$LogInfo['ManagerId']];
+				}
+				//否则重新获取
+				else
+				{
+					$ManagerInfo = $this->manager->get($LogInfo['ManagerId'], "name");
+				}
+				$UserLicenseInfo['comment']['LicenseUpdateLog'][$key]['LogText'] = $ManagerInfo['name']." 执行".$LogInfo['actionName']."操作<br>操作理由:".$LogInfo['reason'];
+			}
+			//模板渲染
+			include $this->tpl('Xrace_User_LicenseUnset');
+		}
+		else
+	   {
+			$home = $this->sign;
+			include $this->tpl('403');
+	   }
+	}
+
+	//执照删除操作
+	public function licenseDeleteAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("LicenseDelete");
+		if($PermissionCheck['return'])
+		{
+			//获取 页面参数
+			$bind = $this->request->from('LicenseId','comment');
+			//获得执照ID
+			$LicenseId = $bind['LicenseId'];
+			//执照ID和用户ID不用存表
+			unset($bind['LicenseId']);
+			//删除执照变更执照状态
+			$bind['LicenseStatus'] = 4;
+			//修改的执照的理由不能为空
+			if (trim($bind['comment']) == "")
+			{
+				$response = array('errno' => 1);
+			}
+			else
+			{
+				//获得执照信息
+				$UserLicenseInfo = $this->oUser->getUserLicense($LicenseId,'*');
+				//数据解包
+				$UserLicenseInfo['comment'] = json_decode($UserLicenseInfo['comment'],true);
+				//解析执照已有的理由
+				$UserLicenseInfo['comment']['LicenseUpdateLog'][count($UserLicenseInfo['comment']['LicenseUpdateLog'])] = array("action" => "delete", "time" => date('Y-m-d H:i:s', time()), "reason" => trim($bind['comment']), 'manager' => $this->manager->id);
+				$bind['comment'] = $UserLicenseInfo['comment'];
+				//封装数据
+				$bind['comment'] = json_encode($bind['comment']);
+				//删除执照 更新执照数据
+				$UpdateLicense = $this->oUser->updateUserLicense($LicenseId,$bind);
+				$response = $UpdateLicense ? array('errno' => 0) : array('errno' => 9);
+			}
+			echo json_encode($response);
+		}
+		else
+	   {
+			$home = $this->sign;
+			include $this->tpl('403');
+	   }
+	}
+	//执照修改页面
+	public function licenseUpdateLogAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("LicenseModify");
+		if($PermissionCheck['return'])
+		{
+			//获得执照ID
+			$LicenseId = trim($this->request->LicenseId);
+			//获得执照信息
+			$UserLicenseInfo = $this->oUser->getUserLicense($LicenseId,'*');
+			$RaceCatalogInfo = $this->oRace->getRaceCatalog($UserLicenseInfo['RaceCatalogId'],'RaceCatalogId,RaceCatalogName');
+			$UserLicenseInfo['RaceCatalogName'] = $RaceCatalogInfo['RaceCatalogName'];
+			$RaceGroupInfo = $this->oRace->getRaceGroup($UserLicenseInfo['RaceGroupId'],'RaceGroupId,RaceGroupName');
+			$UserLicenseInfo['RaceGroupName'] = $RaceGroupInfo['RaceGroupName'];
+			//数据解包
+			$UserLicenseInfo['comment'] = json_decode($UserLicenseInfo['comment'],true);
+			//获得常用的操作符号列表
+			$actionList = Base_Common::actionList();
+			//初始化一个空的管理员列表
+			$ManagerList = array();
+			//循环操作记录
+			foreach($UserLicenseInfo['comment']['LicenseUpdateLog'] as $key => $LogInfo)
+			{
+				$LogInfo['actionName'] = isset($actionList[$LogInfo['action']])?$actionList[$LogInfo['action']]:"未定义";
+				// 如果管理员记录已经获取到
+				if(isset($ManagerList[$LogInfo['ManagerId']]))
+				{
+					$ManagerInfo = $ManagerList[$LogInfo['ManagerId']];
+				}
+				//否则重新获取
+				else
+				{
+					$ManagerInfo = $this->manager->get($LogInfo['ManagerId'], "name");
+				}
+				$UserLicenseInfo['comment']['LicenseUpdateLog'][$key]['LogText'] = $ManagerInfo['name']." 执行".$LogInfo['actionName']."操作<br>操作理由:".$LogInfo['reason'];
+			}
+			//模板渲染
+			include $this->tpl('Xrace_User_LicenseUpdateLog');
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
 }
