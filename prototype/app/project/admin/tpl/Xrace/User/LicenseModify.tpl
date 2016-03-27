@@ -2,8 +2,8 @@
 <div class="br_bottom"></div>
 <form id="license_update_form" name="license_update_form" action="{tpl:$this.sign/}&ac=license.update" metdod="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
-<input type="hidden" name="UserId"  id="UserId" value="{tpl:$UserId/}" />
-<input type="hidden" name="LicenseId"  id="LicenseId" value="{tpl:$LicenseId/}" />
+<input type="hidden" name="UserId"  id="UserId" value="{tpl:$UserLicenseInfo.UserId/}" />
+<input type="text" name="LicenseId"  id="LicenseId" value="{tpl:$UserLicenseInfo.LicenseId/}" />
 <tr class="hover">
     <td>执照所属赛事</td>
     <td align="left">	
@@ -19,7 +19,7 @@
 <tr class="hover">
     <td>执照所属分组</td>
     <td align="left">
-        <select name="GroupId"  id="GroupId" size="1">
+        <select name="RaceGroupId"  id="RaceGroupId" size="1">
             {tpl:loop $RaceGroupList $RaceGroupInfo}
             <option value="{tpl:$RaceGroupInfo.RaceGroupId/}" {tpl:if($RaceGroupInfo.RaceGroupId==$UserLicenseInfo.RaceGroupId)}selected="selected"{/tpl:if}>{tpl:$RaceGroupInfo.RaceGroupName/}</option>
             {/tpl:loop}

@@ -376,17 +376,17 @@ class Xrace_User extends Base_Widget
 				//生效中
 				if($LicenseStatus == 2)
 				{
-					$t[] = "(LicenseStartDate <= $currentTime)";
+					$t[] = "(LicenseStartDate <= '$currentTime')";
 				}
 				//失效
 				elseif($LicenseStatus == 1)
 				{
-					$t[] = "(LicenseStartDate > $currentTime and LicenseEndDate <= $currentTime)";
+					$t[] = "(LicenseStartDate >= '$currentTime'' and LicenseEndDate <= '$currentTime')";
 				}
 				//已删除
 				elseif($LicenseStatus == 3)
 				{
-					$t[] = "(LicenseEndDate > $currentTime)";
+					$t[] = "(LicenseEndDate > '$currentTime')";
 				}
 				else
 				{
@@ -395,10 +395,10 @@ class Xrace_User extends Base_Widget
 			}
 			$whereLicenseStatus = implode(" or ",$t);
 		}
+		//排除数据
+		$whereException = isset($params['Exception'])?" LicenseId != '".$params['ExceptionId']."' ":"";
 		//所有查询条件置入数组
-		$whereCondition = array($whereLicenseId,$whereUserId,$whereGroupId,$whereLicenseStatus);
-		print_r( $whereCondition );
-		die();
+		$whereCondition = array($whereLicenseId,$whereUserId,$whereGroupId,$whereLicenseStatus,$whereException);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		//获取用户数量
@@ -440,32 +440,39 @@ class Xrace_User extends Base_Widget
 			if(isset($params['LicenseStatus']) && $params['LicenseStatus'] != 0)
 			{
 				$currentTime = date("Y-m-d",time());
-				//生效中
-				if($params['LicenseStatus'] == 2)
+				$p = explode("|",$params['LicenseStatus']);
+				foreach($p as $LicenseStatus)
 				{
-					$whereLicenseStatus = "LicenseStartDate <= $currentTime";
+					//生效中
+					if($LicenseStatus == 2)
+					{
+						$t[] = "(LicenseStartDate <= '$currentTime')";
+					}
+					//失效
+					elseif($LicenseStatus == 1)
+					{
+						$t[] = "(LicenseStartDate >= '$currentTime' and LicenseEndDate <= '$currentTime')";
+					}
+					//已删除
+					elseif($LicenseStatus == 3)
+					{
+						$t[] = "(LicenseEndDate > '$currentTime')";
+					}
+					else
+					{
+						$t[] = "(LicenseStatus = ".$params['LicenseStatus'].")";
+					}
 				}
-				//失效
-				elseif($params['LicenseStatus'] == 1)
-				{
-					$whereLicenseStatus = "LicenseStartDate > $currentTime and LicenseEndDate <= $currentTime";
-				}
-				//已删除
-				elseif($params['LicenseStatus'] == 3)
-				{
-					$whereLicenseStatus = "LicenseEndDate > $currentTime";
-				}
-				else
-				{
-					$whereLicenseStatus = "LicenseStatus = ".$params['LicenseStatus'];
-				}
+				$whereLicenseStatus = implode(" or ",$t);
 			}
-            //所有查询条件置入数组
-            $whereCondition = array($whereLicenseId,$whereUserId,$whereGroupId,$whereLicenseStatus);
+			//排除数据
+			$whereException = isset($params['ExceptionId'])?" LicenseId != '".$params['ExceptionId']."' ":"";
+			//所有查询条件置入数组
+			$whereCondition = array($whereLicenseId,$whereUserId,$whereGroupId,$whereLicenseStatus,$whereException);
             //生成条件列
             $where = Base_common::getSqlWhere($whereCondition);
-            $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
-            return $this->db->getOne($sql);
+			$sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
+			return $this->db->getOne($sql);
         }
 	/**
 	 * 获取单个用户记录
