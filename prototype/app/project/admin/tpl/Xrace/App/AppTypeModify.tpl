@@ -5,7 +5,7 @@
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">
 <td>APP类型名称</td>
-<td align="left"><input name="AppTypeName" type="text" class="span4" id="AppTypeName" value="{tpl:$AppTypeInfo.AppTypeName/}" size="50" /></td>
+<td align="left"><input name="AppTypeName" type="text" class="span2" id="AppTypeName" value="{tpl:$AppTypeInfo.AppTypeName/}" size="50" /></td>
 <tr class="noborder"><td></td>
 <td><button type="submit" id="app_type_update_submit">提交</button></td>
 </tr>

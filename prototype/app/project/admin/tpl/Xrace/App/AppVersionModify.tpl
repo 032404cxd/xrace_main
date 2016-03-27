@@ -5,11 +5,11 @@
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">
 <td>APP版本</td>
-<td align="left"><input name="AppVersion" type="text" class="span4" id="AppVersion" value="{tpl:$AppVersionInfo.AppVersion/}" size="50" /></td>
+<td align="left"><input name="AppVersion" type="text" class="span2" id="AppVersion" value="{tpl:$AppVersionInfo.AppVersion/}" size="50" /></td>
 	<tr class="hover">
 		<td>APP类型</td>
 		<td align="left">
-			<select name="AppTypeId" size="1">
+			<select name="AppTypeId" class="span2" size="1">
 				{tpl:loop $AppTypeList $AppTypeInfo}
 				<option value="{tpl:$AppTypeInfo.AppTypeId/}" {tpl:if($AppTypeInfo.AppTypeId==$AppVersionInfo.AppTypeId)}selected="selected"{/tpl:if}>{tpl:$AppTypeInfo.AppTypeName/}</option>
 				{/tpl:loop}
@@ -19,7 +19,7 @@
 	<tr class="hover">
 		<td>APP系统</td>
 		<td align="left">
-			<select name="AppOSId" size="1">
+			<select name="AppOSId" class="span2" size="1">
 				{tpl:loop $AppOSList $AppOSInfo}
 				<option value="{tpl:$AppOSInfo.AppOSId/}" {tpl:if($AppOSInfo.AppOSId==$AppVersionInfo.AppOSId)}selected="selected"{/tpl:if}>{tpl:$AppOSInfo.AppOSName/}</option>
 				{/tpl:loop}
@@ -55,7 +55,7 @@ $('#app_version_update_submit').click(function(){
 				divBox.alertBox(errors[jsonResponse.errno],function(){});
 			} else {
 				var message = '修改APP版本成功';
-				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}&ac=app.version.list');}});
+				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}');}});
 			}
 		}
 	};

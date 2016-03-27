@@ -2,7 +2,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$('#add_app_type').click(function(){
-		addAppVersionBox = divBox.showBox('{tpl:$this.sign/}&ac=app.version.add', {title:'添加APP版本',width:600,height:500});
+		addAppVersionBox = divBox.showBox('{tpl:$this.sign/}&ac=app.version.add', {title:'添加APP版本',width:500,height:500});
 	});
 });
 
@@ -11,7 +11,7 @@ function appVersionDelete(t_id, t_name){
 }
 
 function appVersionModify(mid){
-	modifyAppVersionBox = divBox.showBox('{tpl:$this.sign/}&ac=app.version.modify&AppVersionId=' + mid, {title:'修改APP版本',width:800,height:600});
+	modifyAppVersionBox = divBox.showBox('{tpl:$this.sign/}&ac=app.version.modify&AppVersionId=' + mid, {title:'修改APP版本',width:500,height:500});
 }
 
 
@@ -20,7 +20,7 @@ function appVersionModify(mid){
 <fieldset><legend>操作</legend>
 [ <a href="javascript:;" id="add_app_type">添加APP版本</a> ]
 </fieldset>
-<form action="{tpl:$this.sign/}&ac=app.version.list" name="form" id="form" method="post">
+<form action="{tpl:$this.sign/}" name="form" id="form" method="post">
     <select name="AppTypeId" size="1">
         <option value="0">全部</option>
         {tpl:loop $AppTypeList $AppTypeInfo}

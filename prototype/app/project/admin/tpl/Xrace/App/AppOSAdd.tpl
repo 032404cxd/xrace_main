@@ -4,7 +4,7 @@
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover">
 <td>APP系统名称</td>
-	<td align="left"><input type="text" class="span4" name="AppOSName"  id="AppOSName" value="" size="50" /></td>
+	<td align="left"><input type="text" class="span2" name="AppOSName"  id="AppOSName" value="" size="50" /></td>
 </tr>
 	<tr class="noborder"><td></td>
 <td><button type="submit" id="app_add_submit">提交</button></td>
@@ -25,7 +25,7 @@ $('#app_add_submit').click(function(){
 				divBox.alertBox(errors[jsonResponse.errno],function(){});
 			} else {
 				var message = '添加APP系统成功';
-				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}&ac=app.os.list');}});
+				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}');}});
 			}
 		}
 	};

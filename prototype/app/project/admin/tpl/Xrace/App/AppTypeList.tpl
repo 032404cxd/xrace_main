@@ -2,7 +2,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$('#add_app_type').click(function(){
-		addAppTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=app.type.add', {title:'添加APP类型',width:800,height:600});
+		addAppTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=app.type.add', {title:'添加APP类型',width:400,height:200});
 	});
 });
 
@@ -11,7 +11,7 @@ function appTypeDelete(t_id, t_name){
 }
 
 function appTypeModify(mid){
-	modifyAppTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=app.type.modify&AppTypeId=' + mid, {title:'修改APP类型',width:800,height:600});
+	modifyAppTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=app.type.modify&AppTypeId=' + mid, {title:'修改APP类型',width:400,height:200});
 }
 
 

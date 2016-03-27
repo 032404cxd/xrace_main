@@ -5,7 +5,7 @@
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">
 <td>APP系统名称</td>
-<td align="left"><input name="AppOSName" type="text" class="span4" id="AppOSName" value="{tpl:$AppOSInfo.AppOSName/}" size="50" /></td>
+<td align="left"><input name="AppOSName" type="text" class="span2" id="AppOSName" value="{tpl:$AppOSInfo.AppOSName/}" size="50" /></td>
 <tr class="noborder"><td></td>
 <td><button type="submit" id="app_os_update_submit">提交</button></td>
 </tr>
@@ -26,7 +26,7 @@ $('#app_os_update_submit').click(function(){
 				divBox.alertBox(errors[jsonResponse.errno],function(){});
 			} else {
 				var message = '修改APP系统成功';
-				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}&ac=app.os.list');}});
+				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}');}});
 			}
 		}
 	};

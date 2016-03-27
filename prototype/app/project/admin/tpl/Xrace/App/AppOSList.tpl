@@ -2,7 +2,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$('#add_app_os').click(function(){
-		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=app.os.add', {title:'添加APP系统',width:800,height:600});
+		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=app.os.add', {title:'添加APP系统',width:400,height:200});
 	});
 });
 
@@ -11,7 +11,7 @@ function appOSDelete(t_id, t_name){
 }
 
 function appOSModify(mid){
-	modifyAppOSBox = divBox.showBox('{tpl:$this.sign/}&ac=app.os.modify&AppOSId=' + mid, {title:'修改APP系统',width:800,height:600});
+	modifyAppOSBox = divBox.showBox('{tpl:$this.sign/}&ac=app.os.modify&AppOSId=' + mid, {title:'修改APP系统',width:400,height:200});
 }
 
 
