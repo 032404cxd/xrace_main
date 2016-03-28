@@ -35,7 +35,7 @@
 	<th align="center" class="rowtip"><input type="text" name="StartTime" value="{tpl:$RaceInfo.StartTime/}" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
 <tr class="hover"><th align="center" class="rowtip">结束时间</th>
 	<th align="center" class="rowtip"><input type="text" name="EndTime" value="{tpl:$RaceInfo.EndTime/}" value="" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
-
+	<tr class="hover"><th align="center" class="rowtip">说明文字</th><th align="center" class="rowtip"><textarea class="span3" name="RaceComment"  id="RaceComment" cols ="50" rows = "5"/>{tpl:$RaceInfo.RaceComment/}</textarea></th></tr>
 <tr class="noborder"><td></td>
 <td><button type="submit" id="race_add_submit">提交</button></td>
 </tr>
