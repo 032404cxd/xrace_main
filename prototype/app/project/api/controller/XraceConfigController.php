@@ -123,6 +123,8 @@ class XraceConfigController extends AbstractController
             //循环分站数组
             foreach ($RaceStageList as $RaceStageId => $RaceStageInfo)
             {
+                //说明文字解码
+                $RaceStageList[$RaceStageId]['RaceStageComment'] = urldecode($RaceStageInfo['RaceStageComment']);
                 //解包数组
                 $RaceStageList[$RaceStageId]['comment'] = json_decode($RaceStageInfo['comment'],true);
                 //解包图片数组
@@ -224,6 +226,8 @@ class XraceConfigController extends AbstractController
             $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId);
             //检测主键存在,否则值为空
             $RaceStageInfo = isset($RaceStageInfo['RaceStageId'])?$RaceStageInfo:array();
+            //说明文字解码
+            $RaceStageInfo['RaceStageComment'] = urldecode($RaceStageInfo['RaceStageComment']);
             //解包数组
             $RaceStageInfo['comment'] = isset($RaceStageInfo['comment'])?json_decode($RaceStageInfo['comment'],true):array();
             //解包图片数组
@@ -356,6 +360,8 @@ class XraceConfigController extends AbstractController
             //解包数组
             foreach ($RaceList as $RaceId => $RaceInfo)
             {
+                //说明文字解码
+                $RaceList[$RaceId]['RaceComment'] = urldecode($RaceInfo['RaceComment']);
                 //解包地图数据数组
                 $RaceList[$RaceId]['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
                 //处理价格列表
@@ -451,7 +457,8 @@ class XraceConfigController extends AbstractController
     /*
      * 获得单个比赛信息
      */
-    public function getRaceInfoAction() {
+    public function getRaceInfoAction()
+    {
         //格式化比赛ID,默认为0
         $RaceId = isset($this->request->RaceId)?abs(intval($this->request->RaceId)):0;
         //比赛ID必须大于0
@@ -462,6 +469,8 @@ class XraceConfigController extends AbstractController
             //检测主键存在,否则值为空
             if(isset($RaceInfo['RaceId']))
             {
+                //说明文字解码
+                $RaceInfo['RaceComment'] = urldecode($RaceInfo['RaceComment']);
                 //解包地图数据数组
                 $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
                 //获取当前比赛的时间状态信息
