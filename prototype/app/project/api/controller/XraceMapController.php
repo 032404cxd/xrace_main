@@ -55,8 +55,8 @@ class XraceMapController extends AbstractController
             {
                 //获取追踪信息
                 $traceInfo  = $this->oMap->getQxTrace($RaceId,$UserId);
+                $result = array("return"=>0,"trace"=>$traceInfo);
             }
-
         }
         else
         {
