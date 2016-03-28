@@ -399,7 +399,7 @@ class Xrace_User extends Base_Widget
 		if(isset($params['ExceptionDate']))
 		{
 			$whereExceptionDate = "((LicenseStartDate <= '".$params['ExceptionDate']['StartDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['StartDate']."')".
-			" or "."(LicenseStartDate <= '".$params['ExceptionDate']['EndDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['EndDate']."'))";
+			" or "."(LicenseStartDate <= '".$params['ExceptionDate']['EndDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['EndDate']."')"." or "."(LicenseStartDate <= '".$params['ExceptionDate']['StartDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['EndDate']."'))";
 		}
 		else
 		{
@@ -424,7 +424,7 @@ class Xrace_User extends Base_Widget
 		}
 		//存储的数据结构
 		$UserLicense = array('UserLicenseList'=>array(),'UserLicenseCount'=>$UserLicenseCount);
-		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
+		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by LicenseId,RaceGroupId";
 		$return = $this->db->getAll($sql);
 		if($return)
 		{
@@ -481,7 +481,8 @@ class Xrace_User extends Base_Widget
 			if(isset($params['ExceptionDate']))
 			{
 				$whereExceptionDate = "((LicenseStartDate <= '".$params['ExceptionDate']['StartDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['StartDate']."')".
-					" or "."(LicenseStartDate <= '".$params['ExceptionDate']['EndDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['EndDate']."'))";
+					" or "."(LicenseStartDate <= '".$params['ExceptionDate']['EndDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['EndDate']."')".
+					" or "."(LicenseStartDate <= '".$params['ExceptionDate']['StartDate']."' and LicenseEndDate >= '".$params['ExceptionDate']['EndDate']."'))";
 			}
 			else
 			{
@@ -495,7 +496,7 @@ class Xrace_User extends Base_Widget
 			$whereCondition = array($whereLicenseId,$whereUserId,$whereGroupId,$whereLicenseStatus,$whereExceptionId,$whereExceptionStatus,$whereExceptionDate);
 			//生成条件列
             $where = Base_common::getSqlWhere($whereCondition);
-			$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by RaceLicenseId,RaceGroupId";
+			$sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
 			return $this->db->getOne($sql);
         }
 	/**

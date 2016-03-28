@@ -3,6 +3,7 @@
 <form id="license_delete_form" name="license_add_form" action="{tpl:$this.sign/}&ac=license.delete" metdod="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
 <input type="hidden" name="LicenseId"  id="LicenseId" value="{tpl:$UserLicenseInfo.LicenseId/}" />
+<input type="hidden" name="UserId"  id="UserId" value="{tpl:$UserLicenseInfo.UserId/}" />
 	<tr class="hover">
 		<td align="center" class="rowtip">所属赛事</td>
 		<td align="center" class="rowtip">{tpl:$UserLicenseInfo.RaceCatalogName/}
@@ -47,7 +48,7 @@ $('#license_delete_submit').click(function(){
 		success:function(jsonResponse) {
 			if (jsonResponse.errno) {
 				var errors = [];
-                                errors[1] = '执照删除理由不能为空，请修正后再次提交';
+				errors[1] = '执照删除理由不能为空，请修正后再次提交';
 				divBox.alertBox(errors[jsonResponse.errno],function(){});
 			} else {
 				var message = '删除执照成功';

@@ -574,7 +574,10 @@ class Xrace_UserController extends AbstractController
 				$params = array(
 					'UserId' => $bind['UserId'],
 					'GroupId' => $bind['GroupId'],
+					//选中生效中 和 尚未生效的记录
 					'LicenseStatus' => '1|3',
+					//不选出时间有冲突的记录
+					'ExceptionDate' => array("StartDate"=>$bind['LicenseStartDate'],"EndDate"=>$bind['LicenseEndDate']),
 				);
 				//获得在目标范围内有冲突的记录
 				$UserLicenseCount = $this->oUser->getUserLicenseCount($params);
@@ -694,8 +697,13 @@ class Xrace_UserController extends AbstractController
 				$params = array(
 					'UserId' => $UserId,
 					'GroupId' => $bind['RaceGroupId'],
+					//排除记录本身
 					'ExceptionId' => $LicenseId,
+					//选中生效中 和 尚未生效的记录
+					'LicenseStatus' => '1|3',
+					//不选出时间有冲突的记录
 					'ExceptionDate' => array("StartDate"=>$bind['LicenseStartDate'],"EndDate"=>$bind['LicenseEndDate']),
+					//不选出已删除的记录
 					'ExceptionStatus' => 4,
 				);
 				//获得在目标范围内有冲突的记录

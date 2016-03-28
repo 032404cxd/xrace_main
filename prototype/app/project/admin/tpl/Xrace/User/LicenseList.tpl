@@ -42,7 +42,7 @@
   </tr>
   {/tpl:loop}
   <tr>
-    <th align="center" class="rowtip" colspan="8">  <a href="javascript:;" onclick="LicenseAdd('{tpl:$UserId/}')">点此添加</a>
+    <th align="center" class="rowtip" colspan="9">  <a href="javascript:;" onclick="LicenseAdd('{tpl:$UserId/}')">点此添加</a>
     </th>
   </tr>
   {tpl:else}
