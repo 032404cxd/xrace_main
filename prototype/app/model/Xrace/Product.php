@@ -1,6 +1,6 @@
 <?php
 /**
- * 用户激活相关mod层
+ * 产品相关mod层
  * @author 陈晓东 <cxd032404@hotmail.com>
  */
 

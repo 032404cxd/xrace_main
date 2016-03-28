@@ -1,14 +1,12 @@
 <?php
 /**
- * 运动类型管理
+ * 运动管理
  * @author Chen<cxd032404@hotmail.com>
- * $Id: LotoController.php 15195 2014-07-23 07:18:26Z 334746 $
  */
 
 class Xrace_SportsController extends AbstractController
 {
-	/**运动类型列表:SportsTypeList
-	 * 权限限制  ?ctl=xrace/sports&ac=sports.type
+	/**运动类型:SportsType
 	 * @var string
 	 */
 	protected $sign = '?ctl=xrace/sports';

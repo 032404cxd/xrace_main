@@ -1,13 +1,12 @@
 <?php
 /**
- * 任务管理
+ * APP系统管理
  * @author Chen<cxd032404@hotmail.com>
- * $Id: LotoController.php 15195 2014-07-23 07:18:26Z 334746 $
  */
 
 class Xrace_AppOsController extends AbstractController
 {
-	/**APP系统列表:AppOsList
+	/**APP系统:AppOs
 	 * @var string
 	 */
 	protected $sign = '?ctl=xrace/app.os';
@@ -120,7 +119,7 @@ class Xrace_AppOsController extends AbstractController
 		echo json_encode($response);
 		return true;
 	}
-	//删除APP
+	//删除APP系统
 	public function appOsDeleteAction()
 	{
 		//检查权限

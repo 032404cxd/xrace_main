@@ -1,14 +1,12 @@
 <?php
 /**
- * 任务管理
+ * 赛事分组管理
  * @author Chen<cxd032404@hotmail.com>
- * $Id: LotoController.php 15195 2014-07-23 07:18:26Z 334746 $
  */
 
 class Xrace_RaceGroupController extends AbstractController
 {
-	/**运动类型列表:RaceGroupList
-	 * 权限限制  ?ctl=xrace/sports&ac=sports.type
+	/**运动类型列表:RaceGroup
 	 * @var string
 	 */
 	protected $sign = '?ctl=xrace/race.group';
@@ -29,7 +27,7 @@ class Xrace_RaceGroupController extends AbstractController
 		$this->oRace = new Xrace_Race();
 
 	}
-	//任务配置列表页面
+	//赛事分组列表页面
 	public function indexAction()
 	{
 		//检查权限
@@ -77,7 +75,7 @@ class Xrace_RaceGroupController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//添加任务填写配置页面
+	//添加赛事分组填写配置页面
 	public function raceGroupAddAction()
 	{
 		//检查权限
@@ -95,7 +93,7 @@ class Xrace_RaceGroupController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//添加新任务
+	//添加新赛事分组
 	public function raceGroupInsertAction()
 	{
 		//检查权限
@@ -128,7 +126,7 @@ class Xrace_RaceGroupController extends AbstractController
 		}
 
 	}
-	//修改任务信息页面
+	//修改赛事分组页面
 	public function raceGroupModifyAction()
 	{
 		//检查权限
@@ -158,7 +156,7 @@ class Xrace_RaceGroupController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//更新任务信息
+	//更新赛事分组信息
 	public function raceGroupUpdateAction()
 	{
 		//检查权限
@@ -234,7 +232,7 @@ class Xrace_RaceGroupController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//删除任务
+	//删除赛事分组
 	public function raceGroupDeleteAction()
 	{
 		//检查权限
@@ -251,7 +249,7 @@ class Xrace_RaceGroupController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//修改任务信息页面
+	//添加赛事分组的权限审核填写配置页面
 	public function groupLicenseAddAction()
 	{
 		//检查权限
@@ -275,7 +273,7 @@ class Xrace_RaceGroupController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//更新任务信息
+	//添加赛事分组的权限审核
 	public function groupLicenseInsertAction()
 	{
 		$bind=$this->request->from('RaceGroupId','LicenseList');
@@ -359,7 +357,7 @@ class Xrace_RaceGroupController extends AbstractController
 		echo json_encode($response);
 		return true;
 	}
-	//更新任务信息
+	//更新赛事分组的权限审核
 	public function groupLicenseDeleteAction()
 	{
 		//检查权限
@@ -403,6 +401,7 @@ class Xrace_RaceGroupController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+	//赛事分组的权限审核条件显示接口
 	public function getLicenseConditionAction()
 	{
 		//检查权限

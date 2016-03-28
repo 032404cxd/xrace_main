@@ -7,6 +7,7 @@
     <td align="left"><input type="text" class="span2" name="ProductName"  id="ProductName" value="{tpl:$ProductInfo.ProductName/}" size="50" /></td>
 </tr>
 <input type="hidden" name="ProductId" id="ProductId" value="{tpl:$ProductInfo.ProductId/}" />
+<input type="hidden" name="ProductTypeId" id="ProductTypeId" value="{tpl:$ProductInfo.ProductTypeId/}" />
 <tr class="noborder"><td></td>
 <td><button type="submit" id="product_update_submit">提交</button></td>
 </tr>
@@ -25,7 +26,8 @@ $('#product_update_submit').click(function(){
 				divBox.alertBox(errors[jsonResponse.errno],function(){});
 			} else {
 				var message = '修改商品成功';
-				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$productSign/}');}});
+				ProductTypeId=$("#ProductTypeId");
+				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=product.list&ProductTypeId=' + ProductTypeId.val());}});
 			}
 		}
 	};

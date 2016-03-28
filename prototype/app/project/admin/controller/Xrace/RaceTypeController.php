@@ -1,14 +1,12 @@
 <?php
 /**
- * 任务管理
+ * 比赛类型管理
  * @author Chen<cxd032404@hotmail.com>
- * $Id: LotoController.php 15195 2014-07-23 07:18:26Z 334746 $
  */
 
 class Xrace_RaceTypeController extends AbstractController
 {
-	/**运动类型列表:RaceTypeList
-	 * 权限限制  ?ctl=xrace/sports&ac=sports.type
+	/**比赛类型:RaceType
 	 * @var string
 	 */
 	protected $sign = '?ctl=xrace/race.type';
@@ -29,7 +27,7 @@ class Xrace_RaceTypeController extends AbstractController
 		$this->oRace = new Xrace_Race();
 
 	}
-	//任务配置列表页面
+	//比赛类型列表页面
 	public function indexAction()
 	{
 		//检查权限
@@ -47,7 +45,7 @@ class Xrace_RaceTypeController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//添加任务填写配置页面
+	//添加比赛类型填写配置页面
 	public function raceTypeAddAction()
 	{
 		//检查权限
@@ -159,7 +157,7 @@ class Xrace_RaceTypeController extends AbstractController
 		return true;
 	}
 
-	//删除任务
+	//删除比赛类型
 	public function raceTypeDeleteAction()
 	{
 		//检查权限
@@ -179,7 +177,7 @@ class Xrace_RaceTypeController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//删除赛事分站图标
+	//删除比赛类型图标
 	public function raceTypeIconDeleteAction()
 	{
 		//比赛类型ID

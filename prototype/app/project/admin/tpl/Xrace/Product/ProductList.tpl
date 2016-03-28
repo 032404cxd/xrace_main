@@ -4,14 +4,14 @@
     ProductAddBox = divBox.showBox('{tpl:$this.sign/}&ac=product.add&ProductTypeId=' + ptid , {title:'添加产品',width:400,height:350});
   }
   function ProductModify(pid,ptid){
-    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=product.modify&ProductId=' + pid + '&ProductTypeId=' + ptid, {title:'修改产品',width:400,height:350});
+    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=product.modify&ProductId=' + pid, {title:'修改产品',width:400,height:350});
   }
   function ProductDelete(pid, pname){
     deleteAppBox = divBox.confirmBox({content:'是否删除 ' + pname + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=product.delete&ProductId=' + pid}});
   }
 </script>
 <form action="{tpl:$this.sign/}&ac=product.update" name="form" id="form" method="post">
-  <fieldset><legend> 产品配置 </legend>
+  <fieldset><legend> {tpl:$ProductTypeInfo.ProductTypeName/} 产品配置 </legend>
 <table width="99%" align="center" class="table table-bordered table-striped">
   {tpl:if(count($ProductList[$ProductTypeId]))}
   <tr>

@@ -1,6 +1,6 @@
 <?php
 /**
- * 用户激活相关mod层
+ * 赛事配置相关mod层
  * @author 陈晓东 <cxd032404@hotmail.com>
  */
 

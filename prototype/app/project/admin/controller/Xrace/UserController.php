@@ -4,7 +4,6 @@
 class Xrace_UserController extends AbstractController
 {
 	/**用户管理相关:User
-	 * 权限限制  ?ctl=xrace/user
 	 * @var string
 	 */
 	protected $sign = '?ctl=xrace/user';
@@ -13,9 +12,7 @@ class Xrace_UserController extends AbstractController
 	 * @var object
 	 */
 	protected $oUser;
-
 	protected $oManager;
-
 	protected $oRace;
 
         /**

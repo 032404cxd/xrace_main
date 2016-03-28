@@ -1,13 +1,12 @@
 <?php
 /**
- * 任务管理
+ * APP版本管理
  * @author Chen<cxd032404@hotmail.com>
- * $Id: LotoController.php 15195 2014-07-23 07:18:26Z 334746 $
  */
 
 class Xrace_AppVersionController extends AbstractController
 {
-	/**APP版本列表:AppVersionList
+	/**APP版本:AppVersionList
 	 * @var string
 	 */
 	protected $sign = '?ctl=xrace/app.version';
@@ -27,7 +26,7 @@ class Xrace_AppVersionController extends AbstractController
 		parent::init();
 		$this->oApp = new Xrace_App();
 	}
-	//APP系统列表页面
+	//APP版本信息列表页面
 	public function indexAction()
 	{
 		//检查权限

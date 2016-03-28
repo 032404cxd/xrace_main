@@ -1,8 +1,12 @@
 <?php
+/**
+ * 赛事分暂管理
+ * @author Chen<cxd032404@hotmail.com>
+ */
+
 class Xrace_RaceStageController extends AbstractController
 {
 	/**赛事分站:
-	 * 权限限制  ?ctl=xrace/sports&ac=sports.stage
 	 * @var string
 	 */
 	protected $sign = '?ctl=xrace/race.stage';

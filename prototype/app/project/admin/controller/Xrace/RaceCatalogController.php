@@ -1,14 +1,12 @@
 <?php
 /**
- * 任务管理
+ * 赛事管理
  * @author Chen<cxd032404@hotmail.com>
- * $Id: LotoController.php 15195 2014-07-23 07:18:26Z 334746 $
  */
 
 class Xrace_RaceCatalogController extends AbstractController
 {
-	/**运动类型列表:RaceCatalogList
-	 * 权限限制  ?ctl=xrace/sports&ac=sports.type
+	/**赛事相关:RaceCatalog
 	 * @var string
 	 */
 	protected $sign = '?ctl=xrace/race.catalog';
@@ -29,7 +27,7 @@ class Xrace_RaceCatalogController extends AbstractController
 		$this->oRace = new Xrace_Race();
 
 	}
-	//任务配置列表页面
+	//赛事列表页面
 	public function indexAction()
 	{
 		//检查权限
@@ -49,7 +47,7 @@ class Xrace_RaceCatalogController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//添加任务填写配置页面
+	//添加赛事填写配置页面
 	public function raceCatalogAddAction()
 	{
 		//检查权限
@@ -65,8 +63,7 @@ class Xrace_RaceCatalogController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	
-	//添加新任务
+	//添加新赛事
 	public function raceCatalogInsertAction()
 	{
 		//检查权限
@@ -100,7 +97,7 @@ class Xrace_RaceCatalogController extends AbstractController
 		return true;
 	}
 	
-	//修改任务信息页面
+	//修改赛事信息页面
 	public function raceCatalogModifyAction()
 	{
 		//检查权限
@@ -121,7 +118,7 @@ class Xrace_RaceCatalogController extends AbstractController
 		}
 	}
 	
-	//更新任务信息
+	//更新赛事信息
 	public function raceCatalogUpdateAction()
 	{
 		//获取页面参数
@@ -163,7 +160,7 @@ class Xrace_RaceCatalogController extends AbstractController
 		return true;
 	}
 
-	//删除任务
+	//删除赛事
 	public function raceCatalogDeleteAction()
 	{
 		//检查权限

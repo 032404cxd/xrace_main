@@ -25,7 +25,9 @@ $('#product_add_submit').click(function(){
 				divBox.alertBox(errors[jsonResponse.errno],function(){});
 			} else {
 				var message = '添加商品成功';
-				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$productSign/}');}});
+				ProductTypeId=$("#ProductTypeId");
+				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=product.list&ProductTypeId=' + ProductTypeId.val());}});
+
 			}
 		}
 	};
