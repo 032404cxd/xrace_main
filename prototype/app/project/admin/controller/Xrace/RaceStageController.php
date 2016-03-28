@@ -207,7 +207,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate');
+		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -245,6 +245,8 @@ class Xrace_RaceStageController extends AbstractController
 					$bind['RaceStageIcon'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
 				}
 			}
+			//对说明文字进行过滤和编码
+			$bind['RaceStageComment'] = urlencode(htmlspecialchars(trim($bind['RaceStageComment'])));
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//图片数据压缩
@@ -271,6 +273,8 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'*');
 			//分组列表
 			$RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
+			//说明文字解码
+			$RaceStageInfo['RaceStageComment'] = urldecode($RaceStageInfo['RaceStageComment']);
 			//数据解包
 			$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
 			//图片数据解包
@@ -307,7 +311,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageUpdateAction()
 	{
 		//获取 页面参数
-		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate');
+		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -355,6 +359,8 @@ class Xrace_RaceStageController extends AbstractController
 					$bind['RaceStageIcon'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
 				}
 			}
+			//对说明文字进行过滤和编码
+			$bind['RaceStageComment'] = urlencode(htmlspecialchars(trim($bind['RaceStageComment'])));
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//图片数据压缩

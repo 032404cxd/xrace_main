@@ -67,7 +67,10 @@ function RaceStageIconDelete(sid,name,logo_id){
                 {/tpl:if}
                 更改图标:<input name="RaceStageIcon[3]" type="file" class="span4" id="RaceStageIcon[3]"/>
             </td>
-        </tr>       
+        </tr>
+	<td>APP版本说明</td>
+	<td align="left"><textarea class="span4" name="RaceStageComment"  id="RaceStageComment"  cols ="50" rows = "5"/>{tpl:$RaceStageInfo.RaceStageComment/}</textarea></td>
+	</tr>
 	<tr class="noborder"><td></td>
 <td><button type="submit" id="race_stage_update_submit">提交</button></td>
 </tr>
