@@ -126,7 +126,6 @@ class Xrace_Race extends Base_Widget
 		return $this->db->delete($table_to_process, '`RaceGroupId` = ?', $RaceGroupId);
 	}
 	//根据赛事获取所有分站列表
-	//赛事ID为0则获取全部分站
 	public function getRaceStageList($RaceCatalogId,$fields = "*")
 	{
 		$RaceCatalogId = trim($RaceCatalogId);
@@ -575,6 +574,7 @@ class Xrace_Race extends Base_Widget
 			}
 		}
 	}
+	//添加比赛
 	public function addRace($RaceInfo)
 	{
 		//获取当前分站信息
