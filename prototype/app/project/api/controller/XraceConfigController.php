@@ -70,29 +70,37 @@ class XraceConfigController extends AbstractController
             //获取赛事信息
             $RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId);
             //检测主键存在,否则值为空
-            $RaceCatalogInfo = isset($RaceCatalogInfo['RaceCatalogId'])?$RaceCatalogInfo:array();
-            //解包数组
-            $RaceCatalogInfo['comment'] = isset($RaceCatalogInfo['comment'])?json_decode($RaceCatalogInfo['comment'],true):array();
-            //如果有输出赛事图标的绝对路径
-            if(isset($RaceCatalogInfo['comment']['RaceCatalogIcon']))
+            if(isset($RaceCatalogInfo['RaceCatalogId']))
             {
-                //删除
-                unset($RaceCatalogInfo['comment']['RaceCatalogIcon']);
+                //解包数组
+                $RaceCatalogInfo['comment'] = isset($RaceCatalogInfo['comment'])?json_decode($RaceCatalogInfo['comment'],true):array();
+                //如果有输出赛事图标的绝对路径
+                if(isset($RaceCatalogInfo['comment']['RaceCatalogIcon']))
+                {
+                    //删除
+                    unset($RaceCatalogInfo['comment']['RaceCatalogIcon']);
+                }
+                //如果有输出赛事图标的相对路径
+                if(isset($RaceCatalogInfo['comment']['RaceCatalogIcon_root']))
+                {
+                    //拼接上ADMIN站点的域名
+                    $RaceCatalogInfo['comment']['RaceCatalogIcon'] = $this->config->adminUrl.$RaceCatalogInfo['comment']['RaceCatalogIcon_root'];
+                    //删除原有数据
+                    unset($RaceCatalogInfo['comment']['RaceCatalogIcon_root']);
+                }
+                //根据赛事获取组别列表
+                $RaceGroupList = isset($RaceCatalogInfo['RaceCatalogId'])?$this->oRace->getRaceGroupList($RaceCatalogInfo['RaceCatalogId'],"RaceGroupId,RaceGroupName"):array();
+                //根据赛事获取分站列表
+                $RaceStageList = isset($RaceCatalogInfo['RaceCatalogId'])?$this->oRace->getRaceStageList($RaceCatalogInfo['RaceCatalogId'],"RaceStageId,RaceStageName"):array();
+                //结果数组
+                $result = array("return"=>1,"RaceCatalogInfo"=>$RaceCatalogInfo,'RaceGroupList'=>$RaceGroupList,'RaceStageList'=>$RaceStageList);
             }
-            //如果有输出赛事图标的相对路径
-            if(isset($RaceCatalogInfo['comment']['RaceCatalogIcon_root']))
+            else
             {
-                //拼接上ADMIN站点的域名
-                $RaceCatalogInfo['comment']['RaceCatalogIcon'] = $this->config->adminUrl.$RaceCatalogInfo['comment']['RaceCatalogIcon_root'];
-                //删除原有数据
-                unset($RaceCatalogInfo['comment']['RaceCatalogIcon_root']);
+                //全部置为空
+                $result = array("return"=>0,"RaceCatalog"=>array(),'RaceGroupList'=>array(),'RaceStageList'=>array(),"comment"=>"请指定一个有效的赛事ID");
             }
-            //根据赛事获取组别列表
-            $RaceGroupList = isset($RaceCatalogInfo['RaceCatalogId'])?$this->oRace->getRaceGroupList($RaceCatalogInfo['RaceCatalogId'],"RaceGroupId,RaceGroupName"):array();
-            //根据赛事获取分站列表
-            $RaceStageList = isset($RaceCatalogInfo['RaceCatalogId'])?$this->oRace->getRaceStageList($RaceCatalogInfo['RaceCatalogId'],"RaceStageId,RaceStageName"):array();
-            //结果数组
-            $result = array("return"=>1,"RaceCatalogInfo"=>$RaceCatalogInfo,'RaceGroupList'=>$RaceGroupList,'RaceStageList'=>$RaceStageList);
+
         }
         else
         {
@@ -104,7 +112,8 @@ class XraceConfigController extends AbstractController
     /*
      * 根据赛事获取所有分站列表
      */
-    public function getRaceStageListAction() {
+    public function getRaceStageListAction()
+    {
         //格式化赛事ID,默认为0
         $RaceCatalogId = isset($this->request->RaceCatalogId)?abs(intval($this->request->RaceCatalogId)):0;
         $RaceStageStatus = isset($this->request->RaceStageStatus)?abs(intval($this->request->RaceStageStatus)):0;
@@ -116,94 +125,102 @@ class XraceConfigController extends AbstractController
             //如果没有返回值,默认为空数组
             if(!is_array($RaceStageList))
             {
-                $RaceStageList = array();
+                //全部置为空
+                $result = array("return"=>0,"RaceStageList"=>array(),"comment"=>"请指定一个有效的赛事ID");
             }
-            //初始化一个空的产品列表
-            $ProductList = array();
-            //循环分站数组
-            foreach ($RaceStageList as $RaceStageId => $RaceStageInfo)
+            else
             {
-                //说明文字解码
-                $RaceStageList[$RaceStageId]['RaceStageComment'] = urldecode($RaceStageInfo['RaceStageComment']);
-                //解包数组
-                $RaceStageList[$RaceStageId]['comment'] = json_decode($RaceStageInfo['comment'],true);
-                //解包图片数组
-                $RaceStageList[$RaceStageId]['RaceStageIcon'] = json_decode($RaceStageInfo['RaceStageIcon'],true);
-                //获取当前比赛的时间状态信息
-                $RaceStageList[$RaceStageId]['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageId,0);
-                if(($RaceStageStatus>0 && $RaceStageList[$RaceStageId]['RaceStageStatus']['StageStatus']==$RaceStageStatus) || ($RaceStageStatus==0))
+                //初始化一个空的产品列表
+                $ProductList = array();
+                //循环分站数组
+                foreach ($RaceStageList as $RaceStageId => $RaceStageInfo)
                 {
-                    //如果有配置分站图片
-                    if(isset($RaceStageList[$RaceStageId]['RaceStageIcon']))
+                    //说明文字解码
+                    $RaceStageList[$RaceStageId]['RaceStageComment'] = urldecode($RaceStageInfo['RaceStageComment']);
+                    //解包数组
+                    $RaceStageList[$RaceStageId]['comment'] = json_decode($RaceStageInfo['comment'],true);
+                    //解包图片数组
+                    $RaceStageList[$RaceStageId]['RaceStageIcon'] = json_decode($RaceStageInfo['RaceStageIcon'],true);
+                    //获取当前比赛的时间状态信息
+                    $RaceStageList[$RaceStageId]['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageId,0);
+                    if(($RaceStageStatus>0 && $RaceStageList[$RaceStageId]['RaceStageStatus']['StageStatus']==$RaceStageStatus) || ($RaceStageStatus==0))
                     {
-                        //循环图片列表
-                        foreach($RaceStageList[$RaceStageId]['RaceStageIcon'] as $IconId => $IconInfo)
+                        //如果有配置分站图片
+                        if(isset($RaceStageList[$RaceStageId]['RaceStageIcon']))
                         {
-                            //拼接上ADMIN站点的域名
-                            $RaceStageList[$RaceStageId]['comment']['RaceStageIconList'][$IconId]['RaceStageIcon'] = $this->config->adminUrl.$IconInfo['RaceStageIcon_root'];
-                        }
-                        //删除原有数据
-                        unset($RaceStageList[$RaceStageId]['RaceStageIcon']);
-                    }
-                    //如果有配置分组信息
-                    if(isset($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup']))
-                    {
-                        //循环图片列表
-                        foreach($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'] as $RaceGroupId)
-                        {
-                            //获取赛事分组基本信息
-                            $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName");
-                            //如果有获取到分组信息
-                            if($RaceGroupInfo['RaceGroupId'])
+                            //循环图片列表
+                            foreach($RaceStageList[$RaceStageId]['RaceStageIcon'] as $IconId => $IconInfo)
                             {
-                                //提取分组名称
-                                $RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'][$RaceGroupId] = $RaceGroupInfo;
+                                //拼接上ADMIN站点的域名
+                                $RaceStageList[$RaceStageId]['comment']['RaceStageIconList'][$IconId]['RaceStageIcon'] = $this->config->adminUrl.$IconInfo['RaceStageIcon_root'];
                             }
-                            else
-                            {
-                                //删除
-                                unset($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'][$RaceGroupId]);
-                            }
+                            //删除原有数据
+                            unset($RaceStageList[$RaceStageId]['RaceStageIcon']);
                         }
-                    }
-                    //如果有配置分组信息
-                    if(isset($RaceStageList[$RaceStageId]['comment']['SelectedProductList']))
-                    {
-                        //循环产品列表
-                        foreach($RaceStageList[$RaceStageId]['comment']['SelectedProductList'] as $ProductId => $Product)
+                        /*
+                        //如果有配置分组信息，暂不输出
+                        if(isset($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup']))
                         {
-                            //如果产品列表中没有此产品
-                            if(!isset($ProductList[$ProductId]))
+                            //循环图片列表
+                            foreach($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'] as $RaceGroupId)
                             {
-                                //获取产品信息
-                                $ProductInfo = $this->oProduct->getProduct($ProductId);
-                                //如果产品信息获取到
-                                if(isset($ProductInfo['ProductId']))
+                                //获取赛事分组基本信息
+                                $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName");
+                                //如果有获取到分组信息
+                                if($RaceGroupInfo['RaceGroupId'])
                                 {
-                                    //放入产品列表中
-                                    $ProductList[$ProductId] = $ProductInfo;
+                                    //提取分组名称
+                                    $RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'][$RaceGroupId] = $RaceGroupInfo;
                                 }
                                 else
                                 {
-                                    continue;
+                                    //删除
+                                    unset($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup'][$RaceGroupId]);
                                 }
                             }
-                            //从产品列表中取出产品
-                            $ProductInfo = $ProductList[$ProductId];
-                            //存入产品名称
-                            $RaceStageList[$RaceStageId]['comment']['SelectedProductList'][$ProductInfo['ProductId']]['ProductName'] = $ProductInfo['ProductName'];
                         }
+                        */
+                        /*
+                        //如果有配置产品信息,暂不输出
+                        if(isset($RaceStageList[$RaceStageId]['comment']['SelectedProductList']))
+                        {
+                            //循环产品列表
+                            foreach($RaceStageList[$RaceStageId]['comment']['SelectedProductList'] as $ProductId => $Product)
+                            {
+                                //如果产品列表中没有此产品
+                                if(!isset($ProductList[$ProductId]))
+                                {
+                                    //获取产品信息
+                                    $ProductInfo = $this->oProduct->getProduct($ProductId);
+                                    //如果产品信息获取到
+                                    if(isset($ProductInfo['ProductId']))
+                                    {
+                                        //放入产品列表中
+                                        $ProductList[$ProductId] = $ProductInfo;
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
+                                }
+                                //从产品列表中取出产品
+                                $ProductInfo = $ProductList[$ProductId];
+                                //存入产品名称
+                                $RaceStageList[$RaceStageId]['comment']['SelectedProductList'][$ProductInfo['ProductId']]['ProductName'] = $ProductInfo['ProductName'];
+                            }
+                        }
+                        */
                     }
-                }
-                else
-                {
-                    unset($RaceStageList[$RaceStageId]);
-                }
+                    else
+                    {
+                        unset($RaceStageList[$RaceStageId]);
+                    }
 
 
+                }
+                //结果数组
+                $result = array("return"=>1,"RaceStageList"=>$RaceStageList);
             }
-            //结果数组
-            $result = array("return"=>1,"RaceStageList"=>$RaceStageList);            
         }
         else 
         {
@@ -226,79 +243,88 @@ class XraceConfigController extends AbstractController
             $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId);
             //检测主键存在,否则值为空
             $RaceStageInfo = isset($RaceStageInfo['RaceStageId'])?$RaceStageInfo:array();
-            //说明文字解码
-            $RaceStageInfo['RaceStageComment'] = urldecode($RaceStageInfo['RaceStageComment']);
-            //解包数组
-            $RaceStageInfo['comment'] = isset($RaceStageInfo['comment'])?json_decode($RaceStageInfo['comment'],true):array();
-            //解包图片数组
-            $RaceStageInfo['RaceStageIcon'] = isset($RaceStageInfo['RaceStageIcon'])?json_decode($RaceStageInfo['RaceStageIcon'],true):array();
-            //如果有配置分站图片
-            if(isset($RaceStageInfo['RaceStageIcon']))
+            if(isset($RaceStageInfo['RaceStageId']))
             {
-                //循环图片列表
-                foreach($RaceStageInfo['RaceStageIcon'] as $IconId => $IconInfo)
+                //说明文字解码
+                $RaceStageInfo['RaceStageComment'] = urldecode($RaceStageInfo['RaceStageComment']);
+                //解包数组
+                $RaceStageInfo['comment'] = isset($RaceStageInfo['comment'])?json_decode($RaceStageInfo['comment'],true):array();
+                //解包图片数组
+                $RaceStageInfo['RaceStageIcon'] = isset($RaceStageInfo['RaceStageIcon'])?json_decode($RaceStageInfo['RaceStageIcon'],true):array();
+                //如果有配置分站图片
+                if(isset($RaceStageInfo['RaceStageIcon']))
                 {
-                    //拼接上ADMIN站点的域名
-                    $RaceStageInfo['comment']['RaceStageIconList'][$IconId]['RaceStageIcon'] = $this->config->adminUrl.$IconInfo['RaceStageIcon_root'];
-                }
-                //删除原有数据
-                unset($RaceStageInfo['RaceStageIcon']);
-            }
-            //如果有配置分组信息
-            if(isset($RaceStageInfo['comment']['SelectedRaceGroup']))
-            {
-                //循环图片列表
-                foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $RaceGroupId)
-                {
-                    //获取赛事分组基本信息
-                    $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName");
-                    //如果有获取到分组信息
-                    if(isset($RaceGroupInfo['RaceGroupId']))
+                    //循环图片列表
+                    foreach($RaceStageInfo['RaceStageIcon'] as $IconId => $IconInfo)
                     {
-                        //提取分组名称
-                        $RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId] = $RaceGroupInfo;
+                        //拼接上ADMIN站点的域名
+                        $RaceStageInfo['comment']['RaceStageIconList'][$IconId]['RaceStageIcon'] = $this->config->adminUrl.$IconInfo['RaceStageIcon_root'];
                     }
-                    else
-                    {
-                        //删除
-                        unset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]);
-                    }
+                    //删除原有数据
+                    unset($RaceStageInfo['RaceStageIcon']);
                 }
-            }
-            //如果有配置分组信息
-            if(isset($RaceStageInfo['comment']['SelectedProductList']))
-            {
-                //初始化一个空的产品列表
-                $ProductList = array();
-                //循环产品列表
-                foreach($RaceStageInfo['comment']['SelectedProductList'] as $ProductId => $Product)
+                //如果有配置分组信息
+                if(isset($RaceStageInfo['comment']['SelectedRaceGroup']))
                 {
-                    //如果产品列表中没有此产品
-                    if(!isset($ProductList[$ProductId]))
+                    //循环图片列表
+                    foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $RaceGroupId)
                     {
-                        //获取产品信息
-                        $ProductInfo = $this->oProduct->getProduct($ProductId,"ProductId,ProductName");
-                        //如果产品信息获取到
-                        if(isset($ProductInfo['ProductId']))
+                        //获取赛事分组基本信息
+                        $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName");
+                        //如果有获取到分组信息
+                        if(isset($RaceGroupInfo['RaceGroupId']))
                         {
-                            //放入产品列表中
-                            $ProductList[$ProductId] = $ProductInfo;
+                            //提取分组名称
+                            $RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId] = $RaceGroupInfo;
                         }
                         else
                         {
-                            continue;
+                            //删除
+                            unset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]);
                         }
                     }
-                    //从产品列表中取出产品
-                    $ProductInfo = $ProductList[$ProductId];
-                    //存入产品名称
-                    $RaceStageInfo['comment']['SelectedProductList'][$ProductId]['ProductName'] = $ProductInfo['ProductName'];
                 }
+                //如果有配置分组信息
+                if(isset($RaceStageInfo['comment']['SelectedProductList']))
+                {
+                    //初始化一个空的产品列表
+                    $ProductList = array();
+                    //循环产品列表
+                    foreach($RaceStageInfo['comment']['SelectedProductList'] as $ProductId => $Product)
+                    {
+                        //如果产品列表中没有此产品
+                        if(!isset($ProductList[$ProductId]))
+                        {
+                            //获取产品信息
+                            $ProductInfo = $this->oProduct->getProduct($ProductId,"ProductId,ProductName");
+                            //如果产品信息获取到
+                            if(isset($ProductInfo['ProductId']))
+                            {
+                                //放入产品列表中
+                                $ProductList[$ProductId] = $ProductInfo;
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                        //从产品列表中取出产品
+                        $ProductInfo = $ProductList[$ProductId];
+                        //存入产品名称
+                        $RaceStageInfo['comment']['SelectedProductList'][$ProductId]['ProductName'] = $ProductInfo['ProductName'];
+                    }
+                }
+                //获取当前比赛的时间状态信息
+                $RaceStageInfo['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageId,0);
+                //结果数组
+                $result = array("return"=>1,"RaceStageInfo"=>$RaceStageInfo);
             }
-            //获取当前比赛的时间状态信息
-            $RaceStageInfo['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageId,0);
-            //结果数组
-            $result = array("return"=>1,"RaceStageInfo"=>$RaceStageInfo);
+            else
+            {
+                //全部置为空
+                $result = array("return"=>0,"RaceStageInfo"=>array(),"comment"=>"请指定一个有效的分站ID");
+            }
+
         }
         else
         {
