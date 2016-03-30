@@ -13,9 +13,14 @@
 			{/tpl:loop}
 		</select></td>
 </tr>
+	<tr class="hover">
 	<td>赛事分组列表</td>
 	<td align="left"><div id = "SelectedGroupList"></div></td>
-	</tr>
+</tr>
+<tr class="hover">
+	<td>人数/价格对应</td>
+	<td align="left"><input name="PriceList" type="text" class="span4" id="PriceList" size="50" /></td>
+</tr>
 	<tr>
 		<th><label >开始结止时间</label></th>
 		<td>

@@ -41,6 +41,10 @@ function RaceStageIconDelete(sid,name,logo_id){
 			{/tpl:loop}
 		</div></td>
 	</tr>
+	<tr class="hover">
+		<td>人数/价格对应</td>
+		<td align="left"><input name="PriceList" type="text" class="span4" id="PriceList" value="{tpl:$RaceStageInfo.comment.PriceList/}" size="50" /></td>
+	</tr>
         <tr class="hover"><td>赛事分组图标1</td>
             <td align="left">
                 {tpl:if($RaceStageIconList.1.RaceStageIcon_root!="")}

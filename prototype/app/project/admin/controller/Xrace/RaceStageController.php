@@ -207,7 +207,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment');
+		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','PriceList');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -247,6 +247,10 @@ class Xrace_RaceStageController extends AbstractController
 			}
 			//对说明文字进行过滤和编码
 			$bind['RaceStageComment'] = urlencode(htmlspecialchars(trim($bind['RaceStageComment'])));
+			//价格对应列表
+			$bind['comment']['PriceList'] = trim($bind['PriceList']);
+			//删除原有数据
+			unset($bind['PriceList']);
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//图片数据压缩
@@ -311,7 +315,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageUpdateAction()
 	{
 		//获取 页面参数
-		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment');
+		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','PriceList');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -361,6 +365,10 @@ class Xrace_RaceStageController extends AbstractController
 			}
 			//对说明文字进行过滤和编码
 			$bind['RaceStageComment'] = urlencode(htmlspecialchars(trim($bind['RaceStageComment'])));
+			//价格对应列表
+			$bind['comment']['PriceList'] = trim($bind['PriceList']);
+			//删除原有数据
+			unset($bind['PriceList']);
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//图片数据压缩
