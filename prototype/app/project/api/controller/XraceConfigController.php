@@ -605,5 +605,15 @@ class XraceConfigController extends AbstractController
         }
         echo json_encode($result);
     }
+    /*
+    * 测试生成计时点
+    */
+    public function timingTextAction()
+    {
+        //格式化比赛ID
+        $RaceId = abs(intval($this->request->RaceId));
+        $this->oRace->genRaceLogToText($RaceId);
+        //http://api.xrace.cn/?ctl=xrace.config&ac=timing.text&RaceId=1
+    }
 
 }

@@ -72,7 +72,7 @@ function RaceStageIconDelete(sid,name,logo_id){
                 更改图标:<input name="RaceStageIcon[3]" type="file" class="span4" id="RaceStageIcon[3]"/>
             </td>
         </tr>
-	<td>APP版本说明</td>
+	<td>赛事分站说明</td>
 	<td align="left"><textarea class="span4" name="RaceStageComment"  id="RaceStageComment"  cols ="50" rows = "5"/>{tpl:$RaceStageInfo.RaceStageComment/}</textarea></td>
 	</tr>
 	<tr class="noborder"><td></td>

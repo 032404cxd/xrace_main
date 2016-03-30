@@ -820,7 +820,7 @@ class Xrace_Race extends Base_Widget
 		}
 		return $text;
 	}
-	//处理比赛价格列表
+	//处理价格列表
 	public function getPriceList($PriceList,$Revert = 0)
 	{
 		if(trim($PriceList)=="")
@@ -862,5 +862,34 @@ class Xrace_Race extends Base_Widget
 			$PriceList = implode("|",$PriceList);
 		}
 		return  $PriceList;
+	}
+	//根据报名记录生成指定场次比赛选手的计时记录到配置文件
+	public function genRaceLogToText($RaceId)
+	{
+		$RaceId = intval($RaceId);
+		//获取比赛信息
+		$RaceInfo = $this->getRaceInfo($RaceId);
+		//如果获取到比赛信息
+		if(isset($RaceInfo['RaceId']))
+		{
+			//数据解包
+			$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+			//如果有配置计时点信息
+			if(isset($RaceInfo['comment']['DetailList']))
+			{
+				foreach($RaceInfo['comment']['DetailList'] as $SportsType => $SportTypeInfo)
+				{
+					
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
 	}
 }
