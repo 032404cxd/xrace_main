@@ -872,14 +872,74 @@ class Xrace_Race extends Base_Widget
 		//如果获取到比赛信息
 		if(isset($RaceInfo['RaceId']))
 		{
+			//查找到的计时点信息
+			$TimingCount = 0;
+			$i = 0;$TimingPointList = array();
 			//数据解包
 			$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
-			//如果有配置计时点信息
-			if(isset($RaceInfo['comment']['DetailList']))
+			//如果有配置赛段信息
+			if(isset($RaceInfo['comment']['DetailList']) && count($RaceInfo['comment']['DetailList']))
 			{
-				foreach($RaceInfo['comment']['DetailList'] as $SportsType => $SportTypeInfo)
+				//循环赛段信息
+				foreach($RaceInfo['comment']['DetailList'] as $SportsType => $TimingList)
 				{
-					
+					$TimingPointList['Sports'][$SportsType]['TimingPointList'] = array();
+					//如果有配置计时点信息
+					if(isset($TimingList['TimingId']))
+					{
+						//获取计时点详情信息
+						$TimingInfo = $this->getTimingDetail($TimingList['TimingId']);
+						if(isset($TimingInfo['TimingId']))
+						{
+							$TimingInfo['comment'] = json_decode($TimingInfo['comment'],true);
+							if(count($TimingInfo['comment']))
+							{
+								foreach($TimingInfo['comment'] as $TimingPoint)
+								{
+									if(count($TimingPoint))
+									{
+										$TimingCount++;
+										for($j = 0;$j<$TimingPoint['Round'];$j++)
+										{
+											$TimingPointList['Sports'][$SportsType]['TimingPointList'][] = $i+1;
+											$TimingPointList['Point'][$i+1] = $TimingPoint;
+											$i++;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				//如果未检测到任何的计时点信息
+				if($TimingCount==0)
+				{
+					return false;
+				}
+				else
+				{
+					//生成查询条件
+					$params = array('RaceId'=>$RaceInfo['RaceId']);
+					$oUser = new Xrace_User();
+					$RaceUserList = $oUser->getRaceUserList($params);
+					if(count($RaceUserList))
+					{
+						foreach($RaceUserList as $ApplyId => $ApplyInfo)
+						{
+							$UserInfo = $oUser->getUserInfo( $ApplyInfo["UserId"],'user_id,name');
+							if($UserInfo['user_id'])
+							{
+								$TimingPointList['UserInfo'] = array('UserName'=>$UserInfo['name'],'UserId' => $UserInfo['user_id']);
+								$fileName = __APP_ROOT_DIR__."\\"."etc"."\\".$RaceInfo['RaceId']."\\".$UserInfo['user_id'].".php";
+								Base_Common::rebuildConfig($fileName,$TimingPointList,"Timing");
+							}
+						}
+					}
+					else
+					{
+						return fasle;
+					}
+
 				}
 			}
 			else

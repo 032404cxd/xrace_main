@@ -13,5 +13,4 @@ $config['adminUrl'] = "http://admin.xrace.cn";
 $config['projectName'] = "XraceWeb控制台";
 $config['currentVersion'] = "1.1";
 
-
 return $config;

@@ -12,6 +12,7 @@ class Xrace_User extends Base_Widget
 	protected $table_auth = 'user_auth';
 	protected $table_auth_log = 'user_auth_log';
 	protected $table_license = 'user_license';
+	protected $table_race = 'user_race';
         //性别列表
 	protected $sex = array('1'=>"男","2"=>"女");
 	//实名认证状态
@@ -531,5 +532,27 @@ class Xrace_User extends Base_Widget
 		$LicenseId = intval($LicenseId);
 		$table_to_process = Base_Widget::getDbTable($this->table_license);
 		return $this->db->update($table_to_process, $bind, '`LicenseId` = ?', $LicenseId);
+	}
+	public function getRaceUserList($params,$fields = array('*'))
+	{
+		//生成查询列
+		$fields = Base_common::getSqlFields($fields);
+		//获取需要用到的表名
+		$table_to_process = Base_Widget::getDbTable($this->table_race);
+		//获得比赛ID
+		$whereRace = isset($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
+		//获得用户ID
+		$whereUser = isset($params['UserId'])?" UserId = '".$params['UserId']."' ":"";
+		//获得组别ID
+		$whereGroup = isset($params['RaceGroupId'])?" RaceGroupId = '".$params['RaceGroupId']."' ":"";
+		//获得赛事ID
+		$whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
+		//所有查询条件置入数组
+		$whereCondition = array($whereCatalog,$whereUser,$whereGroup,$whereRace);
+		//生成条件列
+		$where = Base_common::getSqlWhere($whereCondition);
+		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by ApplyId";
+		$return = $this->db->getAll($sql);
+		return $return;
 	}
 }
