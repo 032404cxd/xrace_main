@@ -44,7 +44,7 @@
   </tr>
   {/tpl:loop}
   <tr>
-    <th align="center" class="rowtip" colspan="10">  <a href="javascript:;" onclick="RaceAdd('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}')">点此添加</a>
+    <th align="center" class="rowtip" colspan="11">  <a href="javascript:;" onclick="RaceAdd('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}')">点此添加</a>
     </th>
   </tr>
   {tpl:else}

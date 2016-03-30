@@ -13,7 +13,7 @@
 			</select>
 		</th></tr>
 <tr class="hover"><th align="center" class="rowtip">百度地图路线ID</th><th align="center" class="rowtip"><input name="BaiDuMapID" type="text" class="span2" id="BaiDuMapID" size="50" /></th></tr>
-<tr class="hover"><th align="center" class="rowtip">人数/价格对应</th><th align="center" class="rowtip"><input name="PriceList" type="text" class="span2" id="PriceList" size="50" /></th></tr>
+<tr class="hover"><th align="center" class="rowtip">人数/价格对应<p>(人数;单价|人数:单价)</th><th align="center" class="rowtip"><input name="PriceList" type="text" class="span2" id="PriceList" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">个人报名</th><th align="center" class="rowtip"><input type="radio" name="SingleUser" id="SingleUser" value="1" checked>接受<input type="radio" name="SingleUser" id="SingleUser"  value="0" >不接受</th></tr>
 <tr class="hover"><th align="center" class="rowtip">个人报名人数上限</th><th align="center" class="rowtip"><input name="SingleUserLimit" type="text" class="span2" id="SingleUserLimit" value = "0" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">团队报名</th><th align="center" class="rowtip"><input type="radio" name="TeamUser" id="TeamUser" value="1" checked>接受<input type="radio" name="TeamUser" id="TeamUser" value="0" >不接受</th></tr>

@@ -18,7 +18,7 @@
 	<td align="left"><div id = "SelectedGroupList"></div></td>
 </tr>
 <tr class="hover">
-	<td>人数/价格对应</td>
+	<td>人数/价格对应<p>(人数;单价|人数:单价)</td>
 	<td align="left"><input name="PriceList" type="text" class="span4" id="PriceList" size="50" /></td>
 </tr>
 	<tr>

@@ -42,7 +42,7 @@ function RaceStageIconDelete(sid,name,logo_id){
 		</div></td>
 	</tr>
 	<tr class="hover">
-		<td>人数/价格对应</td>
+		<td>人数/价格对应<p>(人数;单价|人数:单价)</td>
 		<td align="left"><input name="PriceList" type="text" class="span4" id="PriceList" value="{tpl:$RaceStageInfo.comment.PriceList/}" size="50" /></td>
 	</tr>
         <tr class="hover"><td>赛事分组图标1</td>

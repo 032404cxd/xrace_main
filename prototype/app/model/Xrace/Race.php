@@ -821,8 +821,12 @@ class Xrace_Race extends Base_Widget
 		return $text;
 	}
 	//处理比赛价格列表
-	public function getPriceList($PriceList)
+	public function getPriceList($PriceList,$Revert = 0)
 	{
+		if(trim($PriceList)=="")
+		{
+			return ($Revert==1)?"":array();
+		}
 		//首层以|切割
 		$P = explode("|",$PriceList);
 		//初始化空数组
@@ -834,13 +838,28 @@ class Xrace_Race extends Base_Widget
 			//如果切割数量大于等于2
 			if(count($T)>=2)
 			{
-				$PriceList[abs(intval($T[0]))] = abs(intval($T[1]));
+				if((abs(intval($T[1])))>0)
+				{
+					$PriceList[abs(intval($T[0]))] = abs(intval($T[1]));
+				}
 			}
 			//如果只有1
 			elseif(count($T)==1)
 			{
-				$PriceList[1] = abs(intval($T[0]));
+				if((abs(intval($T[0])))>0)
+				{
+					$PriceList[1] = abs(intval($T[0]));
+				}
 			}
+		}
+		ksort($PriceList);
+		if($Revert == 1)
+		{
+			foreach($PriceList as $num => $price)
+			{
+				$PriceList[$num] = intval($num).":".intval($price);
+			}
+			$PriceList = implode("|",$PriceList);
 		}
 		return  $PriceList;
 	}

@@ -316,6 +316,8 @@ class XraceConfigController extends AbstractController
                 }
                 //获取当前比赛的时间状态信息
                 $RaceStageInfo['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageId,0);
+                //处理价格列表
+                $RaceStageInfo['comment']['PriceList'] = ($RaceStageInfo['comment']['PriceList']);
                 //结果数组
                 $result = array("return"=>1,"RaceStageInfo"=>$RaceStageInfo);
             }
@@ -368,7 +370,8 @@ class XraceConfigController extends AbstractController
     /*
      * 获取赛事分站和赛事组别获取比赛列表
      */
-    public function getRaceListAction() {
+    public function getRaceListAction()
+    {
         //格式化赛事分站和赛事组别ID,默认为0
         $RaceStageId = isset($this->request->RaceStageId)?abs(intval($this->request->RaceStageId)):0;
         $RaceGroupId = isset($this->request->RaceGroupId)?abs(intval($this->request->RaceGroupId)):0;

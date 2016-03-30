@@ -248,7 +248,7 @@ class Xrace_RaceStageController extends AbstractController
 			//对说明文字进行过滤和编码
 			$bind['RaceStageComment'] = urlencode(htmlspecialchars(trim($bind['RaceStageComment'])));
 			//价格对应列表
-			$bind['comment']['PriceList'] = trim($bind['PriceList']);
+			$bind['comment']['PriceList'] =  $this->oRace->getPriceList(trim($bind['PriceList']),1);
 			//删除原有数据
 			unset($bind['PriceList']);
 			//数据压缩
@@ -366,7 +366,7 @@ class Xrace_RaceStageController extends AbstractController
 			//对说明文字进行过滤和编码
 			$bind['RaceStageComment'] = urlencode(htmlspecialchars(trim($bind['RaceStageComment'])));
 			//价格对应列表
-			$bind['comment']['PriceList'] = trim($bind['PriceList']);
+			$bind['comment']['PriceList'] = $this->oRace->getPriceList(trim($bind['PriceList']),1);
 			//删除原有数据
 			unset($bind['PriceList']);
 			//数据压缩
@@ -672,6 +672,8 @@ class Xrace_RaceStageController extends AbstractController
 		}
 		else
 		{
+			//价格对应列表
+			$bind['PriceList'] = $this->oRace->getPriceList(trim($bind['PriceList']),1);
 			//将人数限制分别置入压缩数组,并删除原数据
 			$bind['comment']['SingleUserLimit'] = $bind['SingleUserLimit'];
 			unset($bind['SingleUserLimit']);
@@ -793,6 +795,8 @@ class Xrace_RaceStageController extends AbstractController
 			$bind['comment'] = json_decode($RaceInfo['comment'],true);
 			//解包地图数组
 			$bind['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
+			//价格对应列表
+			$bind['PriceList'] = $this->oRace->getPriceList(trim($bind['PriceList']),1);
 			//将人数限制分别置入压缩数组,并删除原数据
 			$bind['comment']['SingleUserLimit'] = $bind['SingleUserLimit'];
 			unset($bind['SingleUserLimit']);
