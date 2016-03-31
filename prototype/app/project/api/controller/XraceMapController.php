@@ -33,7 +33,7 @@ class XraceMapController extends AbstractController
         //用户ID
         $UserId = isset($this->request->UserId)?abs(intval($this->request->UserId)):0;
         //获取比赛信息
-        $RaceInfo = $this->oRace->getRaceInfo($RaceId);
+        $RaceInfo = $this->oRace->getRace($RaceId);
         //检测主键存在,否则值为空
         if(isset($RaceInfo['RaceId']))
         {

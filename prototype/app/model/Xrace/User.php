@@ -555,4 +555,12 @@ class Xrace_User extends Base_Widget
 		$return = $this->db->getAll($sql);
 		return $return;
 	}
+	//更新用户报名信息
+	public function updateRaceUser($RaceId,$UserId, array $bind)
+	{
+		$RaceId = intval($RaceId);
+		$UserId = intval($UserId);
+		$table_to_process = Base_Widget::getDbTable($this->table_race);
+		return $this->db->update($table_to_process, $bind, '`RaceId` = ? and `UserId` = ?', array($RaceId,$UserId));
+	}
 }

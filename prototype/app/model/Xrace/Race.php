@@ -219,7 +219,7 @@ class Xrace_Race extends Base_Widget
 		return $this->db->delete($table_to_process, '`RaceTypeId` = ?', $RaceTypeId);
 	}
 	//获取单个比赛信息
-	public function getRaceInfo($RaceId,$fields = '*')
+	public function getRace($RaceId,$fields = '*')
 	{
 		$RaceId = intval($RaceId);
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
@@ -315,7 +315,7 @@ class Xrace_Race extends Base_Widget
 			else
 			{
 				//获取比赛信息
-				$RaceInfo = $this->getRaceInfo($RaceId);
+				$RaceInfo = $this->getRace($RaceId);
 				//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
 				if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
 				{
@@ -435,7 +435,7 @@ class Xrace_Race extends Base_Widget
 			else
 			{
 				//获取比赛信息
-				$RaceInfo = $this->getRaceInfo($RaceId);
+				$RaceInfo = $this->getRace($RaceId);
 				//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
 				if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
 				{
@@ -509,7 +509,7 @@ class Xrace_Race extends Base_Widget
 			else
 			{
 				//获取比赛信息
-				$RaceInfo = $this->getRaceInfo($RaceId);
+				$RaceInfo = $this->getRace($RaceId);
 				//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
 				if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
 				{
@@ -868,7 +868,7 @@ class Xrace_Race extends Base_Widget
 	{
 		$RaceId = intval($RaceId);
 		//获取比赛信息
-		$RaceInfo = $this->getRaceInfo($RaceId);
+		$RaceInfo = $this->getRace($RaceId);
 		//如果获取到比赛信息
 		if(isset($RaceInfo['RaceId']))
 		{
@@ -921,17 +921,23 @@ class Xrace_Race extends Base_Widget
 					//生成查询条件
 					$params = array('RaceId'=>$RaceInfo['RaceId']);
 					$oUser = new Xrace_User();
+					//获取选手名单
 					$RaceUserList = $oUser->getRaceUserList($params);
+					//如果获取到选手名单
 					if(count($RaceUserList))
 					{
+						//循环选手列表
 						foreach($RaceUserList as $ApplyId => $ApplyInfo)
 						{
+							//获取用户信息
 							$UserInfo = $oUser->getUserInfo( $ApplyInfo["UserId"],'user_id,name');
+							//如果获取到用户
 							if($UserInfo['user_id'])
 							{
 								$TimingPointList['UserInfo'] = array('UserName'=>$UserInfo['name'],'UserId' => $UserInfo['user_id']);
-								$fileName = __APP_ROOT_DIR__."\\"."etc"."\\".$RaceInfo['RaceId']."\\".$UserInfo['user_id'].".php";
-								Base_Common::rebuildConfig($fileName,$TimingPointList,"Timing");
+								$filePath = __APP_ROOT_DIR__."Timing"."\\".$RaceInfo['RaceId']."\\";
+								$fileName = $UserInfo['user_id'].".php";
+								Base_Common::rebuildConfig($filePath,$fileName,$TimingPointList,"Timing");
 							}
 						}
 					}

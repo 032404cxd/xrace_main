@@ -562,7 +562,7 @@ class Xrace_RaceStageController extends AbstractController
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
 			//获取比赛信息
-			$RaceInfo = $this->oRace->getRaceInfo($RaceId);
+			$RaceInfo = $this->oRace->getRace($RaceId);
 			//如果有获取到比赛信息
 			if(isset($RaceInfo['RaceId']))
 			{
@@ -786,7 +786,7 @@ class Xrace_RaceStageController extends AbstractController
 		else
 		{
 			//获取比赛信息
-			$RaceInfo = $this->oRace->getRaceInfo($RaceId);
+			$RaceInfo = $this->oRace->getRace($RaceId);
 			//解包数组
 			$bind['comment'] = json_decode($RaceInfo['comment'],true);
 			//解包地图数组
@@ -827,7 +827,7 @@ class Xrace_RaceStageController extends AbstractController
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
 			//获取比赛信息
-			$RaceInfo = $this->oRace->getRaceInfo($RaceId);
+			$RaceInfo = $this->oRace->getRace($RaceId);
 			//如果有获取到比赛信息
 			if(isset($RaceInfo['RaceId']))
 			{
@@ -937,7 +937,7 @@ class Xrace_RaceStageController extends AbstractController
 					else
 					{
 						//获取比赛信息
-						$RaceInfo = $this->oRace->getRaceInfo($RaceId);
+						$RaceInfo = $this->oRace->getRace($RaceId);
 						//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
 						if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
 						{
@@ -1018,7 +1018,7 @@ class Xrace_RaceStageController extends AbstractController
 			//获取运动类型列表
 			$SportsTypeList = $this->oSports->getAllSportsTypeList('SportsTypeId,SportsTypeName');
 			//获取比赛信息
-			$RaceInfo = $this->oRace->getRaceInfo($RaceId);
+			$RaceInfo = $this->oRace->getRace($RaceId);
 			//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
 			if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
 			{
@@ -1089,7 +1089,7 @@ class Xrace_RaceStageController extends AbstractController
 				$this->response->redirect($this->sign);
 			}
 			//获取比赛信息
-			$RaceInfo = $this->oRace->getRaceInfo($RaceId);
+			$RaceInfo = $this->oRace->getRace($RaceId);
 			//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
 			if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
 			{
@@ -1203,7 +1203,7 @@ class Xrace_RaceStageController extends AbstractController
 			//获取运动类型列表
 			$SportsTypeList = $this->oSports->getAllSportsTypeList('SportsTypeId,SportsTypeName');
 			//获取比赛信息
-			$RaceInfo = $this->oRace->getRaceInfo($RaceId);
+			$RaceInfo = $this->oRace->getRace($RaceId);
 			//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
 			if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
 			{
@@ -1278,7 +1278,7 @@ class Xrace_RaceStageController extends AbstractController
 			//获取运动类型列表
 			$SportsTypeList = $this->oSports->getAllSportsTypeList('SportsTypeId,SportsTypeName');
 			//获取比赛信息
-			$RaceInfo = $this->oRace->getRaceInfo($RaceId);
+			$RaceInfo = $this->oRace->getRace($RaceId);
 			//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
 			if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
 			{
@@ -1487,6 +1487,75 @@ class Xrace_RaceStageController extends AbstractController
 			$UpdateRaceStage = $this->oRace->updateRaceStage($RaceStageId, $bind);
 			$response = $UpdateRaceStage ? array('errno' => 0) : array('errno' => 9);
 			echo json_encode($response);
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//比赛选手列表 批量更新BIB
+	public function raceUserListAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		if($PermissionCheck['return'])
+		{
+			//比赛ID
+			$RaceId = intval($this->request->RaceId);
+			//获取赛站信息
+			$RaceInfo = $this->oRace->getRace($RaceId);
+			//生成查询条件
+			$params = array('RaceId'=>$RaceInfo['RaceId']);
+			$oUser = new Xrace_User();
+			//获取选手名单
+			$RaceUserList = $oUser->getRaceUserList($params);
+			//如果获取到选手名单
+			if(count($RaceUserList))
+			{
+				foreach($RaceUserList as $ApplyId => $ApplyInfo)
+				{
+					//获取用户信息
+					$UserInfo = $oUser->getUserInfo( $ApplyInfo["UserId"],'user_id,name');
+					//如果获取到用户
+					if($UserInfo['user_id'])
+					{
+						$RaceUserList[$ApplyId]['UserId'] = $UserInfo['user_id'];
+						$RaceUserList[$ApplyId]['Name'] = $UserInfo['name'];
+					}
+				}
+			}
+			//渲染模板
+			include $this->tpl('Xrace_Race_RaceUserList');
+			//print_R($RaceUserList);
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//批量更新比赛选手列表
+	public function raceUserListUpdateAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		if($PermissionCheck['return'])
+		{
+			//比赛ID
+			$RaceId = intval($this->request->RaceId);
+			//获取BIB号码列表
+			$BIBList = $this->request->from('BIB');
+			$oUser = new Xrace_User();
+			//循环号码牌列表
+			foreach($BIBList['BIB'] as $UserId => $BIBNo)
+			{
+				$bind['BIB'] = $BIBNo;
+				//更新报名记录
+				$oUser->updateRaceUser($RaceId,$UserId,$bind);
+			}
+			//返回之前页面
+			$this->response->goBack();
 		}
 		else
 		{

@@ -94,4 +94,8 @@ $table['config_app_type']['num'] = 1;
 $table['user_license']['db'] = 'xrace';
 $table['user_license']['num'] = 1;
 
+//报名记录（选手名单）
+$table['user_race']['db'] = 'xrace';
+$table['user_race']['num'] = 1;
+
 return $table;
