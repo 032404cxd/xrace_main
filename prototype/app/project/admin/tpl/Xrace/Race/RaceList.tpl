@@ -3,8 +3,11 @@
   function RaceAdd(sid,gid){
     RaceAddBox = divBox.showBox('{tpl:$this.sign/}&ac=race.add&RaceGroupId=' + gid + '&RaceStageId=' + sid, {title:'添加比赛',width:400,height:750});
   }
-  function RaceModify(sid,gid,rid,rname){
-    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.modify&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&RaceId=' + rid, {title:'修改比赛-'+rname,width:400,height:750});
+  function RaceModify(rid,rname){
+    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.modify&RaceId=' + rid, {title:'修改比赛-'+rname,width:400,height:750});
+  }
+  function RaceUserList(rid){
+    RaceUserListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.list&RaceId=' + rid, {title:'选手名单',width:400,height:750});
   }
 </script>
 <form action="{tpl:$this.sign/}&ac=race.update" name="form" id="form" method="post">
@@ -17,8 +20,8 @@
     <th align="center" class="rowtip">比赛名称</th>
     <th align="center" class="rowtip">比赛类型</th>
     <th align="center" class="rowtip">人数/价格对应</th>
-    <th align="center" class="rowtip">是否接受个人报名</th>
-    <th align="center" class="rowtip">是否接受团队报名</th>
+    <th align="center" class="rowtip">个人报名</th>
+    <th align="center" class="rowtip">团队报名</th>
     <th align="center" class="rowtip">开始报名时间</th>
     <th align="center" class="rowtip">结束报名时间</th>
     <th align="center" class="rowtip">开始时间</th>
@@ -38,8 +41,8 @@
     <th align="center" class="rowtip">{tpl:$RaceInfo.StartTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.EndTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceStatus/}</th>    
-    <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceModify('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}','{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">修改</a>
-     | <a href="{tpl:$this.sign/}&ac=race.detail&RaceStageId={tpl:$RaceStageInfo.RaceStageId/}&RaceGroupId={tpl:$RaceGroupInfo.RaceGroupId/}&RaceId={tpl:$RaceInfo.RaceId/}">计时点详情</a></th>
+    <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceModify('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">修改</a>
+     | <a href="{tpl:$this.sign/}&ac=race.detail&RaceId={tpl:$RaceInfo.RaceId/}">计时点</a> | <a href="javascript:;" onclick="RaceUserList('{tpl:$RaceInfo.RaceId/}')">选手名单</a></th>
     </th>
   </tr>
   {/tpl:loop}

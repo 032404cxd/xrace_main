@@ -559,16 +559,12 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
 		if($PermissionCheck['return'])
 		{
-			//赛事分站ID
-			$RaceStageId = intval($this->request->RaceStageId);
-			//赛事分组ID
-			$RaceGroupId = intval($this->request->RaceGroupId);
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
 			//获取比赛信息
 			$RaceInfo = $this->oRace->getRaceInfo($RaceId);
-			//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
-			if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
+			//如果有获取到比赛信息
+			if(isset($RaceInfo['RaceId']))
 			{
 				//说明文字解码
 				$RaceInfo['RaceComment'] = urldecode($RaceInfo['RaceComment']);
@@ -828,35 +824,19 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
 		if($PermissionCheck['return'])
 		{
-			//分站ID
-			$RaceStageId = intval($this->request->RaceStageId);
-			//分组ID
-			$RaceGroupId = intval($this->request->RaceGroupId);
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
-			//获取当前分站信息
-			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'*');
-			//解包压缩数组
-			$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
-			//如果当前分站未配置了当前分组
-			if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
-			{
-				//跳转到分站列表页面
-				$this->response->redirect($this->sign);
-			}
-			//获取赛事分组信息
-			$RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,'*');
-			//如果赛事分组尚未配置
-			if(!$RaceGroupInfo['RaceGroupId'])
-			{
-				//跳转到分站列表页面
-				$this->response->redirect($this->sign);
-			}
 			//获取比赛信息
 			$RaceInfo = $this->oRace->getRaceInfo($RaceId);
-			//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
-			if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
+			//如果有获取到比赛信息
+			if(isset($RaceInfo['RaceId']))
 			{
+				//获取当前分站信息
+				$RaceStageInfo = $this->oRace->getRaceStage($RaceInfo['RaceStageId'],'*');
+				//解包压缩数组
+				$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
+				//获取赛事分组信息
+				$RaceGroupInfo = $this->oRace->getRaceGroup($RaceInfo['RaceGroupId'],'*');
 				//数据解包
 				$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
 				//初始运动类型信息列表
