@@ -157,7 +157,7 @@ class XraceConfigController extends AbstractController
                             //删除原有数据
                             unset($RaceStageList[$RaceStageId]['RaceStageIcon']);
                         }
-                        /*
+
                         //如果有配置分组信息，暂不输出
                         if(isset($RaceStageList[$RaceStageId]['comment']['SelectedRaceGroup']))
                         {
@@ -179,7 +179,10 @@ class XraceConfigController extends AbstractController
                                 }
                             }
                         }
-                        */
+                        //如果有配置分站的价格，则格式化价格
+                        $RaceStageList[$RaceStageId]['comment']['PriceList'] = isset($RaceStageList[$RaceStageId]['comment']['PriceList'])?$this->oRace->getPriceList($RaceStageList[$RaceStageId]['comment']['PriceList']):array();
+                        //不输出产品相关信息
+                        unset($RaceStageList[$RaceStageId]['comment']['SelectedProductList']);
                         /*
                         //如果有配置产品信息,暂不输出
                         if(isset($RaceStageList[$RaceStageId]['comment']['SelectedProductList']))

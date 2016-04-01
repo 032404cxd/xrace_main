@@ -1,8 +1,8 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
 <form id="race_add_form" name="race_add_form" action="{tpl:$this.sign/}&ac=race.update" metdod="post">
-<input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageId/}" />
-<input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupId/}" />
+<input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceInfo.RaceStageId/}" />
+<input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceInfo.RaceGroupId/}" />
 <input type="hidden" name="RaceId" id="RaceId" value="{tpl:$RaceId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover"><th align="center" class="rowtip">比赛名称</th><th align="center" class="rowtip"><input name="RaceName" type="text" class="span2" id="RaceName" value = "{tpl:$RaceInfo.RaceName/}" size="50" /></th></tr>
