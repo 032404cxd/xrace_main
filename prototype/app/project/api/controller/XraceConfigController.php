@@ -382,7 +382,7 @@ class XraceConfigController extends AbstractController
         if($RaceStageId && $RaceGroupId)
         {
             //获得比赛列表
-            $RaceList = $this->oRace->getRaceList($RaceStageId, $RaceGroupId,"RaceId,RaceTypeId,RouteInfo,RaceName,PriceList,SingleUser,TeamUser,StartTime,EndTime,ApplyStartTime,ApplyEndTime,comment");
+            $RaceList = $this->oRace->getRaceList($RaceStageId, $RaceGroupId,"RaceId,RaceTypeId,RouteInfo,RaceName,PriceList,SingleUser,TeamUser,StartTime,EndTime,ApplyStartTime,ApplyEndTime,comment,RaceComment");
             if(!is_array($RaceList))
             {
                 $RaceList =array();
@@ -409,7 +409,7 @@ class XraceConfigController extends AbstractController
                 //获取比赛分类信息
                 $RaceTypeInfo  =  $RaceInfo['RaceTypeId']?$this->oRace->getRaceType($RaceInfo['RaceTypeId'],'*'):array();
                 //如果获取到比赛类型信息
-                if($RaceTypeInfo['RaceTypeId'])
+                if(isset($RaceTypeInfo['RaceTypeId']))
                 {
                     $RaceTypeInfo['comment'] = json_decode($RaceTypeInfo['comment'],true);
                     //如果有输比赛类型图标的相对路径

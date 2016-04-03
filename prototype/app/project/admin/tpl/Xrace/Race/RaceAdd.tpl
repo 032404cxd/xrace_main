@@ -6,14 +6,16 @@
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover"><th align="center" class="rowtip">比赛名称</th><th align="center" class="rowtip"><input name="RaceName" type="text" class="span2" id="RaceName" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">比赛类型</th><th align="center" class="rowtip">
-			<select name="RaceTypeId" size="1">
+			<select name="RaceTypeId" size="1" class="span2">
 				{tpl:loop $RaceTypeList $RaceTypeInfo}
 				<option value="{tpl:$RaceTypeInfo.RaceTypeId/}" >{tpl:$RaceTypeInfo.RaceTypeName/}</option>
 				{/tpl:loop}
 			</select>
 		</th></tr>
-<tr class="hover"><th align="center" class="rowtip">百度地图路线ID</th><th align="center" class="rowtip"><input name="BaiDuMapID" type="text" class="span2" id="BaiDuMapID" size="50" /></th></tr>
-<tr class="hover"><th align="center" class="rowtip">人数/价格对应<p>(人数;单价|人数:单价)</th><th align="center" class="rowtip"><input name="PriceList" type="text" class="span2" id="PriceList" size="50" /></th></tr>
+<tr class="hover"><th align="center" class="rowtip">百度路线ID</th><th align="center" class="rowtip"><input name="BaiDuMapID" type="text" class="span2" id="BaiDuMapID" size="50" /></th></tr>
+	<tr class="hover"><th align="center" class="rowtip"  rowspan="2">百度路线起止时间</th><th align="center" class="rowtip"><input name="BaiDuMapStartTime" type="text" class="span2" id="BaiDuMapStartTime"  size="50" onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})"  /></th></tr>
+	<tr class="hover"><th align="center" class="rowtip"><input name="BaiDuMapEndTime" type="text" class="span2" id="BaiDuMapEndTime"  size="50" onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})"/></th></tr>
+	<tr class="hover"><th align="center" class="rowtip">人数/价格对应<p>(人数;单价|人数:单价)</th><th align="center" class="rowtip"><input name="PriceList" type="text" class="span2" id="PriceList" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">个人报名</th><th align="center" class="rowtip"><input type="radio" name="SingleUser" id="SingleUser" value="1" checked>接受<input type="radio" name="SingleUser" id="SingleUser"  value="0" >不接受</th></tr>
 <tr class="hover"><th align="center" class="rowtip">个人报名人数上限</th><th align="center" class="rowtip"><input name="SingleUserLimit" type="text" class="span2" id="SingleUserLimit" value = "0" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">团队报名</th><th align="center" class="rowtip"><input type="radio" name="TeamUser" id="TeamUser" value="1" checked>接受<input type="radio" name="TeamUser" id="TeamUser" value="0" >不接受</th></tr>

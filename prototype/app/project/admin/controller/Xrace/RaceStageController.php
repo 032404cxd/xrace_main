@@ -588,7 +588,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','RaceTypeId','RaceComment');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -679,8 +679,22 @@ class Xrace_RaceStageController extends AbstractController
 			unset($bind['TeamUserMin']);
 			$bind['comment']['TeamUserMax'] = $bind['TeamUserMax'];
 			unset($bind['TeamUserMax']);
+			//保存百度地图信息
 			$bind['RouteInfo']['BaiDuMapID'] = $bind['BaiDuMapID'];
 			unset($bind['BaiDuMapID']);
+			//如果有填写百度地图ID,就保存相关的起止时间
+			if(strlen($bind['RouteInfo']['BaiDuMapID']))
+			{
+				$bind['RouteInfo']['BaiDuMapStartTime'] = $bind['BaiDuMapStartTime'];
+				$bind['RouteInfo']['BaiDuMapEndTime'] = $bind['BaiDuMapEndTime'];
+			}
+			else
+			{
+				$bind['RouteInfo']['BaiDuMapStartTime'] = date("Y-m-d H:i:s",0);
+				$bind['RouteInfo']['BaiDuMapEndTime'] = date("Y-m-d H:i:s",0);
+			}
+			unset($bind['BaiDuMapStartTime']);
+			unset($bind['BaiDuMapEndTime']);
 			//对说明文字进行过滤和编码
 			$bind['RaceComment'] = urlencode(htmlspecialchars(trim($bind['RaceComment'])));
 			//数据打包
@@ -698,7 +712,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','RaceTypeId','RaceComment');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -802,8 +816,22 @@ class Xrace_RaceStageController extends AbstractController
 			unset($bind['TeamUserMin']);
 			$bind['comment']['TeamUserMax'] = $bind['TeamUserMax'];
 			unset($bind['TeamUserMax']);
+			//保存百度地图信息
 			$bind['RouteInfo']['BaiDuMapID'] = $bind['BaiDuMapID'];
 			unset($bind['BaiDuMapID']);
+			//如果有填写百度地图ID,就保存相关的起止时间
+			if(strlen($bind['RouteInfo']['BaiDuMapID']))
+			{
+				$bind['RouteInfo']['BaiDuMapStartTime'] = $bind['BaiDuMapStartTime'];
+				$bind['RouteInfo']['BaiDuMapEndTime'] = $bind['BaiDuMapEndTime'];
+			}
+			else
+			{
+				$bind['RouteInfo']['BaiDuMapStartTime'] = date("Y-m-d H:i:s",0);
+				$bind['RouteInfo']['BaiDuMapEndTime'] = date("Y-m-d H:i:s",0);
+			}
+			unset($bind['BaiDuMapStartTime']);
+			unset($bind['BaiDuMapEndTime']);
 			//对说明文字进行过滤和编码
 			$bind['RaceComment'] = urlencode(htmlspecialchars(trim($bind['RaceComment'])));
 			//数据打包
