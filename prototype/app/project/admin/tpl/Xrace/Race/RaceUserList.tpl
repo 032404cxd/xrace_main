@@ -10,15 +10,17 @@
     <th align="center" class="rowtip">姓名</th>
     <th align="center" class="rowtip">报名时间</th>
     <th align="center" class="rowtip">选手号码</th>
+    <th align="center" class="rowtip">计时芯片ID</th>
   </tr>
   {tpl:loop $RaceUserList $Aid $UserInfo}
   <tr>
     <th align="center" class="rowtip">{tpl:$UserInfo.Name/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.ApplyTime/}</th>
-    <th align="center" class="rowtip"><input type="text" class="span2" name="BIB[{tpl:$UserInfo.UserId/}]" id="BIB[{tpl:$UserInfo.UserId/}]" value="{tpl:$UserInfo.BIB/}" /></th>
+    <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$UserInfo.UserId/}][BIB]" id="UserList[{tpl:$UserInfo.UserId/}][BIB]" value="{tpl:$UserInfo.BIB/}" /></th>
+    <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$UserInfo.UserId/}][ChipId]" id="UserList[{tpl:$UserInfo.UserId/}][ChipId]" value="{tpl:$UserInfo.ChipId/}" /></th>
   </tr>
   {/tpl:loop}
-  <tr class="noborder"><td colspan = 3><button type="submit" id="race_user_list_update_submit">提交</button></td>
+  <tr class="noborder"><td colspan = 4><button type="submit" id="race_user_list_update_submit">提交</button></td>
   </tr>
   {tpl:else}
   <tr>

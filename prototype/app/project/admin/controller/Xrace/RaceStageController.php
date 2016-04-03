@@ -1522,7 +1522,7 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//比赛选手列表 批量更新BIB
+	//比赛选手列表 批量更新BIB和计时芯片ID
 	public function raceUserListAction()
 	{
 		//检查权限
@@ -1573,12 +1573,13 @@ class Xrace_RaceStageController extends AbstractController
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
 			//获取BIB号码列表
-			$BIBList = $this->request->from('BIB');
+			$UserList = $this->request->from('UserList');
 			$oUser = new Xrace_User();
 			//循环号码牌列表
-			foreach($BIBList['BIB'] as $UserId => $BIBNo)
+			foreach($UserList['UserList'] as $UserId => $UserInfo)
 			{
-				$bind['BIB'] = $BIBNo;
+				$bind['BIB'] = trim($UserInfo['BIB']);
+				$bind['ChipId'] = trim($UserInfo['ChipId']);
 				//更新报名记录
 				$oUser->updateRaceUser($RaceId,$UserId,$bind);
 			}
