@@ -382,7 +382,7 @@ class XraceConfigController extends AbstractController
         if($RaceStageId && $RaceGroupId)
         {
             //获得比赛列表
-            $RaceList = $this->oRace->getRaceList($RaceStageId, $RaceGroupId,"RaceId,RaceTypeId,RouteInfo,RaceName,PriceList,SingleUser,TeamUser,StartTime,EndTime,ApplyStartTime,ApplyEndTime,comment,RaceComment");
+            $RaceList = $this->oRace->getRaceList($RaceStageId, $RaceGroupId,"RaceId,RaceTypeId,RouteInfo,RaceName,PriceList,SingleUser,TeamUser,StartTime,EndTime,ApplyStartTime,ApplyEndTime,comment,RaceComment,MustSelect");
             if(!is_array($RaceList))
             {
                 $RaceList =array();
