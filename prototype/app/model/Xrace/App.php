@@ -168,6 +168,8 @@ class Xrace_App extends Base_Widget
 		{
 			foreach($return as $key => $value)
 			{
+				//数据解包
+				$value['comment'] = json_decode($value['comment'],true);
 				$AppVersionList[$value['AppVersionId']] = $value;
 			}
 		}
@@ -233,6 +235,72 @@ class Xrace_App extends Base_Widget
 		$AppVersionId = intval($AppVersionId);
 		$table_to_process = Base_Widget::getDbTable($this->table_version);
 		return $this->db->delete($table_to_process, '`AppVersionId` = ?', $AppVersionId);
+	}
+	/**
+	 * 获得各个最新版本的信息
+	 * @param integer $Cache
+	 * @return boolean
+	 */
+	public function getNewestVersionList($Cache = 1)
+	{
+		$oMemCache = new Base_Cache_Memcache("B5M");
+		//如果需要获取缓存
+		if($Cache == 1)
+		{
+			//获取缓存
+			$m = $oMemCache->get("NewestAppVersionList");
+			//缓存解开
+			$NewestAppVersionList = json_decode($m,true);
+			//如果数据为空
+			if(count($NewestAppVersionList)==0)
+			{
+				//需要从数据库获取
+				$NeedDB = 1;
+			}
+			else
+			{
+				//echo "cached";
+			}
+		}
+		else
+		{
+			//需要从数据库获取
+			$NeedDB = 1;
+		}
+		if(isset($NeedDB))
+		{
+			//获取所有版本信息
+			$AppVersionList = $this->getAppVersionList();
+			//初始化一个空的最新版本列表
+			$NewestAppVersionList = array();
+			//循环版本数据
+			foreach($AppVersionList as $AppVersionId => $AppVersionInfo)
+			{
+				//如果在最新版本列表中尚未出现
+				if(!isset($NewestAppVersionList[$AppVersionInfo['AppOSId']][$AppVersionInfo['AppTypeId']]))
+				{
+					//存入结果数组
+					$NewestAppVersionList[$AppVersionInfo['AppOSId']][$AppVersionInfo['AppTypeId']] = $AppVersionInfo;
+				}
+				else
+				{
+					//如果当前版本大于最新版本中的
+					if($AppVersionInfo['AppVersion']>$NewestAppVersionList[$AppVersionInfo['AppOSId']][$AppVersionInfo['AppTypeId']]['AppVersion'])
+					{
+						//存入结果数组
+						$NewestAppVersionList[$AppVersionInfo['AppOSId']][$AppVersionInfo['AppTypeId']] = $AppVersionInfo;
+					}
+				}
+			}
+			//如果有获取到最新版本信息
+			if(count($NewestAppVersionList))
+			{
+				//写入缓存
+				$oMemCache -> set('NewestAppVersionList',json_encode($NewestAppVersionList),86400);
+			}
+
+		}
+		return $NewestAppVersionList;
 	}
 
 }

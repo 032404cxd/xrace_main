@@ -42,6 +42,10 @@ $table['config_race_type']['num'] = 1;
 $table['config_product_type']['db'] = 'xrace_config';
 $table['config_product_type']['num'] = 1;
 
+#商品
+$table['config_product']['db'] = 'xrace_config';
+$table['config_product']['num'] = 1;
+
 #赛事分站
 $table['config_race_stage']['db'] = 'xrace_config';
 $table['config_race_stage']['num'] = 1;
@@ -74,13 +78,21 @@ $table['config_menu_permission']['num'] = 1;
 $table['config_logs_manager']['db'] = 'xrace_config';
 $table['config_logs_manager']['num'] = 16;
 
-#商品类型
-$table['config_product_type']['db'] = 'xrace_config';
-$table['config_product_type']['num'] = 1;
+//APP版本
+$table['config_app_version']['db'] = 'xrace_config';
+$table['config_app_version']['num'] = 1;
 
-#商品
-$table['config_product']['db'] = 'xrace_config';
-$table['config_product']['num'] = 1;
+//APP系统
+$table['config_app_os']['db'] = 'xrace_config';
+$table['config_app_os']['num'] = 1;
+
+//APP类型
+$table['config_app_type']['db'] = 'xrace_config';
+$table['config_app_type']['num'] = 1;
+
+//用户执照
+$table['user_license']['db'] = 'xrace';
+$table['user_license']['num'] = 1;
 
 //报名记录（选手名单）
 $table['user_race']['db'] = 'xrace';

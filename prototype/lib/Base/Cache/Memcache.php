@@ -13,13 +13,13 @@ class Base_Cache_Memcache implements Base_Cache_Interface
 	var $handler;
     var $options;
     /**
-     * ¼Ü¹¹º¯Êý
-     * @param array $options »º´æ²ÎÊý
+     * ï¿½Ü¹ï¿½ï¿½ï¿½ï¿½ï¿½
+     * @param array $options ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      * @access public
      */
     function __construct($server) {
         if ( !extension_loaded('memcache') ) {
-            throw new Exception('Ã»ÓÐ¼ÓÔØmemcacheÀ©Õ¹£¡');
+            throw new Exception('Ã»ï¿½Ð¼ï¿½ï¿½ï¿½memcacheï¿½ï¿½Õ¹ï¿½ï¿½');
         }           
         $this->handler = new Memcache;
 		$this->prefix = $server;
@@ -37,9 +37,9 @@ class Base_Cache_Memcache implements Base_Cache_Interface
 		}
     }
     /**
-     * ¶ÁÈ¡»º´æ
+     * ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½
      * @access public
-     * @param string $name »º´æ±äÁ¿Ãû
+     * @param string $name ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      * @return mixed
      */
     public function get($name) {
@@ -47,11 +47,11 @@ class Base_Cache_Memcache implements Base_Cache_Interface
     }
 
     /**
-     * Ð´Èë»º´æ
+     * Ð´ï¿½ë»ºï¿½ï¿½
      * @access public
-     * @param string $name »º´æ±äÁ¿Ãû
-     * @param mixed $value  ´æ´¢Êý¾Ý
-     * @param integer $expire  ÓÐÐ§Ê±¼ä£¨Ãë£©
+     * @param string $name ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+     * @param mixed $value  ï¿½æ´¢ï¿½ï¿½ï¿½ï¿½
+     * @param integer $expire  ï¿½ï¿½Ð§Ê±ï¿½ä£¨ï¿½ë£©
      * @return boolen
      */
     public function set($name, $value,  $expire = 1) {
@@ -64,9 +64,9 @@ class Base_Cache_Memcache implements Base_Cache_Interface
     }
 
     /**
-     * É¾³ý»º´æ
+     * É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      * @access public
-     * @param string $name »º´æ±äÁ¿Ãû
+     * @param string $name ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      * @return boolen
      */
     public function remove($name, $ttl = false) {
@@ -77,7 +77,7 @@ class Base_Cache_Memcache implements Base_Cache_Interface
     }
 
     /**
-     * Çå³ý»º´æ
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      * @access public
      * @return boolen
      */
@@ -86,7 +86,7 @@ class Base_Cache_Memcache implements Base_Cache_Interface
     }
     
     /**
-     * »º´æÅäÖÃÎÄ¼þ
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
      * @access public
      * @return boolen
      */

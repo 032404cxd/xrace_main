@@ -48,7 +48,7 @@ function appVersionModify(mid){
 
 {tpl:loop $AppVersionList $AppVersionInfo}
   <tr class="hover">
-    <td align="center">{tpl:$AppVersionInfo.AppVersionId/}</td>
+    <td align="center">{tpl:$AppVersionInfo.AppVersionId/} {tpl:if($AppVersionInfo.NewestVersion==1)}(最新){tpl:else}{/tpl:if}</td>
     <td align="center">{tpl:$AppVersionInfo.AppVersion/}</td>
     <td align="center">{tpl:$AppVersionInfo.AppOSName/}</td>
     <td align="center">{tpl:$AppVersionInfo.AppTypeName/}</td>

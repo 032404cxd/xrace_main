@@ -33,6 +33,8 @@ class Xrace_AppVersionController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
+			//获取最新版本信息
+			$NewestAppVersionList = $this->oApp->getNewestVersionList(1);
 			//APP类型ID
 			$AppTypeId = isset($this->request->AppTypeId)?intval($this->request->AppTypeId):0;
 			//APP系统ID
@@ -46,6 +48,15 @@ class Xrace_AppVersionController extends AbstractController
 			//循环APP版本列表
 			foreach($AppVersionList as $AppVersionId => $AppVersionInfo)
 			{
+				//如果存在于最新版本列表
+				if(isset($NewestAppVersionList[$AppVersionInfo['AppOSId']][$AppVersionInfo['AppTypeId']]) && ($NewestAppVersionList[$AppVersionInfo['AppOSId']][$AppVersionInfo['AppTypeId']]['AppVersionId']==$AppVersionId))
+				{
+					$AppVersionList[$AppVersionId]['NewestVersion'] = 1;
+				}
+				else
+				{
+					$AppVersionList[$AppVersionId]['NewestVersion'] = 0;
+				}
 				//格式化版本信息
 				$AppVersionList[$AppVersionId]['AppVersion'] = Base_Common::ParthIntToVersion($AppVersionInfo['AppVersion']);
 				//如果当前尚未获取过APP类型
@@ -71,7 +82,7 @@ class Xrace_AppVersionController extends AbstractController
 				//解压缩下载路径
 				$AppVersionList[$AppVersionId]['AppDownloadUrl'] = urldecode($AppVersionInfo['AppDownloadUrl']);
 				//数据解包
-				$AppVersionList[$AppVersionId]['comment'] = json_decode($AppVersionInfo['comment']);
+				$AppVersionList[$AppVersionId]['comment'] = json_decode($AppVersionInfo['comment'],true);
 			}
 			//渲染模版
 			include $this->tpl('Xrace_App_AppVersionList');
@@ -139,6 +150,8 @@ class Xrace_AppVersionController extends AbstractController
 			//添加APP版本
 			$res = $this->oApp->insertAppVersion($bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
+			//更新最新版本信息缓存
+			$this->oApp->getNewestVersionList(0);
 		}
 		echo json_encode($response);
 		return true;
@@ -214,6 +227,8 @@ class Xrace_AppVersionController extends AbstractController
 			//添加APP版本
 			$res = $this->oApp->updateAppVersion($bind['AppVersionId'],$bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
+			//更新最新版本信息缓存
+			$this->oApp->getNewestVersionList(0);
 		}
 		echo json_encode($response);
 		return true;
@@ -229,6 +244,8 @@ class Xrace_AppVersionController extends AbstractController
 			$AppVersionId = trim($this->request->AppVersionId);
 			//删除APP版本
 			$this->oApp->deleteAppVersion($AppVersionId);
+			//更新最新版本信息缓存
+			$this->oApp->getNewestVersionList(0);
 			$this->response->goBack();
 		}
 		else
