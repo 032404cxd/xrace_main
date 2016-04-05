@@ -46,6 +46,8 @@ class Xrace_AppVersionController extends AbstractController
 			//循环APP版本列表
 			foreach($AppVersionList as $AppVersionId => $AppVersionInfo)
 			{
+				//格式化版本信息
+				$AppVersionList[$AppVersionId]['AppVersion'] = Base_Common::ParthIntToVersion($AppVersionInfo['AppVersion']);
 				//如果当前尚未获取过APP类型
 				if(isset($AppTypeList[$AppVersionInfo['AppTypeId']]))
 				{
@@ -126,6 +128,8 @@ class Xrace_AppVersionController extends AbstractController
 		}
 		else
 		{
+			//格式化版本信息
+			$bind['AppVersion'] = Base_Common::ParthVersionToInt($bind['AppVersion']);
 			//下载路径编码
 			$bind['AppDownloadUrl'] = urlencode($bind['AppDownloadUrl']);
 			//获取并过滤版本说明文字
@@ -154,6 +158,8 @@ class Xrace_AppVersionController extends AbstractController
 			$AppVersionId = intval($this->request->AppVersionId);
 			//获取APP版本信息
 			$AppVersionInfo = $this->oApp->getAppVersion($AppVersionId,'*');
+			//格式化版本信息
+			$AppVersionInfo['AppVersion'] = Base_Common::ParthIntToVersion($AppVersionInfo['AppVersion']);
 			//解压缩下载路径
 			$AppVersionInfo['AppDownloadUrl'] = urldecode($AppVersionInfo['AppDownloadUrl']);
 			//数据解包
@@ -193,6 +199,8 @@ class Xrace_AppVersionController extends AbstractController
 		}
 		else
 		{
+			//格式化版本信息
+			$bind['AppVersion'] = Base_Common::ParthVersionToInt($bind['AppVersion']);
 			//获取APP版本信息
 			$AppVersionInfo = $this->oApp->getAppVersion($bind['AppVersionId'],'comment');
 			//下载路径编码

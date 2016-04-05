@@ -618,5 +618,4 @@ class XraceConfigController extends AbstractController
         $this->oRace->genRaceLogToText($RaceId);
         //http://api.xrace.cn/?ctl=xrace.config&ac=timing.text&RaceId=1
     }
-
 }

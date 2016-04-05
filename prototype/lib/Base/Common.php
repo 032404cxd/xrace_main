@@ -1064,5 +1064,67 @@ EOF;
 			'delete'=>"删除");
 		return $return;
 	}
+	/**
+	 * 格式化版本信息到长整形
+	 * @param string $fields
+	 */
+	function ParthVersionToInt($Version,$count = 3)
+	{
+		$t = explode(".",$Version);
+		if(count($t)<$count)
+		{
+			for($i=count($t);$i<$count;$i++)
+			{
+				$t[$i] = 0;
+			}
+		}
+		elseif(count($t)>$count)
+		{
+			foreach($t as $k => $v)
+			{
+				if($k>=$count)
+				{
+					unset($t[$k]);
+				}
+			}
+		}
+		$Version = implode(".",$t);
+		if($count <4)
+		{
+			for($i=0;$i<=(count($t)-$count);$i++)
+			{
+				$Version = "0.".$Version;
+			}
+		}
+		return ip2long($Version);
+	}
+	/**
+	 * 格式化长整形到版本信息
+	 * @param string $fields
+	 */
+	function ParthIntToVersion($Version,$count = 3)
+	{
+		$Version = long2ip($Version);
+		$t = explode(".",$Version);
 
+		for($i=0;$i<4-$count;$i++)
+		{
+			unset($t[$i]);
+		}
+		krsort($t);
+		foreach($t as $k => $v)
+		{
+			if($v!="0")
+			{
+				break;
+			}
+			else
+			{
+				unset($t[$k]);
+			}
+		}
+		ksort($t);
+		$Version = implode(".",$t);
+		return $Version;
+	}
 }
