@@ -19,7 +19,7 @@ class Base_Cache_Memcache implements Base_Cache_Interface
      */
     function __construct($server) {
         if ( !extension_loaded('memcache') ) {
-            throw new Exception('û�м���memcache��չ��');
+            throw new Exception('载入memcache模块失败');
         }           
         $this->handler = new Memcache;
 		$this->prefix = $server;
