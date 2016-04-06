@@ -122,11 +122,10 @@ class Xrace_User extends Base_Widget
 	 * @param $params 传入的条件列表
 	 * @return array
 	 */
-	public function getUserLst($params,$fields = array("*"))
+	public function getUserList($params,$fields = array("*"))
 	{
 		//生成查询列
 		$fields = Base_common::getSqlFields($fields);
-
 		//获取需要用到的表名
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		//性别判断

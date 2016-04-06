@@ -52,7 +52,7 @@ class Xrace_UserController extends AbstractController
 			//获取用户列表时需要获得记录总数
 			$params['getCount'] = 1;
 			//获取用户列表
-			$UserList = $this->oUser->getUserLst($params);
+			$UserList = $this->oUser->getUserList($params);
 			//导出EXCEL链接
 			$export_var = "<a href =".(Base_Common::getUrl('','xrace/user','user.list.download',$params))."><导出表格></a>";
 			//翻页参数
@@ -112,7 +112,7 @@ class Xrace_UserController extends AbstractController
 			$Count = 1;$params['Page'] =1;
 			do
 			{
-				$UserList = $this->oUser->getUserLst($params);
+				$UserList = $this->oUser->getUserList($params);
 				$Count = count($UserList['UserList']);
 				foreach($UserList['UserList'] as $UserId => $UserInfo)
 				{
@@ -140,7 +140,7 @@ class Xrace_UserController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//用户列表下载
+	//用户详情
 	public function userDetailAction()
 	{
 		//检查权限

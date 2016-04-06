@@ -3,7 +3,7 @@
   function ProductAdd(ptid){
     ProductAddBox = divBox.showBox('{tpl:$this.sign/}&ac=product.add&ProductTypeId=' + ptid , {title:'添加产品',width:400,height:350});
   }
-  function ProductModify(pid,ptid){
+  function ProductModify(pid){
     RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=product.modify&ProductId=' + pid, {title:'修改产品',width:400,height:350});
   }
   function ProductDelete(pid, pname){
@@ -23,7 +23,7 @@
   <tr>
     <td align="center" class="rowtip">{tpl:$ProductInfo.ProductId/}</th>
     <td align="center" class="rowtip">{tpl:$ProductInfo.ProductName/}</th>
-    <td align="center"><a href="javascript:;" onclick="ProductDelete('{tpl:$ProductInfo.ProductId/}','{tpl:$ProductInfo.ProductName/}')">删除</a> |  <a href="javascript:;" onclick="ProductModify('{tpl:$ProductInfo.ProductId/}','{tpl:$ProductTypeId/}');">修改</a></td>
+    <td align="center"><a href="javascript:;" onclick="ProductDelete('{tpl:$ProductInfo.ProductId/}','{tpl:$ProductInfo.ProductName/}')">删除</a> |  <a href="javascript:;" onclick="ProductModify('{tpl:$ProductInfo.ProductId/}');">修改</a></td>
   </tr>
   {/tpl:loop}
   <tr>

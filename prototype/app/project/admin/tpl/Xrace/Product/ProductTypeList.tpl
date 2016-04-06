@@ -1,13 +1,13 @@
 {tpl:tpl contentHeader/}
 <script type="text/javascript">
 $(document).ready(function(){
-	$('#add_app').click(function(){
-		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=product.type.add', {title:'添加商品类型',width:400,height:200});
+	$('#add_product_type').click(function(){
+		addProductTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=product.type.add', {title:'添加商品类型',width:400,height:200});
 	});
 });
 
 function productTypeDelete(p_id, p_name){
-	deleteAppBox = divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=product.type.delete&ProductTypeId=' + p_id;}});
+	deleteProductTypeBox = divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=product.type.delete&ProductTypeId=' + p_id;}});
 }
 
 function productTypeModify(mid){
@@ -17,7 +17,7 @@ function productTypeModify(mid){
 </script>
 
 <fieldset><legend>操作</legend>
-[ <a href="javascript:;" id="add_app">添加商品类型</a> ]
+[ <a href="javascript:;" id="add_product_type">添加商品类型</a> ]
 </fieldset>
 <form action="{tpl:$this.sign/}" name="form" id="form" method="post">
   <select name="RaceCatalogId" size="1">
