@@ -17,7 +17,7 @@
 		<td>赛事分组列表</td>
 		<td align="left"><div id = "SelectedGroupList"></div></td>
 	</tr>
-	<td>说明文字</td>
+	<td>队伍说明</td>
 	<td align="left"><textarea class="span3" name="RaceTeamComment"  id="RaceTeamComment" cols ="50" rows = "5"/></textarea></td>
 	</tr>
 <tr class="noborder"><td></td>
@@ -52,7 +52,7 @@ function getGroupList()
 	$.ajax
 	({
 		type: "GET",
-		url: "?ctl=xrace/race.stage&ac=get.selected.group&RaceCatalogId="+catalog.val(),
+		url: "?ctl=xrace/team&ac=get.selected.group&RaceCatalogId="+catalog.val(),
 		success: function(msg)
 		{
 			$("#SelectedGroupList").html(msg);

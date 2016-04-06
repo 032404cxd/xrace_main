@@ -19,7 +19,7 @@ class Xrace_Team extends Base_Widget
 	{
 		$TeamId = intval($TeamId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->selectRow($table_to_process, $fields, '`TeamId` = ?', $TeamId);
+		return $this->db->selectRow($table_to_process, $fields, '`RaceTeamId` = ?', $TeamId);
 	}
 	/**
 	 * 添加单个队伍记录
@@ -41,7 +41,7 @@ class Xrace_Team extends Base_Widget
 	{
 		$TeamId = intval($TeamId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->update($table_to_process, $bind, '`TeamId` = ?', $TeamId);
+		return $this->db->update($table_to_process, $bind, '`RaceTeamId` = ?', $TeamId);
 	}
 	/**
 	 * 删除单个队伍记录
@@ -68,8 +68,10 @@ class Xrace_Team extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		//队伍名称
 		$whereTeamName = (isset($params['RaceTeamName']) && trim($params['RaceTeamName']))?" RaceTeamName like '%".$params['RaceTeamName']."%' ":"";
+		//赛事
+		$whereCatalog = (isset($params['RaceCatalogId']) && intval($params['RaceCatalogId'])!= 0)?" RaceCatalogId = ".$params['RaceCatalogId']:"";
 		//所有查询条件置入数组
-		$whereCondition = array($whereTeamName);
+		$whereCondition = array($whereTeamName,$whereCatalog );
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		//获取用户数量
@@ -114,8 +116,10 @@ class Xrace_Team extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		//队伍名称
 		$whereTeamName = (isset($params['RaceTeamName']) && trim($params['RaceTeamName']))?" RaceTeamName like '%".$params['RaceTeamName']."%' ":"";
+		//赛事
+		$whereCatalog = (isset($params['RaceCatalogId']) && intval($params['RaceCatalogId'])!= 0)?" RaceCatalogId = ".$params['RaceCatalogId']:"";
 		//所有查询条件置入数组
-		$whereCondition = array($whereTeamName);
+		$whereCondition = array($whereTeamName,$whereCatalog );
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		//生成条件列
