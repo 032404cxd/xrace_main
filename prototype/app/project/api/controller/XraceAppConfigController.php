@@ -45,6 +45,8 @@ class XraceAppConfigController extends AbstractController
                     $NewestAppVersionInfo = $NewestAppVersionList[$AppOSId][$AppTypeId];
                     //格式化版本信息
                     $NewestAppVersionInfo['AppVersion'] = Base_Common::ParthIntToVersion($NewestAppVersionInfo['AppVersion']);
+                    //解压缩下载路径
+                    $NewestAppVersionInfo['AppDownloadUrl'] = urldecode($NewestAppVersionInfo['AppDownloadUrl']);
                     //结果数组
                     $result = array("return"=>1,"NewestAppVersionInfo" => $NewestAppVersionInfo);
                 }
