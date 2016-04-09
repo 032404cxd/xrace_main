@@ -902,7 +902,11 @@ class Xrace_Race extends Base_Widget
 										for($j = 0;$j<$TimingPoint['Round'];$j++)
 										{
 											$TimingPointList['Sports'][$SportsType]['TimingPointList'][] = $i+1;
-											$TimingPointList['Point'][$i+1] = $TimingPoint;
+											$t = $TimingPoint;
+											$t['TName'].= "*".($j+1);
+											$t['inTime'] = 0;
+											$t['outTime'] = 0;
+											$TimingPointList['Point'][$i+1] = $t;
 											$i++;
 										}
 									}
