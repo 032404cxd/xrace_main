@@ -1541,6 +1541,9 @@ class Xrace_RaceStageController extends AbstractController
 			//如果获取到选手名单
 			if(count($RaceUserList))
 			{
+				$oTeam = new Xrace_Team();
+				$RaceTeamList = array();
+
 				foreach($RaceUserList as $ApplyId => $ApplyInfo)
 				{
 					//获取用户信息
@@ -1550,6 +1553,16 @@ class Xrace_RaceStageController extends AbstractController
 					{
 						$RaceUserList[$ApplyId]['UserId'] = $UserInfo['user_id'];
 						$RaceUserList[$ApplyId]['Name'] = $UserInfo['name'];
+						if(!isset($RaceTeamList[$ApplyInfo['RaceTeamId']]))
+						{
+							//队伍信息
+							$RaceTeamInfo = $oTeam->getRaceTeamInfo($ApplyInfo['RaceTeamId'],'*');
+							if(isset($RaceTeamInfo['RaceTeamId']))
+							{
+								$RaceTeamList[$ApplyInfo['RaceTeamId']] = $RaceTeamInfo;
+							}
+						}
+						$RaceUserList[$ApplyId]['RaceTeamName'] = isset($RaceTeamList[$ApplyInfo['RaceTeamId']])?$RaceTeamList[$ApplyInfo['RaceTeamId']]['RaceTeamName']:"个人报名";
 					}
 				}
 			}

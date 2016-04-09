@@ -8,6 +8,7 @@
   {tpl:if(count($RaceUserList))}
   <tr>
     <th align="center" class="rowtip">姓名</th>
+    <th align="center" class="rowtip">所属队伍</th>
     <th align="center" class="rowtip">报名时间</th>
     <th align="center" class="rowtip">选手号码</th>
     <th align="center" class="rowtip">计时芯片ID</th>
@@ -15,6 +16,7 @@
   {tpl:loop $RaceUserList $Aid $UserInfo}
   <tr>
     <th align="center" class="rowtip">{tpl:$UserInfo.Name/}</th>
+    <th align="center" class="rowtip">{tpl:$UserInfo.RaceTeamName/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.ApplyTime/}</th>
     <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$UserInfo.UserId/}][BIB]" id="UserList[{tpl:$UserInfo.UserId/}][BIB]" value="{tpl:$UserInfo.BIB/}" /></th>
     <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$UserInfo.UserId/}][ChipId]" id="UserList[{tpl:$UserInfo.UserId/}][ChipId]" value="{tpl:$UserInfo.ChipId/}" /></th>
