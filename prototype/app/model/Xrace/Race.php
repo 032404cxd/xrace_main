@@ -961,4 +961,113 @@ class Xrace_Race extends Base_Widget
 			return false;
 		}
 	}
+	//根据分组信息判断用户是否符合组别的报名规则
+	public function raceLicenseCheck($RaceLicenseList,$UserId,$RaceStageInfo,$RaceGroupInfo)
+	{
+		$oUser = new Xrace_User();
+		$oMemCache = new Base_Cache_Memcache("B5M");
+		{
+			//获取缓存
+			$m = $oMemCache->get("UserInfo_".$UserId);
+			//缓存解开
+			$m = json_decode($m,true);
+			//如果获取到的用户信息有效
+			if(isset($m['user_id']))
+			{
+				$UserInfo = $m;
+			}
+			else
+			{
+				//从数据库获取用户信息你
+				$UserInfo = $oUser->getUserInfo($UserId);
+				//如果获取到的用户信息有效
+				if(isset($UserInfo['user_id']))
+				{
+					//写入缓存
+					$oMemCache -> set("UserInfo_".$UserId,json_encode($UserInfo),86400);
+				}
+			}
+		}
+		//如果已配置执照条件列表
+		if(count($RaceLicenseList))
+		{
+			//获取条件列表
+			$RaceLisenceTypeList = $this->getRaceLicenseType();
+			//初始化空字符串
+			$text = array();
+			//循环条件列表
+			foreach ($RaceLicenseList as $key => $LicenseInfo)
+			{
+				//如果已配置当前条件
+				if(isset($RaceLisenceTypeList[$LicenseInfo['LicenseType']]))
+				{
+					$text[$key] = "".$RaceLisenceTypeList[$LicenseInfo['LicenseType']].": ";
+					//根据不同的条件类型拼接不同的字符串
+					$functionName = $LicenseInfo['LicenseType'] . "ConditionCheck";
+					//依次检查用户信息的审核状态
+					$RaceLicenseList[$key]['checked'] = $this->$functionName($LicenseInfo, $UserInfo,$RaceStageInfo,$RaceGroupInfo);
+				}
+				else
+				{
+					//删除数据
+					unset($RaceLicenseList[$key]);
+				}
+			}
+			return $RaceLicenseList;
+		}
+		else
+		{
+			return $RaceLicenseList;
+		}
+	}
+	//根据 用户生日判断是否符合执照条件
+	public function birthdayConditionCheck($LicenseInfo,$UserInfo)
+	{
+		//如果获取到的用户信息有效
+		if(isset($UserInfo['user_id']) && ($LicenseInfo['LicenseType']=="birthday"))
+		{
+			//判断结果
+			$text = '$return=$UserInfo['."'birth_day'".']'.$LicenseInfo['License']['equal']."'".$LicenseInfo['License']['Date']."'?true:false;";
+			eval($text);
+			return $return;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	//根据 用户性比判断是否符合执照条件
+	public function sexConditionCheck($LicenseInfo,$UserInfo)
+	{
+		//如果获取到的用户信息有效
+		if(isset($UserInfo['user_id']) && ($LicenseInfo['LicenseType']=="sex"))
+		{
+			//判断结果
+			$text = '$return=$UserInfo['."'sex'".']=='.$LicenseInfo['License']."?true:false;";
+			eval($text);
+			return $return;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	//根据 用户性比判断是否符合执照条件
+	public function managerConditionCheck($LicenseInfo,$UserInfo,$RaceStageInfo,$RaceGroupInfo)
+	{
+		//如果获取到的用户信息有效
+		if(isset($UserInfo['user_id']) && ($LicenseInfo['LicenseType']=="manager"))
+		{
+			//判断结果
+			$oUser = new Xrace_User();
+			//检查指定时间段，指定分组范围内有没有执照
+			$params = array('UserId'=>$UserInfo['user_id'],'RaceGroupId'=>$RaceGroupInfo['RaceGroupId'],'DuringDate'=>array('StartDate'=>$RaceStageInfo['StageStartDate'],'EndDate'=>$RaceStageInfo['StageEndDate']));
+			$UserLicenseCount = $oUser->getUserLicenseCount($params);
+			return $UserLicenseCount>0?true:false;
+		}
+		else
+		{
+			return false;
+		}
+	}
 }

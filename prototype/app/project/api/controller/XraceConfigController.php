@@ -281,8 +281,18 @@ class XraceConfigController extends AbstractController
                         {
                             //数据解包
                             $RaceGroupInfo['comment'] = json_decode($RaceGroupInfo['comment'],true);
-                            $RaceGroupInfo['LicenseList'] = $this->oRace->ParthRaceLicenseListToHtml($RaceGroupInfo['comment']['LicenseList'],0,0,1);
+                            //执照条件的审核
+                            $RaceGroupInfo['LicenseList'] = $this->oRace->raceLicenseCheck($RaceGroupInfo['comment']['LicenseList'],$UserId,$RaceStageInfo,$RaceGroupInfo);
+                            //格式化执照的条件，供显示
+                            $LicenseListText = $this->oRace->ParthRaceLicenseListToHtml($RaceGroupInfo['LicenseList'],0,0,1);
+                            //循环执照审核条件的文字
+                            foreach($LicenseListText as $key => $LicenseInfo)
+                            {
+                                //分别置入权限审核列表
+                                $RaceGroupInfo['LicenseList'][$key]['LicenseTextArr'] =  $LicenseInfo;
+                            }
                             //提取分组名称
+                            unset($RaceGroupInfo['comment']);
                             $RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId] = $RaceGroupInfo;
                         }
                         else
@@ -610,6 +620,58 @@ class XraceConfigController extends AbstractController
         {
             //全部置为空
             $result = array("return"=>0,"RaceInfo"=>array(),"comment"=>"请指定一个有效的比赛ID");
+        }
+        echo json_encode($result);
+    }
+    /*
+ * 获取单个赛事信息
+ */
+    public function getRaceTeamListAction()
+    {
+        //格式化赛事ID
+        $RaceCatalogId = abs(intval($this->request->RaceCatalogId));
+        //格式化赛事ID
+        $RaceGroupId = abs(intval($this->request->RaceGroupId));
+        //赛事ID必须大于0
+        if($RaceCatalogId)
+        {
+            //获取赛事信息
+            $RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId);
+            //检测主键存在,否则值为空
+            if(isset($RaceCatalogInfo['RaceCatalogId']))
+            {
+                //获取赛事组别信息
+                $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId);
+                //print_R($RaceGroupInfo);
+                print_R($RaceCatalogInfo);
+                //检测主键存在,否则值为空
+                if(isset($RaceGroupInfo['RaceGroupId']) && ($RaceGroupInfo['RaceCatalogId']==$RaceCatalogInfo['RaceCatalogId']))
+                {
+                    $oTeam = new Xrace_Team();
+                    $params = array('RaceCatalogId'=>$RaceCatalogId,'getCount'=>0);
+                    $RaceTeamList = $oTeam->getRaceTeamList($params);
+                    print_R($RaceTeamList);
+                    //结果数组
+                    //$result = array("return"=>1,"RaceCatalogInfo"=>$RaceCatalogInfo,'RaceGroupList'=>$RaceGroupList,'RaceStageList'=>$RaceStageList);
+                }
+                else
+                {
+                    //全部置为空
+                    $result = array("return"=>0,"RaceTeamList"=>array(),"comment"=>"请指定一个有效的分组ID");
+                }
+
+            }
+            else
+            {
+                //全部置为空
+                $result = array("return"=>0,"RaceTeamList"=>array(),"comment"=>"请指定一个有效的赛事ID");
+            }
+
+        }
+        else
+        {
+            //全部置为空
+            $result = array("return"=>0,"RaceCatalog"=>array(),'RaceGroupList'=>array(),'RaceStageList'=>array(),"comment"=>"请指定一个有效的赛事ID");
         }
         echo json_encode($result);
     }

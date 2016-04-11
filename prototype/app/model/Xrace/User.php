@@ -395,6 +395,10 @@ class Xrace_User extends Base_Widget
 			}
 			$whereLicenseStatus = implode(" or ",$t);
 		}
+		else
+		{
+			$whereLicenseStatus = "";
+		}
 		//需要排除的时间
 		if(isset($params['ExceptionDate']))
 		{
@@ -405,12 +409,21 @@ class Xrace_User extends Base_Widget
 		{
 			$whereExceptionDate = "";
 		}
+		//需要检查的时间
+		if(isset($params['DuringDate']))
+		{
+			$whereDuringDate = "(LicenseStartDate <= '".$params['DuringDate']['StartDate']."' and LicenseEndDate >= '".$params['DuringDate']['EndDate']."')";
+		}
+		else
+		{
+			$whereDuringDate = "";
+		}
 		//排除数据
 		$whereExceptionId = isset($params['ExceptionId'])?" LicenseId != '".$params['ExceptionId']."' ":"";
 		//排除数据
 		$whereExceptionStatus = isset($params['ExceptionStatus'])?" LicenseStatus != '".$params['ExceptionStatus']."' ":"";
 		//所有查询条件置入数组
-		$whereCondition = array($whereLicenseId,$whereUserId,$whereGroupId,$whereLicenseStatus,$whereExceptionId,$whereExceptionStatus,$whereExceptionDate);
+		$whereCondition = array($whereLicenseId,$whereUserId,$whereGroupId,$whereLicenseStatus,$whereExceptionId,$whereExceptionStatus,$whereExceptionDate,$whereDuringDate);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		//获取用户数量
@@ -477,6 +490,10 @@ class Xrace_User extends Base_Widget
 				}
 				$whereLicenseStatus = implode(" or ",$t);
 			}
+			else
+			{
+				$whereLicenseStatus = "";
+			}
 			//需要排除的时间
 			if(isset($params['ExceptionDate']))
 			{
@@ -488,12 +505,21 @@ class Xrace_User extends Base_Widget
 			{
 				$whereExceptionDate = "";
 			}
+			//需要检查的时间
+			if(isset($params['DuringDate']))
+			{
+				$whereDuringDate = "(LicenseStartDate <= '".$params['DuringDate']['StartDate']."' and LicenseEndDate >= '".$params['DuringDate']['EndDate']."')";
+			}
+			else
+			{
+				$whereDuringDate = "";
+			}
 			//排除数据
 			$whereExceptionId = isset($params['ExceptionId'])?" LicenseId != '".$params['ExceptionId']."' ":"";
 			//排除数据
 			$whereExceptionStatus = isset($params['ExceptionStatus'])?" LicenseStatus != '".$params['ExceptionStatus']."' ":"";
 			//所有查询条件置入数组
-			$whereCondition = array($whereLicenseId,$whereUserId,$whereGroupId,$whereLicenseStatus,$whereExceptionId,$whereExceptionStatus,$whereExceptionDate);
+			$whereCondition = array($whereLicenseId,$whereUserId,$whereGroupId,$whereLicenseStatus,$whereExceptionId,$whereExceptionStatus,$whereExceptionDate,$whereDuringDate);
 			//生成条件列
             $where = Base_common::getSqlWhere($whereCondition);
 			$sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
