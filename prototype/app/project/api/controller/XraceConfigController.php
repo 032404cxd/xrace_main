@@ -239,6 +239,8 @@ class XraceConfigController extends AbstractController
     {
         //格式化赛事分站ID,默认为0
         $RaceStageId = isset($this->request->RaceStageId)?abs(intval($this->request->RaceStageId)):0;
+        //格式化用户ID,默认为空
+        $UserId = isset($this->request->UserId)?trim($this->request->UserId):"";
         //赛事分站D必须大于0
         if($RaceStageId)
         {
@@ -273,10 +275,13 @@ class XraceConfigController extends AbstractController
                     foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $RaceGroupId)
                     {
                         //获取赛事分组基本信息
-                        $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName");
+                        $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName,comment");
                         //如果有获取到分组信息
                         if(isset($RaceGroupInfo['RaceGroupId']))
                         {
+                            //数据解包
+                            $RaceGroupInfo['comment'] = json_decode($RaceGroupInfo['comment'],true);
+                            $RaceGroupInfo['LicenseList'] = $this->oRace->ParthRaceLicenseListToHtml($RaceGroupInfo['comment']['LicenseList'],0,0,1);
                             //提取分组名称
                             $RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId] = $RaceGroupInfo;
                         }

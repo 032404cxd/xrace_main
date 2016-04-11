@@ -715,7 +715,7 @@ class Xrace_Race extends Base_Widget
 		return $StageTimeStatus;
 	}
 	//把执照获得条件转化成HTML
-	public function ParthRaceLicenseListToHtml($RaceLicenseList,$edit=1,$delete=0)
+	public function ParthRaceLicenseListToHtml($RaceLicenseList,$ReturnType=1,$delete=0,$array=0)
 	{
 		//如果已配置执照条件列表
 		if(count($RaceLicenseList))
@@ -730,15 +730,14 @@ class Xrace_Race extends Base_Widget
 				//如果已配置当前条件
 				if(isset($RaceLisenceTypeList[$LicenseInfo['LicenseType']]))
 				{
-					$text[$key] = "<tr><td>".$RaceLisenceTypeList[$LicenseInfo['LicenseType']]."</td>";
+					$text[$key] = "".$RaceLisenceTypeList[$LicenseInfo['LicenseType']].": ";
 					//根据不同的条件类型拼接不同的字符串
 					$functionName = $LicenseInfo['LicenseType']."ConditionToHtml";
-					$text[$key].= "<td>".$this->$functionName("LicenseList[".$key."]",$LicenseInfo,$edit)."</td>";
+					$text[$key].= " ".$this->$functionName("LicenseList[".$key."]",$LicenseInfo,$ReturnType)."";
 					if($delete)
 					{
-						$text[$key].= '<td><a href="javascript:void(0);" onclick="LicenseDelete('."'".$delete."'".','."'".$key."'".','."'".$RaceLisenceTypeList[$LicenseInfo['LicenseType']]."'".')">删除</a></td>';
+						$text[$key].= '<a href="javascript:void(0);" onclick="LicenseDelete('."'".$delete."'".','."'".$key."'".','."'".$RaceLisenceTypeList[$LicenseInfo['LicenseType']]."'".')"> 删除 </a>';
 					}
-					$text[$key].="</tr>";
 				}
 				else
 				{
@@ -746,7 +745,7 @@ class Xrace_Race extends Base_Widget
 					unset($RaceLicenseList[$key]);
 				}
 			}
-			return "<table>".implode("",$text)."</table>";
+			return $array==1?$text:("".implode("<br>",$text)."");
 		}
 		else
 		{
@@ -754,13 +753,13 @@ class Xrace_Race extends Base_Widget
 		}
 	}
 	//管理员赋予
-	public function managerConditionToHtml($key,$LicenseInfo,$edit = 1)
+	public function managerConditionToHtml($key,$LicenseInfo,$ReturnType = 1)
 	{
 		if(!count($LicenseInfo))
 		{
 			$LicenseInfo  = array("LicenseType"=>"manager","License"=>0);
 		}
-		if($edit==1)
+		if($ReturnType==1)
 		{
 			$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="manager">
 			<input type="radio" name="'.$key.'[License]" id="'.$key.'[License]" value="1" '.((isset($LicenseInfo['License'])&&$LicenseInfo['License']==1)?'checked':"").'>是
@@ -773,13 +772,13 @@ class Xrace_Race extends Base_Widget
 		return $text;
 	}
 	//生日
-	public function birthdayConditionToHtml($key,$LicenseInfo,$edit = 1)
+	public function birthdayConditionToHtml($key,$LicenseInfo,$ReturnType = 1)
 	{
 		if(!count($LicenseInfo))
 		{
 			$LicenseInfo  = array("LicenseType"=>"birthday","License"=>array("equal"=>">=","Date"=>date("Y-m-d",time())));
 		}
-		if($edit==1)
+		if($ReturnType==1)
 		{
 			$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="birthday"><select name="'.$key.'[License][equal]" size="1" class="span2">';
 			$equalList = Base_common::equalList();
@@ -797,7 +796,7 @@ class Xrace_Race extends Base_Widget
 		return $text;
 	}
 	//管理员赋予
-	public function sexConditionToHtml($key,$LicenseInfo,$edit = 1)
+	public function sexConditionToHtml($key,$LicenseInfo,$ReturnType = 1)
 	{
 		$oUser = new Xrace_User();
 		$sexList = $oUser -> getSexList();
@@ -805,7 +804,7 @@ class Xrace_Race extends Base_Widget
 		{
 			$LicenseInfo  = array("LicenseType"=>"sex","License"=>array_pop(array_keys($sexList)));
 		}
-		if($edit==1)
+		if($ReturnType==1)
 		{
 
 			$text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="sex">';
