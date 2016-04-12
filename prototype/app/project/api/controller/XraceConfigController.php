@@ -274,15 +274,28 @@ class XraceConfigController extends AbstractController
                     //循环图片列表
                     foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $RaceGroupId)
                     {
+
                         //获取赛事分组基本信息
                         $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName,comment");
                         //如果有获取到分组信息
                         if(isset($RaceGroupInfo['RaceGroupId']))
                         {
+                            //默认当前组别可选
+                            $RaceGroupInfo['checkable'] = true;
                             //数据解包
                             $RaceGroupInfo['comment'] = json_decode($RaceGroupInfo['comment'],true);
                             //执照条件的审核
                             $RaceGroupInfo['LicenseList'] = $this->oRace->raceLicenseCheck($RaceGroupInfo['comment']['LicenseList'],$UserId,$RaceStageInfo,$RaceGroupInfo);
+                            foreach($RaceGroupInfo['LicenseList'] as $k => $v)
+                            {
+                                //如果发现条件为不可选
+                                if(isset($v['checked']) && $v['checked'] == false)
+                                {
+                                    //将当前组别置为不可选
+                                    $RaceGroupInfo['checkable'] = false;
+                                    break;
+                                }
+                            }
                             //格式化执照的条件，供显示
                             $LicenseListText = $this->oRace->ParthRaceLicenseListToHtml($RaceGroupInfo['LicenseList'],0,0,1);
                             //循环执照审核条件的文字
@@ -344,7 +357,6 @@ class XraceConfigController extends AbstractController
                 //全部置为空
                 $result = array("return"=>0,"RaceStageInfo"=>array(),"comment"=>"请指定一个有效的分站ID");
             }
-
         }
         else
         {

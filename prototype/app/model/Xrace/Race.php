@@ -1033,7 +1033,7 @@ class Xrace_Race extends Base_Widget
 		}
 		else
 		{
-			return false;
+			return true;
 		}
 	}
 	//根据 用户性比判断是否符合执照条件
@@ -1049,7 +1049,7 @@ class Xrace_Race extends Base_Widget
 		}
 		else
 		{
-			return false;
+			return true;
 		}
 	}
 	//根据 用户性比判断是否符合执照条件
@@ -1062,12 +1062,13 @@ class Xrace_Race extends Base_Widget
 			$oUser = new Xrace_User();
 			//检查指定时间段，指定分组范围内有没有执照
 			$params = array('UserId'=>$UserInfo['user_id'],'RaceGroupId'=>$RaceGroupInfo['RaceGroupId'],'DuringDate'=>array('StartDate'=>$RaceStageInfo['StageStartDate'],'EndDate'=>$RaceStageInfo['StageEndDate']));
+			//获取用户的有效执照的数量
 			$UserLicenseCount = $oUser->getUserLicenseCount($params);
 			return $UserLicenseCount>0?true:false;
 		}
 		else
 		{
-			return false;
+			return true;
 		}
 	}
 }
