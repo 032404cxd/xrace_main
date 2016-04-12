@@ -642,17 +642,21 @@ class XraceConfigController extends AbstractController
             {
                 //获取赛事组别信息
                 $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId);
-                //print_R($RaceGroupInfo);
-                print_R($RaceCatalogInfo);
                 //检测主键存在,否则值为空
                 if(isset($RaceGroupInfo['RaceGroupId']) && ($RaceGroupInfo['RaceCatalogId']==$RaceCatalogInfo['RaceCatalogId']))
                 {
                     $oTeam = new Xrace_Team();
-                    $params = array('RaceCatalogId'=>$RaceCatalogId,'getCount'=>0);
-                    $RaceTeamList = $oTeam->getRaceTeamList($params);
-                    print_R($RaceTeamList);
+                    //获取分组相关的队伍列表
+                    $RaceTeamList = $oTeam->getRaceTeamListByGroup($RaceGroupInfo,1);
                     //结果数组
-                    //$result = array("return"=>1,"RaceCatalogInfo"=>$RaceCatalogInfo,'RaceGroupList'=>$RaceGroupList,'RaceStageList'=>$RaceStageList);
+                    if(count($RaceTeamList['RaceTeamList']))
+                    {
+                        $result = array("return"=>1,"RaceTeamList"=>$RaceTeamList['RaceTeamList']);
+                    }
+                    else
+                    {
+                        $result = array("return"=>0,"RaceTeamList"=>array(),"comment"=>"组别下并未有队伍");
+                    }
                 }
                 else
                 {
@@ -666,7 +670,6 @@ class XraceConfigController extends AbstractController
                 //全部置为空
                 $result = array("return"=>0,"RaceTeamList"=>array(),"comment"=>"请指定一个有效的赛事ID");
             }
-
         }
         else
         {

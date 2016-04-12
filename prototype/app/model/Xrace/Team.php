@@ -81,7 +81,7 @@ class Xrace_Team extends Base_Widget
 		}
 		else
 		{
-			$TeamCount = 0;
+			$RaceTeamCount = 0;
 		}
 		$limit  = isset($params['Page'])&&$params['Page']?" limit ".($params['Page']-1)*$params['PageSize'].",".$params['PageSize']." ":"";
 		$order = " ORDER BY RaceTeamId desc";
@@ -125,5 +125,83 @@ class Xrace_Team extends Base_Widget
 		//生成条件列
 		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
 		return $this->db->getOne($sql);
+	}
+	/**
+	 * 获取队伍数量
+	 * @param $RaceGroupInfo  分组信息
+	 * @param $Cache 是否强制更新缓存
+	 * @return array
+	 */
+	public function getRaceTeamListByGroup($RaceGroupInfo,$Cache = 1)
+	{
+		$oMemCache = new Base_Cache_Memcache("B5M");
+		$CacheKey = "TeamList_".$RaceGroupInfo['RaceGroupId'];
+		//如果需要获取缓存
+		if($Cache == 1)
+		{
+			//获取缓存
+			$m = $oMemCache->get($CacheKey);
+			//缓存解开
+			$RaceTeamList = json_decode($m,true);
+			//如果数据为空
+			if(count($RaceTeamList['RaceTeamList'])==0)
+			{
+				//需要从数据库获取
+				$NeedDB = 1;
+			}
+			else
+			{
+				//echo "cached";
+				return $RaceTeamList;
+			}
+		}
+		else
+		{
+			//需要从数据库获取
+			$NeedDB = 1;
+		}
+		if(isset($NeedDB))
+		{
+			//查询参数
+			$params = array('RaceCatalogId'=>$RaceGroupInfo['RaceCatalogId'],'getCount'=>0);
+			//获取指定赛事下的队伍列表
+			$RaceTeamList = $this->getRaceTeamList($RaceGroupInfo);
+			//如果有获取到队伍列表
+			if(count($RaceTeamList['RaceTeamList']))
+			{
+				//循环队伍列表
+				foreach($RaceTeamList['RaceTeamList'] as $RaceTeamId => $RaceTeamInfo)
+				{
+					//数据解包
+					$RaceTeamInfo['comment'] = json_decode($RaceTeamInfo['comment'],true);
+					//如果并未选择分组 或者 当前组别不在已经选择的分组当中
+					if(!isset($RaceTeamInfo['comment']['SelectedRaceGroup']) || !in_array($RaceGroupInfo['RaceGroupId'],$RaceTeamInfo['comment']['SelectedRaceGroup']))
+					{
+						//删除当前分组
+						unset($RaceTeamList['RaceTeamList'][$RaceTeamId]);
+					}
+					else
+					{
+						//保留数据
+						$RaceTeamList['RaceTeamList'][$RaceTeamId] = $RaceTeamInfo;
+					}
+				}
+				//如果有获取到队伍列表
+				if(count($RaceTeamList['RaceTeamList']))
+				{
+					//写入缓存
+					$oMemCache -> set($CacheKey,json_encode($RaceTeamList),86400);
+					return $RaceTeamList;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
 	}
 }

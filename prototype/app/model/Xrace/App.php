@@ -238,7 +238,7 @@ class Xrace_App extends Base_Widget
 	}
 	/**
 	 * 获得各个最新版本的信息
-	 * @param integer $Cache
+	 * @param integer $Cache 是否强制更新缓存
 	 * @return boolean
 	 */
 	public function getNewestVersionList($Cache = 1)
