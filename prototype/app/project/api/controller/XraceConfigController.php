@@ -740,7 +740,14 @@ class XraceConfigController extends AbstractController
         $RaceId = abs(intval($this->request->RaceId));
         //比赛ID
         $UserId = abs(intval($this->request->UserId));
-        print_R($this->oRace->getUserRaceInfo($RaceId,$UserId));
+        $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId,$UserId);
+        if(count($UserRaceInfo))
+        {
+            $this->oRace->genRaceLogToText($RaceId);
+            $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId,$UserId);
+        }
+        $result = array("return"=>0,"UserRaceInfo"=>$UserRaceInfo);
+        echo json_encode($result);
     }
     /*
     * 测试生成计时点

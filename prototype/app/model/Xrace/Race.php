@@ -930,8 +930,6 @@ class Xrace_Race extends Base_Widget
 						}
 					}
 				}
-				print_R($TimingPointList);
-				die();
 				//如果未检测到任何的计时点信息
 				if($TimingCount==0)
 				{
