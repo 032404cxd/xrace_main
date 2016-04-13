@@ -1091,7 +1091,6 @@ class Xrace_Race extends Base_Widget
 	{
 		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
 		$fileName = $UserId.".php";
-		echo $filePath.$fileName."<br>";
 		return Base_Common::loadConfig($filePath,$fileName);
 	}
 }
