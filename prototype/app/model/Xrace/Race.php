@@ -882,31 +882,47 @@ class Xrace_Race extends Base_Widget
 				//循环赛段信息
 				foreach($RaceInfo['comment']['DetailList'] as $SportsType => $TimingList)
 				{
+					//初始化空数组
 					$TimingPointList['Sports'][$SportsType]['TimingPointList'] = array();
 					//如果有配置计时点信息
 					if(isset($TimingList['TimingId']))
 					{
 						//获取计时点详情信息
 						$TimingInfo = $this->getTimingDetail($TimingList['TimingId']);
+						//如果计时点数据获取成功
 						if(isset($TimingInfo['TimingId']))
 						{
+							//数据解包
 							$TimingInfo['comment'] = json_decode($TimingInfo['comment'],true);
+							//如果解包后有计时点数据
 							if(count($TimingInfo['comment']))
 							{
+								//循环计时点数据
 								foreach($TimingInfo['comment'] as $TimingPoint)
 								{
+									//如果有计时点
 									if(count($TimingPoint))
 									{
+										//依次累加
 										$TimingCount++;
-										for($j = 0;$j<$TimingPoint['Round'];$j++)
+										$oSports = new Xrace_Sports();
+										//获取运动信息
+										$SportsTypeInfo = $oSports->getSportsType($TimingList['SportsTypeId'],"SportsTypeId,SportsTypeName");
+										if(isset($SportsTypeInfo['SportsTypeId']))
 										{
-											$TimingPointList['Sports'][$SportsType]['TimingPointList'][] = $i+1;
-											$t = $TimingPoint;
-											$t['TName'].= "*".($j+1);
-											$t['inTime'] = 0;
-											$t['outTime'] = 0;
-											$TimingPointList['Point'][$i+1] = $t;
-											$i++;
+											$SportsTypeInfo['TimingId']=$TimingList['TimingId'];
+											//保存运动本身信息
+											$TimingPointList['Sports'][$SportsType]['SportsTypeInfo'] = $SportsTypeInfo;
+											for($j = 0;$j<$TimingPoint['Round'];$j++)
+											{
+												$TimingPointList['Sports'][$SportsType]['TimingPointList'][] = $i+1;
+												$t = $TimingPoint;
+												$t['TName'].= "*".($j+1);
+												$t['inTime'] = 0;
+												$t['outTime'] = 0;
+												$TimingPointList['Point'][$i+1] = $t;
+												$i++;
+											}
 										}
 									}
 								}
@@ -914,6 +930,8 @@ class Xrace_Race extends Base_Widget
 						}
 					}
 				}
+				print_R($TimingPointList);
+				die();
 				//如果未检测到任何的计时点信息
 				if($TimingCount==0)
 				{
