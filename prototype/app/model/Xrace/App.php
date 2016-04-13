@@ -298,9 +298,7 @@ class Xrace_App extends Base_Widget
 				//写入缓存
 				$oMemCache -> set('NewestAppVersionList',json_encode($NewestAppVersionList),86400);
 			}
-
 		}
 		return $NewestAppVersionList;
 	}
-
 }

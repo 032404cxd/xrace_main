@@ -636,8 +636,8 @@ class XraceConfigController extends AbstractController
         echo json_encode($result);
     }
     /*
- * 获取单个赛事信息
- */
+     * 获取指定赛事组别下的车队列表
+     */
     public function getRaceTeamListAction()
     {
         //格式化赛事ID
@@ -687,6 +687,50 @@ class XraceConfigController extends AbstractController
         {
             //全部置为空
             $result = array("return"=>0,"RaceCatalog"=>array(),'RaceGroupList'=>array(),'RaceStageList'=>array(),"comment"=>"请指定一个有效的赛事ID");
+        }
+        echo json_encode($result);
+    }
+    /*
+     * 获取指定比赛报名的车队列表
+    */
+    public function getRaceUserListByRaceAction()
+    {
+        //比赛ID
+        $RaceId = abs(intval($this->request->RaceId));
+        //队伍ID -1表示个人选手 0表示全部
+        $TeamId = intval($this->request->TeamId)>=-1?intval($this->request->TeamId):0;
+        //赛事ID必须大于0
+        if($RaceId)
+        {
+            //获取比赛信息
+            $RaceInfo = $this->oRace->getRace($RaceId);
+            //检测主键存在,否则值为空
+            if(isset($RaceInfo['RaceId']))
+            {
+                $oUser = new Xrace_User();
+                //获取选手和车队名单
+                $RaceUserList = $oUser->getRaceUserListByRace($RaceId,$TeamId,1);
+                if(count($RaceUserList['RaceUserList']))
+                {
+                    //返回车手名单和车队列表
+                    $result = array("return"=>0,"RaceUserList"=>$RaceUserList['RaceUserList'],"RaceTeamList"=>$RaceUserList['RaceTeamList'],"comment"=>"请指定一个有效的比赛ID");
+                }
+                else
+                {
+                    //全部置为空
+                    $result = array("return"=>0,"RaceUserList"=>array(),"RaceTeamList"=>array(),"comment"=>"尚无选手报名");
+                }
+            }
+            else
+            {
+                //全部置为空
+                $result = array("return"=>0,"RaceUserList"=>array(),"RaceTeamList"=>array(),"comment"=>"请指定一个有效的比赛ID");
+            }
+        }
+        else
+        {
+            //全部置为空
+            $result = array("return"=>0,"RaceUserList"=>array(),"RaceTeamList"=>array(),"comment"=>"请指定一个有效的赛事ID");
         }
         echo json_encode($result);
     }

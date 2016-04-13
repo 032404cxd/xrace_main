@@ -1537,35 +1537,7 @@ class Xrace_RaceStageController extends AbstractController
 			$params = array('RaceId'=>$RaceInfo['RaceId']);
 			$oUser = new Xrace_User();
 			//获取选手名单
-			$RaceUserList = $oUser->getRaceUserList($params);
-			//如果获取到选手名单
-			if(count($RaceUserList))
-			{
-				$oTeam = new Xrace_Team();
-				$RaceTeamList = array();
-
-				foreach($RaceUserList as $ApplyId => $ApplyInfo)
-				{
-					//获取用户信息
-					$UserInfo = $oUser->getUserInfo( $ApplyInfo["UserId"],'user_id,name');
-					//如果获取到用户
-					if($UserInfo['user_id'])
-					{
-						$RaceUserList[$ApplyId]['UserId'] = $UserInfo['user_id'];
-						$RaceUserList[$ApplyId]['Name'] = $UserInfo['name'];
-						if(!isset($RaceTeamList[$ApplyInfo['RaceTeamId']]))
-						{
-							//队伍信息
-							$RaceTeamInfo = $oTeam->getRaceTeamInfo($ApplyInfo['RaceTeamId'],'*');
-							if(isset($RaceTeamInfo['RaceTeamId']))
-							{
-								$RaceTeamList[$ApplyInfo['RaceTeamId']] = $RaceTeamInfo;
-							}
-						}
-						$RaceUserList[$ApplyId]['RaceTeamName'] = isset($RaceTeamList[$ApplyInfo['RaceTeamId']])?$RaceTeamList[$ApplyInfo['RaceTeamId']]['RaceTeamName']:"个人报名";
-					}
-				}
-			}
+			$RaceUserList = $oUser->getRaceUserListByRace($RaceInfo['RaceId'],0,0);
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceUserList');
 			//print_R($RaceUserList);

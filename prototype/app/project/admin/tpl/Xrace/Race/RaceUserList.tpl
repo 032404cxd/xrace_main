@@ -13,7 +13,7 @@
     <th align="center" class="rowtip">选手号码</th>
     <th align="center" class="rowtip">计时芯片ID</th>
   </tr>
-  {tpl:loop $RaceUserList $Aid $UserInfo}
+  {tpl:loop $RaceUserList.RaceUserList $Aid $UserInfo}
   <tr>
     <th align="center" class="rowtip">{tpl:$UserInfo.Name/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.RaceTeamName/}</th>

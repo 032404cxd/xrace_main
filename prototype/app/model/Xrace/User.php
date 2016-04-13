@@ -537,13 +537,13 @@ class Xrace_User extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_license);
 		return $this->db->selectRow($table_to_process, $fields, '`LicenseId` = ?', $LicenseId);
 	}
-        /*
-         * 获得用户执照状态
-         */
-        public function getUserLicenseStatus($UserLicenseInfo)
-		{
-			return $this->user_license_status[$UserLicenseInfo['LicenseStatus']];
-        }
+	/*
+	 * 获得用户执照状态
+	 */
+	public function getUserLicenseStatus($UserLicenseInfo)
+	{
+		return $this->user_license_status[$UserLicenseInfo['LicenseStatus']];
+	}
         
         //新增单个用户执照信息
 	public function insertUserLicense(array $bind)
@@ -558,6 +558,7 @@ class Xrace_User extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_license);
 		return $this->db->update($table_to_process, $bind, '`LicenseId` = ?', $LicenseId);
 	}
+	//获取报名记录
 	public function getRaceUserList($params,$fields = array('*'))
 	{
 		//生成查询列
@@ -579,6 +580,110 @@ class Xrace_User extends Base_Widget
 		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by ApplyId";
 		$return = $this->db->getAll($sql);
 		return $return;
+	}
+	//获取某场比赛的报名名单
+	public function getRaceUserListByRace($RaceId,$TeamId=0,$Cache = 1)
+	{
+		$oMemCache = new Base_Cache_Memcache("B5M");
+		//如果需要获取缓存
+		if($Cache == 1)
+		{
+			//获取缓存
+			$m = $oMemCache->get("RaceUserList_".$RaceId);
+			//缓存解开
+			$RaceUserList = json_decode($m,true);
+			//如果数据为空
+			if(count($RaceUserList['RaceUserList'])==0)
+			{
+				//需要从数据库获取
+				$NeedDB = 1;
+			}
+			else
+			{
+				//echo "cached";
+			}
+		}
+		else
+		{
+			//需要从数据库获取
+			$NeedDB = 1;
+		}
+		if(isset($NeedDB))
+		{
+			//生成查询条件
+			$params = array('RaceId'=>$RaceId);
+			//获取选手名单
+			$UserList = $this->getRaceUserList($params);
+			//初始化空的返回值列表
+			$RaceTeamList = array('RaceUserList'=>array(),'RaceTeamList'=>array());
+			//如果获取到选手名单
+			if(count($UserList))
+			{
+				$oTeam = new Xrace_Team();
+				foreach($UserList as $ApplyId => $ApplyInfo)
+				{
+					//获取用户信息
+					$UserInfo = $this->getUserInfo( $ApplyInfo["UserId"],'user_id,name');
+					//如果获取到用户
+					if($UserInfo['user_id'])
+					{
+						//存储报名数据
+						$RaceUserList['RaceUserList'][$ApplyId] = $ApplyInfo;
+						//获取用户名
+						$RaceUserList['RaceUserList'][$ApplyId]['Name'] = $UserInfo['name'];
+						if(!isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']]))
+						{
+							//队伍信息
+							$RaceTeamInfo = $oTeam->getRaceTeamInfo($ApplyInfo['RaceTeamId'],'RaceTeamId,RaceTeamName');
+							//如果在队伍列表中有获取到队伍信息
+							if(isset($RaceTeamInfo['RaceTeamId']))
+							{
+								$RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']] = $RaceTeamInfo;
+							}
+						}
+						//格式化用户的队伍名称和队伍ID
+						$RaceUserList['RaceUserList'][$ApplyId]['RaceTeamName'] = isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']])?$RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']]['RaceTeamName']:"个人报名";
+						$RaceUserList['RaceUserList'][$ApplyId]['RaceTeamId'] = isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']])?$ApplyInfo['RaceTeamId']:0;
+					}
+				}
+				//如果有获取到最新版本信息
+				if(count($RaceUserList['RaceUserList']))
+				{
+					//写入缓存
+					$oMemCache -> set("RaceUserList_".$RaceId,json_encode($RaceUserList),86400);
+				}
+			}
+		}
+		//如果需要筛选的队伍ID在队伍列表中
+		if(isset($RaceUserList['RaceTeamList'][$TeamId]))
+		{
+			//循环名单
+			foreach($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
+			{
+
+				//如果不是想要的队伍
+				if($ApplyInfo['RaceTeamId'] != $TeamId)
+				{
+					//删除数据
+					unset($RaceUserList['RaceUserList'][$ApplyId]);
+				}
+			}
+		}
+		//如果只要个人报名选手
+		elseif($TeamId == -1)
+		{
+			//循环名单
+			foreach($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
+			{
+				//如果不是想要的队伍
+				if($ApplyInfo['RaceTeamId'] != 0)
+				{
+					//删除数据
+					unset($RaceUserList['RaceUserList'][$ApplyId]);
+				}
+			}
+		}
+		return $RaceUserList;
 	}
 	//更新用户报名信息
 	public function updateRaceUser($RaceId,$UserId, array $bind)
