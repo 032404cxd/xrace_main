@@ -954,7 +954,7 @@ class Xrace_Race extends Base_Widget
 							if($UserInfo['user_id'])
 							{
 								$TimingPointList['UserInfo'] = array('UserName'=>$UserInfo['name'],'UserId' => $UserInfo['user_id']);
-								$filePath = __APP_ROOT_DIR__."Timing"."\\".$RaceInfo['RaceId']."\\";
+								$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/";
 								$fileName = $UserInfo['user_id'].".php";
 								Base_Common::rebuildConfig($filePath,$fileName,$TimingPointList,"Timing");
 							}
@@ -1089,8 +1089,9 @@ class Xrace_Race extends Base_Widget
 	}
 	public function getUserRaceInfo($RaceId,$UserId)
 	{
-		$filePath = __APP_ROOT_DIR__."Timing"."\\".$RaceId."\\";
+		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
 		$fileName = $UserId.".php";
+		echo $filePath.$fileName."<br>";
 		return Base_Common::loadConfig($filePath,$fileName);
 	}
 }
