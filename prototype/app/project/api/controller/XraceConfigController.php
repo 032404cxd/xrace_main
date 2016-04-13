@@ -734,6 +734,14 @@ class XraceConfigController extends AbstractController
         }
         echo json_encode($result);
     }
+    public function getUserRaceInfoAction()
+    {
+        //比赛ID
+        $RaceId = abs(intval($this->request->RaceId));
+        //比赛ID
+        $UserId = abs(intval($this->request->UserId));
+        print_R($this->oRace->getUserRaceInfo($RaceId,$UserId));
+    }
     /*
     * 测试生成计时点
     */

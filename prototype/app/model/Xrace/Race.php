@@ -1071,4 +1071,10 @@ class Xrace_Race extends Base_Widget
 			return true;
 		}
 	}
+	public function getUserRaceInfo($RaceId,$UserId)
+	{
+		$filePath = __APP_ROOT_DIR__."Timing"."\\".$RaceId."\\";
+		$fileName = $UserId.".php";
+		return Base_Common::loadConfig($filePath,$fileName);
+	}
 }

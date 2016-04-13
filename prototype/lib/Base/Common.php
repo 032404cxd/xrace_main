@@ -1034,7 +1034,7 @@ EOF;
 	 * 将一个数组写入配置文件
 	 * @param string $fields
 	 */
-	 function rebuildConfig($filePath,$fileName,$dataArr,$arrName)
+	function rebuildConfig($filePath,$fileName,$dataArr,$arrName)
 	{
 		$var = var_export($dataArr,true);
 		$text ='<?php $'.$arrName.'='.$var.'; return $'.$arrName.';?>';
@@ -1043,6 +1043,15 @@ EOF;
 			$res=mkdir($filePath,0777,true);
 		}
 		file_put_contents($filePath.$fileName,$text);
+	}
+	/**
+	 * 将一个配置文件载入数组
+	 * @param string $fields
+	 */
+	function loadConfig($filePath,$fileName)
+	{
+		$return = @include($filePath.$fileName);
+		return $return;
 	}
 	/**
 	 * 返回一个比较符号的数组
