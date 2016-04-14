@@ -1564,7 +1564,7 @@ class Xrace_RaceStageController extends AbstractController
 			foreach($UserList['UserList'] as $ApplyId => $UserInfo)
 			{
 				//根据报名记录ID获取用户报名信息
-				$RaceUserInfo = $oUser->getRaceUserInfo($ApplyId,'ApplyId,UserId,RaceId,comment');
+				$RaceUserInfo = $oUser->getRaceApplyUserInfo($ApplyId,'ApplyId,UserId,RaceId,comment');
 				//复制到待更新数据
 				$bind = $RaceUserInfo;
 				//数据解包
@@ -1577,9 +1577,8 @@ class Xrace_RaceStageController extends AbstractController
 				$bind['comment']['XpUrl'] = trim($UserInfo['XpUrl']);
 				//数据打包
 				$bind['comment'] = json_encode($bind['comment']);
-				//$bind['comment'] = json_encode($bind['comment']);
 				//更新报名记录
-				$oUser->updateRaceUser($ApplyId,$bind);
+				$oUser->updateRaceUserApply($ApplyId,$bind);
 			}
 			//返回之前页面
 			$this->response->goBack();

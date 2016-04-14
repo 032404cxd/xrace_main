@@ -863,7 +863,7 @@ class Xrace_Race extends Base_Widget
 		return  $PriceList;
 	}
 	//根据报名记录生成指定场次比赛选手的计时记录到配置文件
-	public function genRaceLogToText($RaceId)
+	public function genRaceLogToText($RaceId,$UserId = 0)
 	{
 		$RaceId = intval($RaceId);
 		//获取比赛信息
@@ -938,7 +938,7 @@ class Xrace_Race extends Base_Widget
 				else
 				{
 					//生成查询条件
-					$params = array('RaceId'=>$RaceInfo['RaceId']);
+					$params = array('RaceId'=>$RaceInfo['RaceId'],'UserId'=>$UserId);
 					$oUser = new Xrace_User();
 					//获取选手名单
 					$RaceUserList = $oUser->getRaceUserList($params);
@@ -953,18 +953,23 @@ class Xrace_Race extends Base_Widget
 							//如果获取到用户
 							if($UserInfo['user_id'])
 							{
+								//存储用户信息
 								$TimingPointList['UserInfo'] = array('UserName'=>$UserInfo['name'],'UserId' => $UserInfo['user_id']);
+								//数据解包
+								$ApplyInfo['comment'] = json_decode($ApplyInfo['comment'],true);
+								//存储报名信息
+								$TimingPointList['ApplyInfo'] = $ApplyInfo;
 								$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/";
 								$fileName = $UserInfo['user_id'].".php";
+								//生成配置文件
 								Base_Common::rebuildConfig($filePath,$fileName,$TimingPointList,"Timing");
 							}
 						}
 					}
 					else
 					{
-						return fasle;
+						return false;
 					}
-
 				}
 			}
 			else
@@ -1087,10 +1092,12 @@ class Xrace_Race extends Base_Widget
 			return true;
 		}
 	}
+	//根据用户ID和比赛ID获取用户该场比赛的详情
 	public function getUserRaceInfo($RaceId,$UserId)
 	{
 		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
 		$fileName = $UserId.".php";
+		//载入预生成的配置文件
 		return Base_Common::loadConfig($filePath,$fileName);
 	}
 }

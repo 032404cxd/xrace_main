@@ -740,10 +740,15 @@ class XraceConfigController extends AbstractController
         $RaceId = abs(intval($this->request->RaceId));
         //比赛ID
         $UserId = abs(intval($this->request->UserId));
+        //获取用户比赛的详情
         $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId,$UserId);
-        if(count($UserRaceInfo))
+        //如果有查出数据
+        if(!isset($UserRaceInfo['UserInfo']))
         {
-            $this->oRace->genRaceLogToText($RaceId);
+            echo "Here";
+            //重新生成该场比赛所有人的配置数据
+            $this->oRace->genRaceLogToText($RaceId,$UserId);
+            //重新获取比赛详情
             $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId,$UserId);
         }
         $result = array("return"=>0,"UserRaceInfo"=>$UserRaceInfo);

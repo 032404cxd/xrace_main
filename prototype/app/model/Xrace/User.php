@@ -552,7 +552,7 @@ class Xrace_User extends Base_Widget
 		return $this->db->insert($table_to_process, $bind);
 	}
 	//获得用户报名信息
-	public function getRaceUserInfo($ApplyId, $fields = '*')
+	public function getRaceApplyUserInfo($ApplyId, $fields = '*')
 	{
 		$ApplyId = intval($ApplyId);
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
@@ -584,7 +584,7 @@ class Xrace_User extends Base_Widget
 		$whereCondition = array($whereCatalog,$whereUser,$whereGroup,$whereRace);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
-		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by ApplyId";
+		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by RaceTeamId,ApplyId desc";
 		$return = $this->db->getAll($sql);
 		return $return;
 	}
@@ -694,7 +694,7 @@ class Xrace_User extends Base_Widget
 		return $RaceUserList;
 	}
 	//更新用户报名信息
-	public function updateRaceUser($ApplyId, array $bind)
+	public function updateRaceUserApply($ApplyId, array $bind)
 	{
 		$ApplyId = intval($ApplyId);
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
