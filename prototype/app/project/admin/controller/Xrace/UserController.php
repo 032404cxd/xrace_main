@@ -309,7 +309,7 @@ class Xrace_UserController extends AbstractController
 				$response = array('errno' => 3);
 			}
 			//要求选择一个操作 通过/拒绝
-			elseif( $UserInfo['auth_state']=="")
+			elseif(!isset($AuthStatusList[$UserInfo['auth_state']]))
 			{
 				$response = array('errno' => 4);
 			}
@@ -319,7 +319,7 @@ class Xrace_UserController extends AbstractController
 				$response = array('errno' => 5);
 			}
 			//通过认证要求填写有效的生日 不小于 今天
-			elseif($UserInfo['auth_state'] == 2 && strtotime($UserInfo['birth_day']) < time())
+			elseif($UserInfo['auth_state'] == 2 && strtotime($UserInfo['birth_day']) > time())
 			{
 				$response = array('errno' => 6);
 			}
