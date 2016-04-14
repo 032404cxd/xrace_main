@@ -1561,12 +1561,25 @@ class Xrace_RaceStageController extends AbstractController
 			$UserList = $this->request->from('UserList');
 			$oUser = new Xrace_User();
 			//循环号码牌列表
-			foreach($UserList['UserList'] as $UserId => $UserInfo)
+			foreach($UserList['UserList'] as $ApplyId => $UserInfo)
 			{
+				//根据报名记录ID获取用户报名信息
+				$RaceUserInfo = $oUser->getRaceUserInfo($ApplyId,'ApplyId,UserId,RaceId,comment');
+				//复制到待更新数据
+				$bind = $RaceUserInfo;
+				//数据解包
+				$bind['comment'] = json_decode($bind['comment'],true);
+				//BIB
 				$bind['BIB'] = trim($UserInfo['BIB']);
+				//计时芯片ID
 				$bind['ChipId'] = trim($UserInfo['ChipId']);
+				//XPLOVER追踪链接
+				$bind['comment']['XpUrl'] = trim($UserInfo['XpUrl']);
+				//数据打包
+				$bind['comment'] = json_encode($bind['comment']);
+				//$bind['comment'] = json_encode($bind['comment']);
 				//更新报名记录
-				$oUser->updateRaceUser($RaceId,$UserId,$bind);
+				$oUser->updateRaceUser($ApplyId,$bind);
 			}
 			//返回之前页面
 			$this->response->goBack();

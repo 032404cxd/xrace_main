@@ -449,7 +449,7 @@ class Xrace_User extends Base_Widget
         /*
          * 获得用户执照数量
          */
-        public function getUserLicenseCount($params)
+	public function getUserLicenseCount($params)
 		{
             //生成查询列
             $fields = Base_common::getSqlFields(array("UserLicenseCount"=>"count(LicenseId)"));
@@ -544,12 +544,19 @@ class Xrace_User extends Base_Widget
 	{
 		return $this->user_license_status[$UserLicenseInfo['LicenseStatus']];
 	}
-        
-        //新增单个用户执照信息
+
+	//新增单个用户执照信息
 	public function insertUserLicense(array $bind)
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table_license);
 		return $this->db->insert($table_to_process, $bind);
+	}
+	//获得用户报名信息
+	public function getRaceUserInfo($ApplyId, $fields = '*')
+	{
+		$ApplyId = intval($ApplyId);
+		$table_to_process = Base_Widget::getDbTable($this->table_race);
+		return $this->db->selectRow($table_to_process, $fields, '`ApplyId` = ?', $ApplyId);
 	}
 	//更新单个用户执照信息
 	public function updateUserLicense($LicenseId,array $bind)
@@ -644,6 +651,7 @@ class Xrace_User extends Base_Widget
 						//格式化用户的队伍名称和队伍ID
 						$RaceUserList['RaceUserList'][$ApplyId]['RaceTeamName'] = isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']])?$RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']]['RaceTeamName']:"个人报名";
 						$RaceUserList['RaceUserList'][$ApplyId]['RaceTeamId'] = isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']])?$ApplyInfo['RaceTeamId']:0;
+						$RaceUserList['RaceUserList'][$ApplyId]['comment'] = json_decode($ApplyInfo['comment'],true);
 					}
 				}
 				//如果有获取到最新版本信息
@@ -686,11 +694,10 @@ class Xrace_User extends Base_Widget
 		return $RaceUserList;
 	}
 	//更新用户报名信息
-	public function updateRaceUser($RaceId,$UserId, array $bind)
+	public function updateRaceUser($ApplyId, array $bind)
 	{
-		$RaceId = intval($RaceId);
-		$UserId = intval($UserId);
+		$ApplyId = intval($ApplyId);
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
-		return $this->db->update($table_to_process, $bind, '`RaceId` = ? and `UserId` = ?', array($RaceId,$UserId));
+		return $this->db->update($table_to_process, $bind, '`ApplyId` = ?', $ApplyId);
 	}
 }
