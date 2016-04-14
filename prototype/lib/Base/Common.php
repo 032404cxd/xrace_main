@@ -1123,6 +1123,7 @@ EOF;
 		krsort($t);
 		foreach($t as $k => $v)
 		{
+			/*
 			if($v!="0")
 			{
 				break;
@@ -1131,6 +1132,7 @@ EOF;
 			{
 				unset($t[$k]);
 			}
+			*/
 		}
 		ksort($t);
 		$Version = implode(".",$t);

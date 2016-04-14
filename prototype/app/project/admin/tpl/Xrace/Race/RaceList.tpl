@@ -19,8 +19,8 @@
   <tr>
     <th align="center" class="rowtip">比赛名称</th>
     <th align="center" class="rowtip">比赛类型</th>
-    <th align="center" class="rowtip">是否必选</th>
-    <th align="center" class="rowtip">人数/价格对应</th>
+    <th align="center" class="rowtip">必选</th>
+    <th align="center" class="rowtip">人数/价格</th>
     <th align="center" class="rowtip">个人报名</th>
     <th align="center" class="rowtip">团队报名</th>
     <th align="center" class="rowtip">开始报名时间</th>
