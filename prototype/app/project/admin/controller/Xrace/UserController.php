@@ -48,7 +48,7 @@ class Xrace_UserController extends AbstractController
 			$params['AuthStatus'] = isset($AuthStatusList[$this->request->AuthStatus])?intval($this->request->AuthStatus):-1;
 			//分页参数
 			$params['Page'] = abs(intval($this->request->Page))?abs(intval($this->request->Page)):1;
-			$params['PageSize'] = 5;
+			$params['PageSize'] = 20;
 			//获取用户列表时需要获得记录总数
 			$params['getCount'] = 1;
 			//获取用户列表
