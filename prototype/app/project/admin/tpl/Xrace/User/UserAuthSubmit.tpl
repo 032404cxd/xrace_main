@@ -83,7 +83,8 @@
                     errors[7] = '必须填写一个有效的证件有效期，请修正后再次提交';
                     errors[8] = '必须填写拒绝理由，请修正后再次提交';
                     errors[9] = '入库失败，请修正后再次提交';
-                    errors[8] = '该用户已经实名认证过，无需多次认证';
+                    errors[10] = '该用户已经实名认证过，无需多次认证';
+                    errors[11] = '必须填写用户真实姓名，请修正后再次提交';
                     divBox.alertBox(errors[jsonResponse.errno],function(){});
                 } else {
                     var message = '实名认证提交成功';

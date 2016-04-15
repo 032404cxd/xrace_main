@@ -32,6 +32,7 @@
 <table width="99%" align="center" class="table table-bordered table-striped">
       <tr>
         <th align="center" class="rowtip">用户ID</th>
+          <th align="center" class="rowtip">真实姓名</th>
         <th align="center" class="rowtip">用户昵称</th>
         <th align="center" class="rowtip">微信openId</th>
         <th align="center" class="rowtip">联系电话</th>
@@ -43,6 +44,7 @@
     {tpl:loop $UserList.UserList $UserInfo}
       <tr class="hover">
         <td align="center">{tpl:$UserInfo.user_id/}</td>
+        <td align="center">{tpl:$UserInfo.name/}</td>
         <td align="center">{tpl:$UserInfo.nick_name/}</td>
         <td align="center">{tpl:$UserInfo.wx_open_id/}</td>
         <td align="center">{tpl:$UserInfo.phone/}</td>

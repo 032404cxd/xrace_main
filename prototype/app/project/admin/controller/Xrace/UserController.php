@@ -289,6 +289,7 @@ class Xrace_UserController extends AbstractController
 			$AuthInfo=$this->request->from('UserId','UserRealName','UserSex','UserAuthStatus','UserAuthIdType','UserAuthIdNo','UserBirthDay','UserAuthReason','UserAuthExpireDay');
 			$UserId = trim($this->request->UserId);
 			//页面参数预处理
+			$UserInfo['name'] = substr(strtoupper(trim($AuthInfo['UserRealName'])),0,30);
 			$UserInfo['sex'] = isset($SexList[intval($AuthInfo['UserSex'])])?intval($AuthInfo['UserSex']):0;
 			$UserInfo['id_type'] = isset($AuthIdTypesList[intval($AuthInfo['UserAuthIdType'])])?intval($AuthInfo['UserAuthIdType']):0;
 			$UserInfo['auth_state'] = isset($AuthStatusList[intval($AuthInfo['UserAuthStatus'])])?intval($AuthInfo['UserAuthStatus']):0;
@@ -332,6 +333,11 @@ class Xrace_UserController extends AbstractController
 			elseif($UserInfo['auth_state'] == 2 && $UserAuthInfo['auth_resp'] == "")
 			{
 				$response = array('errno' => 8);
+			}
+			//必须填写真实姓名
+			elseif($UserInfo['name'] == "")
+			{
+				$response = array('errno' => 11);
 			}
 			else
 			{
