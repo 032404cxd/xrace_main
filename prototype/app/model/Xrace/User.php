@@ -239,7 +239,7 @@ class Xrace_User extends Base_Widget
 
 		$UserAuthInfo = $this->getUserAuthInfo($UserId);
 		$UserAuthInfo['auth_resp'] = $AuthInfo['auth_resp'];
-		$UserAuthInfo['auth_result'] = 2;
+		$UserAuthInfo['auth_result'] = 0;
 		$UserAuthInfo['op_time'] = date("Y-m-d H:i:s",time());
 		$UserAuthInfo['op_uid'] = $AuthInfo['op_uid'];
 		//事务开始
