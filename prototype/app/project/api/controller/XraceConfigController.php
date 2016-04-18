@@ -11,6 +11,7 @@ class XraceConfigController extends AbstractController
     protected $oRace;
     protected $oSports;
     protected $oProduct;
+    protected $oUser;
     /**
      * 初始化
      * (non-PHPdoc)
@@ -22,6 +23,7 @@ class XraceConfigController extends AbstractController
         $this->oRace = new Xrace_Race();
         $this->oSports = new Xrace_Sports();
         $this->oProduct = new Xrace_Product();
+        $this->oUser = new Xrace_User();
     }
     /**
      *获取所有赛事的列表
@@ -707,9 +709,8 @@ class XraceConfigController extends AbstractController
             //检测主键存在,否则值为空
             if(isset($RaceInfo['RaceId']))
             {
-                $oUser = new Xrace_User();
                 //获取选手和车队名单
-                $RaceUserList = $oUser->getRaceUserListByRace($RaceId,$TeamId,1);
+                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId,$TeamId,1);
                 if(count($RaceUserList['RaceUserList']))
                 {
                     //返回车手名单和车队列表
@@ -734,6 +735,9 @@ class XraceConfigController extends AbstractController
         }
         echo json_encode($result);
     }
+    /*
+     * 获取指定用户或BIB在比赛中的详情
+    */
     public function getUserRaceInfoAction()
     {
         //比赛ID
@@ -744,9 +748,8 @@ class XraceConfigController extends AbstractController
         $BIB = trim($this->request->BIB);
         if(!$UserId)
         {
-            $oUser = new Xrace_User();
             //根据用户的BIB获取比赛报名信息
-            $UserApplyInfo = $oUser->getRaceApplyUserInfoByBIB($RaceId,$BIB);
+            $UserApplyInfo = $this->oUser->getRaceApplyUserInfoByBIB($RaceId,$BIB);
             //如果查询到报名记录
             if($UserApplyInfo['ApplyId'])
             {
@@ -766,6 +769,25 @@ class XraceConfigController extends AbstractController
         }
         $result = array("return"=>0,"UserRaceInfo"=>$UserRaceInfo);
         echo json_encode($result);
+    }
+    /*
+     * 获取指定用户的报名记录
+    */
+    public function getUserRaceListAction()
+    {
+        //比赛ID
+        $UserId = abs(intval($this->request->UserId));
+        if($UserId)
+        {
+            //根据用户获取报名记录
+            $UserApplyList = $this->oUser->getRaceUserList(array('UserId'=>$UserId));
+        }
+        else
+        {
+
+        }
+        //$result = array("return"=>0,"UserRaceInfo"=>$UserRaceInfo);
+        //echo json_encode($result);
     }
     /*
     * 测试生成计时点
