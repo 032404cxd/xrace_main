@@ -787,7 +787,7 @@ class XraceConfigController extends AbstractController
                 //根据用户获取报名记录
                 $UserApplyList = $this->oUser->getRaceUserList(array('UserId'=>$UserInfo['user_id']));
                 //获取赛事列表
-                $RaceCatalogList = $this->oRace->getRaceCatalogList("RaceCatalogId,RaceCatalogName,comment");
+                $RaceCatalogList = $this->oRace->getRaceCatalogList("RaceCatalogId,RaceCatalogName");
                 $RaceGroupList = array();
                 $RaceStageList = array();
                 //循环报名列表
@@ -798,7 +798,7 @@ class XraceConfigController extends AbstractController
                         $UserApplyList[$key]['RaceCatalogName'] = $RaceCatalogList[$ApplyInfo['RaceCatalogId']]['RaceCatalogName'];
                         if(!isset($RaceGroupList[$ApplyInfo['RaceGroupId']]))
                         {
-                            $RaceGroupInfo = $this->oRace->getRaceGroup($ApplyInfo['RaceGroupId'],'RaceGroupId,RaceGroupName,comment');
+                            $RaceGroupInfo = $this->oRace->getRaceGroup($ApplyInfo['RaceGroupId'],'RaceGroupId,RaceGroupName');
                             if(isset($RaceGroupInfo['RaceGroupId']))
                             {
                                 $RaceGroupList[$ApplyInfo['RaceGroupId']] = $RaceGroupInfo;
@@ -809,6 +809,20 @@ class XraceConfigController extends AbstractController
                             }
                         }
                         $UserApplyList[$key]['RaceGroupName'] = $RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupName'];
+
+                        if(!isset($RaceStageList[$ApplyInfo['RaceStageId']]))
+                        {
+                            $RaceStageInfo = $this->oRace->getRaceStage($ApplyInfo['RaceStageId'],'RaceStageId,RaceStageName');
+                            if(isset($RaceStageInfo['RaceStageId']))
+                            {
+                                $RaceStageList[$ApplyInfo['RaceStageId']] = $RaceStageInfo;
+                            }
+                            else
+                            {
+                                unset($UserApplyList[$key]);
+                            }
+                        }
+                        $UserApplyList[$key]['RaceStageName'] = $RaceStageList[$ApplyInfo['RaceStageId']]['RaceStageName'];
                     }
                     else
                     {

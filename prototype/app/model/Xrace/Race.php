@@ -43,7 +43,10 @@ class Xrace_Race extends Base_Widget
 			foreach($return as $key => $value)
 			{
 				$RaceCatalogList[$value['RaceCatalogId']] = $value;
-				$RaceCatalogList[$value['RaceCatalogId']]['comment'] = json_decode($RaceCatalogList[$value['RaceCatalogId']]['comment'],true);
+				if(isset($RaceCatalogList[$value['RaceCatalogId']]['comment']))
+				{
+					$RaceCatalogList[$value['RaceCatalogId']]['comment'] = json_decode($RaceCatalogList[$value['RaceCatalogId']]['comment'],true);
+				}
 			}
 		}
 		return $RaceCatalogList;
