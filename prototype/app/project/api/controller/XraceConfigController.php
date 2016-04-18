@@ -779,15 +779,54 @@ class XraceConfigController extends AbstractController
         $UserId = abs(intval($this->request->UserId));
         if($UserId)
         {
-            //根据用户获取报名记录
-            $UserApplyList = $this->oUser->getRaceUserList(array('UserId'=>$UserId));
+            //获取用户信息
+            $UserInfo = $this->oUser->getUserInfo( $UserId,'user_id,name');
+            //如果有获取到用户信息
+            if($UserInfo['user_id'])
+            {
+                //根据用户获取报名记录
+                $UserApplyList = $this->oUser->getRaceUserList(array('UserId'=>$UserInfo['user_id']));
+                //获取赛事列表
+                $RaceCatalogList = $this->oRace->getRaceCatalogList("RaceCatalogId,RaceCatalogName,comment");
+                $RaceGroupList = array();
+                $RaceStageList = array();
+                //循环报名列表
+                foreach($UserApplyList as $key => $ApplyInfo)
+                {
+                    if(isset($RaceCatalogList[$ApplyInfo['RaceCatalogId']]))
+                    {
+                        $UserApplyList[$key]['RaceCatalogName'] = $RaceCatalogList[$ApplyInfo['RaceCatalogId']]['RaceCatalogName'];
+                        if(!isset($RaceGroupList[$ApplyInfo['RaceGroupId']]))
+                        {
+                            $RaceGroupInfo = $this->oRace->getRaceGroup($ApplyInfo['RaceGroupId'],'RaceGroupId,RaceGroupName,comment');
+                            if(isset($RaceGroupInfo['RaceGroupId']))
+                            {
+                                $RaceGroupList[$ApplyInfo['RaceGroupId']] = $RaceGroupInfo;
+                            }
+                            else
+                            {
+                                unset($UserApplyList[$key]);
+                            }
+                        }
+                        $UserApplyList[$key]['RaceGroupName'] = $RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupName'];
+                    }
+                    else
+                    {
+                        unset($UserApplyList[$key]);
+                    }
+                }
+            }
+            else
+            {
+                $result = array("return"=>0,"UserRaceList"=>array(),"comment"=>"无此用户");
+            }
         }
         else
         {
-
+            $result = array("return"=>0,"UserRaceList"=>array(),"comment"=>"请指定一个有效的用户ID");
         }
-        //$result = array("return"=>0,"UserRaceInfo"=>$UserRaceInfo);
-        //echo json_encode($result);
+        print_R($UserApplyList);
+        echo json_encode($result);
     }
     /*
     * 测试生成计时点
