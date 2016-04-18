@@ -740,12 +740,25 @@ class XraceConfigController extends AbstractController
         $RaceId = abs(intval($this->request->RaceId));
         //比赛ID
         $UserId = abs(intval($this->request->UserId));
+        //用户BIB
+        $BIB = trim($this->request->BIB);
+        if(!$UserId)
+        {
+            $oUser = new Xrace_User();
+            //根据用户的BIB获取比赛报名信息
+            $UserApplyInfo = $oUser->getRaceApplyUserInfoByBIB($RaceId,$BIB);
+            //如果查询到报名记录
+            if($UserApplyInfo['ApplyId'])
+            {
+                //保存用户ID
+                $UserId = $UserApplyInfo['UserId'];
+            }
+        }
         //获取用户比赛的详情
         $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId,$UserId);
         //如果有查出数据
         if(!isset($UserRaceInfo['UserInfo']))
         {
-            echo "Here";
             //重新生成该场比赛所有人的配置数据
             $this->oRace->genRaceLogToText($RaceId,$UserId);
             //重新获取比赛详情

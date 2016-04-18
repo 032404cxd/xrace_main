@@ -949,7 +949,7 @@ class Xrace_Race extends Base_Widget
 						foreach($RaceUserList as $ApplyId => $ApplyInfo)
 						{
 							//获取用户信息
-							$UserInfo = $oUser->getUserInfo( $ApplyInfo["UserId"],'user_id,name');
+							$UserInfo = $oUser->getUserInfo($ApplyInfo["UserId"],'user_id,name');
 							//如果获取到用户
 							if($UserInfo['user_id'])
 							{
@@ -1100,4 +1100,5 @@ class Xrace_Race extends Base_Widget
 		//载入预生成的配置文件
 		return Base_Common::loadConfig($filePath,$fileName);
 	}
+
 }

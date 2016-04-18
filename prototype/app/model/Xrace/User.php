@@ -700,4 +700,12 @@ class Xrace_User extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
 		return $this->db->update($table_to_process, $bind, '`ApplyId` = ?', $ApplyId);
 	}
+	//根据BIB获得用户报名信息
+	public function getRaceApplyUserInfoByBIB($RaceId,$BIB, $fields = '*')
+	{
+		$RaceId = intval($RaceId);
+		$BIB = trim($BIB);
+		$table_to_process = Base_Widget::getDbTable($this->table_race);
+		return $this->db->selectRow($table_to_process, $fields, '`RaceId` = ? and `BIB` = ?', array($RaceId,$BIB));
+	}
 }
