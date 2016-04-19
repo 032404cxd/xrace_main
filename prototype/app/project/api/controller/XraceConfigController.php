@@ -868,7 +868,6 @@ class XraceConfigController extends AbstractController
         {
             $result = array("return"=>0,"UserRaceList"=>array(),"comment"=>"请指定一个有效的用户ID");
         }
-        print_R($UserApplyList);
         echo json_encode($result);
     }
     /*
