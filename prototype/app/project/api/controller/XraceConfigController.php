@@ -790,6 +790,7 @@ class XraceConfigController extends AbstractController
                 $RaceCatalogList = $this->oRace->getRaceCatalogList("RaceCatalogId,RaceCatalogName");
                 $RaceGroupList = array();
                 $RaceStageList = array();
+                $RaceTypeList = array();
                 //循环报名列表
                 foreach($UserApplyList as $key => $ApplyInfo)
                 {
@@ -823,12 +824,40 @@ class XraceConfigController extends AbstractController
                             }
                         }
                         $UserApplyList[$key]['RaceStageName'] = $RaceStageList[$ApplyInfo['RaceStageId']]['RaceStageName'];
+
+                        $RaceInfo = $this->oRace->getRace($ApplyInfo['RaceId'],"*");
+                        if(isset($RaceInfo['RaceId']))
+                        {
+                            $UserApplyList[$key]['RaceName'] = $RaceInfo['RaceName'];
+                            if(!isset($RaceTypeList[$RaceInfo['RaceTypeId']]))
+                            {
+                                $RaceTypeInfo = $this->oRace->getRaceType($RaceInfo['RaceTypeId'],'*');
+                                if(isset($RaceTypeInfo['RaceTypeId']))
+                                {
+                                    $RaceTypeInfo['comment'] = json_decode($RaceTypeInfo['comment'],true);
+                                    //拼接上ADMIN站点的域名
+                                    $RaceTypeInfo['comment']['RaceTypeIcon'] = $this->config->adminUrl.$RaceTypeInfo['comment']['RaceTypeIcon_root'];
+                                    $RaceTypeList[$RaceInfo['RaceTypeId']] = $RaceTypeInfo;
+                                }
+                                else
+                                {
+                                    unset($UserApplyList[$key]);
+                                }
+                            }
+                            $UserApplyList[$key]['RaceTypeIcon'] = $RaceTypeList[$RaceInfo['RaceTypeId']]['comment']['RaceTypeIcon'];
+                            $UserApplyList[$key]['RaceTypeName'] = $RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName'];
+                        }
+                        else
+                        {
+                            unset($UserApplyList[$key]);
+                        }
                     }
                     else
                     {
                         unset($UserApplyList[$key]);
                     }
                 }
+                $result = array("return"=>1,"UserRaceList"=>$UserApplyList);
             }
             else
             {
