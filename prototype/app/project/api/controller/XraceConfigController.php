@@ -796,6 +796,7 @@ class XraceConfigController extends AbstractController
                 {
                     if(isset($RaceCatalogList[$ApplyInfo['RaceCatalogId']]))
                     {
+                        $UserApplyList[$key]['comment'] = json_decode($ApplyInfo['comment'],true);
                         $UserApplyList[$key]['RaceCatalogName'] = $RaceCatalogList[$ApplyInfo['RaceCatalogId']]['RaceCatalogName'];
                         if(!isset($RaceGroupList[$ApplyInfo['RaceGroupId']]))
                         {
@@ -888,7 +889,7 @@ class XraceConfigController extends AbstractController
             if(isset($RaceInfo['RaceId']))
             {
                 //获取选手和车队名单
-                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId,0,0);
+                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId,0,1);
                 if(count($RaceUserList['RaceUserList']))
                 {
                     foreach($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
