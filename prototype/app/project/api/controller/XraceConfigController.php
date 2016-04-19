@@ -714,7 +714,7 @@ class XraceConfigController extends AbstractController
                 if(count($RaceUserList['RaceUserList']))
                 {
                     //返回车手名单和车队列表
-                    $result = array("return"=>0,"RaceUserList"=>$RaceUserList['RaceUserList'],"RaceTeamList"=>$RaceUserList['RaceTeamList'],"comment"=>"请指定一个有效的比赛ID");
+                    $result = array("return"=>1,"RaceUserList"=>$RaceUserList['RaceUserList'],"RaceTeamList"=>$RaceUserList['RaceTeamList']);
                 }
                 else
                 {
@@ -867,6 +867,56 @@ class XraceConfigController extends AbstractController
         else
         {
             $result = array("return"=>0,"UserRaceList"=>array(),"comment"=>"请指定一个有效的用户ID");
+        }
+        echo json_encode($result);
+    }
+    /*
+ * 获取指定比赛报名的车队列表
+*/
+    public function getRaceUserListByBibAction()
+    {
+        //比赛ID
+        $RaceId = abs(intval($this->request->RaceId));
+        //BIB号码
+        $BIB = trim($this->request->BIB);
+        //赛事ID必须大于0
+        if($RaceId)
+        {
+            //获取比赛信息
+            $RaceInfo = $this->oRace->getRace($RaceId);
+            //检测主键存在,否则值为空
+            if(isset($RaceInfo['RaceId']))
+            {
+                //获取选手和车队名单
+                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId,0,0);
+                if(count($RaceUserList['RaceUserList']))
+                {
+                    foreach($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
+                    {
+                        if(!strstr($ApplyInfo['BIB'],$BIB))
+                        {
+                            unset($RaceUserList['RaceUserList'][$ApplyId]);
+                        }
+                    }
+                    //返回车手名单和车队列表
+                    $result = array("return"=>1,"RaceUserList"=>$RaceUserList['RaceUserList']);
+                }
+                else
+                {
+                    //全部置为空
+                    $result = array("return"=>0,"RaceUserList"=>array(),"RaceTeamList"=>array(),"comment"=>"尚无选手报名");
+                }
+            }
+            else
+            {
+                //全部置为空
+                $result = array("return"=>0,"RaceUserList"=>array(),"RaceTeamList"=>array(),"comment"=>"请指定一个有效的比赛ID");
+            }
+        }
+        else
+        {
+            //全部置为空
+            $result = array("return"=>0,"RaceUserList"=>array(),"RaceTeamList"=>array(),"comment"=>"请指定一个有效的赛事ID");
         }
         echo json_encode($result);
     }
