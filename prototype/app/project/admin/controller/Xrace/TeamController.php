@@ -44,10 +44,10 @@ class Xrace_TeamController extends AbstractController
 			//赛事分组列表
 			$RaceGroupList = $this->oRace->getRaceGroupList($params['RaceCatalogId'],'RaceGroupId,RaceGroupName');
 			//页面参数预处理
-			$params['RaceTeamName'] = urldecode(trim($this->request->RaceTeamName))?substr(urldecode(trim($this->request->RaceTeamName)),0,8):"";
+			$params['RaceTeamName'] = urldecode(trim($this->request->RaceTeamName))?substr(urldecode(trim($this->request->RaceTeamName)),0,20):"";
 			//分页参数
 			$params['Page'] = abs(intval($this->request->Page))?abs(intval($this->request->Page)):1;
-			$params['PageSize'] = 5;
+			$params['PageSize'] = 20;
 			//获取用户列表时需要获得记录总数
 			$params['getCount'] = 1;
 			//获取用户列表
@@ -55,7 +55,7 @@ class Xrace_TeamController extends AbstractController
 			//导出EXCEL链接
 			$export_var = "<a href =".(Base_Common::getUrl('','xrace/team','team.list.download',$params))."><导出表格></a>";
 			//翻页参数
-			$page_url = Base_Common::getUrl('','xrace/user','index',$params)."&Page=~page~";
+			$page_url = Base_Common::getUrl('','xrace/team','index',$params)."&Page=~page~";
 			$page_content =  base_common::multi($RaceTeamList['RaceTeamCount'], $page_url, $params['Page'], $params['PageSize'], 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');
 			//循环队伍列表
 			foreach($RaceTeamList['RaceTeamList'] as $RaceTeamId => $RaceTeamInfo)

@@ -49,7 +49,7 @@ $('#team_update_submit').click(function(){
 				errors[9] = '入库失败，请修正后再次提交';
 				divBox.alertBox(errors[jsonResponse.errno],function(){});
 			} else {
-				var message = '修改赛事分站成功';
+				var message = '修改队伍成功';
 				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}');}});
 			}
 		}

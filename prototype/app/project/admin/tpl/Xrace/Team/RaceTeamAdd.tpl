@@ -39,7 +39,7 @@ $('#team_add_submit').click(function(){
 				errors[9] = '入库失败，请修正后再次提交';
 				divBox.alertBox(errors[jsonResponse.errno],function(){});
 			} else {
-				var message = '添加赛事成功';
+				var message = '添加队伍成功';
 				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}');}});
 			}
 		}
