@@ -2,7 +2,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$('#add_app').click(function(){
-		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=race.catalog.add', {title:'添加赛事',width:500,height:600});
+		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=race.catalog.add', {title:'添加赛事',width:700,height:600});
 	});
 });
 
@@ -11,7 +11,7 @@ function RaceCatalogDelete(p_id, p_name){
 }
 
 function RaceCatalogModify(mid){
-	modifyRaceCatalogBox = divBox.showBox('{tpl:$this.sign/}&ac=race.catalog.modify&RaceCatalogId=' + mid, {title:'修改赛事',width:500,height:600});
+	modifyRaceCatalogBox = divBox.showBox('{tpl:$this.sign/}&ac=race.catalog.modify&RaceCatalogId=' + mid, {title:'修改赛事',width:700,height:600});
 }
 
 </script>

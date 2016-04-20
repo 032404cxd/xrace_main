@@ -13,6 +13,9 @@
 	<tr class="hover"><td>赛事图标</td>
 		<td align="left"><input name="RaceCatalogIcon[1]" type="file" class="span4" id="RaceCatalogIcon[1]" /></td>
 	</tr>
+	<tr class="hover"><td colspan = 2>赛事介绍</td></tr>
+	<tr class="hover"><td colspan = 2><?php echo $editor->editor("RaceCatalogComment",$RaceCatalogInfo['RaceCatalogComment']); ?></td>
+	</tr>
 <tr class="noborder"><td></td>
 <td><button type="submit" id="race_catalog_update_submit">提交</button></td>
 </tr>

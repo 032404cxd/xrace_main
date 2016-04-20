@@ -52,6 +52,13 @@ class Xrace_RaceCatalogController extends AbstractController
 	{
 		//检查权限
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceCatalogInsert");
+		include('Third/ckeditor/ckeditor.php');
+
+		$editor =  new CKEditor();
+		$editor->BasePath = '/js/ckeditor/';
+		$editor->config['height'] = 150;
+		$editor->config['width'] =600;
+
 		if($PermissionCheck['return'])
 		{
 			//渲染模板
@@ -67,7 +74,7 @@ class Xrace_RaceCatalogController extends AbstractController
 	public function raceCatalogInsertAction()
 	{
 		//检查权限
-		$bind=$this->request->from('RaceCatalogId','RaceCatalogName');
+		$bind=$this->request->from('RaceCatalogId','RaceCatalogName','RaceCatalogComment');
 		//赛事名称不能为空
 		if(trim($bind['RaceCatalogName'])=="")
 		{
@@ -108,6 +115,13 @@ class Xrace_RaceCatalogController extends AbstractController
 			$RaceCatalogId = trim($this->request->RaceCatalogId);
 			//获取赛事信息
 			$RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId,'*');
+			include('Third/ckeditor/ckeditor.php');
+
+			$editor =  new CKEditor();
+			$editor->BasePath = '/js/ckeditor/';
+			$editor->config['height'] = 150;
+			$editor->config['width'] =600;
+
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceCatalogModify');
 		}
@@ -122,7 +136,7 @@ class Xrace_RaceCatalogController extends AbstractController
 	public function raceCatalogUpdateAction()
 	{
 		//获取页面参数
-		$bind=$this->request->from('RaceCatalogId','RaceCatalogName');
+		$bind=$this->request->from('RaceCatalogId','RaceCatalogName','RaceCatalogComment');
 		//赛事名称不能为空
 		if(trim($bind['RaceCatalogName'])=="")
 		{
