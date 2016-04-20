@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="user_auth_form" name="user_auth_form" action="{tpl:$this.sign/}&ac=user.auth" metdod="post">
+<form id="user_auth_form" name="user_auth_form" action="{tpl:$this.sign/}&ac=user.auth" method="post">
     <input type="hidden" name="UserId" value="{tpl:$UserInfo.user_id/}" />
     <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
         <tr class="hover">

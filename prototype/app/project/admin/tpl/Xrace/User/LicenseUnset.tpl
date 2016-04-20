@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="license_delete_form" name="license_add_form" action="{tpl:$this.sign/}&ac=license.delete" metdod="post">
+<form id="license_delete_form" name="license_add_form" action="{tpl:$this.sign/}&ac=license.delete" method="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
 <input type="hidden" name="LicenseId"  id="LicenseId" value="{tpl:$UserLicenseInfo.LicenseId/}" />
 <input type="hidden" name="UserId"  id="UserId" value="{tpl:$UserLicenseInfo.UserId/}" />

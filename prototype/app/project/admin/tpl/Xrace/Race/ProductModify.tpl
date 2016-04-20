@@ -1,5 +1,5 @@
 {tpl:tpl contentHeader/}
-<form id="product_update_form" name="product_update_form" action="{tpl:$this.sign/}&ac=product.update" metdod="post">
+<form id="product_update_form" name="product_update_form" action="{tpl:$this.sign/}&ac=product.update" method="post">
 <input type="hidden" name="RaceCatalogId" id="RaceCatalogId" value="{tpl:$RaceCatalogId /}">   
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageId/}">   
 {tpl:loop $ProductTypeList $ProductTypeId $ProductTypeInfo}

@@ -2,7 +2,7 @@
 <script type="text/javascript">
 </script>
 <div class="br_bottom"></div>
-<form id="team_update_form" name="team_update_form" action="{tpl:$this.sign/}&ac=team.update" metdod="post">
+<form id="team_update_form" name="team_update_form" action="{tpl:$this.sign/}&ac=team.update" method="post">
 <input type="hidden" name="RaceTeamId" id="RaceTeamId" value="{tpl:$RaceTeamInfo.RaceTeamId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">

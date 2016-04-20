@@ -7,7 +7,7 @@
 </script>
 
 <div class="br_bottom"></div>
-<form id="race_type_update_form" name="race_type_update_form" action="{tpl:$this.sign/}&ac=race.type.update" metdod="post">
+<form id="race_type_update_form" name="race_type_update_form" action="{tpl:$this.sign/}&ac=race.type.update" method="post">
 <input type="hidden" name="RaceTypeId" value="{tpl:$RaceTypeInfo.RaceTypeId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">

@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="race_catalog_update_form" name="race_catalog_update_form" action="{tpl:$this.sign/}&ac=race.catalog.update" metdod="post">
+<form id="race_catalog_update_form" name="race_catalog_update_form" action="{tpl:$this.sign/}&ac=race.catalog.update" method="post">
 <input type="hidden" name="RaceCatalogId" value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">

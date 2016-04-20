@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="race_stage_add_form" name="race_stage_add_form"" action="{tpl:$this.sign/}&ac=race.stage.insert" metdod="post">
+<form id="race_stage_add_form" name="race_stage_add_form"" action="{tpl:$this.sign/}&ac=race.stage.insert" method="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover">
 <td>赛事分站名称</td>

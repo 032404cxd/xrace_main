@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="sports_type_add_form" name="sports_type_add_form" action="{tpl:$this.sign/}&ac=sports.type.insert" metdod="post">
+<form id="sports_type_add_form" name="sports_type_add_form" action="{tpl:$this.sign/}&ac=sports.type.insert" method="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover">
 <td>运动类型名称</td>

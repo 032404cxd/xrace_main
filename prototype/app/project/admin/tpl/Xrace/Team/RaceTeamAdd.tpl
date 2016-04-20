@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="team_add_form" name="team_add_form" action="{tpl:$this.sign/}&ac=team.insert" metdod="post">
+<form id="team_add_form" name="team_add_form" action="{tpl:$this.sign/}&ac=team.insert" method="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover">
 <td>队伍名称</td>

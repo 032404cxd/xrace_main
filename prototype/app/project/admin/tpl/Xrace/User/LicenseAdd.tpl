@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="license_add_form" name="license_add_form" action="{tpl:$this.sign/}&ac=license.insert" metdod="post">
+<form id="license_add_form" name="license_add_form" action="{tpl:$this.sign/}&ac=license.insert" method="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
 <input type="hidden" name="UserId"  id="UserId" value="{tpl:$UserId/}" />
 <tr class="hover">

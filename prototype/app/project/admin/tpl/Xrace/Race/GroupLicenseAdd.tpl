@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="group_license_add_form" name="group_license_add_form" action="{tpl:$this.sign/}&ac=group.license.insert" metdod="post">
+<form id="group_license_add_form" name="group_license_add_form" action="{tpl:$this.sign/}&ac=group.license.insert" method="post">
 <input type="hidden" name="RaceGroupId" value="{tpl:$RaceGroupInfo.RaceGroupId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">

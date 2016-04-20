@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="race_add_form" name="race_add_form"" action="{tpl:$this.sign/}&ac=race.insert" metdod="post">
+<form id="race_add_form" name="race_add_form"" action="{tpl:$this.sign/}&ac=race.insert" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageId/}" />
 <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped">

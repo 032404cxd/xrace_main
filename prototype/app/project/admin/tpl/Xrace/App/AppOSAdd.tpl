@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="app_os_add_form" name="app_os_add_form" action="{tpl:$this.sign/}&ac=app.os.insert" metdod="post">
+<form id="app_os_add_form" name="app_os_add_form" action="{tpl:$this.sign/}&ac=app.os.insert" method="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover">
 <td>APP系统名称</td>

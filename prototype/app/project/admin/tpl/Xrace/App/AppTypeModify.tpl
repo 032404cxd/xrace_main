@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="app_type_update_form" name="app_type_update_form" action="{tpl:$this.sign/}&ac=app.type.update" metdod="post">
+<form id="app_type_update_form" name="app_type_update_form" action="{tpl:$this.sign/}&ac=app.type.update" method="post">
 <input type="hidden" name="AppTypeId" value="{tpl:$AppTypeInfo.AppTypeId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">

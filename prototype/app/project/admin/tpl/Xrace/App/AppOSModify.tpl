@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="app_os_update_form" name="app_os_update_form" action="{tpl:$this.sign/}&ac=app.os.update" metdod="post">
+<form id="app_os_update_form" name="app_os_update_form" action="{tpl:$this.sign/}&ac=app.os.update" method="post">
 <input type="hidden" name="AppOSId" value="{tpl:$AppOSInfo.AppOSId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">

@@ -767,7 +767,7 @@ class XraceConfigController extends AbstractController
             //重新获取比赛详情
             $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId,$UserId);
         }
-        $result = array("return"=>0,"UserRaceInfo"=>$UserRaceInfo);
+        $result = array("return"=>isset($UserRaceInfo['ApplyInfo'])?1:0,"UserRaceInfo"=>$UserRaceInfo);
         echo json_encode($result);
     }
     /*

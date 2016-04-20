@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="app_version_update_form" name="app_version_update_form" action="{tpl:$this.sign/}&ac=app.version.update" metdod="post">
+<form id="app_version_update_form" name="app_version_update_form" action="{tpl:$this.sign/}&ac=app.version.update" method="post">
 <input type="hidden" name="AppVersionId" value="{tpl:$AppVersionInfo.AppVersionId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">

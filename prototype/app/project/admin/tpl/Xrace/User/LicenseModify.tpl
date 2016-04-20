@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="license_update_form" name="license_update_form" action="{tpl:$this.sign/}&ac=license.update" metdod="post">
+<form id="license_update_form" name="license_update_form" action="{tpl:$this.sign/}&ac=license.update" method="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
 <input type="hidden" name="UserId"  id="UserId" value="{tpl:$UserLicenseInfo.UserId/}" />
 <input type="hidden" name="LicenseId"  id="LicenseId" value="{tpl:$UserLicenseInfo.LicenseId/}" />
