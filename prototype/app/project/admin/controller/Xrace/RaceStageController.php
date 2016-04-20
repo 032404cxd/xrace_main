@@ -190,6 +190,13 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageInsert");
 		if($PermissionCheck['return'])
 		{
+			//加载富文本编辑器
+			include('Third/ckeditor/ckeditor.php');
+			$editor =  new CKEditor();
+			$editor->BasePath = '/js/ckeditor/';
+			$editor->config['height'] = 150;
+			$editor->config['width'] =600;
+			//初始化起止时间
 			$StageStartDate = date("Y-m-d",time()+30*86400);
 			$StageEndDate = date("Y-m-d",time()+32*86400);
 			//赛事列表
@@ -245,8 +252,6 @@ class Xrace_RaceStageController extends AbstractController
 					$bind['RaceStageIcon'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
 				}
 			}
-			//对说明文字进行过滤和编码
-			$bind['RaceStageComment'] = urlencode(htmlspecialchars(trim($bind['RaceStageComment'])));
 			//价格对应列表
 			$bind['comment']['PriceList'] =  $this->oRace->getPriceList(trim($bind['PriceList']),1);
 			//删除原有数据
@@ -277,8 +282,6 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'*');
 			//分组列表
 			$RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
-			//说明文字解码
-			$RaceStageInfo['RaceStageComment'] = urldecode($RaceStageInfo['RaceStageComment']);
 			//数据解包
 			$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
 			//图片数据解包
@@ -302,6 +305,12 @@ class Xrace_RaceStageController extends AbstractController
 			{
 				$RaceStageIconList = $RaceStageInfo['RaceStageIcon'];
 			}
+			//加载富文本编辑器
+			include('Third/ckeditor/ckeditor.php');
+			$editor =  new CKEditor();
+			$editor->BasePath = '/js/ckeditor/';
+			$editor->config['height'] = 150;
+			$editor->config['width'] =750;
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceStageModify');
 		}
@@ -363,8 +372,6 @@ class Xrace_RaceStageController extends AbstractController
 					$bind['RaceStageIcon'][$iconkey]['RaceStageIcon_root'] = $path['path_root'];
 				}
 			}
-			//对说明文字进行过滤和编码
-			$bind['RaceStageComment'] = urlencode(htmlspecialchars(trim($bind['RaceStageComment'])));
 			//价格对应列表
 			$bind['comment']['PriceList'] = $this->oRace->getPriceList(trim($bind['PriceList']),1);
 			//删除原有数据

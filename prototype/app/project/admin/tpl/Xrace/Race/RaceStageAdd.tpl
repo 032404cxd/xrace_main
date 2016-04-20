@@ -31,17 +31,17 @@
 				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd'})" >
 		</td>
 	</tr>
-	<tr class="hover"><td>赛事分组图标1</td>
+	<tr class="hover"><td>赛事分站图片1</td>
 			<td align="left"><input name="RaceStageIcon[1]" type="file" class="span4" id="RaceStageIcon[1]" /></td>
 	</tr>
-	<tr class="hover"><td>赛事分组图标2</td>
+	<tr class="hover"><td>赛事分站图片2</td>
 			<td align="left"><input name="RaceStageIcon[2]" type="file" class="span4" id="RaceStageIcon[2]" /></td>
 	</tr>
-	<tr class="hover"><td>赛事分组图标3</td>
+	<tr class="hover"><td>赛事分站图片3</td>
 			<td align="left"><input name="RaceStageIcon[3]" type="file" class="span4" id="RaceStageIcon[3]" /></td>
 	</tr>
-	<td>说明文字</td>
-	<td align="left"><textarea class="span4" name="RaceStageComment"  id="RaceStageComment" cols ="50" rows = "5"/></textarea></td>
+	<tr class="hover"><td colspan = 2>赛事分站介绍</td></tr>
+	<tr class="hover"><td colspan = 2><?php echo $editor->editor("RaceStageComment",""); ?></td>
 	</tr>
 <tr class="noborder"><td></td>
 <td><button type="submit" id="race_stage_add_submit">提交</button></td>

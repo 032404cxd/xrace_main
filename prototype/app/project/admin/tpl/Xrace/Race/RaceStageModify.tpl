@@ -45,35 +45,35 @@ function RaceStageIconDelete(sid,name,logo_id){
 		<td>人数/价格对应<p>(人数;单价|人数:单价)</td>
 		<td align="left"><input name="PriceList" type="text" class="span4" id="PriceList" value="{tpl:$RaceStageInfo.comment.PriceList/}" size="50" /></td>
 	</tr>
-        <tr class="hover"><td>赛事分组图标1</td>
+        <tr class="hover"><td>赛事分站图片1</td>
             <td align="left">
                 {tpl:if($RaceStageIconList.1.RaceStageIcon_root!="")}
-                已选图标:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconList.1.RaceStageIcon_root/}" width="30px;" height="30px;"/>
-                <a href="javascript:void(0);" onclick="RaceStageIconDelete('{tpl:$RaceStageInfo.RaceStageId/}','图标1','1')">删除</a><br>       
+                已选图片:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconList.1.RaceStageIcon_root/}" width="30px;" height="30px;"/>
+                <a href="javascript:void(0);" onclick="RaceStageIconDelete('{tpl:$RaceStageInfo.RaceStageId/}','图片1','1')">删除</a><br>       
                 {/tpl:if}
-                更改图标:<input name="RaceStageIcon[1]" type="file" class="span4" id="RaceStageIcon[1]"/>
+                更改图片:<input name="RaceStageIcon[1]" type="file" class="span4" id="RaceStageIcon[1]"/>
             </td>
         </tr>
-        <tr class="hover"><td>赛事分组图标2</td>
+        <tr class="hover"><td>赛事分站图片2</td>
             <td align="left">
                 {tpl:if($RaceStageIconList.2.RaceStageIcon_root!="")}
-                已选图标:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconList.2.RaceStageIcon_root/}" width="30px;" height="30px;"/>
-                <a href="javascript:void(0);" onclick="RaceStageIconDelete('{tpl:$RaceStageInfo.RaceStageId/}','图标2','2')">删除</a><br>           
+                已选图片:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconList.2.RaceStageIcon_root/}" width="30px;" height="30px;"/>
+                <a href="javascript:void(0);" onclick="RaceStageIconDelete('{tpl:$RaceStageInfo.RaceStageId/}','图片2','2')">删除</a><br>           
                 {/tpl:if}
-                更改图标:<input name="RaceStageIcon[2]" type="file" class="span4" id="RaceStageIcon[2]"/>
+                更改图片:<input name="RaceStageIcon[2]" type="file" class="span4" id="RaceStageIcon[2]"/>
             </td>
         </tr>
-        <tr class="hover"><td>赛事分组图标3</td>
+        <tr class="hover"><td>赛事分站图片3</td>
             <td align="left">
                 {tpl:if($RaceStageIconList.3.RaceStageIcon_root!="")}
-                已选图标:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconList.3.RaceStageIcon_root/}" width="30px;" height="30px;"/>
-                <a href="javascript:void(0);" onclick="RaceStageIconDelete('{tpl:$RaceStageInfo.RaceStageId/}','图标3','3')">删除</a><br>            
+                已选图片:<img src="{tpl:$RootUrl/}{tpl:$RaceStageIconList.3.RaceStageIcon_root/}" width="30px;" height="30px;"/>
+                <a href="javascript:void(0);" onclick="RaceStageIconDelete('{tpl:$RaceStageInfo.RaceStageId/}','图片3','3')">删除</a><br>            
                 {/tpl:if}
-                更改图标:<input name="RaceStageIcon[3]" type="file" class="span4" id="RaceStageIcon[3]"/>
+                更改图片:<input name="RaceStageIcon[3]" type="file" class="span4" id="RaceStageIcon[3]"/>
             </td>
         </tr>
-	<td>赛事分站说明</td>
-	<td align="left"><textarea class="span4" name="RaceStageComment"  id="RaceStageComment"  cols ="50" rows = "5"/>{tpl:$RaceStageInfo.RaceStageComment/}</textarea></td>
+	<tr class="hover"><td colspan = 2>赛事分站介绍</td></tr>
+	<tr class="hover"><td colspan = 2><?php echo $editor->editor("RaceStageComment",$RaceStageInfo['RaceStageComment']); ?></td>
 	</tr>
 	<tr class="noborder"><td></td>
 <td><button type="submit" id="race_stage_update_submit">提交</button></td>
