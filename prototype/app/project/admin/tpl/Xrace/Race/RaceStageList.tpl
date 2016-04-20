@@ -2,7 +2,7 @@
 <script type="text/javascript">
   $(document).ready(function(){
     $('#add_race_stage').click(function(){
-      addRaceStageBox= divBox.showBox('{tpl:$this.sign/}&ac=race.stage.add', {title:'添加赛事分站',width:500,height:600});
+      addRaceStageBox= divBox.showBox('{tpl:$this.sign/}&ac=race.stage.add', {title:'添加赛事分站',width:800,height:600});
     });
   });
   function RaceStageModify(mid){

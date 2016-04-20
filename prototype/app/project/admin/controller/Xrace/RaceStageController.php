@@ -195,7 +195,7 @@ class Xrace_RaceStageController extends AbstractController
 			$editor =  new CKEditor();
 			$editor->BasePath = '/js/ckeditor/';
 			$editor->config['height'] = 150;
-			$editor->config['width'] =600;
+			$editor->config['width'] =750;
 			//初始化起止时间
 			$StageStartDate = date("Y-m-d",time()+30*86400);
 			$StageEndDate = date("Y-m-d",time()+32*86400);
@@ -545,11 +545,17 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceGroupId = intval($this->request->RaceGroupId);
 			//获取比赛类型列表
 			$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
-			//初始化开始和结束时间
+			//初始化开始和结束时间 报名开始与结束时间
 			$ApplyStartTime = date("Y-m-d H:i:s",time()+86400);
 			$ApplyEndTime = date("Y-m-d H:i:s",time()+86400*8);
 			$StartTime = date("Y-m-d H:i:s",time()+86400*15);
 			$EndTime = date("Y-m-d H:i:s",time()+86400*16);
+			//加载富文本编辑器
+			include('Third/ckeditor/ckeditor.php');
+			$editor =  new CKEditor();
+			$editor->BasePath = '/js/ckeditor/';
+			$editor->config['height'] = 150;
+			$editor->config['width'] =750;
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceAdd');
 		}
@@ -573,14 +579,18 @@ class Xrace_RaceStageController extends AbstractController
 			//如果有获取到比赛信息
 			if(isset($RaceInfo['RaceId']))
 			{
-				//说明文字解码
-				$RaceInfo['RaceComment'] = urldecode($RaceInfo['RaceComment']);
 				//获取比赛类型列表
 				$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
 				//解包数组
 				$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
 				//解包地图数组
 				$RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
+				//加载富文本编辑器
+				include('Third/ckeditor/ckeditor.php');
+				$editor =  new CKEditor();
+				$editor->BasePath = '/js/ckeditor/';
+				$editor->config['height'] = 150;
+				$editor->config['width'] =750;
 				//渲染模板
 				include $this->tpl('Xrace_Race_RaceModify');
 			}
@@ -702,8 +712,6 @@ class Xrace_RaceStageController extends AbstractController
 			}
 			unset($bind['BaiDuMapStartTime']);
 			unset($bind['BaiDuMapEndTime']);
-			//对说明文字进行过滤和编码
-			$bind['RaceComment'] = urlencode(htmlspecialchars(trim($bind['RaceComment'])));
 			//数据打包
 			$bind['comment'] = json_encode($bind['comment']);
 			//地图数据打包
@@ -839,8 +847,6 @@ class Xrace_RaceStageController extends AbstractController
 			}
 			unset($bind['BaiDuMapStartTime']);
 			unset($bind['BaiDuMapEndTime']);
-			//对说明文字进行过滤和编码
-			$bind['RaceComment'] = urlencode(htmlspecialchars(trim($bind['RaceComment'])));
 			//数据打包
 			$bind['comment'] = json_encode($bind['comment']);
 			//地图数据打包

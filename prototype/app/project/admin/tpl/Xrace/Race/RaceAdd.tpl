@@ -29,8 +29,9 @@
 <tr class="hover"><th align="center" class="rowtip">结束报名时间</th><th align="center" class="rowtip"><input type="text" name="ApplyEndTime" value="{tpl:$ApplyEndTime/}" value="" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
 <tr class="hover"><th align="center" class="rowtip">开始时间</th><th align="center" class="rowtip"><input type="text" name="StartTime" value="{tpl:$StartTime/}" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
 <tr class="hover"><th align="center" class="rowtip">结束时间</th><th align="center" class="rowtip"><input type="text" name="EndTime" value="{tpl:$EndTime/}" value="" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
-<tr class="hover"><th align="center" class="rowtip">说明文字</th><th align="center" class="rowtip"><textarea class="span3" name="RaceComment"  id="RaceComment" cols ="50" rows = "5"/></textarea></th></tr>
-	<tr class="noborder"><td></td>
+	<tr class="hover"><td colspan = 2>比赛介绍</td></tr>
+	<tr class="hover"><td colspan = 2><?php echo $editor->editor("RaceComment",""); ?></td>
+	</tr>	<tr class="noborder"><td></td>
 <td><button type="submit" id="race_add_submit">提交</button></td>
 </tr>
 </table>
