@@ -2,7 +2,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$('#add_app').click(function(){
-		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=race.type.add', {title:'添加比赛分类',width:500,height:300});
+		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=race.type.add', {title:'添加比赛类型',width:500,height:300});
 	});
 });
 
@@ -11,20 +11,20 @@ function RaceTypeDelete(p_id, p_name){
 }
 
 function RaceTypeModify(mid){
-	modifyRaceTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=race.type.modify&RaceTypeId=' + mid, {title:'修改比赛分类',width:500,height:300});
+	modifyRaceTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=race.type.modify&RaceTypeId=' + mid, {title:'修改比赛类型',width:500,height:300});
 }
 
 </script>
 
 <fieldset><legend>操作</legend>
-[ <a href="javascript:;" id="add_app">添加比赛分类</a> ]
+[ <a href="javascript:;" id="add_app">添加比赛类型</a> ]
 </fieldset>
 
-<fieldset><legend>比赛分类列表 </legend>
+<fieldset><legend>比赛类型列表 </legend>
 <table width="99%" align="center" class="table table-bordered table-striped">
   <tr>
-    <th align="center" class="rowtip">比赛分类ID</th>
-    <th align="center" class="rowtip">比赛分类名称</th>
+    <th align="center" class="rowtip">比赛类型ID</th>
+    <th align="center" class="rowtip">比赛类型名称</th>
     <th align="center" class="rowtip">操作</th>
   </tr>
 

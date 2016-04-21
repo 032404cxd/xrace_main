@@ -34,7 +34,7 @@ class Xrace_RaceTypeController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
-			//获取比赛分类列表
+			//获取比赛类型列表
 			$RaceTypeList  = $this->oRace->getRaceTypeList();
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceTypeList');
@@ -86,7 +86,7 @@ class Xrace_RaceTypeController extends AbstractController
 			}
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
-			//添加比赛分类
+			//添加比赛类型
 			$res = $this->oRace->insertRaceType($bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
 		}
@@ -102,9 +102,9 @@ class Xrace_RaceTypeController extends AbstractController
 		{
 			//站点根域名
 			$RootUrl = "http://".$_SERVER['HTTP_HOST'];
-			//比赛分类ID
+			//比赛类型ID
 			$RaceTypeId = intval($this->request->RaceTypeId);
-			//获取比赛分类信息
+			//获取比赛类型信息
 			$RaceTypeInfo = $this->oRace->getRaceType($RaceTypeId,'*');
 			//数据解包
 			$RaceTypeInfo['comment'] = json_decode($RaceTypeInfo['comment'],true);
@@ -120,12 +120,12 @@ class Xrace_RaceTypeController extends AbstractController
 	public function raceTypeUpdateAction()
 	{
 		$bind=$this->request->from('RaceTypeId','RaceTypeName');
-		//比赛分类名称不能为空
+		//比赛类型名称不能为空
 		if(trim($bind['RaceTypeName'])=="")
 		{
 			$response = array('errno' => 1);
 		}
-		//比赛分类ID必须大于0
+		//比赛类型ID必须大于0
 		elseif(intval($bind['RaceTypeId'])<=0)
 		{
 			$response = array('errno' => 2);
@@ -149,7 +149,7 @@ class Xrace_RaceTypeController extends AbstractController
 			}
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
-			//更新比赛分类
+			//更新比赛类型
 			$res = $this->oRace->updateRaceType($bind['RaceTypeId'],$bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
 		}
@@ -164,7 +164,7 @@ class Xrace_RaceTypeController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceTypeDelete");
 		if($PermissionCheck['return'])
 		{
-			//比赛分类ID
+			//比赛类型ID
 			$RaceTypeId = intval($this->request->RaceTypeId);
 			//删除比赛类型
 			$this->oRace->deleteRaceType($RaceTypeId);

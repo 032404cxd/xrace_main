@@ -520,7 +520,7 @@ class Xrace_RaceStageController extends AbstractController
 				//获取比赛当前状态
 				$RaceStatus = $this->oRace->getRaceTimeStatus($RaceInfo);
 				$RaceList[$RaceId]['RaceStatus'] = $RaceStatus['RaceStatusName'];
-				//获取比赛分类名称
+				//获取比赛类型名称
 				$RaceList[$RaceId]['RaceTypeName'] = isset($RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName'])?$RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName']:"未配置";
 			}
 			//渲染模板
