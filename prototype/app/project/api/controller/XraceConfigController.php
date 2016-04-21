@@ -30,6 +30,8 @@ class XraceConfigController extends AbstractController
      */
     public function getRaceCatalogListAction()
     {
+        //是否显示说明注释 默认为1
+        $GetComment = isset($this->request->GetComment)?abs(intval($this->request->GetComment)):1;
         //获得赛事列表
         $RaceCatalogList = $this->oRace->getRaceCatalogList();
         //如果没有返回值,默认为空数组
@@ -54,6 +56,12 @@ class XraceConfigController extends AbstractController
                 //删除原有数据
                 unset($RaceCatalogList[$RaceCatalogId]['comment']['RaceCatalogIcon_root']);
             }
+            //如果参数不显示说明文字
+            if($GetComment!=1)
+            {
+                //则删除该字段
+                unset($RaceCatalogList[$RaceCatalogId]['RaceCatalogComment']);
+            }
         }
         //结果数组 如果列表中有数据则返回成功，否则返回失败
         $result = array("return"=>count($RaceCatalogList)?1:0,"RaceCatalogList"=>$RaceCatalogList);
@@ -64,6 +72,8 @@ class XraceConfigController extends AbstractController
      */
     public function getRaceCatalogInfoAction()
     {
+        //是否显示说明注释 默认为1
+        $GetComment = isset($this->request->GetComment)?abs(intval($this->request->GetComment)):1;
         //格式化赛事ID,默认为0
         $RaceCatalogId = isset($this->request->RaceCatalogId)?abs(intval($this->request->RaceCatalogId)):0;
         //赛事ID必须大于0
@@ -94,6 +104,12 @@ class XraceConfigController extends AbstractController
                 $RaceGroupList = isset($RaceCatalogInfo['RaceCatalogId'])?$this->oRace->getRaceGroupList($RaceCatalogInfo['RaceCatalogId'],"RaceGroupId,RaceGroupName"):array();
                 //根据赛事获取分站列表
                 $RaceStageList = isset($RaceCatalogInfo['RaceCatalogId'])?$this->oRace->getRaceStageList($RaceCatalogInfo['RaceCatalogId'],"RaceStageId,RaceStageName"):array();
+                //如果参数不显示说明文字
+                if($GetComment!=1)
+                {
+                    //则删除该字段
+                    unset($RaceCatalogInfo['RaceCatalogComment']);
+                }
                 //结果数组
                 $result = array("return"=>1,"RaceCatalogInfo"=>$RaceCatalogInfo,'RaceGroupList'=>$RaceGroupList,'RaceStageList'=>$RaceStageList);
             }
