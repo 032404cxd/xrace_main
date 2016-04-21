@@ -2,7 +2,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$('#add_app').click(function(){
-		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=race.type.add', {title:'添加比赛类型',width:500,height:300});
+		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=race.type.add', {title:'添加比赛类型',width:500,height:200});
 	});
 });
 
@@ -11,7 +11,7 @@ function RaceTypeDelete(p_id, p_name){
 }
 
 function RaceTypeModify(mid){
-	modifyRaceTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=race.type.modify&RaceTypeId=' + mid, {title:'修改比赛类型',width:500,height:300});
+	modifyRaceTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=race.type.modify&RaceTypeId=' + mid, {title:'修改比赛类型',width:500,height:250});
 }
 
 </script>

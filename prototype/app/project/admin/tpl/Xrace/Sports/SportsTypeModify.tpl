@@ -5,7 +5,7 @@
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">
 <td>运动类型名称</td>
-<td align="left"><input name="SportsTypeName" type="text" class="span4" id="SportsTypeName" value="{tpl:$SportsTypeInfo.SportsTypeName/}" size="50" /></td>
+<td align="left"><input name="SportsTypeName" type="text" class="span2" id="SportsTypeName" value="{tpl:$SportsTypeInfo.SportsTypeName/}" size="50" /></td>
 <tr class="noborder"><td></td>
 <td><button type="submit" id="sports_type_update_submit">提交</button></td>
 </tr>

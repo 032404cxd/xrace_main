@@ -2,7 +2,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$('#add_app').click(function(){
-		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=sports.type.add', {title:'添加运动类型',width:800,height:600});
+		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=sports.type.add', {title:'添加运动类型',width:400,height:150});
 	});
 });
 
@@ -11,7 +11,7 @@ function sportsTypeDelete(p_id, p_name){
 }
 
 function sportsTypeModify(mid){
-	modifySportsTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=sports.type.modify&SportsTypeId=' + mid, {title:'修改运动类型',width:800,height:600});
+	modifySportsTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=sports.type.modify&SportsTypeId=' + mid, {title:'修改运动类型',width:400,height:150});
 }
 
 function sportsTypeParamsModify(mid){
