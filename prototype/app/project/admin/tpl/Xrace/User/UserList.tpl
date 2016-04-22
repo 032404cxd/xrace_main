@@ -6,6 +6,9 @@
     function userAuth(uid){
         userAuthBox = divBox.showBox('{tpl:$this.sign/}&ac=user.auth.info&UserId=' + uid, {title:'实名认证',width:600,height:400});
     }
+    function userTeamList(uid,uname){
+        userTeamListBox = divBox.showBox('{tpl:$this.sign/}&ac=user.team.list&UserId=' + uid, {title:uname+'的队伍列表',width:600,height:400});
+    }
 </script>
 
 <fieldset><legend>操作</legend>
@@ -32,7 +35,7 @@
 <table width="99%" align="center" class="table table-bordered table-striped">
       <tr>
         <th align="center" class="rowtip">用户ID</th>
-          <th align="center" class="rowtip">真实姓名</th>
+        <th align="center" class="rowtip">真实姓名</th>
         <th align="center" class="rowtip">用户昵称</th>
         <th align="center" class="rowtip">微信openId</th>
         <th align="center" class="rowtip">联系电话</th>
@@ -51,7 +54,7 @@
         <td align="center">{tpl:$UserInfo.sex/}</td>
         <td align="center">{tpl:$UserInfo.AuthStatus/}</td>
         <td align="center">{tpl:$UserInfo.Birthday/}</td>
-        <td align="center"><a  href="javascript:;" onclick="userDetail('{tpl:$UserInfo.user_id/}')">详细</a>{tpl:if($UserInfo.auth_state==1)} | <a  href="javascript:;" onclick="userAuth('{tpl:$UserInfo.user_id/}')">审核</a>{/tpl:if} | {tpl:$UserInfo.License/}</td>
+        <td align="center"><a  href="javascript:;" onclick="userDetail('{tpl:$UserInfo.user_id/}')">详细</a>{tpl:if($UserInfo.auth_state==1)} | <a  href="javascript:;" onclick="userAuth('{tpl:$UserInfo.user_id/}')">审核</a>{/tpl:if} | {tpl:$UserInfo.License/} | <a  href="javascript:;" onclick="userTeamList('{tpl:$UserInfo.user_id/}','{tpl:$UserInfo.name/}')">队伍</a></td>
       </tr>
     {/tpl:loop}
     <tr><th colspan="10" align="center" class="rowtip">{tpl:$page_content/}</th></tr>

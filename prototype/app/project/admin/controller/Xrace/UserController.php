@@ -875,4 +875,85 @@ class Xrace_UserController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+	//用户的队伍列表
+	public function userTeamListAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("UserListDownload");
+		if($PermissionCheck['return'])
+		{
+			$UserId = trim($this->request->UserId);
+			//获取用户信息
+			$UserInfo = $this->oUser->getUserInfo($UserId);
+			//如果有获取到用户信息
+			if($UserInfo['user_id'])
+			{
+				$params = array('UserId'=>$UserInfo['user_id']);
+				//获取用户入队记录
+				$UserTeamList = $this->oUser->getUserTeamList($params);
+				//初始化空的赛事列表
+				$RaceCatalogList  = array();
+				//初始化空的赛事组别列表
+				$RaceGroupList  = array();
+				$oTeam = new Xrace_Team();
+				//初始化空的队伍列表
+				$RaceTeamList  = array();
+				//循环用户的队伍列表
+				foreach($UserTeamList as $key => $UserTeamInfo)
+				{
+					//如果赛事列表里面没有找到当前赛事
+					if(!isset($RaceCatalogList[$UserTeamInfo['RaceCatalogId']]))
+					{
+						//获取赛事信息
+						$RaceCatalogInfo = $this->oRace->getRaceCatalog($UserTeamInfo['RaceCatalogId'],'RaceCatalogId,RaceCatalogName');
+						//如果有获取到赛事信息
+						if(isset($RaceCatalogInfo['RaceCatalogId']))
+						{
+							//存入赛事信息列表
+							$RaceCatalogList[$UserTeamInfo['RaceCatalogId']] = $RaceCatalogInfo;
+						}
+					}
+					//保存赛事信息
+					$UserTeamList[$key]['RaceCatalogName'] = isset($RaceCatalogList[$UserTeamInfo['RaceCatalogId']])?$RaceCatalogList[$UserTeamInfo['RaceCatalogId']]['RaceCatalogName']:"未定义";
+
+					//如果队伍列表里面没有找到当前队伍
+					if(!isset($RaceGroupList[$UserTeamInfo['RaceGroupId']]))
+					{
+						//获取队伍信息
+						$RaceGroupInfo = $this->oRace->getRaceGroup($UserTeamInfo['RaceGroupId'],'RaceGroupId,RaceGroupName');
+						//如果有获取到队伍信息
+						if(isset($RaceGroupInfo['RaceGroupId']))
+						{
+							//存入组别队伍列表
+							$RaceGroupList[$UserTeamInfo['RaceGroupId']] = $RaceGroupInfo;
+						}
+					}
+					//保存队伍信息
+					$UserTeamList[$key]['RaceGroupName'] = isset($RaceGroupList[$UserTeamInfo['RaceGroupId']])?$RaceGroupList[$UserTeamInfo['RaceGroupId']]['RaceGroupName']:"未定义";
+
+					//如果队伍列表里面没有找到当前队伍
+					if(!isset($RaceTeamList[$UserTeamInfo['RaceTeamId']]))
+					{
+						//获取队伍信息
+						$RaceTeamInfo = $oTeam->getRaceTeamInfo($UserTeamInfo['RaceTeamId'],'RaceTeamId,RaceTeamName');
+						//如果有获取到队伍信息
+						if(isset($RaceTeamInfo['RaceTeamId']))
+						{
+							//存入组别队伍列表
+							$RaceTeamList[$UserTeamInfo['RaceTeamId']] = $RaceTeamInfo;
+						}
+					}
+					//保存队伍信息
+					$UserTeamList[$key]['RaceTeamName'] = isset($RaceTeamList[$UserTeamInfo['RaceTeamId']])?$RaceTeamList[$UserTeamInfo['RaceTeamId']]['RaceTeamName']:"未定义";
+				}
+			}
+			//渲染模板
+			include $this->tpl('Xrace_User_UserTeamList');
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
 }
