@@ -52,7 +52,6 @@ class Xrace_RaceCatalogController extends AbstractController
 	{
 		//检查权限
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceCatalogInsert");
-
 		if($PermissionCheck['return'])
 		{
 			//加载富文本编辑器

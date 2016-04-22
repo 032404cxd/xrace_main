@@ -307,4 +307,70 @@ class Xrace_TeamController extends AbstractController
 		echo $text;
 		die();
 	}
+	//获取赛事对应的队伍列表
+	public function getTeamByCatalogAction()
+	{
+		//赛事ID
+		$RaceCatalogId = intval($this->request->RaceCatalogId);
+		//分组ID
+		$RaceTeamId = intval($this->request->RaceGroupId);
+		//所有赛事分组列表
+		$params = array('RaceCatalogId'=>$RaceCatalogId);
+		$RaceTeamList = $this->oTeam->getRaceTeamList($params,array("RaceTeamId","RaceTeamName"));
+		$text = '';
+		//循环赛事分组列表
+		foreach($RaceTeamList['RaceTeamList'] as $TeamId => $RaceTeamInfo)
+		{
+			//初始化选中状态
+			$selected = "";
+			//如果分组ID与传入的分组ID相符
+			if($RaceTeamInfo['RaceTeamId'] == $RaceTeamId)
+			{
+				//选中拼接
+				$selected = 'selected="selected"';
+			}
+			//字符串拼接
+			$text .= '<option value="'.$RaceTeamInfo['RaceTeamId'].'">'.$RaceTeamInfo['RaceTeamName'].'</option>';
+		}
+		echo $text;
+		die();
+	}
+	//获取赛事对应的队伍列表
+	public function getGroupByTeamAction()
+	{
+		//分组ID
+		$RaceTeamId = intval($this->request->RaceTeamId);
+		//分组ID
+		$RaceGroupId = intval($this->request->RaceGroupId);
+		//所有赛事分组列表
+		$TeamInfo = $this->oTeam->getRaceTeamInfo($RaceTeamId);
+		//数据解包
+		$TeamInfo['comment'] = json_decode($TeamInfo['comment'],true);
+		$text = '';
+		if(isset($TeamInfo['comment']['SelectedRaceGroup']))
+		{
+			//所有赛事分组列表
+			$RaceGroupList = $this->oRace->getRaceGroupList($TeamInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
+			//循环赛事分组列表
+			foreach($TeamInfo['comment']['SelectedRaceGroup'] as $GroupId)
+			{
+				if(isset($RaceGroupList[$GroupId]))
+				{
+					//初始化选中状态
+					$selected = "";
+					//如果分组ID与传入的分组ID相符
+					if($GroupId == $RaceGroupId)
+					{
+						//选中拼接
+						$selected = 'selected="selected"';
+					}
+					//字符串拼接
+					$text .= '<option value="'.$GroupId.'">'.$RaceGroupList[$GroupId]['RaceGroupName'].'</option>';
+				}
+
+			}
+		}
+		echo $text;
+		die();
+	}
 }

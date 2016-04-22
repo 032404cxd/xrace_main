@@ -1,9 +1,11 @@
 {tpl:tpl contentHeader/}
 <script type="text/javascript">
-
+    function UserTeamAdd(uid){
+        userTeamAddBox = divBox.showBox('{tpl:$this.sign/}&ac=user.team.add&UserId=' + uid, {title:"加入队伍",width:400,height:300});
+    }
 </script>
 <form action="{tpl:$this.sign/}&ac=race.user.list.update" name="race_user_list_update_form" id="race_user_list_update_form" method="post">
-    <input type="hidden" name="RaceId" id="RaceId" value="{tpl:$RaceInfo.RaceId/}" />
+    <input type="hidden" name="UserId" id="UserId" value="{tpl:$UserInfo.UserId/}" />
     <table width="99%" align="center" class="table table-bordered table-striped">
         {tpl:if(count($UserTeamList))}
         <tr>
@@ -20,13 +22,12 @@
             <th align="center" class="rowtip">{tpl:$UserTeamInfo.InTime/}</th>
         </tr>
         {/tpl:loop}
-        <tr class="noborder"><td colspan = 6><button type="submit" id="race_user_list_update_submit">提交</button></td>
+        <tr>
+            <th align="center" class="rowtip" colspan="4"><a href="javascript:;" onclick="UserTeamAdd('{tpl:$UserInfo.user_id/}')">点此参加</a></th>
         </tr>
         {tpl:else}
         <tr>
-            <th align="center" class="rowtip">尚未参加任何队伍<a href="javascript:;" onclick="RaceAdd('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}')">点此添加</a>
-            </th>
-            </th>
+            <th align="center" class="rowtip">尚未参加任何队伍<a href="javascript:;" onclick="UserTeamAdd('{tpl:$UserInfo.user_id/}')">点此参加</a></th>
         </tr>
         {/tpl:if}
     </table>

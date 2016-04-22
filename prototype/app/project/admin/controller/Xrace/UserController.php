@@ -882,6 +882,7 @@ class Xrace_UserController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("UserListDownload");
 		if($PermissionCheck['return'])
 		{
+			//用户ID
 			$UserId = trim($this->request->UserId);
 			//获取用户信息
 			$UserInfo = $this->oUser->getUserInfo($UserId);
@@ -956,4 +957,45 @@ class Xrace_UserController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+	//添加赛事填写配置页面
+	public function userTeamAddAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("UserListDownload");
+		if($PermissionCheck['return'])
+		{
+			//用户ID
+			$UserId = trim($this->request->UserId);
+			//获取用户信息
+			$UserInfo = $this->oUser->getUserInfo($UserId);
+			//获取赛事列表
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
+			//获取第一个赛事的信息
+			$FirstRaceCatalog = current($RaceCatalogList);
+			$oTeam = new Xrace_Team();
+			//获取第一个赛事对应的队伍列表
+			$RaceTeamList = $oTeam->getRaceTeamList($FirstRaceCatalog['RaceCatalogId'],array("RaceTeamId","RaceTeamName"));
+			//print_R($FirstRaceCatalog);
+
+			//print_r($RaceTeamList);
+			//获取第一个组别的信息
+			//$FirstGroup = current($RaceGroupList);
+			//渲染模板
+			include $this->tpl('Xrace_User_UserTeamAdd');
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+/*
+<tr class="hover"><td>所属组别</td>
+<td align="left"><div id = "GroupList"><select name="RaceGroupId" id="RaceGroupId" size="1" class="span2">
+{tpl:loop $RaceGroupList $RaceGroupInfo}
+<option value="{tpl:$RaceGroupInfo.RaceGroupId/}" >{tpl:$RaceGroupInfo.RaceGroupName/}</option>
+				{/tpl:loop}
+			</select></div></td>
+	</tr>
+*/
 }
