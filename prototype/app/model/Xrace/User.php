@@ -730,4 +730,16 @@ class Xrace_User extends Base_Widget
 		$return = $this->db->getAll($sql);
 		return $return;
 	}
+	public function insertUserTeam($bind)
+	{
+		//获取当前时间
+		$CurrentTime = time();
+		//生成入队时间和最后更新时间
+		$bind['InTime'] = date("Y-m-d H:i:s",$CurrentTime);
+		$bind['LastUpdateTime'] = date("Y-m-d H:i:s",$CurrentTime);
+		//否则更新最后更新时间
+		$updatebind = array('LastUpdateTime'=>$bind['LastUpdateTime']);
+		$table_to_process = Base_Widget::getDbTable($this->table_race_user_team);
+		return $this->db->insert_update($table_to_process, $bind,$updatebind);
+	}
 }

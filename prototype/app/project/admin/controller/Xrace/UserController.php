@@ -68,8 +68,10 @@ class Xrace_UserController extends AbstractController
 				$UserList['UserList'][$UserId]['AuthStatus'] = ($UserInfo['auth_state'] == 2 && isset($AuthIdTypesList[intval($UserInfo['id_type'])]))?$UserList['UserList'][$UserId]['AuthStatus']."/".$AuthIdTypesList[intval($UserInfo['id_type'])]:$UserList['UserList'][$UserId]['AuthStatus'];
 				//用户生日
 				$UserList['UserList'][$UserId]['Birthday'] = is_null($UserInfo['birth_day'])?"未知":$UserInfo['birth_day'];
-                                //用户执照
+				//用户执照
 				$UserList['UserList'][$UserId]['License'] = "<a href='".Base_Common::getUrl('','xrace/user','license.list',array('UserId'=>$UserId)) ."'>执照</a>";
+				//用户执照
+				$UserList['UserList'][$UserId]['Team'] = "<a href='".Base_Common::getUrl('','xrace/user','user.team.list',array('UserId'=>$UserId)) ."'>队伍</a>";
 			}
 			//模板渲染
 			include $this->tpl('Xrace_User_UserList');
@@ -975,11 +977,6 @@ class Xrace_UserController extends AbstractController
 			$oTeam = new Xrace_Team();
 			//获取第一个赛事对应的队伍列表
 			$RaceTeamList = $oTeam->getRaceTeamList($FirstRaceCatalog['RaceCatalogId'],array("RaceTeamId","RaceTeamName"));
-			//print_R($FirstRaceCatalog);
-
-			//print_r($RaceTeamList);
-			//获取第一个组别的信息
-			//$FirstGroup = current($RaceGroupList);
 			//渲染模板
 			include $this->tpl('Xrace_User_UserTeamAdd');
 		}
@@ -989,6 +986,53 @@ class Xrace_UserController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+	//添加赛事填写配置页面
+	public function userTeamInsertAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("UserListDownload");
+		if($PermissionCheck['return'])
+		{
+			//获取 页面参数
+			$bind = $this->request->from('RaceGroupId','UserId','RaceTeamId');
+			$oTeam = new Xrace_Team();
+			//获取队伍数据
+			$RaceTeamInfo = $oTeam->getRaceTeamInfo($bind['RaceTeamId']);
+			//如果有获取到队伍信息
+			if(isset($RaceTeamInfo['RaceTeamId']))
+			{
+				//保存赛事ID
+				$bind['RaceCatalogId'] = $RaceTeamInfo['RaceCatalogId'];
+				//数据解包
+				$RaceTeamInfo['comment'] = json_decode($RaceTeamInfo['comment'],true);
+				//如果选定的分组不在队伍已选队列中
+				if(!in_array($bind['RaceGroupId'],$RaceTeamInfo['comment']['SelectedRaceGroup']))
+				{
+					$response = array('errno' => 1);
+				}
+				else
+				{
+					//插入数据
+					$res = $this->oUser->insertUserTeam($bind);
+					$response = $res ? array('errno' => 0) : array('errno' => 9);
+				}
+			}
+			else
+			{
+				$response = array('errno' => 2);
+			}
+			echo json_encode($response);
+			return true;
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+
+
+	//http://admin.xrace.cn/?ctl=xrace/user&ac=user_team_insert&RaceCatalogId=1&RaceGroupId=3&RaceTeamId=12&UserId=1
 /*
 <tr class="hover"><td>所属组别</td>
 <td align="left"><div id = "GroupList"><select name="RaceGroupId" id="RaceGroupId" size="1" class="span2">

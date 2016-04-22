@@ -54,7 +54,7 @@
         <td align="center">{tpl:$UserInfo.sex/}</td>
         <td align="center">{tpl:$UserInfo.AuthStatus/}</td>
         <td align="center">{tpl:$UserInfo.Birthday/}</td>
-        <td align="center"><a  href="javascript:;" onclick="userDetail('{tpl:$UserInfo.user_id/}')">详细</a>{tpl:if($UserInfo.auth_state==1)} | <a  href="javascript:;" onclick="userAuth('{tpl:$UserInfo.user_id/}')">审核</a>{/tpl:if} | {tpl:$UserInfo.License/} | <a  href="javascript:;" onclick="userTeamList('{tpl:$UserInfo.user_id/}','{tpl:$UserInfo.name/}')">队伍</a></td>
+        <td align="center"><a  href="javascript:;" onclick="userDetail('{tpl:$UserInfo.user_id/}')">详细</a>{tpl:if($UserInfo.auth_state==1)} | <a  href="javascript:;" onclick="userAuth('{tpl:$UserInfo.user_id/}')">审核</a>{/tpl:if} | {tpl:$UserInfo.License/} | {tpl:$UserInfo.Team/}</td>
       </tr>
     {/tpl:loop}
     <tr><th colspan="10" align="center" class="rowtip">{tpl:$page_content/}</th></tr>

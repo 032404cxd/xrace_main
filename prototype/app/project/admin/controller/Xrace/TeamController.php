@@ -244,7 +244,7 @@ class Xrace_TeamController extends AbstractController
 		else
 		{
 			//获取原有数据
-			$RaceTeamInfo = $this->oRace->getRaceTeam($bind['RaceTeamId']);
+			$RaceTeamInfo = $this->oTeam->getRaceTeamInfo($bind['RaceTeamId']);
 			//数据解包
 			$bind['comment'] = json_decode($RaceTeamInfo['comment'],true);
 			$bind['comment']['SelectedRaceGroup'] = $SelectedRaceGroup['SelectedRaceGroup'];
