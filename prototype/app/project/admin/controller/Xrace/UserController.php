@@ -948,6 +948,7 @@ class Xrace_UserController extends AbstractController
 					}
 					//保存队伍信息
 					$UserTeamList[$key]['RaceTeamName'] = isset($RaceTeamList[$UserTeamInfo['RaceTeamId']])?$RaceTeamList[$UserTeamInfo['RaceTeamId']]['RaceTeamName']:"未定义";
+					$UserTeamList[$key]['UserTeamDelete'] = "<a href='".Base_Common::getUrl('','xrace/user','user.team.delete',array('LogId'=>$UserTeamInfo['LogId'])) ."'>退出</a>";
 				}
 			}
 			//渲染模板
@@ -1023,6 +1024,23 @@ class Xrace_UserController extends AbstractController
 			}
 			echo json_encode($response);
 			return true;
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//删除赛事分组
+	public function userTeamDeleteAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("UserListDownload");
+		if($PermissionCheck['return'])
+		{
+			$LogId = intval($this->request->LogId);
+			$this->oUser->deleteUserTeam($LogId);
+			$this->response->goBack();
 		}
 		else
 		{
