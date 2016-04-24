@@ -30,7 +30,8 @@ class Xrace_Mylaps extends Base_Widget
 		$whereCondition = array($whereChip,$whereChipList);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
-		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by ChipTime,Millisecs desc".$Limit;
+		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by Chip,ChipTime,Millisecs asc".$Limit;
+		echo $sql."<br>";
 		$return = $this->db->getAll($sql);
 		return $return;
 	}

@@ -576,7 +576,7 @@ class Xrace_User extends Base_Widget
 		//获得比赛ID
 		$whereRace = isset($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
 		//获得用户ID
-		$whereUser = isset($params['UserId'])?" UserId = '".$params['UserId']."' ":"";
+		$whereUser = (isset($params['UserId']) && $params['UserId']!="0")?" UserId = '".$params['UserId']."' ":"";
 		//获得组别ID
 		$whereGroup = isset($params['RaceGroupId'])?" RaceGroupId = '".$params['RaceGroupId']."' ":"";
 		//获得赛事ID
