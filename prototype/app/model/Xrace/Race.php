@@ -971,7 +971,7 @@ class Xrace_Race extends Base_Widget
 									}
 								}
 								$TimingPointList['ApplyInfo'] = $ApplyInfo;
-								$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/";
+								$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/"."UserList"."/";
 								$fileName = $UserInfo['user_id'].".php";
 								//生成配置文件
 								Base_Common::rebuildConfig($filePath,$fileName,$TimingPointList,"Timing");
@@ -1107,8 +1107,17 @@ class Xrace_Race extends Base_Widget
 	//根据用户ID和比赛ID获取用户该场比赛的详情
 	public function getUserRaceInfo($RaceId,$UserId)
 	{
-		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
+		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/"."UserList"."/";
 		$fileName = $UserId.".php";
+		//载入预生成的配置文件
+		return Base_Common::loadConfig($filePath,$fileName);
+	}
+
+	//根据用户ID和比赛ID获取用户该场比赛的详情
+	public function GetUserRaceTimingInfo($RaceId)
+	{
+		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
+		$fileName = "Total.php";
 		//载入预生成的配置文件
 		return Base_Common::loadConfig($filePath,$fileName);
 	}

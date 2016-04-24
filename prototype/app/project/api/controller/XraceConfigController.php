@@ -910,13 +910,15 @@ class XraceConfigController extends AbstractController
                 {
                     foreach($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
                     {
-                        if(!strstr($ApplyInfo['BIB'],$BIB))
+                        if(strlen(trim($BIB)) && !strstr($ApplyInfo['BIB'],$BIB))
                         {
                             unset($RaceUserList['RaceUserList'][$ApplyId]);
                         }
                     }
+                    //重新获取比赛详情
+                    $UserRaceTimingInfo = $this->oRace->GetUserRaceTimingInfo($RaceId);
                     //返回车手名单和车队列表
-                    $result = array("return"=>1,"RaceUserList"=>$RaceUserList['RaceUserList']);
+                    $result = array("return"=>1,"RaceUserList"=>$RaceUserList['RaceUserList'],"UserRaceTimingInfo"=>$UserRaceTimingInfo);
                 }
                 else
                 {
@@ -944,7 +946,28 @@ class XraceConfigController extends AbstractController
     {
         //格式化比赛ID
         $RaceId = abs(intval($this->request->RaceId));
-        $this->oRace->genRaceLogToText($RaceId);
+        //获取选手和车队名单
+        $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId,0,0);
+        $ChipList = array();
+        foreach($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
+        {
+            if(trim($ApplyInfo['ChipId']))
+            {
+                $ChipList[] = "'".$ApplyInfo['ChipId']."'";
+            }
+        }
+        //$this->oRace->genRaceLogToText($RaceId);
         //http://api.xrace.cn/?ctl=xrace.config&ac=timing.text&RaceId=1
+        $oMylaps = new Xrace_Mylaps();
+        $Count = 1;$i=1;
+        while($Count >0)
+        {
+            $params = array('page'=>$i,'pageSize'=>1000,'ChipList'=>count($ChipList)?implode(",",$ChipList):"0");
+            $TimingList = $oMylaps->getTimingData($params);
+            $Count = count($TimingList);
+            $i++;
+
+        }
     }
+
 }

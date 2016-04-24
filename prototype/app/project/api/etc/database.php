@@ -30,5 +30,13 @@ $db['xrace_baoming'][0] = array(
 	'port' => PORT_LOCAL,
 	'database' => 'xrace_baoming',
 );
+
+$db['mylaps'][0] = array(
+	'host' => HOST_LOCAL,
+	'user' => USER_LOCAL,
+	'password' => PASSWORD_LOCAL,
+	'port' => PORT_LOCAL,
+	'database' => 'mylaps',
+);
 return $db;
 ?>

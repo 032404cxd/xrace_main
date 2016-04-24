@@ -110,5 +110,7 @@ $table['user_team']['num'] = 1;
 $table['hs_order']['db'] = 'xrace_baoming';
 $table['hs_order']['num'] = 1;
 
-
+//用户参加队伍列表
+$table['zs_times']['db'] = 'mylaps';
+$table['zs_times']['num'] = 1;
 return $table;
