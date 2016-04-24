@@ -961,6 +961,15 @@ class Xrace_Race extends Base_Widget
 								//数据解包
 								$ApplyInfo['comment'] = json_decode($ApplyInfo['comment'],true);
 								//存储报名信息
+								if(isset($ApplyInfo['comment']['order_id']))
+								{
+									$oOrder = new Xrace_Order();
+									$OrderInfo = $oOrder->getOrder($ApplyInfo['comment']['order_id']);
+									if(isset($OrderInfo['order_no']))
+									{
+										$TimingPointList['OrderInfo'] = $OrderInfo;
+									}
+								}
 								$TimingPointList['ApplyInfo'] = $ApplyInfo;
 								$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/";
 								$fileName = $UserInfo['user_id'].".php";
