@@ -947,7 +947,6 @@ class XraceConfigController extends AbstractController
         //格式化比赛ID
         $RaceId = abs(intval($this->request->RaceId));
         $RaceInfo = $this->oRace->getRace($RaceId);
-        print_R($RaceInfo);
         $this->oRace->genRaceLogToText($RaceId);
         //获取选手和车队名单
         $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId,0,0);
@@ -960,34 +959,72 @@ class XraceConfigController extends AbstractController
                 $UserList[$ApplyInfo['ChipId']] = $ApplyInfo['UserId'];
             }
         }
-        //print_R($UserList);
-        //http://api.xrace.cn/?ctl=xrace.config&ac=timing.text&RaceId=1
         $oMylaps = new Xrace_Mylaps();
-        $i=1;$pageSize = 1000; $Count = $pageSize;
+        $i=1;$pageSize = 1000; $Count = $pageSize;$currentChip = "";
         while($Count == $pageSize)
         {
             $params = array('page'=>$i,'pageSize'=>$pageSize,'ChipList'=>count($ChipList)?implode(",",$ChipList):"0");
             $TimingList = $oMylaps->getTimingData($params);
             foreach($TimingList as $Key => $TimingInfo)
             {
-
+                if($currentChip != $TimingInfo['Chip'])
+                {
+                    $currentChip = $TimingInfo['Chip'];
+                    echo $currentChip."--------------".$UserList[$TimingInfo['Chip']]."<br>";
+                }
                 $TimingInfo['ChipTime'] = date("Y-m-d H:i:s",strtotime($TimingInfo['ChipTime'])-8*3600);
                 if($TimingInfo['ChipTime'] >= $RaceInfo['StartTime'])
                 {
                     $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId,$UserList[$TimingInfo['Chip']]);
-                    if(!isset($UserRaceInfo['NextPoint']))
+                    if(!isset($UserRaceInfo['CurrentPoint']))
                     {
                         $i = 1;
                         $FirstPointInfo = $UserRaceInfo['Point'][$i];
                         if($FirstPointInfo['ChipId'] == $TimingInfo['Location'])
                         {
+                            echo "Chip:".$TimingInfo['Location'].",found:"."1"."<br>";
+                            $UserRaceInfo['CurrentPoint'] = $i;
                             $UserRaceInfo['NextPoint'] = $i+1;
                             $UserRaceInfo['Point'][$i]['inTime'] = $TimingInfo['ChipTime'].".".substr($TimingInfo['MilliSecs'],-3);
+                            echo $UserRaceInfo['Point'][$i]['inTime']."<br>";
                             $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/"."UserList"."/";
                             $fileName = $UserList[$TimingInfo['Chip']].".php";
                             //生成配置文件
                             Base_Common::rebuildConfig($filePath,$fileName,$UserRaceInfo,"Timing");
                         }
+                    }
+                    else
+                    {
+                        do{
+                            if(isset($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]))
+                            {
+                                $CurrentPointInfo = $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']];
+                                if($CurrentPointInfo['inTime'] == $TimingInfo['ChipTime'].".".substr($TimingInfo['MilliSecs'],-3))
+                                {
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        while
+                        (
+                            (($CurrentPointInfo['ChipId'] != $TimingInfo['Location']) || (($CurrentPointInfo['ChipId'] == $TimingInfo['Location']) && (strtotime($CurrentPointInfo['inTime']) != 0)))  && ($UserRaceInfo['CurrentPoint']++ )
+                        );
+                        if($CurrentPointInfo['ChipId'])
+                        {
+                            echo "Chip:".$TimingInfo['Location'].",found:".$UserRaceInfo['CurrentPoint']."<br>";
+                            $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['inTime'] = $TimingInfo['ChipTime'].".".substr($TimingInfo['MilliSecs'],-3);
+                            echo $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['inTime']."<br>";
+                            $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/"."UserList"."/";
+                            $fileName = $UserList[$TimingInfo['Chip']].".php";
+                            //生成配置文件
+                            Base_Common::rebuildConfig($filePath,$fileName,$UserRaceInfo,"Timing");
+                            $UserRaceInfo['NextPoint'] = $UserRaceInfo['CurrentPoint'];
+                        }
+                        //echo "Chip:".$TimingInfo['Location'].",found:".$UserRaceInfo['NextPoint']."<br>";
                     }
                 }
             }

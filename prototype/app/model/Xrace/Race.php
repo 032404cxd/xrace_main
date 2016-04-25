@@ -920,7 +920,7 @@ class Xrace_Race extends Base_Widget
 											{
 												$TimingPointList['Sports'][$SportsType]['TimingPointList'][] = $i+1;
 												$t = $TimingPoint;
-												$t['TName'].= "*".($j+1);
+												$t['TName'].= ($j==0)?"":"*".($j+1);
 												$t['inTime'] = 0;
 												$t['outTime'] = 0;
 												$TimingPointList['Point'][$i+1] = $t;

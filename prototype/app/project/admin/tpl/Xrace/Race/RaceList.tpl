@@ -7,7 +7,7 @@
     RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.modify&RaceId=' + rid, {title:'修改比赛-'+rname,width:800,height:750});
   }
   function RaceUserList(rid,rname){
-    RaceUserListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.list&RaceId=' + rid, {title:rname+'选手名单',width:500,height:750});
+    RaceUserListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.list&RaceId=' + rid, {title:rname+'选手名单',width:700,height:750});
   }
 </script>
 <form action="{tpl:$this.sign/}&ac=race.update" name="form" id="form" method="post">
