@@ -74,7 +74,7 @@
   {tpl:else}
   <tr>
     <th align="center" class="rowtip" colspan="4">尚未配置任何分段数据
-      <a href="javascript:;" onclick="SportsTypeAdd('{tpl:$RaceStageId/}','{tpl:$RaceGroupId/}','{tpl:$RaceId/}','-1')">在头部添加</a>
+      <a href="javascript:;" onclick="SportsTypeAdd('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}','{tpl:$RaceId/}','-1')">在头部添加</a>
     </th>
   </tr>
   {/tpl:if}

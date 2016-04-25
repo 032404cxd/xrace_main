@@ -1033,6 +1033,8 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceStageId = intval($this->request->RaceStageId);
 			//分组ID
 			$RaceGroupId = intval($this->request->RaceGroupId);
+			//echo $RaceGroupId;
+			//die();
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
 			//需要添加的运动类型置于哪个位置之后，默认为开头

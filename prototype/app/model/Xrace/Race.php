@@ -920,9 +920,10 @@ class Xrace_Race extends Base_Widget
 											{
 												$TimingPointList['Sports'][$SportsType]['TimingPointList'][] = $i+1;
 												$t = $TimingPoint;
-												$t['TName'].= "*".($j+1);
+												$t['TName'].= ($j==0)?"":"*".($j+1);
 												$t['inTime'] = 0;
 												$t['outTime'] = 0;
+												$t['UserList'] = array();
 												$TimingPointList['Point'][$i+1] = $t;
 												$i++;
 											}
@@ -942,6 +943,13 @@ class Xrace_Race extends Base_Widget
 				{
 					//生成查询条件
 					$params = array('RaceId'=>$RaceInfo['RaceId'],'UserId'=>$UserId);
+					if($UserId==0)
+					{
+						$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/";
+						$fileName = "Total".".php";
+						//生成配置文件
+						Base_Common::rebuildConfig($filePath,$fileName,$TimingPointList,"Timing");
+					}
 					$oUser = new Xrace_User();
 					//获取选手名单
 					$RaceUserList = $oUser->getRaceUserList($params);
@@ -1109,6 +1117,14 @@ class Xrace_Race extends Base_Widget
 	{
 		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/"."UserList"."/";
 		$fileName = $UserId.".php";
+		//载入预生成的配置文件
+		return Base_Common::loadConfig($filePath,$fileName);
+	}
+	//根据用户ID和比赛ID获取用户该场比赛的详情
+	public function getUserRaceInfoList($RaceId)
+	{
+		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
+		$fileName = "Total".".php";
 		//载入预生成的配置文件
 		return Base_Common::loadConfig($filePath,$fileName);
 	}
