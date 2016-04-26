@@ -1013,6 +1013,35 @@ class XraceConfigController extends AbstractController
                                 $t[$k] =$UserRaceInfoList['Point'][$i]['UserList'][$k]['TimeLag'];
                             }
                             array_multisort($t, SORT_ASC, $UserRaceInfoList['Point'][$i]['UserList']);
+
+                            if(isset($UserRaceInfoList['Total']) && count($UserRaceInfoList['Total']))
+                            {
+                                $found = 0;
+                                foreach($UserRaceInfoList['Total'] as $k => $v)
+                                {
+                                    if($v['UserId'] == $UserList[$TimingInfo['Chip']]['UserId'])
+                                    {
+                                        $UserRaceInfoList['Total'][$k] = array("CurrentPosition"=>1,"TotalTime"=>($TimingInfo['ChipTime']+substr($TimingInfo['MilliSecs'],-3)/1000-strtotime($RaceInfo['StartTime'])),"Name"=>$UserList[$TimingInfo['Chip']]['Name'],"BIB"=>$UserList[$TimingInfo['Chip']]['BIB'],"inTime"=>$TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'],-3)/1000,'UserId'=>$UserList[$TimingInfo['Chip']]['UserId']);
+                                        $found = 1;
+                                        break;
+                                    }
+                                }
+                                if($found == 0)
+                                {
+                                    $UserRaceInfoList['Total'][count($UserRaceInfoList['Total'])+1] = array("CurrentPosition"=>1,"TotalTime"=>($TimingInfo['ChipTime']+substr($TimingInfo['MilliSecs'],-3)/1000-strtotime($RaceInfo['StartTime'])),"Name"=>$UserList[$TimingInfo['Chip']]['Name'],"BIB"=>$UserList[$TimingInfo['Chip']]['BIB'],"inTime"=>$TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'],-3)/1000,'UserId'=>$UserList[$TimingInfo['Chip']]['UserId']);
+                                }
+                            }
+                            else
+                            {
+                                $UserRaceInfoList['Total'][1] = array("CurrentPosition"=>1,"TotalTime"=>($TimingInfo['ChipTime']+substr($TimingInfo['MilliSecs'],-3)/1000-strtotime($RaceInfo['StartTime'])),"Name"=>$UserList[$TimingInfo['Chip']]['Name'],"BIB"=>$UserList[$TimingInfo['Chip']]['BIB'],"inTime"=>$TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'],-3)/1000,'UserId'=>$UserList[$TimingInfo['Chip']]['UserId']);
+                            }
+                            $t = array();
+                            foreach($UserRaceInfoList['Total'] as $k => $v)
+                            {
+                                $t1[$k] = $v['CurrentPosition'];
+                                $t2[$k] = $v['TotalTime'];
+                            }
+                            array_multisort($t1, SORT_DESC, $t2,SORT_ASC,$UserRaceInfoList['Total']);
                             $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/";
                             $fileName = "Total".".php";
                             //生成配置文件
@@ -1068,6 +1097,36 @@ class XraceConfigController extends AbstractController
 
                             }
                             array_multisort($t, SORT_ASC, $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList']);
+
+                            if(isset($UserRaceInfoList['Total']) && count($UserRaceInfoList['Total']))
+                            {
+                                $found = 0;
+                                foreach($UserRaceInfoList['Total'] as $k => $v)
+                                {
+                                    if($v['UserId'] == $UserList[$TimingInfo['Chip']]['UserId'])
+                                    {
+                                        $UserRaceInfoList['Total'][$k] = array("CurrentPosition"=>$UserRaceInfo['CurrentPoint'],"TotalTime"=>($TimingInfo['ChipTime']+substr($TimingInfo['MilliSecs'],-3)/1000-strtotime($RaceInfo['StartTime'])),"Name"=>$UserList[$TimingInfo['Chip']]['Name'],"BIB"=>$UserList[$TimingInfo['Chip']]['BIB'],"inTime"=>$TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'],-3)/1000,'UserId'=>$UserList[$TimingInfo['Chip']]['UserId']);
+                                        $found = 1;
+                                        break;
+                                    }
+                                }
+                                if($found == 0)
+                                {
+                                    $UserRaceInfoList['Total'][count($UserRaceInfoList['Total'])+1] = array("CurrentPosition"=>$UserRaceInfo['CurrentPoint'],"TotalTime"=>($TimingInfo['ChipTime']+substr($TimingInfo['MilliSecs'],-3)/1000-strtotime($RaceInfo['StartTime'])),"Name"=>$UserList[$TimingInfo['Chip']]['Name'],"BIB"=>$UserList[$TimingInfo['Chip']]['BIB'],"inTime"=>$TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'],-3)/1000,'UserId'=>$UserList[$TimingInfo['Chip']]['UserId']);
+                                }
+                            }
+                            else
+                            {
+                                $UserRaceInfoList['Total'][1] = array("CurrentPosition"=>$UserRaceInfo['CurrentPoint'],"TotalTime"=>($TimingInfo['ChipTime']+substr($TimingInfo['MilliSecs'],-3)/1000-strtotime($RaceInfo['StartTime'])),"Name"=>$UserList[$TimingInfo['Chip']]['Name'],"BIB"=>$UserList[$TimingInfo['Chip']]['BIB'],"inTime"=>$TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'],-3)/1000,'UserId'=>$UserList[$TimingInfo['Chip']]['UserId']);
+                            }
+                            $t = array();
+                            foreach($UserRaceInfoList['Total'] as $k => $v)
+                            {
+                                $t1[$k] = $v['CurrentPosition'];
+                                $t2[$k] = $v['TotalTime'];
+                            }
+                            array_multisort($t1, SORT_DESC, $t2,SORT_ASC,$UserRaceInfoList['Total']);
+
 
                             $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/";
                             $fileName = "Total".".php";
