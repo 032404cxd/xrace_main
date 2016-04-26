@@ -685,6 +685,7 @@ class Xrace_RaceStageController extends AbstractController
 		}
 		else
 		{
+			echo "Here";
 			//价格对应列表
 			$bind['PriceList'] = $this->oRace->getPriceList(trim($bind['PriceList']),1);
 			//将人数限制分别置入压缩数组,并删除原数据

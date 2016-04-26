@@ -602,7 +602,6 @@ class Xrace_Race extends Base_Widget
 			{
 				$RaceInfo['SingleUser'] = in_array($RaceInfo['SingleUser'],array(0,1))?$RaceInfo['SingleUser']:0;
 				$RaceInfo['TeamUser'] = in_array($RaceInfo['TeamUser'],array(0,1))?$RaceInfo['TeamUser']:0;
-				$RaceInfo['comment'] = "";
 				$RaceInsert = $this->insertRace($RaceInfo);
 				return $RaceInsert;
 			}
