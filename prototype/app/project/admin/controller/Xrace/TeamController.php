@@ -263,6 +263,26 @@ class Xrace_TeamController extends AbstractController
 		echo json_encode($response);
 		return true;
 	}
+	//删除队伍
+	public function teamDeleteAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceTeamDelete");
+		if($PermissionCheck['return'])
+		{
+			//队伍ID
+			$RaceTeamId = intval($this->request->RaceTeamId);
+			//删除比赛类型
+			$this->oTeam->deleteRaceTeam($RaceTeamId);
+			//返回之前页面
+			$this->response->goBack();
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
 	//获取队伍已经选择的分组列表
 	public function getSelectedGroupAction()
 	{

@@ -8,8 +8,8 @@
     function TeamModify(pid){
         RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=team.modify&RaceTeamId=' + pid, {title:'修改队伍',width:500,height:400});
     }
-    function ProductDelete(pid, pname){
-        deleteAppBox = divBox.confirmBox({content:'是否删除 ' + pname + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=product.delete&ProductId=' + pid}});
+    function TeamDelete(pid, pname){
+        deleteAppBox = divBox.confirmBox({content:'是否删除 ' + pname + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=team.delete&RaceTeamId=' + pid}});
     }
 </script>
 

@@ -52,7 +52,7 @@ class Xrace_Team extends Base_Widget
 	{
 		$TeamId = intval($TeamId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->delete($table_to_process, '`TeamId` = ?', $TeamId);
+		return $this->db->delete($table_to_process, '`RaceTeamId` = ?', $TeamId);
 	}
 	/**
 	 * 获取队伍列表
