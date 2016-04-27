@@ -20,6 +20,7 @@
     <th align="center" class="rowtip">比赛名称</th>
     <th align="center" class="rowtip">比赛类型</th>
     <th align="center" class="rowtip">必选</th>
+    <th align="center" class="rowtip">单选</th>
     <th align="center" class="rowtip">人数/价格</th>
     <th align="center" class="rowtip">个人报名</th>
     <th align="center" class="rowtip">团队报名</th>
@@ -35,6 +36,7 @@
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceName/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceTypeName/}</th>
     <th align="center" class="rowtip">{tpl:if($RaceInfo.MustSelect==1)}是{tpl:else}否{/tpl:if}</th>
+    <th align="center" class="rowtip">{tpl:if($RaceInfo.SingleSelect==1)}是{tpl:else}否{/tpl:if}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.PriceList/}</th>
     <th align="center" class="rowtip">{tpl:if($RaceInfo.SingleUser==1)}{tpl:$RaceInfo.comment.SingleUserLimit/}人 {tpl:else}不接受{/tpl:if}</th>
     <th align="center" class="rowtip">{tpl:if($RaceInfo.TeamUser==1)}{tpl:$RaceInfo.comment.TeamLimit/}队/{tpl:$RaceInfo.comment.TeamUserMin/}-{tpl:$RaceInfo.comment.TeamUserMax/}人 {tpl:else}不接受{/tpl:if}</th>

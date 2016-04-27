@@ -14,9 +14,13 @@
 		</select>
 	</th></tr>
 <tr class="hover"><th align="center" class="rowtip">是否必选</th><th align="center" class="rowtip">
-		<input type="radio" name="MustSelect" id="MustSelect" value="1" {tpl:if($RaceInfo.MustSelect=="1")}checked{/tpl:if}>是
-		<input type="radio" name="MustSelect" id="MustSelect" value="0" {tpl:if($RaceInfo.MustSelect=="0")}checked{/tpl:if}>否</th>
-</tr>
+			<input type="radio" name="MustSelect" id="MustSelect" value="1" {tpl:if($RaceInfo.MustSelect=="1")}checked{/tpl:if}>是
+			<input type="radio" name="MustSelect" id="MustSelect" value="0" {tpl:if($RaceInfo.MustSelect=="0")}checked{/tpl:if}>否</th>
+	</tr>
+	<tr class="hover"><th align="center" class="rowtip">是否排他单选</th><th align="center" class="rowtip">
+			<input type="radio" name="SingleSelect" id="SingleSelect" value="1" {tpl:if($RaceInfo.SingleSelect=="1")}checked{/tpl:if}>是
+			<input type="radio" name="SingleSelect" id="SingleSelect" value="0" {tpl:if($RaceInfo.SingleSelect=="0")}checked{/tpl:if}>否</th>
+	</tr>
 	<tr class="hover"><th align="center" class="rowtip">Mylaps表前缀</th><th align="center" class="rowtip"><input name="MylapsPrefix" type="text" class="span2" id="MylapsPrefix" value = "{tpl:$RaceInfo.RouteInfo.MylapsPrefix/}" size="50" /></th></tr>
 	<tr class="hover"><th align="center" class="rowtip">百度路线ID</th><th align="center" class="rowtip"><input name="BaiDuMapID" type="text" class="span2" id="BaiDuMapID" value = "{tpl:$RaceInfo.RouteInfo.BaiDuMapID/}" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip"  rowspan="2">百度路线起止时间</th><th align="center" class="rowtip"><input name="BaiDuMapStartTime" type="text" class="span2" id="BaiDuMapStartTime" value = "{tpl:$RaceInfo.RouteInfo.BaiDuMapStartTime/}" size="50" onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})"  /></th></tr>
