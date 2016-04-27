@@ -81,17 +81,17 @@ class Xrace_RaceStageController extends AbstractController
 							if($RaceCount>0)
 							{
 								//添加场次数量
-								$Suffix = "(".$RaceCount.")";
+								$Prefix = "(".$RaceCount.")";
 							}
 							else
 							{
-								$Suffix = "";
+								$Prefix = "";
 							}
 							//如果赛事组别配置有效
 							if(isset($RaceGroupList[$v]))
 							{
 								//生成到比赛详情页面的链接
-								$t[$k] = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.list',array('RaceStageId'=>$RaceStageInfo['RaceStageId'],'RaceGroupId'=>$v)) ."'>".$RaceGroupList[$v]['RaceGroupName'].$Suffix."</a>";
+								$t[$k] = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.list',array('RaceStageId'=>$RaceStageInfo['RaceStageId'],'RaceGroupId'=>$v)) ."'>".$RaceGroupList[$v]['RaceGroupName'].$Prefix."</a>";
 							}
 						}
 					}
@@ -605,7 +605,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','MylapsPrefix');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -626,12 +626,12 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			$response = array('errno' => 3);
 		}
+		/*
 		//价格参数必须填写
 		elseif(trim($bind['PriceList'])=="")
 		{
 			$response = array('errno' => 4);
 		}
-		/*
 		//开始时间不能早于当前时间
 		elseif($StartTime<=time())
 		{
@@ -685,7 +685,6 @@ class Xrace_RaceStageController extends AbstractController
 		}
 		else
 		{
-			echo "Here";
 			//价格对应列表
 			$bind['PriceList'] = $this->oRace->getPriceList(trim($bind['PriceList']),1);
 			//将人数限制分别置入压缩数组,并删除原数据
@@ -697,9 +696,14 @@ class Xrace_RaceStageController extends AbstractController
 			unset($bind['TeamUserMin']);
 			$bind['comment']['TeamUserMax'] = $bind['TeamUserMax'];
 			unset($bind['TeamUserMax']);
+			//保存mylaps计时数据表的前缀
+			$bind['RouteInfo']['MylapsPrefix'] = $bind['MylapsPrefix'];
+			unset($bind['MylapsPrefix']);
 			//保存百度地图信息
 			$bind['RouteInfo']['BaiDuMapID'] = $bind['BaiDuMapID'];
 			unset($bind['BaiDuMapID']);
+			$bind['RouteInfo']['MylapsPrefix'] = $bind['MylapsPrefix'];
+			unset($bind['MylapsPrefix']);
 			//如果有填写百度地图ID,就保存相关的起止时间
 			if(strlen($bind['RouteInfo']['BaiDuMapID']))
 			{
@@ -728,7 +732,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','MylapsPrefix');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -751,12 +755,13 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			$response = array('errno' => 3);
 		}
+		/*
 		//价格参数必须填写
 		elseif(trim($bind['PriceList'])=="")
 		{
 			$response = array('errno' => 4);
 		}
-		/*
+
 		//开始时间不能早于当前时间
 		elseif($StartTime<=time())
 		{
@@ -832,6 +837,9 @@ class Xrace_RaceStageController extends AbstractController
 			unset($bind['TeamUserMin']);
 			$bind['comment']['TeamUserMax'] = $bind['TeamUserMax'];
 			unset($bind['TeamUserMax']);
+			//保存mylaps计时数据表的前缀
+			$bind['RouteInfo']['MylapsPrefix'] = $bind['MylapsPrefix'];
+			unset($bind['MylapsPrefix']);
 			//保存百度地图信息
 			$bind['RouteInfo']['BaiDuMapID'] = $bind['BaiDuMapID'];
 			unset($bind['BaiDuMapID']);
