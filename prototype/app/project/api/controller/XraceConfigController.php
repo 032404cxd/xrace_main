@@ -908,13 +908,16 @@ class XraceConfigController extends AbstractController
                 $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId,0,1);
                 if(count($RaceUserList['RaceUserList']))
                 {
+                    $t = array();
                     foreach($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
                     {
-                        if(strlen(trim($BIB)) && !strstr($ApplyInfo['BIB'],$BIB))
+                        if(!(strlen(trim($BIB)) && !strstr($ApplyInfo['BIB'],$BIB)))
                         {
-                            unset($RaceUserList['RaceUserList'][$ApplyId]);
+                            $t[] = $ApplyInfo;
+                            //unset($RaceUserList['RaceUserList'][$ApplyId]);
                         }
                     }
+                    $RaceUserList['RaceUserList'] = $t;
                     //重新获取比赛详情
                     $UserRaceTimingInfo = $this->oRace->GetUserRaceTimingInfo($RaceId);
                     //返回车手名单和车队列表

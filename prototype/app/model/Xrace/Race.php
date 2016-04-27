@@ -839,9 +839,9 @@ class Xrace_Race extends Base_Widget
 			//如果切割数量大于等于2
 			if(count($T)>=2)
 			{
-				if((abs(intval($T[1])))>0)
+				if((abs(sprintf("%10.2f",$T[1])))>0)
 				{
-					$PriceList[abs(intval($T[0]))] = abs(intval($T[1]));
+					$PriceList[abs(intval($T[0]))] = abs(sprintf("%10.2f",$T[1]));
 				}
 			}
 			//如果只有1
@@ -849,7 +849,7 @@ class Xrace_Race extends Base_Widget
 			{
 				if((abs(intval($T[0])))>0)
 				{
-					$PriceList[1] = abs(intval($T[0]));
+					$PriceList[1] = abs(sprintf("%10.2f",$T[0]));
 				}
 			}
 		}
@@ -858,7 +858,7 @@ class Xrace_Race extends Base_Widget
 		{
 			foreach($PriceList as $num => $price)
 			{
-				$PriceList[$num] = intval($num).":".intval($price);
+				$PriceList[$num] = intval($num).":".trim(sprintf("%10.2f",$price));
 			}
 			$PriceList = implode("|",$PriceList);
 		}
