@@ -781,9 +781,8 @@ class XraceConfigController extends AbstractController
                 if (count($RaceUserList['RaceUserList'])) {
                     $t = array();
                     foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo) {
-                        if (!(strlen(trim($BIB)) && !strstr($ApplyInfo['BIB'], $BIB))) {
+                        if ((strlen(trim($BIB)) && strstr($ApplyInfo['BIB'], $BIB))) {
                             $t[] = $ApplyInfo;
-                            //unset($RaceUserList['RaceUserList'][$ApplyId]);
                         }
                     }
                     $RaceUserList['RaceUserList'] = $t;
