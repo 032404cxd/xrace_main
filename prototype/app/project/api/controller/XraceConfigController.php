@@ -778,16 +778,40 @@ class XraceConfigController extends AbstractController
             if (isset($RaceInfo['RaceId'])) {
                 //获取选手和车队名单
                 $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0, 1);
-                if (count($RaceUserList['RaceUserList'])) {
+                if (count($RaceUserList['RaceUserList']))
+                {
                     $t = array();
-                    foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo) {
-                        if ((strlen(trim($BIB)) && strstr($ApplyInfo['BIB'], $BIB))) {
+                    foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
+                    {
+                        if ((strlen(trim($BIB)) && strstr($ApplyInfo['BIB'], $BIB)))
+                        {
                             $t[] = $ApplyInfo;
                         }
                     }
                     $RaceUserList['RaceUserList'] = $t;
                     //重新获取比赛详情
                     $UserRaceTimingInfo = $this->oRace->GetUserRaceTimingInfo($RaceId);
+                    foreach($UserRaceTimingInfo['Point'] as $k => $v)
+                    {
+                        foreach($v['UserList'] as $k2 => $v2)
+                        {
+                            $UserRaceTimingInfo['Point'][$k]['UserList'][$k2]['Rank'] = $k2+1;
+                            if ((strlen(trim($BIB)) && !strstr( $v2['BIB'], $BIB)))
+                            {
+                                unset($UserRaceTimingInfo['Point'][$k]['UserList'][$k2]);
+                            }
+                        }
+                        $UserRaceTimingInfo['Point'][$k]['UserList'] = array_values($UserRaceTimingInfo['Point'][$k]['UserList']);
+                    }
+                    foreach($UserRaceTimingInfo['Total'] as $k => $v)
+                    {
+                        $UserRaceTimingInfo['Total'][$k]['Rank'] = $k+1;
+                        if ((strlen(trim($BIB)) && !strstr( $v['BIB'], $BIB)))
+                        {
+                            unset($UserRaceTimingInfo['Total'][$k]);
+                        }
+                    }
+                    $UserRaceTimingInfo['Total'] = array_values($UserRaceTimingInfo['Total']);
                     //返回车手名单和车队列表
                     $result = array("return" => 1, "RaceUserList" => $RaceUserList['RaceUserList'], "UserRaceTimingInfo" => $UserRaceTimingInfo);
                 } else {
