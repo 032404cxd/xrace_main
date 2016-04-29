@@ -864,7 +864,7 @@ class XraceConfigController extends AbstractController
                     echo $currentChip . "--------------" . $UserList[$TimingInfo['Chip']]['UserId'] . "<br>";
                 }
                 $TimingInfo['ChipTime'] = strtotime($TimingInfo['ChipTime']) - 8 * 3600;
-                echo ($TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000) . "-" . date("Y-m-d H:i:s", $TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000) . "<br>";
+                echo $TimingInfo['Location']."-".($TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000) . "-" . date("Y-m-d H:i:s", $TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000) . "<br>";
                 if ($TimingInfo['ChipTime'] >= strtotime($RaceInfo['StartTime'])) {
                     $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId, $UserList[$TimingInfo['Chip']]['UserId']);
 
@@ -930,7 +930,7 @@ class XraceConfigController extends AbstractController
                             if (isset($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']])) {
                                 $CurrentPointInfo = $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']];
                                 $timeLag = sprintf("%20.4f", $CurrentPointInfo['inTime']) - ($TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000) . "<br>";
-                                if (abs($timeLag) <= 30) {
+                                if (abs($timeLag) <= 600) {
                                     break;
                                 }
                             } else {
@@ -981,7 +981,7 @@ class XraceConfigController extends AbstractController
                                 $t1[$k] = $v['CurrentPosition'];
                                 $t2[$k] = $v['TotalTime'];
                             }
-                            array_multisort($t1, SORT_DESC, $t2, SORT_ASC, $UserRaceInfoList['Total']);
+                            array_multisort($t2, SORT_ASC, $t1, SORT_DESC, $UserRaceInfoList['Total']);
 
 
                             $filePath = __APP_ROOT_DIR__ . "Timing" . "/" . $RaceInfo['RaceId'] . "/";
