@@ -8,7 +8,8 @@
 class Xrace_Mylaps extends Base_Widget
 {
 	//声明所用到的表
-	protected $table = 'zs_times';
+	#protected $table = 'zs_times';
+	protected $table = 'times';
 
 	/**
 	 * 获取单条记录
@@ -22,6 +23,8 @@ class Xrace_Mylaps extends Base_Widget
 		$fields = Base_common::getSqlFields($fields);
 		//获取需要用到的表名
 		$table_to_process = Base_Widget::getDbTable($this->table);
+		$table_to_process = str_replace($this->table,$params['prefix'].$this->table,$table_to_process);
+		echo "table_to_process:".$table_to_process."<br>";
 		//获得芯片ID
 		$whereChip = isset($params['Chip'])?" Chip = '".$params['Chip']."' ":"";
 		$whereChipList = isset($params['ChipList'])?" Chip in (".$params['ChipList'].") ":"";

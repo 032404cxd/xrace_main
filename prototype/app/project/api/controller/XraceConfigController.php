@@ -837,6 +837,8 @@ class XraceConfigController extends AbstractController
         //格式化比赛ID
         $RaceId = abs(intval($this->request->RaceId));
         $RaceInfo = $this->oRace->getRace($RaceId);
+        $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
+		print_R($RaceInfo['RouteInfo']);
         $this->oRace->genRaceLogToText($RaceId);
         //获取选手和车队名单
         $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0, 0);
@@ -856,7 +858,7 @@ class XraceConfigController extends AbstractController
         $Count = $pageSize;
         $currentChip = "";
         while ($Count == $pageSize) {
-            $params = array('page' => $i, 'pageSize' => $pageSize, 'ChipList' => count($ChipList) ? implode(",", $ChipList) : "0");
+            $params = array('prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'],'page' => $i, 'pageSize' => $pageSize, 'ChipList' => count($ChipList) ? implode(",", $ChipList) : "0");
             $TimingList = $oMylaps->getTimingData($params);
             foreach ($TimingList as $Key => $TimingInfo) {
                 if ($currentChip != $TimingInfo['Chip']) {
@@ -981,7 +983,7 @@ class XraceConfigController extends AbstractController
                                 $t1[$k] = $v['CurrentPosition'];
                                 $t2[$k] = $v['TotalTime'];
                             }
-                            array_multisort($t2, SORT_ASC, $t1, SORT_DESC, $UserRaceInfoList['Total']);
+                            array_multisort($t1, SORT_DESC,$t2, SORT_ASC,  $UserRaceInfoList['Total']);
 
 
                             $filePath = __APP_ROOT_DIR__ . "Timing" . "/" . $RaceInfo['RaceId'] . "/";
