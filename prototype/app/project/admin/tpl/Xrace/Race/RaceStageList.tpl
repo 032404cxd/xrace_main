@@ -37,6 +37,7 @@
     <th align="center" class="rowtip">赛事分站图标</th>
     <th align="center" class="rowtip">开始日期</th>
     <th align="center" class="rowtip">结束日期</th>
+    <th align="center" class="rowtip">比赛列表</th>
     <th align="center" class="rowtip">已开设组别</th>
     <th align="center" class="rowtip">已选择产品</th>
     <th align="center" class="rowtip">当前状态</th>
@@ -54,6 +55,7 @@
     <th align="center">{tpl:$RaceStageInfo.RaceStageIconList/}</th>
     <th align="center" class="rowtip" >{tpl:$RaceStageInfo.StageStartDate/}</th>
     <th align="center" class="rowtip" >{tpl:$RaceStageInfo.StageEndDate/}</th>
+    <td align="center" class="rowtip" >{tpl:$RaceStageInfo.RaceList/}</td>
     <td align="center" class="rowtip" >{tpl:$RaceStageInfo.SelectedGroupList/}</td>
     <td align="center" class="rowtip" ><a href="javascript:;" onclick="ProductModify('{tpl:$RaceStageInfo.RaceStageId/}');">{tpl:$RaceStageInfo.SelectedProductList/}</a></td>
     <td align="center" class="rowtip" >{tpl:$RaceStageInfo.RaceStageStatus.StageStatusName/}</td>

@@ -69,9 +69,11 @@ class Xrace_RaceStageController extends AbstractController
 					//解包压缩数组
 					$RaceStageInfo['RaceStageIcon'] = json_decode($RaceStageInfo['RaceStageIcon'],true);
 					$t = array();
+					$TotalRaceCount = 0;
 					//如果有已经选择的赛事组别
 					if(isset($RaceStageInfo['comment']['SelectedRaceGroup']) && is_array($RaceStageInfo['comment']['SelectedRaceGroup']))
 					{
+						$TotalRaceCount = 0;
 						//循环各个组别
 						foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $k => $v)
 						{
@@ -87,6 +89,7 @@ class Xrace_RaceStageController extends AbstractController
 							{
 								$Prefix = "";
 							}
+							$TotalRaceCount+=$RaceCount;
 							//如果赛事组别配置有效
 							if(isset($RaceGroupList[$v]))
 							{
@@ -110,6 +113,8 @@ class Xrace_RaceStageController extends AbstractController
 						$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceStageList'][$RaceStageId]['GroupCount'] = 0;
 						$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceStageList'][$RaceStageId]['RowCount'] = 1;
 					}
+					$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceStageList'][$RaceStageId]['RaceList'] = $t[$k] = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.list',array('RaceStageId'=>$RaceStageInfo['RaceStageId'])) ."'>"."比赛列表(".$TotalRaceCount.")";"</a>";
+
 					// 初始化一个临时数组
 					$t = array();
 					$t2 = array();
@@ -500,16 +505,14 @@ class Xrace_RaceStageController extends AbstractController
 			//如果当前分站未配置了当前分组
 			if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
 			{
-				//跳转到分站列表页面
-				$this->response->redirect($this->sign);
+				$RaceGroupId = 0;
 			}
 			//获取赛事分组信息
 			$RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,'*');
 			//如果赛事分组尚未配置
 			if(!$RaceGroupInfo['RaceGroupId'])
 			{
-				//跳转到分站列表页面
-				$this->response->redirect($this->sign);
+				$RaceGroupId = 0;
 			}
 			//获取比赛列表
 			$RaceList = $this->oRace->getRaceList($RaceStageId,$RaceGroupId);
