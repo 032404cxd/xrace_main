@@ -915,13 +915,16 @@ class Xrace_Race extends Base_Widget
 											$SportsTypeInfo['TimingId']=$TimingList['TimingId'];
 											//保存运动本身信息
 											$TimingPointList['Sports'][$SportsType]['SportsTypeInfo'] = $SportsTypeInfo;
+											// 按照计时点通过测次数进行循环
 											for($j = 0;$j<$TimingPoint['Round'];$j++)
 											{
 												$TimingPointList['Sports'][$SportsType]['TimingPointList'][] = $i+1;
 												$t = $TimingPoint;
+												//第一次通过不需要下标
 												$t['TName'].= ($j==0)?"":"*".($j+1);
 												$t['inTime'] = 0;
 												$t['outTime'] = 0;
+												//初始化通过的用户列表
 												$t['UserList'] = array();
 												$TimingPointList['Point'][$i+1] = $t;
 												$i++;
@@ -967,16 +970,20 @@ class Xrace_Race extends Base_Widget
 								$TimingPointList['UserInfo'] = array('UserName'=>$UserInfo['name'],'UserId' => $UserInfo['user_id']);
 								//数据解包
 								$ApplyInfo['comment'] = json_decode($ApplyInfo['comment'],true);
-								//存储报名信息
+								//如果有关联的订单数据
 								if(isset($ApplyInfo['comment']['order_id']))
 								{
 									$oOrder = new Xrace_Order();
+									//获取订单信息
 									$OrderInfo = $oOrder->getOrder($ApplyInfo['comment']['order_id']);
+									//如果有获取到订单信息
 									if(isset($OrderInfo['order_no']))
 									{
+										//保存订单信息
 										$TimingPointList['OrderInfo'] = $OrderInfo;
 									}
 								}
+								//存储报名信息
 								$TimingPointList['ApplyInfo'] = $ApplyInfo;
 								$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/"."UserList"."/";
 								$fileName = $UserInfo['user_id'].".php";
@@ -1139,26 +1146,36 @@ class Xrace_Race extends Base_Widget
 	//根据比赛ID生成该场比赛的MYLAPS计时数据
 	public function genMylapsTimingInfo($RaceId)
 	{
-		//格式化比赛ID
-		$RaceId = abs(intval($this->request->RaceId));
+		$oUser = new Xrace_User();
 		//获取比赛信息
 		$RaceInfo = $this->getRace($RaceId);
 		//解包路径相关的信息
 		$RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
-		print_R($RaceInfo['RouteInfo']);
-		$this->genRaceLogToText($RaceId);
+
 		//获取选手和车队名单
-		$RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0, 0);
+		$RaceUserList = $oUser->getRaceUserListByRace($RaceId, 0, 0);
+		print_R($RaceUserList);
+		die();
+		//初始化空的芯片列表
 		$ChipList = array();
+		//初始化空的用户列表
 		$UserList = array();
-		foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo) {
-			if (trim($ApplyInfo['ChipId'])) {
+		//循环报名记录
+		foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
+		{
+			//如果有配置芯片数据和BIB
+			if (trim($ApplyInfo['ChipId']) && trim($ApplyInfo['BIB']))
+			{
+				//拼接字符串加入到芯片列表
 				$ChipList[] = "'" . $ApplyInfo['ChipId'] . "'";
+				//分别保存用户的ID,姓名和BIB
 				$UserList[$ApplyInfo['ChipId']]['UserId'] = $ApplyInfo['UserId'];
 				$UserList[$ApplyInfo['ChipId']]['Name'] = $ApplyInfo['Name'];
 				$UserList[$ApplyInfo['ChipId']]['BIB'] = $ApplyInfo['BIB'];
 			}
 		}
+		//重新生成选手的mylaps排名数据
+		//$this->genRaceLogToText($RaceId);
 		$oMylaps = new Xrace_Mylaps();
 		$i = 1;
 		$pageSize = 1000;
