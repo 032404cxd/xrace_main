@@ -32,7 +32,6 @@
 <table width="99%" align="center" class="table table-bordered table-striped">
   <tr>
     <th align="center" class="rowtip">对应赛事</th>
-    <th align="center" class="rowtip">赛事分站ID</th>
     <th align="center" class="rowtip">赛事分站名称</th>
     <th align="center" class="rowtip">赛事分站图标</th>
     <th align="center" class="rowtip">开始日期</th>
@@ -50,7 +49,6 @@
   </tr>
   {tpl:loop $RaceCatalogInfoInfo.RaceStageList $RaceStageId $RaceStageInfo}
   <tr>
-    <th align="center" class="rowtip" >{tpl:$RaceStageInfo.RaceStageId/}</th>
     <th align="center" class="rowtip" >{tpl:$RaceStageInfo.RaceStageName/}</th>
     <th align="center">{tpl:$RaceStageInfo.RaceStageIconList/}</th>
     <th align="center" class="rowtip" >{tpl:$RaceStageInfo.StageStartDate/}</th>

@@ -836,6 +836,8 @@ class XraceConfigController extends AbstractController
     {
         //格式化比赛ID
         $RaceId = abs(intval($this->request->RaceId));
+        $this->oRace->genMylapsTimingInfo($RaceId);
+        die();
         $RaceInfo = $this->oRace->getRace($RaceId);
         $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
 		print_R($RaceInfo['RouteInfo']);
