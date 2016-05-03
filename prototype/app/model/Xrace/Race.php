@@ -1147,6 +1147,7 @@ class Xrace_Race extends Base_Widget
 	public function genMylapsTimingInfo($RaceId)
 	{
 		$oUser = new Xrace_User();
+		$oMylaps = new Xrace_Mylaps();
 		//获取比赛信息
 		$RaceInfo = $this->getRace($RaceId);
 		//解包路径相关的信息
@@ -1154,8 +1155,6 @@ class Xrace_Race extends Base_Widget
 
 		//获取选手和车队名单
 		$RaceUserList = $oUser->getRaceUserListByRace($RaceId, 0, 0);
-		print_R($RaceUserList);
-		die();
 		//初始化空的芯片列表
 		$ChipList = array();
 		//初始化空的用户列表
@@ -1176,25 +1175,44 @@ class Xrace_Race extends Base_Widget
 		}
 		//重新生成选手的mylaps排名数据
 		//$this->genRaceLogToText($RaceId);
-		$oMylaps = new Xrace_Mylaps();
+		//初始化页码
 		$i = 1;
+		//单页记录数量
 		$pageSize = 1000;
+		//默认第一次有获取到
 		$Count = $pageSize;
+		//初始化当前芯片（选手）
 		$currentChip = "";
-		while ($Count == $pageSize) {
-			$params = array('prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'],'page' => $i, 'pageSize' => $pageSize, 'ChipList' => count($ChipList) ? implode(",", $ChipList) : "0");
+		while ($Count == $pageSize)
+		{
+			//拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
+			$params = array('prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'],'page'=>$i, 'pageSize'=>$pageSize, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"0");
+			//获取计时数据
 			$TimingList = $oMylaps->getTimingData($params);
-			foreach ($TimingList as $Key => $TimingInfo) {
-				if ($currentChip != $TimingInfo['Chip']) {
+			//依次循环计时数据
+			foreach ($TimingList as $Key => $TimingInfo)
+			{
+				//如果当前芯片 和 循环到的计时数据不同 （说明已经结束了上一个选手的循环）
+				if ($currentChip != $TimingInfo['Chip'])
+				{
+					//将当前位置置为循环到的计时点
 					$currentChip = $TimingInfo['Chip'];
-					echo $currentChip . "--------------" . $UserList[$TimingInfo['Chip']]['UserId'] . "<br>";
+					//调试信息
+					echo "当前选手芯片:".$currentChip . "-----".$UserList[$TimingInfo['Chip']]['UserId']."-----" . $UserList[$TimingInfo['Chip']]['Name'] . "<br>";
 				}
+				//mylaps系统中生成的时间一直比当前时间晚8小时，修正
 				$TimingInfo['ChipTime'] = strtotime($TimingInfo['ChipTime']) - 8 * 3600;
-				echo $TimingInfo['Location']."-".($TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000) . "-" . date("Y-m-d H:i:s", $TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000) . "<br>";
-				if ($TimingInfo['ChipTime'] >= strtotime($RaceInfo['StartTime'])) {
+				//调试信息
+				$ChipTime = $TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000;
+				echo $TimingInfo['Location']."-".($ChipTime)."-".date("Y-m-d H:i:s", $TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000) . "<br>";
+				continue;
+				//如果时间在比赛的开始时间和结束时间之内
+				if ($TimingInfo['ChipTime'] >= strtotime($RaceInfo['StartTime']) && $TimingInfo['ChipTime'] <= strtotime($RaceInfo['EndTime']))
+				{
+					//获取选手的比赛信息（计时）
 					$UserRaceInfo = $this->getUserRaceInfo($RaceId, $UserList[$TimingInfo['Chip']]['UserId']);
-
-					if (!isset($UserRaceInfo['CurrentPoint'])) {
+					if (!isset($UserRaceInfo['CurrentPoint']))
+					{
 						$c = 1;
 						$i = 1;
 						$FirstPointInfo = $UserRaceInfo['Point'][$i];
