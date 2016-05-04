@@ -14,7 +14,7 @@ class Xrace_User extends Base_Widget
 	protected $table_license = 'user_license';
 	protected $table_race = 'user_race';
 	protected $table_race_user_team = 'user_team';
-        //性别列表
+	//性别列表
 	protected $sex = array('1'=>"男","2"=>"女");
 	//实名认证状态
 	protected $auth_status = array('0'=>"未审核",'1'=>"审核中",'2'=>"已审核");
@@ -194,7 +194,6 @@ class Xrace_User extends Base_Widget
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 
-		//生成条件列
 		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
 		return $this->db->getOne($sql);
 	}

@@ -107,7 +107,7 @@ $table['user_team']['db'] = 'xrace';
 $table['user_team']['num'] = 1;
 
 //用户参加队伍列表
-$table['hs_order']['db'] = 'xrace_baoming';
+$table['hs_order']['db'] = 'xrace_bm';
 $table['hs_order']['num'] = 1;
 
 

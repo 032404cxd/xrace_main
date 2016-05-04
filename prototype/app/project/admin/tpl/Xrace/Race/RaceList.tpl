@@ -3,8 +3,8 @@
   function RaceAdd(sid,gid){
     RaceAddBox = divBox.showBox('{tpl:$this.sign/}&ac=race.add&RaceGroupId=' + gid + '&RaceStageId=' + sid, {title:'添加比赛',width:800,height:750});
   }
-  function RaceModify(rid,rname){
-    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.modify&RaceId=' + rid, {title:'修改比赛-'+rname,width:800,height:750});
+  function RaceModify(rid,rname,gid){
+    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.modify&RaceId=' + rid + '&RaceGroupId=' + gid, {title:'修改比赛-'+rname,width:800,height:750});
   }
   function RaceUserList(rid,rname,gname){
     RaceUserListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.list&RaceId=' + rid, {title:gname+'-'+rname+'选手名单',width:700,height:750});
@@ -12,7 +12,7 @@
 </script>
 <form action="{tpl:$this.sign/}&ac=race.update" name="form" id="form" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
-  <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupInfo.RaceGroupId/}" />
+  <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupId/}" />
   <fieldset><legend>{tpl:$RaceStageInfo.RaceStageName/}-{tpl:$RaceGroupInfo.RaceGroupName/} 赛段详情配置 </legend>
 <table width="99%" align="center" class="table table-bordered table-striped">
   {tpl:if(count($RaceList))}
@@ -47,7 +47,7 @@
     <th align="center" class="rowtip">{tpl:$RaceInfo.StartTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.EndTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceStatus/}</th>    
-    <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceModify('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">修改</a>
+    <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceModify('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceGroupId/}')">修改</a>
      | <a href="{tpl:$this.sign/}&ac=race.detail&RaceId={tpl:$RaceInfo.RaceId/}">计时点</a> | <a href="javascript:;" onclick="RaceUserList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceInfo.RaceGroupName/}')">选手名单</a></th>
     </th>
   </tr>

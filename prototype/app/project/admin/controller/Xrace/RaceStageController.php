@@ -581,8 +581,11 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
+			//比赛分组
+			$RaceGroupId = intval($this->request->RaceGroupId);
 			//获取比赛信息
 			$RaceInfo = $this->oRace->getRace($RaceId);
+			$RaceGroupId = in_array($RaceGroupId,array(0,$RaceInfo['RaceGroupId']))?$RaceGroupId:0;
 			//如果有获取到比赛信息
 			if(isset($RaceInfo['RaceId']))
 			{
