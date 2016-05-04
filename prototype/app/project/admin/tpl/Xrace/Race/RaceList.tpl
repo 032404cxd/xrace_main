@@ -6,8 +6,8 @@
   function RaceModify(rid,rname){
     RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.modify&RaceId=' + rid, {title:'修改比赛-'+rname,width:800,height:750});
   }
-  function RaceUserList(rid,rname){
-    RaceUserListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.list&RaceId=' + rid, {title:rname+'选手名单',width:700,height:750});
+  function RaceUserList(rid,rname,gname){
+    RaceUserListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.list&RaceId=' + rid, {title:gname+'-'+rname+'选手名单',width:700,height:750});
   }
 </script>
 <form action="{tpl:$this.sign/}&ac=race.update" name="form" id="form" method="post">
@@ -17,6 +17,7 @@
 <table width="99%" align="center" class="table table-bordered table-striped">
   {tpl:if(count($RaceList))}
   <tr>
+    <th align="center" class="rowtip">所属分组</th>
     <th align="center" class="rowtip">比赛名称</th>
     <th align="center" class="rowtip">比赛类型</th>
     <th align="center" class="rowtip">必选</th>
@@ -33,6 +34,7 @@
   </tr>
   {tpl:loop $RaceList $Rid $RaceInfo}
   <tr>
+    <th align="center" class="rowtip">{tpl:$RaceInfo.RaceGroupName/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceName/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceTypeName/}</th>
     <th align="center" class="rowtip">{tpl:if($RaceInfo.MustSelect==1)}是{tpl:else}否{/tpl:if}</th>
@@ -46,7 +48,7 @@
     <th align="center" class="rowtip">{tpl:$RaceInfo.EndTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceStatus/}</th>    
     <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceModify('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">修改</a>
-     | <a href="{tpl:$this.sign/}&ac=race.detail&RaceId={tpl:$RaceInfo.RaceId/}">计时点</a> | <a href="javascript:;" onclick="RaceUserList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">选手名单</a></th>
+     | <a href="{tpl:$this.sign/}&ac=race.detail&RaceId={tpl:$RaceInfo.RaceId/}">计时点</a> | <a href="javascript:;" onclick="RaceUserList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceInfo.RaceGroupName/}')">选手名单</a></th>
     </th>
   </tr>
   {/tpl:loop}

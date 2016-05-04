@@ -518,11 +518,15 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceList = $this->oRace->getRaceList($RaceStageId,$RaceGroupId);
 			//获取比赛类型列表
 			$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
+			//赛事分组列表
+			$RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
 			foreach($RaceList as $RaceId => $RaceInfo)
 			{
 				//获取比赛当前状态
 				$RaceStatus = $this->oRace->getRaceTimeStatus($RaceInfo);
 				$RaceList[$RaceId]['RaceStatus'] = $RaceStatus['RaceStatusName'];
+				//获取比赛类型名称
+				$RaceList[$RaceId]['RaceGroupName'] = isset($RaceGroupList[$RaceInfo['RaceGroupId']]['RaceGroupName'])?$RaceGroupList[$RaceInfo['RaceGroupId']]['RaceGroupName']:"未配置";
 				//获取比赛类型名称
 				$RaceList[$RaceId]['RaceTypeName'] = isset($RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName'])?$RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName']:"未配置";
 			}
