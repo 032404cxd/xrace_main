@@ -550,6 +550,32 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceStageId = intval($this->request->RaceStageId);
 			//赛事分组ID
 			$RaceGroupId = intval($this->request->RaceGroupId);
+			//获取赛事分站信息
+			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,"RaceStageId,RaceStageName,RaceCatalogId,comment");
+			//数据解包
+			$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
+			//获取当前赛事下的分组列表
+			$RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],"RaceGroupName,RaceGroupId");
+			//如果当前传入的分组ID没有配置
+			if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
+			{
+				//置为0
+				$RaceGroupId = 0;
+				//循环已经配置的分组
+				foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $k => $v)
+				{
+					//如果查到就保留
+					if(isset($RaceGroupList[$k]))
+					{
+						$RaceStageInfo['comment']['SelectedRaceGroup'][$k] = $RaceGroupList[$k];
+					}
+					//否则就删除
+					else
+					{
+						unset($RaceStageInfo['comment']['SelectedRaceGroup'][$k]);
+					}
+				}
+			}
 			//获取比赛类型列表
 			$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
 			//初始化开始和结束时间 报名开始与结束时间

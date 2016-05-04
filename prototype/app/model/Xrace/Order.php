@@ -9,6 +9,7 @@ class Xrace_Order extends Base_Widget
 {
 	//声明所用到的表
 	protected $table = 'hs_order';
+	protected $table_detail = 'hs_order_detail';
 
 	//支付状态列表
 	protected $PayStatusList = array('0'=>"未支付","1"=>"已支付","2"=>"待确认");
@@ -35,7 +36,19 @@ class Xrace_Order extends Base_Widget
 	{
 		$OrderId = trim($OrderId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->selectRow($table_to_process, $fields, '`order_no` = ?', $OrderId);
+		return $this->db->selectRow($table_to_process, $fields, '`id` = ?', $OrderId);
+	}
+	/**
+	 * 获取单条订单的详情记录
+	 * @param integer $OrderId
+	 * @param string $fields
+	 * @return array
+	 */
+	public function getOrderDetailList($OrderId, $fields = '*')
+	{
+		$OrderId = trim($OrderId);
+		$table_to_process = Base_Widget::getDbTable($this->table_detail);
+		return $this->db->select($table_to_process, $fields, '`order_id` = ?', $OrderId);
 	}
 	//获取主订单记录
 	public function getOrderList($params,$fields = array('*'))
@@ -44,6 +57,8 @@ class Xrace_Order extends Base_Widget
 		$fields = Base_common::getSqlFields($fields);
 		//获取需要用到的表名
 		$table_to_process = Base_Widget::getDbTable($this->table);
+		//获得赛事ID
+		$whereCatalog = (isset($params['RaceCatalogId']) && $params['RaceCatalogId']>0)?" active_id = ".$params['RaceCatalogId']." ":"";
 		//获得订单ID
 		$whereOrder = (isset($params['OrderId']) && strlen($params['OrderId']))?" order_no like '%".$params['OrderId']."%' ":"";
 		//获得支付ID
@@ -55,7 +70,7 @@ class Xrace_Order extends Base_Widget
 		//是否已经支付
 		$whereIsCancel = (isset($params['IsCancel'])&&$params['IsCancel']!=-1)?" isCancel = ".$params['IsCancel']." ":"";
 		//所有查询条件置入数组
-		$whereCondition = array($whereOrder,$whereTrade,$whereUser,$whereIsPay,$whereIsCancel);
+		$whereCondition = array($whereOrder,$whereTrade,$whereUser,$whereIsPay,$whereIsCancel,$whereCatalog);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		//获取用户数量
@@ -92,6 +107,8 @@ class Xrace_Order extends Base_Widget
 		$fields = Base_common::getSqlFields(array("OrderCount"=>"count(order_no)"));
 		//获取需要用到的表名
 		$table_to_process = Base_Widget::getDbTable($this->table);
+		//获得赛事ID
+		$whereCatalog = (isset($params['RaceCatalogId']) && $params['RaceCatalogId']>0)?" active_id = ".$params['RaceCatalogId']." ":"";
 		//获得订单ID
 		$whereOrder = (isset($params['OrderId']) && strlen($params['OrderId']))?" order_no like '%".$params['OrderId']."%' ":"";
 		//获得支付ID
@@ -103,7 +120,7 @@ class Xrace_Order extends Base_Widget
 		//是否已经支付
 		$whereIsCancel = (isset($params['IsCancel'])&&$params['IsCancel']!=-1)?" isCancel = ".$params['IsCancel']." ":"";
 		//所有查询条件置入数组
-		$whereCondition = array($whereOrder,$whereTrade,$whereUser,$whereIsPay,$whereIsCancel);
+		$whereCondition = array($whereOrder,$whereTrade,$whereUser,$whereIsPay,$whereIsCancel,$whereCatalog);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where;

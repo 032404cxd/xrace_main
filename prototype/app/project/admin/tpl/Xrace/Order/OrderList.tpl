@@ -1,13 +1,7 @@
 {tpl:tpl contentHeader/}
 <script type="text/javascript">
-    function userDetail(uid){
-        userDetailBox = divBox.showBox('{tpl:$this.sign/}&ac=user.detail&OrderId=' + uid, {title:'用户详情',width:600,height:400});
-    }
-    function userAuth(uid){
-        userAuthBox = divBox.showBox('{tpl:$this.sign/}&ac=user.auth.info&OrderId=' + uid, {title:'实名认证',width:600,height:400});
-    }
-    function userTeamList(uid,uname){
-        userTeamListBox = divBox.showBox('{tpl:$this.sign/}&ac=user.team.list&OrderId=' + uid, {title:uname+'的队伍列表',width:600,height:400});
+    function orderDetail(oid){
+        orderDetailBox = divBox.showBox('{tpl:$this.sign/}&ac=order.detail&OrderId=' + oid, {title:'订单详情',width:600,height:400});
     }
 </script>
 
@@ -17,6 +11,12 @@
     订单号:<input type="text" class="span2" name="OrderId" value="{tpl:$params.OrderId/}" />
     支付号:<input type="text" class="span2" name="PayId" value="{tpl:$params.PayId/}" />
     用户姓名:<input type="text" class="span2" name="Name" value="{tpl:$params.Name/}" />
+    对应赛事:<select name="RaceCatalogId" size="1" class="span2">
+        <option value="0">全部</option>
+        {tpl:loop $RaceCatalogList $RaceCatalogInfo}
+        <option value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" {tpl:if($RaceCatalogInfo.RaceCatalogId==$params.RaceCatalogId)}selected="selected"{/tpl:if}>{tpl:$RaceCatalogInfo.RaceCatalogName/}</option>
+        {/tpl:loop}
+    </select>
     支付状态:<select name="IsPay" class="span2" size="1">
         <option value="-1">全部</option>
         {tpl:loop $PayStatusList $PayStatus $PayStatusName}
@@ -44,6 +44,8 @@
         <th align="center" class="rowtip">联系电话</th>
           <th align="center" class="rowtip">下单时间</th>
           <th align="center" class="rowtip">支付时间</th>
+          <th align="center" class="rowtip">对应赛事</th>
+          <th align="center" class="rowtip">操作</th>
       </tr>
     {tpl:loop $OrderList.OrderList $OrderInfo}
       <tr class="hover">
@@ -56,10 +58,11 @@
         <td align="center">{tpl:$OrderInfo.m_mobile/}</td>
         <td align="center">{tpl:$OrderInfo.createDateTime/}</td>
         <td align="center">{tpl:if($OrderInfo.isPay==1)}{tpl:$OrderInfo.payDateTime/}{tpl:else}尚未支付{/tpl:if}</td>
-        <td align="center"><a  href="javascript:;" onclick="userDetail('{tpl:$OrderInfo.user_id/}')">详细</a>{tpl:if($OrderInfo.auth_state==1)} | <a  href="javascript:;" onclick="userAuth('{tpl:$OrderInfo.user_id/}')">审核</a>{/tpl:if} | {tpl:$OrderInfo.License/} | {tpl:$OrderInfo.Team/}</td>
+        <td align="center">{tpl:$OrderInfo.RaceCatalogName/}</td>
+        <td align="center"><a  href="javascript:;" onclick="orderDetail('{tpl:$OrderInfo.id/}')">详细</a></td>
       </tr>
     {/tpl:loop}
-    <tr><th colspan="10" align="center" class="rowtip">{tpl:$page_content/}</th></tr>
+    <tr><th colspan="14" align="center" class="rowtip">{tpl:$page_content/}</th></tr>
 
 </table>
 </fieldset>

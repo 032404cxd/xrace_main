@@ -13,6 +13,7 @@ class Xrace_OrderController extends AbstractController
 	 */
 	protected $oOrder;
 	protected $oUser;
+	protected $oRace;
 
         /**
 	 * 初始化
@@ -24,6 +25,7 @@ class Xrace_OrderController extends AbstractController
 		parent::init();
 		$this->oOrder = new Xrace_Order();
 		$this->oUser = new Xrace_User();
+		$this->oRace = new Xrace_Race();
 	}
 	//订单列表
 	public function indexAction()
@@ -32,11 +34,15 @@ class Xrace_OrderController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("OrderList");
 		if($PermissionCheck['return'])
 		{
+			//赛事列表
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList('RaceCatalogName,RaceCatalogId');
 			//获取支付状态
 			$PayStatusList = $this->oOrder->getPayStatusList();
 			//获取取消状态
 			$CancelStatusList = $this->oOrder->getCancelStatusList();
 			//页面参数预处理
+			//赛事ID
+			$params['RaceCatalogId'] = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
 			$params['IsPay'] = isset($PayStatusList[intval($this->request->IsPay)])?intval($this->request->IsPay):-1;
 			$params['IsCancel'] = isset($CancelStatusList[intval($this->request->IsCancel)])?intval($this->request->IsCancel):-1;
 			$params['OrderId'] = urldecode(trim($this->request->OrderId))?substr(urldecode(trim($this->request->OrderId)),0,30):"";
@@ -92,6 +98,8 @@ class Xrace_OrderController extends AbstractController
 				$OrderList['OrderList'][$OrderId]['PayStatusName'] = isset($PayStatusList[$OrderInfo['isPay']])?$PayStatusList[$OrderInfo['isPay']]:"未定义";
 				//获取订单取消状态
 				$OrderList['OrderList'][$OrderId]['CancelStatusName'] = isset($CancelStatusList[$OrderInfo['isCancel']])?$CancelStatusList[$OrderInfo['isCancel']]:"未定义";
+				//获取订单取消状态
+				$OrderList['OrderList'][$OrderId]['RaceCatalogName'] = isset($RaceCatalogList[$OrderInfo['active_id']])?$RaceCatalogList[$OrderInfo['active_id']]['RaceCatalogName']:"未定义";
 			}
 			//模板渲染
 			include $this->tpl('Xrace_Order_OrderList');
@@ -163,57 +171,32 @@ class Xrace_OrderController extends AbstractController
 		}
 	}
 	//用户详情
-	public function userDetailAction()
+	public function orderDetailAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("OrderListDownload");
+		$PermissionCheck = $this->manager->checkMenuPermission("OrderList");
 		if($PermissionCheck['return'])
 		{
-			//获取性别列表
-			$SexList = $this->oOrder->getSexList();
-			//获取实名认证状态列表
-			$AuthStatusList = $this->oOrder->getAuthStatus();
-			//获取实名认证证件类型列表
-			$AuthIdTypesList = $this->oOrder->getAuthIdType();
+			//订单号
 			$OrderId = trim($this->request->OrderId);
-			//获取用户信息
-			$OrderInfo = $this->oOrder->getOrderInfo($OrderId);
-			//用户性别
-			$OrderInfo['sex'] = isset($SexList[$OrderInfo['sex']])?$SexList[$OrderInfo['sex']]:"保密";
-			//实名认证状态
-			$OrderInfo['AuthStatus'] = isset($AuthStatusList[$OrderInfo['auth_state']])?$AuthStatusList[$OrderInfo['auth_state']]:"未知";
-			//证件有效期
-			$OrderInfo['AuthExpireDate'] = !is_null($OrderInfo['expire_day'])?$OrderInfo['expire_day']:"未知";
-			//证件有效期
-			$OrderInfo['Birthday'] = !is_null($OrderInfo['birth_day'])?$OrderInfo['birth_day']:"未知";
-			//用户头像
-			$OrderInfo['thumb'] = urldecode($OrderInfo['thumb']);
-			//实名认证证件类型
-			$OrderInfo['AuthIdType'] = isset($AuthIdTypesList[intval($OrderInfo['id_type'])])?$AuthIdTypesList[intval($OrderInfo['id_type'])]:"未知";
-			//获取用户实名认证记录
-			$OrderInfo['OrderAuthLog'] = $this->oOrder->getOrderAuthLog($OrderId,'submit_time,op_time,op_uid,auth_result,auth_resp');
-			if(count($OrderInfo['OrderAuthLog']))
+			//获取订单号信息
+			$OrderInfo = $this->oOrder->getOrder($OrderId);
+			//获取子订单信息
+			$OrderDetailList = $this->oOrder->getOrderDetailList($OrderInfo['id']);
+			//如果有获取到子订单
+			if(count($OrderDetailList))
 			{
-				//初始化一个空的后台管理员列表
-				$ManagerList = array();
-				//获取实名认证记录的状态列表
-				$AuthLogIdStatusList = $this->oOrder->getAuthLogStatusTypeList();
-				foreach($OrderInfo['OrderAuthLog'] as $LogId => $AuthLog)
+				//循环订单详情
+				foreach($OrderDetailList as $LogId => $OrderDetailInfo)
 				{
-					// 如果管理员记录已经获取到
-					if(isset($ManagerList[$AuthLog['op_uid']]))
+					if($OrderDetailInfo['product_id']>0)
 					{
-						$ManagerInfo = $ManagerList[$AuthLog['op_uid']];
+						$OrderDetailList[$LogId]['OrderType'] = "产品购买";
 					}
-					//否则重新获取
 					else
 					{
-						$ManagerInfo = $this->manager->get($AuthLog['op_uid'], "name");
+						$OrderDetailList[$LogId]['OrderType'] = "比赛报名";
 					}
-					//记录管理员账号
-					$OrderInfo['OrderAuthLog'][$LogId]['ManagerName'] = $ManagerInfo['name'];
-					//认证结果
-					$OrderInfo['OrderAuthLog'][$LogId]['AuthResult'] = $AuthLogIdStatusList[$AuthLog['auth_result']];
 				}
 			}
 			//渲染模板

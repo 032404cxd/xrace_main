@@ -106,9 +106,13 @@ $table['race_team']['num'] = 1;
 $table['user_team']['db'] = 'xrace';
 $table['user_team']['num'] = 1;
 
-//用户参加队伍列表
+//用户支付订单表
 $table['hs_order']['db'] = 'xrace_bm';
 $table['hs_order']['num'] = 1;
+
+//用户支付订单详情表
+$table['hs_order_detail']['db'] = 'xrace_bm';
+$table['hs_order_detail']['num'] = 1;
 
 
 return $table;
