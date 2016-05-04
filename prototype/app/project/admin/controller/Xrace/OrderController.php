@@ -111,7 +111,7 @@ class Xrace_OrderController extends AbstractController
 		}
 	}
 	//用户列表下载
-	public function userListDownloadAction()
+	public function orderListDownloadAction()
 	{
 		//检查权限
 		$PermissionCheck = $this->manager->checkMenuPermission("OrderListDownload");
@@ -177,10 +177,26 @@ class Xrace_OrderController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("OrderList");
 		if($PermissionCheck['return'])
 		{
+			//获取支付状态
+			$PayStatusList = $this->oOrder->getPayStatusList();
+			//获取取消状态
+			$CancelStatusList = $this->oOrder->getCancelStatusList();
 			//订单号
 			$OrderId = trim($this->request->OrderId);
 			//获取订单号信息
 			$OrderInfo = $this->oOrder->getOrder($OrderId);
+			//获取赛事信息
+			$RaceCatalogInfo = $this->oRace->getRaceCatalog($OrderInfo['active_id'],'*');
+			//获取用户数据
+			$UserInfo = $this->oUser->getUserInfo($OrderInfo['member_id'],"user_id,name");
+			//获取用户姓名
+			$OrderInfo['Name'] = isset($UserInfo['user_id'])?$UserInfo['name']:"未知用户";
+			//获取订单支付状态
+			$OrderInfo['PayStatusName'] = isset($PayStatusList[$OrderInfo['isPay']])?$PayStatusList[$OrderInfo['isPay']]:"未定义";
+			//获取订单取消状态
+			$OrderInfo['CancelStatusName'] = isset($CancelStatusList[$OrderInfo['isCancel']])?$CancelStatusList[$OrderInfo['isCancel']]:"未定义";
+			//获取订单取消状态
+			$OrderInfo['RaceCatalogName'] = isset($RaceCatalogInfo['RaceCatalogId'])?$RaceCatalogInfo['RaceCatalogName']:"未定义";
 			//获取子订单信息
 			$OrderDetailList = $this->oOrder->getOrderDetailList($OrderInfo['id']);
 			//如果有获取到子订单

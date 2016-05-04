@@ -39,7 +39,6 @@
         <th align="center" class="rowtip">支付ID</th>
         <th align="center" class="rowtip">用户姓名</th>
         <th align="center" class="rowtip">支付金额</th>
-        <th align="center" class="rowtip">支付状态</th>
         <th align="center" class="rowtip">取消状态</th>
         <th align="center" class="rowtip">联系电话</th>
           <th align="center" class="rowtip">下单时间</th>
@@ -53,11 +52,10 @@
         <td align="center">{tpl:$OrderInfo.trade_no/}</td>
         <td align="center">{tpl:$OrderInfo.Name/}</td>
         <td align="center">{tpl:$OrderInfo.amount_total/}</td>
-        <td align="center">{tpl:$OrderInfo.PayStatusName/}</td>
         <td align="center">{tpl:$OrderInfo.CancelStatusName/}</td>
         <td align="center">{tpl:$OrderInfo.m_mobile/}</td>
         <td align="center">{tpl:$OrderInfo.createDateTime/}</td>
-        <td align="center">{tpl:if($OrderInfo.isPay==1)}{tpl:$OrderInfo.payDateTime/}{tpl:else}尚未支付{/tpl:if}</td>
+        <td align="center">{tpl:if($OrderInfo.isPay==1)}{tpl:$OrderInfo.payDateTime/}{tpl:else}{tpl:$OrderInfo.PayStatusName/}{/tpl:if}</td>
         <td align="center">{tpl:$OrderInfo.RaceCatalogName/}</td>
         <td align="center"><a  href="javascript:;" onclick="orderDetail('{tpl:$OrderInfo.id/}')">详细</a></td>
       </tr>
