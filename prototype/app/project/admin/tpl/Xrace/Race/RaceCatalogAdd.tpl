@@ -9,6 +9,10 @@
 <tr class="hover"><td>赛事图标</td>
 	<td align="left"><input name="RaceCatalogIcon[1]" type="file" class="span4" id="RaceCatalogIcon[1]" /></td>
 </tr>
+	<tr class="hover"><th align="center" class="rowtip">是否显示</th><th align="center" class="rowtip">
+			<input type="radio" name="Display" id="Display" value="1" >是
+			<input type="radio" name="Display" id="Display" value="0" checked>否</th>
+	</tr>
 	<tr class="hover"><td colspan = 2>赛事介绍</td></tr>
 	<tr class="hover"><td colspan = 2><?php echo $editor->editor("RaceCatalogComment",""); ?></td>
 	</tr>

@@ -35,7 +35,7 @@ class Xrace_OrderController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList('RaceCatalogName,RaceCatalogId');
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,'RaceCatalogName,RaceCatalogId');
 			//获取支付状态
 			$PayStatusList = $this->oOrder->getPayStatusList();
 			//获取取消状态

@@ -38,6 +38,10 @@ class Xrace_RaceCatalogController extends AbstractController
 			$RootUrl = "http://".$_SERVER['HTTP_HOST'];
 			//获取赛事列表
 			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
+			foreach($RaceCatalogList as $RaceCatalogId => $RaceCatalogInfo)
+			{
+				$RaceCatalogList[$RaceCatalogId]['RaceCatalogName'].=($RaceCatalogInfo['Display'])?"":"(隐藏)";
+			}
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceCatalogList');
 		}
@@ -73,7 +77,7 @@ class Xrace_RaceCatalogController extends AbstractController
 	public function raceCatalogInsertAction()
 	{
 		//检查权限
-		$bind=$this->request->from('RaceCatalogId','RaceCatalogName','RaceCatalogComment');
+		$bind=$this->request->from('RaceCatalogId','RaceCatalogName','RaceCatalogComment','Display');
 		//赛事名称不能为空
 		if(trim($bind['RaceCatalogName'])=="")
 		{
@@ -134,7 +138,7 @@ class Xrace_RaceCatalogController extends AbstractController
 	public function raceCatalogUpdateAction()
 	{
 		//获取页面参数
-		$bind=$this->request->from('RaceCatalogId','RaceCatalogName','RaceCatalogComment');
+		$bind=$this->request->from('RaceCatalogId','RaceCatalogName','RaceCatalogComment','Display');
 		//赛事名称不能为空
 		if(trim($bind['RaceCatalogName'])=="")
 		{

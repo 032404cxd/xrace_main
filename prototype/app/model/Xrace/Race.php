@@ -32,10 +32,11 @@ class Xrace_Race extends Base_Widget
 		return $this->raceLicenseType;
 	}
 	//获取所有赛事的列表
-	public function getRaceCatalogList($fields = "*")
+	public function getRaceCatalogList($Display = 0,$fields = "*")
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		$sql = "SELECT $fields FROM " . $table_to_process . " ORDER BY RaceCatalogId ASC";
+		$whereDisplay = $Display == 1?" and Display = '1'":"";
+		$sql = "SELECT $fields FROM " . $table_to_process . " where 1 ".$whereDisplay." ORDER BY RaceCatalogId ASC";
 		$return = $this->db->getAll($sql);
 		$RaceCatalogList = array();
 		if(count($return))

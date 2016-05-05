@@ -514,7 +514,7 @@ class Xrace_UserController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList('RaceCatalogId,RaceCatalogName');
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,'RaceCatalogId,RaceCatalogName');
 			//获得需要添加执照的用户ID
 			$UserId = trim($this->request->UserId);
 			//模板渲染
@@ -613,7 +613,7 @@ class Xrace_UserController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList('RaceCatalogId,RaceCatalogName');
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,'RaceCatalogId,RaceCatalogName');
 			//获得执照ID
 			$LicenseId = trim($this->request->LicenseId);
 			//获得执照信息
