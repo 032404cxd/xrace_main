@@ -1600,7 +1600,6 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceUserList = $oUser->getRaceUserListByRace($RaceInfo['RaceId'],0,0);
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceUserList');
-			//print_R($RaceUserList);
 		}
 		else
 		{
@@ -1642,6 +1641,120 @@ class Xrace_RaceStageController extends AbstractController
 			}
 			//返回之前页面
 			$this->response->goBack();
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//报名记录上传提交页面
+	public function raceUserUploadSubmitAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		if($PermissionCheck['return'])
+		{
+			//比赛ID
+			$RaceId = intval($this->request->RaceId);
+			//比赛分组
+			$RaceGroupId = intval($this->request->RaceGroupId);
+			//获取比赛信息
+			$RaceInfo = $this->oRace->getRace($RaceId);
+			$RaceGroupId = in_array($RaceGroupId,array(0,$RaceInfo['RaceGroupId']))?$RaceGroupId:0;
+			//如果有获取到比赛信息
+			if(isset($RaceInfo['RaceId']))
+			{
+				//渲染模板
+				include $this->tpl('Xrace_Race_RaceUserUpload');
+			}
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//报名记录上传
+	public function raceUserUploadAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		if($PermissionCheck['return'])
+		{
+			//比赛ID
+			$RaceId = intval($this->request->RaceId);
+			//比赛分组
+			$RaceGroupId = intval($this->request->RaceGroupId);
+			//获取比赛信息
+			$RaceInfo = $this->oRace->getRace($RaceId);
+			$RaceGroupId = in_array($RaceGroupId,array(0,$RaceInfo['RaceGroupId']))?$RaceGroupId:0;
+			//如果有获取到比赛信息
+			if(isset($RaceInfo['RaceId']))
+			{
+				//获取当前时间
+				$CurrentTime = date("Y-m-d H:i:s",time());
+				//获取赛事信息
+				$RaceStageInfo = $this->oRace->getRaceStage($RaceInfo['RaceStageId'],"RaceStageId,RaceCatalogId");
+				//文件上传
+				$oUpload = new Base_Upload('RaceUserList');
+				$upload = $oUpload->upload('RaceUserList');
+				$res = $upload->resultArr;
+				//打开文件
+				$handle = fopen($res['1']['path'], 'r');
+				$content = '';
+				$ApplyCount = 0;
+				$oUser = new Xrace_User();
+				//循环到文件结束
+				while(!feof($handle))
+				{
+					//获取每行信息
+					$content= fgets($handle, 8080);
+					//以,为分隔符解开
+					$t = explode(",",$content);
+					$mobile = trim($t[5]);
+					//根据手机号码获取用户信息
+					$UserInfo = $oUser->getUserInfoByMobile($mobile,"user_id,name");
+					//如果用户有获取到
+					if(!isset($UserInfo['user_id']))
+					{
+						//生成新用户ID
+						$NewUserId = $oUser->genNewUserId();
+						//如果生成成功
+						if($NewUserId)
+						{
+							//生成用户信息
+							$UserInfo = array('user_id'=>$NewUserId,'name'=>trim($t[2]),'sex'=>intval($t[3]),'phone'=>$mobile,'pwd'=>'tbd','crt_time'=>$CurrentTime);
+							//创建 用户
+							$InsertUser = $oUser->insertUser($UserInfo);
+							//如果创建不成功
+							if(!$InsertUser)
+							{
+								continue;
+							}
+						}
+						else
+						{
+							continue;
+						}
+					}
+					//如果检测到用户ID
+					if(isset($UserInfo['user_id']))
+					{
+						//初始化新报名记录的信息
+						$ApplyInfo = array("ApplyTime"=>$CurrentTime,"UserId"=>$UserInfo['user_id'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]));
+						//如果存在，则更新部分信息
+						$ApplyUpdateInfo = array("ApplyTime"=>$CurrentTime,"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]));
+						//创建/更新报名记录
+						$Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
+						if($Apply)
+						{
+							$ApplyCount ++;
+						}
+					}
+				}
+			}
+			echo json_encode(array('errno' => 0,'ApplyCount'=>$ApplyCount));
 		}
 		else
 		{

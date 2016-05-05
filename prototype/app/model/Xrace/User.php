@@ -59,6 +59,12 @@ class Xrace_User extends Base_Widget
 	{
 		return $this->user_license_status;
 	}
+	//创建用户
+	public function insertUser(array $bind)
+	{
+		$table_to_process = Base_Widget::getDbTable($this->table);
+		return $this->db->insert($table_to_process, $bind);
+	}
 	/**
 	 * 获取单个用户记录
 	 * @param char $UserId 用户ID
@@ -70,6 +76,29 @@ class Xrace_User extends Base_Widget
 		$UserId = trim($UserId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		return $this->db->selectRow($table_to_process, $fields, '`user_id` = ?', $UserId);
+	}
+	/**
+	 * 获取单个用户记录
+	 * @param char $UserId 用户ID
+	 * @param string $fields 所要获取的数据列
+	 * @return array
+	 */
+	public function getUserInfoByMobile($Mobile, $fields = '*')
+	{
+		$Mobile = trim($Mobile);
+		$table_to_process = Base_Widget::getDbTable($this->table);
+		return $this->db->selectRow($table_to_process, $fields, '`phone` = ?', $Mobile);
+	}
+
+	/**
+	 * 获取当前要新建的用户的ID
+	 * @return array
+	 */
+	public function genNewUserId()
+	{
+		$table_to_process = Base_Widget::getDbTable($this->table);
+		$sql = "select xrace.nextval('user_id')";
+		return $this->db->getOne($sql);
 	}
 	/**
 	 * 更新单个用户记录
@@ -550,6 +579,12 @@ class Xrace_User extends Base_Widget
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table_license);
 		return $this->db->insert($table_to_process, $bind);
+	}
+	//创建用户报名信息
+	public function insertRaceApplyUserInfo(array $bind,array $bind_update)
+	{
+		$table_to_process = Base_Widget::getDbTable($this->table_race);
+		return $this->db->insert_update($table_to_process, $bind,$bind_update);
 	}
 	//获得用户报名信息
 	public function getRaceApplyUserInfo($ApplyId, $fields = '*')

@@ -332,7 +332,7 @@ class Xrace_UserController extends AbstractController
 				$response = array('errno' => 7);
 			}
 			//拒绝认证需要填写理由
-			elseif($UserInfo['auth_state'] == 2 && $UserAuthInfo['auth_resp'] == "")
+			elseif($UserInfo['auth_state'] == 0 && $UserAuthInfo['auth_resp'] == "")
 			{
 				$response = array('errno' => 8);
 			}
