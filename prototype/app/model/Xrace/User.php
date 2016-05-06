@@ -733,6 +733,9 @@ class Xrace_User extends Base_Widget
 	{
 		$ApplyId = intval($ApplyId);
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
+		echo "Apply:".$ApplyId;
+		print_R($bind);
+		echo $table_to_process;
 		return $this->db->update($table_to_process, $bind, '`ApplyId` = ?', $ApplyId);
 	}
 	//根据BIB获得用户报名信息

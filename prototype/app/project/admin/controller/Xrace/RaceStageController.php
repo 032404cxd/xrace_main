@@ -1629,10 +1629,10 @@ class Xrace_RaceStageController extends AbstractController
 			$UserList = $this->request->from('UserList');
 			$oUser = new Xrace_User();
 			//循环号码牌列表
-			foreach($UserList['UserList'] as $ApplyId => $UserInfo)
+			foreach($UserList['UserList'] as $Id => $UserInfo)
 			{
 				//根据报名记录ID获取用户报名信息
-				$RaceUserInfo = $oUser->getRaceApplyUserInfo($ApplyId,'ApplyId,UserId,RaceId,comment');
+				$RaceUserInfo = $oUser->getRaceApplyUserInfo($UserInfo['ApplyId'],'ApplyId,UserId,RaceId,comment');
 				//复制到待更新数据
 				$bind = $RaceUserInfo;
 				//数据解包
@@ -1643,10 +1643,12 @@ class Xrace_RaceStageController extends AbstractController
 				$bind['ChipId'] = trim($UserInfo['ChipId']);
 				//XPLOVER追踪链接
 				$bind['comment']['XpUrl'] = trim($UserInfo['XpUrl']);
+				//北斗魔盒的设备ID
+				$bind['comment']['BDDeviceId'] = trim($UserInfo['BDDeviceId']);
 				//数据打包
 				$bind['comment'] = json_encode($bind['comment']);
 				//更新报名记录
-				$oUser->updateRaceUserApply($ApplyId,$bind);
+				$oUser->updateRaceUserApply($UserInfo['ApplyId'],$bind);
 			}
 			//返回之前页面
 			$this->response->goBack();

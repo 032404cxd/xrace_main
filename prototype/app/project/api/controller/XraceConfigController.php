@@ -704,15 +704,21 @@ class XraceConfigController extends AbstractController
                 $RaceStageList = array();
                 $RaceTypeList = array();
                 //循环报名列表
-                foreach ($UserApplyList as $key => $ApplyInfo) {
-                    if (isset($RaceCatalogList[$ApplyInfo['RaceCatalogId']])) {
+                foreach ($UserApplyList as $key => $ApplyInfo)
+                {
+                    if (isset($RaceCatalogList[$ApplyInfo['RaceCatalogId']]))
+                    {
                         $UserApplyList[$key]['comment'] = json_decode($ApplyInfo['comment'], true);
                         $UserApplyList[$key]['RaceCatalogName'] = $RaceCatalogList[$ApplyInfo['RaceCatalogId']]['RaceCatalogName'];
-                        if (!isset($RaceGroupList[$ApplyInfo['RaceGroupId']])) {
+                        if (!isset($RaceGroupList[$ApplyInfo['RaceGroupId']]))
+                        {
                             $RaceGroupInfo = $this->oRace->getRaceGroup($ApplyInfo['RaceGroupId'], 'RaceGroupId,RaceGroupName');
-                            if (isset($RaceGroupInfo['RaceGroupId'])) {
+                            if (isset($RaceGroupInfo['RaceGroupId']))
+                            {
                                 $RaceGroupList[$ApplyInfo['RaceGroupId']] = $RaceGroupInfo;
-                            } else {
+                            }
+                            else
+                            {
                                 unset($UserApplyList[$key]);
                             }
                         }

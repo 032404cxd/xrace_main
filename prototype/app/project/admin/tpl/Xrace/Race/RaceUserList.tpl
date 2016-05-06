@@ -20,15 +20,18 @@
     <th align="center" class="rowtip">选手号码</th>
     <th align="center" class="rowtip">计时芯片ID</th>
     <th align="center" class="rowtip">XP追踪链接</th>
+    <th align="center" class="rowtip">北斗魔盒设备ID</th>
   </tr>
   {tpl:loop $RaceUserList.RaceUserList $Aid $UserInfo}
   <tr>
+    <input type="hidden" name="UserList[{tpl:$Aid/}][ApplyId]" id="UserList[{tpl:$UserInfo.UserId/}][ApplyId]" value="{tpl:$UserInfo.ApplyId/}" />
     <th align="center" class="rowtip">{tpl:$UserInfo.Name/}  <a href="javascript:void(0);" onclick="UserRaceDelete('{tpl:$UserInfo.Name/}','{tpl:$UserInfo.ApplyId/}')">退赛</a></th>
     <th align="center" class="rowtip">{tpl:$UserInfo.RaceTeamName/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.ApplyTime/}</th>
     <th align="center" class="rowtip"><input type="text" class="span2" name="UserList[{tpl:$Aid/}][BIB]" id="UserList[{tpl:$UserInfo.UserId/}][BIB]" value="{tpl:$UserInfo.BIB/}" /></th>
     <th align="center" class="rowtip"><input type="text" class="span2" name="UserList[{tpl:$Aid/}][ChipId]" id="UserList[{tpl:$UserInfo.UserId/}][ChipId]" value="{tpl:$UserInfo.ChipId/}" /></th>
-    <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$Aid/}][XpUrl]" id="UserList[{tpl:$UserInfo.UserId/}][XpUrl]" value="{tpl:$UserInfo.comment.XpUrl/}" /></th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="UserList[{tpl:$Aid/}][XpUrl]" id="UserList[{tpl:$UserInfo.UserId/}][XpUrl]" value="{tpl:$UserInfo.comment.XpUrl/}" /></th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="UserList[{tpl:$Aid/}][BDDeviceId]" id="UserList[{tpl:$UserInfo.UserId/}][BDDeviceId]" value="{tpl:$UserInfo.comment.BDDeviceId/}" /></th>
   </tr>
   {/tpl:loop}
   <tr class="noborder"><td colspan = 6><button type="submit" id="race_user_list_update_submit">提交</button></td>
