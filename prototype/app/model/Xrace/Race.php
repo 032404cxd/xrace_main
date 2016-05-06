@@ -984,6 +984,10 @@ class Xrace_Race extends Base_Widget
 										$TimingPointList['OrderInfo'] = $OrderInfo;
 									}
 								}
+								if(isset($ApplyInfo['comment']['BDDeviceId']) && (strlen($ApplyInfo['comment']['BDDeviceId'])>4))
+								{
+									$ApplyInfo['comment']['BDLocationUrl'] = "http://182.92.140.26:8000/rest/sdk.location.queryLocation/226/0?deviceId=".$ApplyInfo['comment']['BDDeviceId']."&beginTime=beginTime&endTime=endTime";
+								}
 								//存储报名信息
 								$TimingPointList['ApplyInfo'] = $ApplyInfo;
 								$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/"."UserList"."/";
