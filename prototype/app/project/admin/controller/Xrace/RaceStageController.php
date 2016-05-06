@@ -1771,4 +1771,15 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+	//用户退出比赛
+	public function userRaceDeleteAction()
+	{
+		$oUser = new Xrace_User();
+		//报名记录ID
+		$ApplyId = intval($this->request->ApplyId);
+		//更新数据
+		$res = $oUser->deleteUserRace($ApplyId);
+		//返回之前页面
+		$this->response->goBack();
+	}
 }

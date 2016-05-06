@@ -21,6 +21,7 @@
   {tpl:if(count($RaceList))}
   <tr>
     <th align="center" class="rowtip">所属分组</th>
+    <th align="center" class="rowtip">比赛ID</th>
     <th align="center" class="rowtip">比赛名称</th>
     <th align="center" class="rowtip">比赛类型</th>
     <th align="center" class="rowtip">必选</th>
@@ -38,6 +39,7 @@
   {tpl:loop $RaceList $Rid $RaceInfo}
   <tr>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceGroupName/}</th>
+    <th align="center" class="rowtip">{tpl:$RaceInfo.RaceId/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceName/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceTypeName/}</th>
     <th align="center" class="rowtip">{tpl:if($RaceInfo.MustSelect==1)}是{tpl:else}否{/tpl:if}</th>
@@ -56,7 +58,7 @@
   </tr>
   {/tpl:loop}
   <tr>
-    <th align="center" class="rowtip" colspan="14">  <a href="javascript:;" onclick="RaceAdd('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}')">点此添加</a>
+    <th align="center" class="rowtip" colspan="15">  <a href="javascript:;" onclick="RaceAdd('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}')">点此添加</a>
     </th>
   </tr>
   {tpl:else}

@@ -787,4 +787,11 @@ class Xrace_User extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_race_user_team);
 		return $this->db->delete($table_to_process, '`LogId` = ?', $LogId);
 	}
+	//用户退出比赛
+	public function deleteUserRace($ApplyId)
+	{
+		$ApplyId = intval($ApplyId);
+		$table_to_process = Base_Widget::getDbTable($this->table_race);
+		return $this->db->delete($table_to_process, '`ApplyId` = ?', $ApplyId);
+	}
 }

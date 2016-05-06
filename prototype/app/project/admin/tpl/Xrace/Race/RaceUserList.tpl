@@ -3,6 +3,9 @@
   function RaceUserUpload(rid,rname,gid){
     RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.upload.submit&RaceId=' + rid + '&RaceGroupId=' + gid, {title:'批量导入报名记录-'+rname,width:300,height:150});
   }
+  function UserRaceDelete(uname,aid){
+    deleteStageLogoBox = divBox.confirmBox({content:'确定将'+ uname + '退出比赛?',ok:function(){location.href = '{tpl:$this.sign/}&ac=user.race.delete&ApplyId=' + aid;}});
+  }
 </script>
 <form action="{tpl:$this.sign/}&ac=race.user.list.update" name="race_user_list_update_form" id="race_user_list_update_form" method="post">
 <input type="hidden" name="RaceId" id="RaceId" value="{tpl:$RaceInfo.RaceId/}" />
@@ -20,11 +23,11 @@
   </tr>
   {tpl:loop $RaceUserList.RaceUserList $Aid $UserInfo}
   <tr>
-    <th align="center" class="rowtip">{tpl:$UserInfo.Name/}</th>
+    <th align="center" class="rowtip">{tpl:$UserInfo.Name/}  <a href="javascript:void(0);" onclick="UserRaceDelete('{tpl:$UserInfo.Name/}','{tpl:$UserInfo.ApplyId/}')">退赛</a></th>
     <th align="center" class="rowtip">{tpl:$UserInfo.RaceTeamName/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.ApplyTime/}</th>
-    <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$Aid/}][BIB]" id="UserList[{tpl:$UserInfo.UserId/}][BIB]" value="{tpl:$UserInfo.BIB/}" /></th>
-    <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$Aid/}][ChipId]" id="UserList[{tpl:$UserInfo.UserId/}][ChipId]" value="{tpl:$UserInfo.ChipId/}" /></th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="UserList[{tpl:$Aid/}][BIB]" id="UserList[{tpl:$UserInfo.UserId/}][BIB]" value="{tpl:$UserInfo.BIB/}" /></th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="UserList[{tpl:$Aid/}][ChipId]" id="UserList[{tpl:$UserInfo.UserId/}][ChipId]" value="{tpl:$UserInfo.ChipId/}" /></th>
     <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$Aid/}][XpUrl]" id="UserList[{tpl:$UserInfo.UserId/}][XpUrl]" value="{tpl:$UserInfo.comment.XpUrl/}" /></th>
   </tr>
   {/tpl:loop}
