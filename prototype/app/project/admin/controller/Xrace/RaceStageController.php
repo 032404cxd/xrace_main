@@ -641,7 +641,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','MylapsTolaranceTime');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -740,6 +740,9 @@ class Xrace_RaceStageController extends AbstractController
 			unset($bind['BaiDuMapID']);
 			$bind['RouteInfo']['MylapsPrefix'] = $bind['MylapsPrefix'];
 			unset($bind['MylapsPrefix']);
+			//保存单个计时点的忍耐时间（在该时间范围内的将被忽略）
+			$bind['RouteInfo']['MylapsTolaranceTime'] = abs(intval($bind['MylapsTolaranceTime']));
+			unset($bind['MylapsTolaranceTime']);
 			//如果有填写百度地图ID,就保存相关的起止时间
 			if(strlen($bind['RouteInfo']['BaiDuMapID']))
 			{
@@ -768,7 +771,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','MylapsTolaranceTime');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -876,6 +879,9 @@ class Xrace_RaceStageController extends AbstractController
 			//保存mylaps计时数据表的前缀
 			$bind['RouteInfo']['MylapsPrefix'] = $bind['MylapsPrefix'];
 			unset($bind['MylapsPrefix']);
+			//保存单个计时点的忍耐时间（在该时间范围内的将被忽略）
+			$bind['RouteInfo']['MylapsTolaranceTime'] = abs(intval($bind['MylapsTolaranceTime']));
+			unset($bind['MylapsTolaranceTime']);
 			//保存百度地图信息
 			$bind['RouteInfo']['BaiDuMapID'] = $bind['BaiDuMapID'];
 			unset($bind['BaiDuMapID']);
@@ -1591,8 +1597,11 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
-			//获取赛站信息
+			//比赛分组
+			$RaceGroupId = intval($this->request->RaceGroupId);
+			//获取比赛信息
 			$RaceInfo = $this->oRace->getRace($RaceId);
+			$RaceGroupId = in_array($RaceGroupId,array(0,$RaceInfo['RaceGroupId']))?$RaceGroupId:0;
 			//生成查询条件
 			$params = array('RaceId'=>$RaceInfo['RaceId']);
 			$oUser = new Xrace_User();
@@ -1724,7 +1733,7 @@ class Xrace_RaceStageController extends AbstractController
 						if($NewUserId)
 						{
 							//生成用户信息
-							$UserInfo = array('user_id'=>$NewUserId,'name'=>trim($t[2]),'sex'=>intval($t[3]),'phone'=>$mobile,'pwd'=>'tbd','crt_time'=>$CurrentTime);
+							$UserInfo = array('user_id'=>$NewUserId,'name'=>trim(iconv('GB2312', 'UTF-8//IGNORE', $t[2])),'sex'=>intval($t[3]),'phone'=>$mobile,'pwd'=>'tbd','crt_time'=>$CurrentTime);
 							//创建 用户
 							$InsertUser = $oUser->insertUser($UserInfo);
 							//如果创建不成功

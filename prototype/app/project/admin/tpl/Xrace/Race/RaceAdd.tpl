@@ -35,6 +35,7 @@
 			<input type="radio" name="SingleSelect" id="SingleSelect" value="0" checked>否</th>
 	</tr>
 	<tr class="hover"><th align="center" class="rowtip">Mylaps表前缀</th><th align="center" class="rowtip"><input name="MylapsPrefix" type="text" class="span2" id="MylapsPrefix" size="50" /></th></tr>
+	<tr class="hover"><th align="center" class="rowtip">Mylaps计时点忍耐时间</th><th align="center" class="rowtip"><input name="MylapsTolaranceTime" type="text" class="span1" id="MylapsTolaranceTime" value = "60" size="50" />秒</th></tr>
 	<tr class="hover"><th align="center" class="rowtip">百度路线ID</th><th align="center" class="rowtip"><input name="BaiDuMapID" type="text" class="span2" id="BaiDuMapID" size="50" /></th></tr>
 	<tr class="hover"><th align="center" class="rowtip"  rowspan="2">百度路线起止时间</th><th align="center" class="rowtip"><input name="BaiDuMapStartTime" type="text" class="input-medium" id="BaiDuMapStartTime"  size="50" onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})"  /></th></tr>
 	<tr class="hover"><th align="center" class="rowtip"><input name="BaiDuMapEndTime" type="text" class="input-medium" id="BaiDuMapEndTime"  size="50" onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})"/></th></tr>

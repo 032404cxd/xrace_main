@@ -836,11 +836,11 @@ class XraceConfigController extends AbstractController
     {
         //格式化比赛ID
         $RaceId = abs(intval($this->request->RaceId));
-        $this->oRace->genMylapsTimingInfo($RaceId);
-        die();
+        //$this->oRace->genMylapsTimingInfo($RaceId);
+        //die();
         $RaceInfo = $this->oRace->getRace($RaceId);
         $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
-		print_R($RaceInfo['RouteInfo']);
+        $RaceInfo['RouteInfo']['MylapsTolaranceTime'] = isset($RaceInfo['RouteInfo']['MylapsTolaranceTime'])?$RaceInfo['RouteInfo']['MylapsTolaranceTime']:60;
         $this->oRace->genRaceLogToText($RaceId);
         //获取选手和车队名单
         $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0, 0);
@@ -868,8 +868,9 @@ class XraceConfigController extends AbstractController
                     echo $currentChip . "--------------" . $UserList[$TimingInfo['Chip']]['UserId'] . "<br>";
                 }
                 $TimingInfo['ChipTime'] = strtotime($TimingInfo['ChipTime']) - 8 * 3600;
-                echo $TimingInfo['Location']."-".($TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000) . "-" . date("Y-m-d H:i:s", $TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000) . "<br>";
                 if ($TimingInfo['ChipTime'] >= strtotime($RaceInfo['StartTime'])) {
+                    echo $TimingInfo['Location']."-".($TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000) . "-" . date("Y-m-d H:i:s", $TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000) . "<br>";
+
                     $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId, $UserList[$TimingInfo['Chip']]['UserId']);
 
                     if (!isset($UserRaceInfo['CurrentPoint'])) {
@@ -934,7 +935,8 @@ class XraceConfigController extends AbstractController
                             if (isset($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']])) {
                                 $CurrentPointInfo = $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']];
                                 $timeLag = sprintf("%20.4f", $CurrentPointInfo['inTime']) - ($TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000) . "<br>";
-                                if (abs($timeLag) <= 600) {
+                                if (abs($timeLag) <= $RaceInfo['RouteInfo']['MylapsTolaranceTime'])
+                                {
                                     break;
                                 }
                             } else {

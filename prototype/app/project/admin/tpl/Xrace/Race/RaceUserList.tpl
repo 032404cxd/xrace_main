@@ -1,10 +1,14 @@
 {tpl:tpl contentHeader/}
 <script type="text/javascript">
-
+  function RaceUserUpload(rid,rname,gid){
+    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.upload.submit&RaceId=' + rid + '&RaceGroupId=' + gid, {title:'批量导入报名记录-'+rname,width:300,height:150});
+  }
 </script>
 <form action="{tpl:$this.sign/}&ac=race.user.list.update" name="race_user_list_update_form" id="race_user_list_update_form" method="post">
 <input type="hidden" name="RaceId" id="RaceId" value="{tpl:$RaceInfo.RaceId/}" />
-<table width="99%" align="center" class="table table-bordered table-striped">
+<input type="hidden" name="CurrentRaceGroupId" id="CurrentRaceGroupId" value="{tpl:$RaceGroupId/}" />
+
+  <table width="99%" align="center" class="table table-bordered table-striped">
   {tpl:if(count($RaceUserList))}
   <tr>
     <th align="center" class="rowtip">姓名</th>
@@ -28,7 +32,7 @@
   </tr>
   {tpl:else}
   <tr>
-    <th align="center" class="rowtip">尚未有选手报名<a href="javascript:;" onclick="RaceAdd('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}')">点此添加</a>
+    <th align="center" class="rowtip">尚未有选手报名<a href="javascript:;" onclick="RaceUserUpload('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceGroupId/}')">点此导入报名</a>
     </th>
     </th>
   </tr>
