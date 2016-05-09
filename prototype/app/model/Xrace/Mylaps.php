@@ -24,7 +24,6 @@ class Xrace_Mylaps extends Base_Widget
 		//获取需要用到的表名
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		$table_to_process = str_replace($this->table,$params['prefix'].$this->table,$table_to_process);
-		echo "table_to_process:".$table_to_process."<br>";
 		//获得芯片ID
 		$whereChip = isset($params['Chip'])?" Chip = '".$params['Chip']."' ":"";
 		$whereChipList = isset($params['ChipList'])?" Chip in (".$params['ChipList'].") ":"";
@@ -34,7 +33,6 @@ class Xrace_Mylaps extends Base_Widget
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by Chip,ChipTime,Millisecs asc".$Limit;
-		echo $sql."<br>";
 		$return = $this->db->getAll($sql);
 		return $return;
 	}

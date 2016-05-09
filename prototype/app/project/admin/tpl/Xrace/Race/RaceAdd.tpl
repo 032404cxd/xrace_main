@@ -42,7 +42,7 @@
 			</select>
 		</th></tr>
 	<tr class="hover"><th align="center" class="rowtip">计时数据方式</th><th align="center" class="rowtip">
-			<select name="RaceTimingType" size="1" class="span2">
+			<select name="RaceTimingResultType" size="1" class="span2">
 				{tpl:loop $RaceTimingResultTypeList $RaceTimingResultType $RaceTimingResultTypeName}
 				<option value="{tpl:$RaceTimingResultType/}" >{tpl:$RaceTimingResultTypeName/}</option>
 				{/tpl:loop}
