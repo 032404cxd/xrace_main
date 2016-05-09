@@ -988,6 +988,7 @@ class Xrace_Race extends Base_Widget
 								{
 									$ApplyInfo['comment']['BDLocationUrl'] = "http://182.92.140.26:8000/rest/sdk.location.queryLocation/226/0?deviceId=".$ApplyInfo['comment']['BDDeviceId']."&beginTime=beginTime&endTime=endTime";
 								}
+								$TimingPointList['RaceInfo'] = $RaceInfo;
 								//存储报名信息
 								$TimingPointList['ApplyInfo'] = $ApplyInfo;
 								$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/"."UserList"."/";
@@ -1346,5 +1347,50 @@ class Xrace_Race extends Base_Widget
 			$Count = count($TimingList);
 			$i++;
 		}
+	}
+	public function getUserRaceStatus($UserRaceInfo)
+	{
+		$CurrentTime = time();
+		//比赛尚未开始
+		if($CurrentTime<strtotime($UserRaceInfo['RaceInfo']['StartTime']))
+		{
+			$RaceStatus = array("RaceStatus"=>1,"RaceStatusName"=>"即将参赛");
+		}
+		//比赛进行中
+		elseif(($CurrentTime>=strtotime($UserRaceInfo['RaceInfo']['StartTime']))&& $CurrentTime<=strtotime($UserRaceInfo['RaceInfo']['EndTime']))
+		{
+			$RaceStatus = array("RaceStatus"=>2,"RaceStatusName"=>"比赛进行中");
+		}
+		else
+		{
+			//计算进过的计时点
+			$passedPoint = 0;
+			foreach($UserRaceInfo['Point'] as $p => $pInfo)
+			{
+				//如果有计时点过线信息，进过的计时点数量累加
+				if($pInfo['inTime']>0)
+				{
+					$passedPoint++;
+				}
+			}
+			//如果没通过任何一个计时点
+			if($passedPoint==0)
+			{
+				$RaceStatus = array("RaceStatus"=>3,"RaceStatusName"=>"DNS");
+			}
+			else
+			{
+				//如果通过了终点
+				if($UserRaceInfo['Point'][count($UserRaceInfo['Point'])]['inTime']>0)
+				{
+					$RaceStatus = array("RaceStatus"=>4,"RaceStatusName"=>"完赛");
+				}
+				else
+				{
+					$RaceStatus = array("RaceStatus"=>5,"RaceStatusName"=>"DNF");
+				}
+			}
+		}
+		return $RaceStatus;
 	}
 }

@@ -674,12 +674,14 @@ class XraceConfigController extends AbstractController
         //获取用户比赛的详情
         $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId, $UserId);
         //如果有查出数据
-        if (!isset($UserRaceInfo['UserInfo'])) {
+        if (!isset($UserRaceInfo['UserInfo']))
+        {
             //重新生成该场比赛所有人的配置数据
             $this->oRace->genRaceLogToText($RaceId, $UserId);
             //重新获取比赛详情
             $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId, $UserId);
         }
+        $UserRaceInfo['ApplyInfo']['RaceStatus'] = $this->oRace->getUserRaceStatus($UserRaceInfo);
         $result = array("return" => isset($UserRaceInfo['ApplyInfo']) ? 1 : 0, "UserRaceInfo" => $UserRaceInfo);
         echo json_encode($result);
     }
@@ -750,6 +752,7 @@ class XraceConfigController extends AbstractController
                             }
                             $UserApplyList[$key]['RaceTypeIcon'] = $RaceTypeList[$RaceInfo['RaceTypeId']]['comment']['RaceTypeIcon'];
                             $UserApplyList[$key]['RaceTypeName'] = $RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName'];
+                            $UserApplyList[$key]['RaceStatus'] = $this->oRace->getUserRaceStatus($this->oRace->getUserRaceInfo($ApplyInfo['RaceId'], $UserId));
                         } else {
                             unset($UserApplyList[$key]);
                         }
