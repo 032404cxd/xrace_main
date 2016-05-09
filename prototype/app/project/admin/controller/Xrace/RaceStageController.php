@@ -578,6 +578,10 @@ class Xrace_RaceStageController extends AbstractController
 			}
 			//获取比赛类型列表
 			$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
+			//获取计时数据方式
+			$RaceTimingTypeList = $this->oRace->getTimingType();
+			//获取计时成绩计算方式
+			$RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType();
 			//初始化开始和结束时间 报名开始与结束时间
 			$ApplyStartTime = date("Y-m-d H:i:s",time()+86400);
 			$ApplyEndTime = date("Y-m-d H:i:s",time()+86400*8);
@@ -617,6 +621,10 @@ class Xrace_RaceStageController extends AbstractController
 			{
 				//获取比赛类型列表
 				$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
+				//获取计时数据方式
+				$RaceTimingTypeList = $this->oRace->getTimingType();
+				//获取计时成绩计算方式
+				$RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType();
 				//解包数组
 				$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
 				//解包地图数组
@@ -641,7 +649,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','MylapsTolaranceTime');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','MylapsTolaranceTime','RaceTimingType','RaceTimingResultType');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -743,6 +751,12 @@ class Xrace_RaceStageController extends AbstractController
 			//保存单个计时点的忍耐时间（在该时间范围内的将被忽略）
 			$bind['RouteInfo']['MylapsTolaranceTime'] = abs(intval($bind['MylapsTolaranceTime']));
 			unset($bind['MylapsTolaranceTime']);
+			//成绩计算数据源
+			$bind['RouteInfo']['RaceTimingType'] = trim($bind['RaceTimingType']);
+			unset($bind['RaceTimingType']);
+			//成绩计算方式
+			$bind['RouteInfo']['RaceTimingResultType'] = trim($bind['RaceTimingResultType']);
+			unset($bind['RaceTimingResultType']);
 			//如果有填写百度地图ID,就保存相关的起止时间
 			if(strlen($bind['RouteInfo']['BaiDuMapID']))
 			{
@@ -771,7 +785,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','MylapsTolaranceTime');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','MylapsTolaranceTime','RaceTimingType','RaceTimingResultType');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -882,6 +896,12 @@ class Xrace_RaceStageController extends AbstractController
 			//保存单个计时点的忍耐时间（在该时间范围内的将被忽略）
 			$bind['RouteInfo']['MylapsTolaranceTime'] = abs(intval($bind['MylapsTolaranceTime']));
 			unset($bind['MylapsTolaranceTime']);
+			//成绩计算数据源
+			$bind['RouteInfo']['RaceTimingType'] = trim($bind['RaceTimingType']);
+			unset($bind['RaceTimingType']);
+			//成绩计算方式
+			$bind['RouteInfo']['RaceTimingResultType'] = trim($bind['RaceTimingResultType']);
+			unset($bind['RaceTimingResultType']);
 			//保存百度地图信息
 			$bind['RouteInfo']['BaiDuMapID'] = $bind['BaiDuMapID'];
 			unset($bind['BaiDuMapID']);

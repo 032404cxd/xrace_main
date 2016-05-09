@@ -22,6 +22,20 @@
 			<input type="radio" name="SingleSelect" id="SingleSelect" value="1" {tpl:if($RaceInfo.SingleSelect=="1")}checked{/tpl:if}>是
 			<input type="radio" name="SingleSelect" id="SingleSelect" value="0" {tpl:if($RaceInfo.SingleSelect=="0")}checked{/tpl:if}>否</th>
 	</tr>
+	<tr class="hover"><th align="center" class="rowtip">计时数据方式</th><th align="center" class="rowtip">
+			<select name="RaceTimingType" size="1" class="span2">
+				{tpl:loop $RaceTimingTypeList $RaceTimingType $RaceTimingTypeName}
+				<option value="{tpl:$RaceTimingType/}" {tpl:if($RaceTimingType==$RaceInfo.RouteInfo.RaceTimingType)}selected="selected"{/tpl:if} >{tpl:$RaceTimingTypeName/}</option>
+				{/tpl:loop}
+			</select>
+		</th></tr>
+	<tr class="hover"><th align="center" class="rowtip">计时数据方式</th><th align="center" class="rowtip">
+			<select name="RaceTimingResultType" size="1" class="span2">
+				{tpl:loop $RaceTimingResultTypeList $RaceTimingResultType $RaceTimingResultTypeName}
+				<option value="{tpl:$RaceTimingResultType/}" {tpl:if($RaceTimingResultType==$RaceInfo.RouteInfo.RaceTimingResultType)}selected="selected"{/tpl:if}>{tpl:$RaceTimingResultTypeName/}</option>
+				{/tpl:loop}
+			</select>
+		</th></tr>
 	<tr class="hover"><th align="center" class="rowtip">Mylaps表前缀</th><th align="center" class="rowtip"><input name="MylapsPrefix" type="text" class="span2" id="MylapsPrefix" value = "{tpl:$RaceInfo.RouteInfo.MylapsPrefix/}" size="50" /></th></tr>
 	<tr class="hover"><th align="center" class="rowtip">Mylaps计时点忍耐时间</th><th align="center" class="rowtip"><input name="MylapsTolaranceTime" type="text" class="span1" id="MylapsTolaranceTime" value = "{tpl:$RaceInfo.RouteInfo.MylapsTolaranceTime/}" size="50" />秒</th></tr>
 	<tr class="hover"><th align="center" class="rowtip">百度路线ID</th><th align="center" class="rowtip"><input name="BaiDuMapID" type="text" class="span2" id="BaiDuMapID" value = "{tpl:$RaceInfo.RouteInfo.BaiDuMapID/}" size="50" /></th></tr>

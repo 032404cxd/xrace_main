@@ -792,12 +792,13 @@ class XraceConfigController extends AbstractController
                     $t = array();
                     foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
                     {
-                        if ((strlen(trim($BIB)) && strstr($ApplyInfo['BIB'], $BIB)))
+                        if (((strlen($BIB)>0) && strstr($ApplyInfo['BIB'], $BIB)) || (strlen($BIB)==0))
                         {
                             $t[] = $ApplyInfo;
                         }
                     }
                     $RaceUserList['RaceUserList'] = $t;
+
                     //重新获取比赛详情
                     $UserRaceTimingInfo = $this->oRace->GetUserRaceTimingInfo($RaceId);
                     foreach($UserRaceTimingInfo['Point'] as $k => $v)

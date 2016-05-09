@@ -16,7 +16,8 @@ class Xrace_Race extends Base_Widget
 	protected $table_timing = 'config_timing_point';
 	protected $maxRaceDetail = 5;
 
-	protected $raceTimingType = array('chip'=>'芯片计时','gps'=>'gps定位');
+	protected $raceTimingType = array('mylaps'=>'myLaps芯片计时');
+	protected $raceTimingResultType = array('gunshot'=>'发枪时间','net'=>'净时间');
 	protected $raceLicenseType = array('manager'=>'管理员审核','birthday'=>'生日','sex'=>'性别');
 
 	public function getTimingType()
@@ -31,6 +32,11 @@ class Xrace_Race extends Base_Widget
 	{
 		return $this->raceLicenseType;
 	}
+	public function getRaceTimingResultType()
+	{
+		return $this->raceTimingResultType;
+	}
+
 	//获取所有赛事的列表
 	public function getRaceCatalogList($Display = 0,$fields = "*")
 	{

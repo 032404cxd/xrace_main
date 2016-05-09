@@ -34,6 +34,20 @@
 			<input type="radio" name="SingleSelect" id="SingleSelect" value="1" >是
 			<input type="radio" name="SingleSelect" id="SingleSelect" value="0" checked>否</th>
 	</tr>
+	<tr class="hover"><th align="center" class="rowtip">计时数据方式</th><th align="center" class="rowtip">
+			<select name="RaceTimingType" size="1" class="span2">
+				{tpl:loop $RaceTimingTypeList $RaceTimingType $RaceTimingTypeName}
+				<option value="{tpl:$RaceTimingType/}" >{tpl:$RaceTimingTypeName/}</option>
+				{/tpl:loop}
+			</select>
+		</th></tr>
+	<tr class="hover"><th align="center" class="rowtip">计时数据方式</th><th align="center" class="rowtip">
+			<select name="RaceTimingType" size="1" class="span2">
+				{tpl:loop $RaceTimingResultTypeList $RaceTimingResultType $RaceTimingResultTypeName}
+				<option value="{tpl:$RaceTimingResultType/}" >{tpl:$RaceTimingResultTypeName/}</option>
+				{/tpl:loop}
+			</select>
+		</th></tr>
 	<tr class="hover"><th align="center" class="rowtip">Mylaps表前缀</th><th align="center" class="rowtip"><input name="MylapsPrefix" type="text" class="span2" id="MylapsPrefix" size="50" /></th></tr>
 	<tr class="hover"><th align="center" class="rowtip">Mylaps计时点忍耐时间</th><th align="center" class="rowtip"><input name="MylapsTolaranceTime" type="text" class="span1" id="MylapsTolaranceTime" value = "60" size="50" />秒</th></tr>
 	<tr class="hover"><th align="center" class="rowtip">百度路线ID</th><th align="center" class="rowtip"><input name="BaiDuMapID" type="text" class="span2" id="BaiDuMapID" size="50" /></th></tr>
