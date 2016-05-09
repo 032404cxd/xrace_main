@@ -848,7 +848,7 @@ class XraceConfigController extends AbstractController
         //格式化比赛ID
         $RaceId = abs(intval($this->request->RaceId));
         $Type = trim($this->request->RaceId);
-        if($Type="new")
+        if($Type=="new")
         {
             $oMylaps->genMylapsTimingInfo($RaceId);
             die();

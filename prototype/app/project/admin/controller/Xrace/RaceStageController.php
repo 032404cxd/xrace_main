@@ -1796,12 +1796,46 @@ class Xrace_RaceStageController extends AbstractController
 	//用户退出比赛
 	public function userRaceDeleteAction()
 	{
-		$oUser = new Xrace_User();
-		//报名记录ID
-		$ApplyId = intval($this->request->ApplyId);
-		//更新数据
-		$res = $oUser->deleteUserRace($ApplyId);
-		//返回之前页面
-		$this->response->goBack();
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		if($PermissionCheck['return'])
+		{
+			$oUser = new Xrace_User();
+			//报名记录ID
+			$ApplyId = intval($this->request->ApplyId);
+			//更新数据
+			$res = $oUser->deleteUserRace($ApplyId);
+			//返回之前页面
+			$this->response->goBack();
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//用户退出比赛
+	public function raceResultListAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission(0);
+		if($PermissionCheck['return'])
+		{
+			$oUser = new Xrace_User();
+			//比赛ID
+			$RaceId = intval($this->request->RaceId);
+			//获取比赛信息
+			$RaceInfo = $this->oRace->getRace($RaceId);
+			//获取成绩列表
+			$RaceResultList = $this->oRace->getRaceResult($RaceId);
+			print_R($RaceResultList['RaceInfo']);
+			//渲染模板
+			include $this->tpl('Xrace_Race_RaceResultList');
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
 	}
 }

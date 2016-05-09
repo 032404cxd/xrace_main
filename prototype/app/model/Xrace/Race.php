@@ -1201,4 +1201,12 @@ class Xrace_Race extends Base_Widget
 		}
 		return $RaceStatus;
 	}
+	//获取某场比赛的成绩列表
+	public function getRaceResult($RaceId)
+	{
+		//拼接URL
+		$url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.race.user.list.by.bib',array('RaceId'=>$RaceId));
+		$return = Base_Common::do_post($url);
+		return json_decode($return,true);
+	}
 }

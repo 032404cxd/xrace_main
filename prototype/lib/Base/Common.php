@@ -828,6 +828,22 @@ EOF;
         }                
 		return $prefix." ".$text.$suffix;
 	}
+	function parthTimeLag($TimeLag)
+	{
+		$T = explode(".",$TimeLag);
+		if(intval($T[0])>=3600)
+		{
+			$Text['Hour'] = intval($T[0]/3600);
+		}
+		else
+		{
+			$Text['Hour'] = "00";
+		}
+		$Text['Minute'] = sprintf("%02d",(intval($T[0])-intval($Text['Hour'])*3600)/60);
+		$Text['Second'] = sprintf("%02d",intval($T[0])%60);
+		//return implode(":",$Text);
+		return implode(":",$Text).(isset($T[1])?".".$T[1]:"");
+	}
 	function cutstr($str,$len,$replace = '...')
 	{
 		$ascLen=strlen($str);
