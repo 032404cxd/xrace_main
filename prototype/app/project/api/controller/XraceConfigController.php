@@ -844,12 +844,13 @@ class XraceConfigController extends AbstractController
     */
     public function timingTextAction()
     {
+        $oMylaps = new Xrace_Mylaps();
         //格式化比赛ID
         $RaceId = abs(intval($this->request->RaceId));
         $Type = trim($this->request->RaceId);
         if($Type="new")
         {
-            $this->oRace->genMylapsTimingInfo($RaceId);
+            $oMylaps->genMylapsTimingInfo($RaceId);
             die();
         }
         $RaceInfo = $this->oRace->getRace($RaceId);
