@@ -15,11 +15,23 @@ class Xrace_Team extends Base_Widget
 	 * @param string $fields 所要获取的数据列
 	 * @return array
 	 */
-	public function getRaceTeamInfo($TeamId, $fields = '*')
+	public function getRaceTeamInfo($RaceTeamId, $fields = '*')
 	{
 		$TeamId = intval($TeamId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->selectRow($table_to_process, $fields, '`RaceTeamId` = ?', $TeamId);
+		return $this->db->selectRow($table_to_process, $fields, '`RaceTeamId` = ?', $RaceTeamId);
+	}
+	/**
+	 * 获取单个队伍记录
+	 * @param char $TeamId 队伍ID
+	 * @param string $fields 所要获取的数据列
+	 * @return array
+	 */
+	public function getRaceTeamInfoByName($RaceTeamName,$RaceCatalogId,$fields = '*')
+	{
+		$TeamId = intval($TeamId);
+		$table_to_process = Base_Widget::getDbTable($this->table);
+		return $this->db->selectRow($table_to_process, $fields, '`RaceTeamName` = ? and `RaceCatalogId` = ?',array($RaceTeamName,$RaceCatalogId));
 	}
 	/**
 	 * 添加单个队伍记录
