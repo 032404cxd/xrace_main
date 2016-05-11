@@ -1709,6 +1709,7 @@ class Xrace_RaceStageController extends AbstractController
 	//报名记录上传
 	public function raceUserUploadAction()
 	{
+		//bib,groupName,name,sex(1,2),chip,mobile
 		//检查权限
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
 		if($PermissionCheck['return'])
@@ -1736,6 +1737,7 @@ class Xrace_RaceStageController extends AbstractController
 				$content = '';
 				$ApplyCount = 0;
 				$oUser = new Xrace_User();
+				$oTeam = new Xrace_Team();
 				//循环到文件结束
 				while(!feof($handle))
 				{
@@ -1746,13 +1748,14 @@ class Xrace_RaceStageController extends AbstractController
 					$mobile = trim($t[5]);
 					//根据手机号码获取用户信息
 					$UserInfo = $oUser->getUserInfoByMobile($mobile,"user_id,name");
-					//如果用户有获取到
-					if(!isset($UserInfo['user_id']))
+					//print_R($UserInfo);
+					//如果用户没有获取到 并且手机号码不为空
+					if(!isset($UserInfo['user_id']) && $mobile!="")
 					{
 						//生成新用户ID
 						$NewUserId = $oUser->genNewUserId();
 						//如果生成成功
-						if($NewUserId)
+						if($NewUserId )
 						{
 							//生成用户信息
 							$UserInfo = array('user_id'=>$NewUserId,'name'=>trim(iconv('GB2312', 'UTF-8//IGNORE', $t[2])),'sex'=>intval($t[3]),'phone'=>$mobile,'pwd'=>'tbd','crt_time'=>$CurrentTime);
@@ -1772,10 +1775,16 @@ class Xrace_RaceStageController extends AbstractController
 					//如果检测到用户ID
 					if(isset($UserInfo['user_id']))
 					{
+						//获取车队名称
+						$RaceTeamName = trim(iconv('GB2312', 'UTF-8//IGNORE', $t[6]));
+						//获取车队信息
+						$RaceTeamInfo = $oTeam->getRaceTeamInfoByName($RaceTeamName,$RaceStageInfo['RaceCatalogId'],'RaceTeamId,RaceTeamName');
+						//判断车队是否获取到
+						$RaceTeamId = isset($RaceTeamInfo['RaceTeamId'])?$RaceTeamInfo['RaceTeamId']:0;
 						//初始化新报名记录的信息
-						$ApplyInfo = array("ApplyTime"=>$CurrentTime,"UserId"=>$UserInfo['user_id'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]));
+						$ApplyInfo = array("ApplyTime"=>$CurrentTime,"UserId"=>$UserInfo['user_id'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"RaceTeamId"=>$RaceTeamId);
 						//如果存在，则更新部分信息
-						$ApplyUpdateInfo = array("ApplyTime"=>$CurrentTime,"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]));
+						$ApplyUpdateInfo = array("ApplyTime"=>$CurrentTime,"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"RaceTeamId"=>$RaceTeamId);
 						//创建/更新报名记录
 						$Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
 						if($Apply)

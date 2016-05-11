@@ -17,7 +17,7 @@ class Xrace_Team extends Base_Widget
 	 */
 	public function getRaceTeamInfo($RaceTeamId, $fields = '*')
 	{
-		$TeamId = intval($TeamId);
+		$TeamId = intval($RaceTeamId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		return $this->db->selectRow($table_to_process, $fields, '`RaceTeamId` = ?', $RaceTeamId);
 	}
@@ -29,7 +29,7 @@ class Xrace_Team extends Base_Widget
 	 */
 	public function getRaceTeamInfoByName($RaceTeamName,$RaceCatalogId,$fields = '*')
 	{
-		$TeamId = intval($TeamId);
+		$TeamId = intval($RaceTeamName);
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		return $this->db->selectRow($table_to_process, $fields, '`RaceTeamName` = ? and `RaceCatalogId` = ?',array($RaceTeamName,$RaceCatalogId));
 	}
