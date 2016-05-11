@@ -1,7 +1,7 @@
 {tpl:tpl contentHeader/}
 <script type="text/javascript">
   function RaceUserUpload(rid,rname,gid){
-    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.upload.submit&RaceId=' + rid + '&RaceGroupId=' + gid, {title:'批量导入报名记录-'+rname,width:300,height:150});
+    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.upload.submit&RaceId=' + rid + '&RaceGroupId=' + gid, {title:'批量导入报名记录-'+rname,width:400,height:250});
   }
   function UserRaceDelete(uname,aid){
     deleteStageLogoBox = divBox.confirmBox({content:'确定将'+ uname + '退出比赛?',ok:function(){location.href = '{tpl:$this.sign/}&ac=user.race.delete&ApplyId=' + aid;}});
