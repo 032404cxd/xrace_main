@@ -1775,7 +1775,17 @@ class Xrace_RaceStageController extends AbstractController
 					//如果检测到用户ID
 					if(isset($UserInfo['user_id']))
 					{
+						//如果姓名为空
+						if($UserInfo['name']=="")
+						{
+							//$bind = array('name'=>trim($t[2]),'sex'=>intval($t[3]));
+							//$bind = array('name'=>trim(iconv('GB2312', 'UTF-8//IGNORE', $t[2])));
+
+							$bind = array('name'=>trim(iconv('GB2312', 'UTF-8//IGNORE', $t[2])),'sex'=>intval($t[3]));
+							$oUser->updateUserInfo($UserInfo['user_id'], $bind);
+						}
 						//获取车队名称
+						//$RaceTeamName = trim($t[6]);
 						$RaceTeamName = trim(iconv('GB2312', 'UTF-8//IGNORE', $t[6]));
 						//获取车队信息
 						$RaceTeamInfo = $oTeam->getRaceTeamInfoByName($RaceTeamName,$RaceStageInfo['RaceCatalogId'],'RaceTeamId,RaceTeamName');
