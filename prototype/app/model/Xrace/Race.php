@@ -32,9 +32,10 @@ class Xrace_Race extends Base_Widget
 	{
 		return $this->raceLicenseType;
 	}
-	public function getRaceTimingResultType()
+	public function getRaceTimingResultType($RaceResultType)
 	{
-		return $this->raceTimingResultType;
+		$raceTimingResultTypeList = $this->raceTimingResultType;
+		return $raceTimingResultTypeList[$RaceResultType];
 	}
 
 	//获取所有赛事的列表
@@ -961,6 +962,7 @@ class Xrace_Race extends Base_Widget
 						Base_Common::rebuildConfig($filePath,$fileName,$TimingPointList,"Timing");
 					}
 					$oUser = new Xrace_User();
+					$oTeam = new Xrace_Team();
 					//获取选手名单
 					$RaceUserList = $oUser->getRaceUserList($params);
 					//如果获取到选手名单
@@ -974,8 +976,13 @@ class Xrace_Race extends Base_Widget
 							//如果获取到用户
 							if($UserInfo['user_id'])
 							{
+								$RaceTeamInfo = $oTeam->getRaceTeamInfo($ApplyInfo['RaceTeamId']);
+								if(!isset($RaceTeamInfo['RaceTeamId']))
+								{
+									$RaceTeamInfo = array('RaceTeamName'=>"个人报名");
+								}
 								//存储用户信息
-								$TimingPointList['UserInfo'] = array('UserName'=>$UserInfo['name'],'UserId' => $UserInfo['user_id']);
+								$TimingPointList['UserInfo'] = array('UserName'=>$UserInfo['name'],'UserId' => $UserInfo['user_id'],'RaceTeamId'=> $ApplyInfo['RaceTeamId'],'RaceTeamName'=>$RaceTeamInfo['RaceTeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
 								//数据解包
 								$ApplyInfo['comment'] = json_decode($ApplyInfo['comment'],true);
 								//如果有关联的订单数据
@@ -983,7 +990,7 @@ class Xrace_Race extends Base_Widget
 								{
 									$oOrder = new Xrace_Order();
 									//获取订单信息
-									$OrderInfo = $oOrder->getOrder($ApplyInfo['comment']['order_id']);
+									$OrderInfo = $oOrder->getOrder($ApplyInfo['comment']['order_id'],'id,order_no,trade_no,amount_total,createDateTime,payDateTime,isCancel,status');
 									//如果有获取到订单信息
 									if(isset($OrderInfo['order_no']))
 									{
@@ -993,10 +1000,10 @@ class Xrace_Race extends Base_Widget
 								}
 								if(isset($ApplyInfo['comment']['BDDeviceId']) && (strlen($ApplyInfo['comment']['BDDeviceId'])>4))
 								{
-									$ApplyInfo['comment']['BDLocationUrl'] = "http://182.92.140.26:8000/rest/sdk.location.queryLocation/226/0?deviceId=".$ApplyInfo['comment']['BDDeviceId']."&beginTime=beginTime&endTime=endTime";
+									$TimingPointList['UserInfo']['ApplyComment']['BDLocationUrl'] = "http://182.92.140.26:8000/rest/sdk.location.queryLocation/226/0?deviceId=".$ApplyInfo['comment']['BDDeviceId']."&beginTime=beginTime&endTime=endTime";
 								}
 								//存储报名信息
-								$TimingPointList['ApplyInfo'] = $ApplyInfo;
+								//$TimingPointList['ApplyInfo'] = $ApplyInfo;
 								$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/"."UserList"."/";
 								$fileName = $UserInfo['user_id'].".php";
 								//生成配置文件

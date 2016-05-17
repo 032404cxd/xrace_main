@@ -847,7 +847,7 @@ class XraceConfigController extends AbstractController
         $oMylaps = new Xrace_Mylaps();
         //格式化比赛ID
         $RaceId = abs(intval($this->request->RaceId));
-        $Type = trim($this->request->RaceId);
+        $Type = trim($this->request->type);
         if($Type=="new")
         {
             $oMylaps->genMylapsTimingInfo($RaceId);
@@ -863,8 +863,10 @@ class XraceConfigController extends AbstractController
         $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0, 0);
         $ChipList = array();
         $UserList = array();
-        foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo) {
-            if (trim($ApplyInfo['ChipId'])) {
+        foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
+        {
+            if (trim($ApplyInfo['ChipId']))
+            {
                 $ChipList[] = "'" . $ApplyInfo['ChipId'] . "'";
                 $UserList[$ApplyInfo['ChipId']]['UserId'] = $ApplyInfo['UserId'];
                 $UserList[$ApplyInfo['ChipId']]['Name'] = $ApplyInfo['Name'];

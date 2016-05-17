@@ -52,7 +52,7 @@ class Xrace_Mylaps extends Base_Widget
 		$RaceInfo['RouteInfo']['MylapsTolaranceTime'] = isset($RaceInfo['RouteInfo']['MylapsTolaranceTime'])?$RaceInfo['RouteInfo']['MylapsTolaranceTime']:60;
 		//初始化计时成绩计算的方式（发枪时刻/第一次经过起始点）
 		$ResultType = ((isset($RaceInfo['RouteInfo']['RaceTimingResultType']) && ($RaceInfo['RouteInfo']['RaceTimingResultType']=="gunshot"))||!isset($RaceInfo['RouteInfo']['RaceTimingResultType']))?"gunshot":"net";
-		echo "result:".$oRace->raceTimingResultType[$ResultType]."<br>";
+		echo "result:".$oRace->getRaceTimingResultType($ResultType)."<br>";
 		//获取选手和车队名单
 		$RaceUserList = $oUser->getRaceUserListByRace($RaceId, 0, 0);
 		//初始化空的芯片列表
@@ -71,12 +71,14 @@ class Xrace_Mylaps extends Base_Widget
 				$UserList[$ApplyInfo['ChipId']]['UserId'] = $ApplyInfo['UserId'];
 				$UserList[$ApplyInfo['ChipId']]['Name'] = $ApplyInfo['Name'];
 				$UserList[$ApplyInfo['ChipId']]['BIB'] = $ApplyInfo['BIB'];
+				$UserList[$ApplyInfo['ChipId']]['RaceTeamId'] = $ApplyInfo['RaceTeamId'];
 			}
 		}
 		echo "比赛时间：".$RaceInfo['StartTime']."~".$RaceInfo['EndTime']."<br>";
 		echo "芯片列表：".implode(",",$ChipList)."<br>";
 		//重新生成选手的mylaps排名数据
 		$oRace->genRaceLogToText($RaceId);
+		die();
 		//初始化页码
 		$i = 1;
 		//单页记录数量
