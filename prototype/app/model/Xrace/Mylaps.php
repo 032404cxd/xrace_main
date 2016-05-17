@@ -71,14 +71,13 @@ class Xrace_Mylaps extends Base_Widget
 				$UserList[$ApplyInfo['ChipId']]['UserId'] = $ApplyInfo['UserId'];
 				$UserList[$ApplyInfo['ChipId']]['Name'] = $ApplyInfo['Name'];
 				$UserList[$ApplyInfo['ChipId']]['BIB'] = $ApplyInfo['BIB'];
-				$UserList[$ApplyInfo['ChipId']]['RaceTeamId'] = $ApplyInfo['RaceTeamId'];
+				$UserList[$ApplyInfo['ChipId']]['RaceTeamName'] = $ApplyInfo['RaceTeamName'];
 			}
 		}
 		echo "比赛时间：".$RaceInfo['StartTime']."~".$RaceInfo['EndTime']."<br>";
 		echo "芯片列表：".implode(",",$ChipList)."<br>";
 		//重新生成选手的mylaps排名数据
 		$oRace->genRaceLogToText($RaceId);
-		die();
 		//初始化页码
 		$i = 1;
 		//单页记录数量
@@ -103,7 +102,7 @@ class Xrace_Mylaps extends Base_Widget
 					//将当前位置置为循环到的计时点
 					$currentChip = $TimingInfo['Chip'];
 					//调试信息
-					echo "当前芯片:".$currentChip . "<br>用户ID:".$UserList[$TimingInfo['Chip']]['UserId']."<br>姓名:" . $UserList[$TimingInfo['Chip']]['Name'] ."<br>号码:" . $UserList[$TimingInfo['Chip']]['BIB'].  "<br>";
+					echo "芯片:".$currentChip . ",用户ID:".$UserList[$TimingInfo['Chip']]['UserId']."<br>".$UserList[$TimingInfo['Chip']]['Name'] ."-" . $UserList[$TimingInfo['Chip']]['RaceTeamName'] ."<br>号码:" . $UserList[$TimingInfo['Chip']]['BIB'].  "<br>";
 				}
 				//mylaps系统中生成的时间一直比当前时间晚8小时，修正
 				$TimingInfo['ChipTime'] = strtotime($TimingInfo['ChipTime']) - 8 * 3600;
@@ -209,6 +208,7 @@ class Xrace_Mylaps extends Base_Widget
 							$fileName = "Total" . ".php";
 							//生成配置文件
 							Base_Common::rebuildConfig($filePath, $fileName, $UserRaceInfoList, "Timing");
+							$num++;
 						}
 						else
 						{
@@ -217,27 +217,41 @@ class Xrace_Mylaps extends Base_Widget
 					}
 					else
 					{
-						continue;
 						$StartTime = $UserRaceInfo['Point'][1]['inTime']>0?$UserRaceInfo['Point'][1]['inTime']:$RaceStartTime;
+						//保存当前点的位置
 						$c = $UserRaceInfo['CurrentPoint'];
+						//循环
 						do {
+							//如果当前点存在 且 下一点也存在
 							if (isset($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]) && isset($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']+1]))
 							{
+								//暂存当前点信息
 								$CurrentPointInfo = $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']];
-								$timeLag = sprintf("%20.3f", $CurrentPointInfo['inTime']) - ($TimingInfo['ChipTime'] + $miliSec) . "<br>";
+								//计算本条计时信息和当前点过线时间的时间差
+								$timeLag = sprintf("%20.3f", $CurrentPointInfo['inTime']) - $ChipTime . "<br>";
+								//如果时间差小于配置的容忍时间（短时间内多次过线）
 								if (abs($timeLag) <= $RaceInfo['RouteInfo']['MylapsTolaranceTime'])
 								{
+									echo "TimeOut Pass<br>";
+									//本条记录废除
 									break;
 								}
 							}
 							else
 							{
+								echo "Reach The Buttom Pass<br>";
+								//本条记录废除
 								break;
 							}
-						} while
+						}
+						while
 						(
+							//(如果芯片的位置不符合 或 （位置符合 且 已经记录的过线时间为空） 且 向上累加)
 							(($CurrentPointInfo['ChipId'] != $TimingInfo['Location']) || (($CurrentPointInfo['ChipId'] == $TimingInfo['Location']) && ($CurrentPointInfo['inTime'] != ""))) && ($UserRaceInfo['CurrentPoint']++)
 						);
+						echo "查找到下一位置：".$UserRaceInfo['CurrentPoint']."<br>";
+						continue;
+						//如果当前点信息内有包含芯片ID(位置合法 且 当前点位置和循环查找之前的不相同（确认移位）)
 						if ($CurrentPointInfo['ChipId'] && $c != $UserRaceInfo['CurrentPoint'])
 						{
 							$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['inTime'] = $TimingInfo['ChipTime'] + $miliSec;
