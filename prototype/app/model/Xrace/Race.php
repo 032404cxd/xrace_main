@@ -877,7 +877,7 @@ class Xrace_Race extends Base_Widget
 	{
 		$RaceId = intval($RaceId);
 		//获取比赛信息
-		$RaceInfo = $this->getRace($RaceId);
+		$RaceInfo = $this->getRace($RaceId,"RaceId,RaceTypeId,RaceStageId,RaceGroupId,RaceName,comment");
 		//如果获取到比赛信息
 		if(isset($RaceInfo['RaceId']))
 		{
@@ -932,7 +932,6 @@ class Xrace_Race extends Base_Widget
 												//第一次通过不需要下标
 												$t['TName'].= ($j==0)?"":"*".($j+1);
 												$t['inTime'] = 0;
-												$t['outTime'] = 0;
 												//初始化通过的用户列表
 												$t['UserList'] = array();
 												$TimingPointList['Point'][$i+1] = $t;
