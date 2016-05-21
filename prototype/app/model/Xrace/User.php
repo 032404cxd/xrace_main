@@ -652,6 +652,7 @@ class Xrace_User extends Base_Widget
 		}
 		if(isset($NeedDB))
 		{
+			echo "hhh";
 			//生成查询条件
 			$params = array('RaceId'=>$RaceId);
 			//获取选手名单
@@ -684,7 +685,7 @@ class Xrace_User extends Base_Widget
 							}
 						}
 						//格式化用户的队伍名称和队伍ID
-						$RaceUserList['RaceUserList'][$ApplyId]['RaceTeamName'] = isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']])?$RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']]['RaceTeamName']:"个人报名";
+						$RaceUserList['RaceUserList'][$ApplyId]['RaceTeamName'] = isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']])?$RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']]['RaceTeamName']:"个人";
 						$RaceUserList['RaceUserList'][$ApplyId]['RaceTeamId'] = isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']])?$ApplyInfo['RaceTeamId']:0;
 						$RaceUserList['RaceUserList'][$ApplyId]['comment'] = json_decode($ApplyInfo['comment'],true);
 					}

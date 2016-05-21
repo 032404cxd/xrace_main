@@ -877,7 +877,7 @@ class Xrace_Race extends Base_Widget
 	{
 		$RaceId = intval($RaceId);
 		//获取比赛信息
-		$RaceInfo = $this->getRace($RaceId,"RaceId,RaceTypeId,RaceStageId,RaceGroupId,RaceName,comment");
+		$RaceInfo = $this->getRace($RaceId,"RaceId,RaceTypeId,RaceStageId,RaceGroupId,RaceName,comment,RouteInfo");
 		//如果获取到比赛信息
 		if(isset($RaceInfo['RaceId']))
 		{
@@ -886,6 +886,8 @@ class Xrace_Race extends Base_Widget
 			$i = 0;$TimingPointList = array();
 			//数据解包
 			$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+			//地图相关数据解包
+			$RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
 			//如果有配置赛段信息
 			if(isset($RaceInfo['comment']['DetailList']) && count($RaceInfo['comment']['DetailList']))
 			{
@@ -932,6 +934,7 @@ class Xrace_Race extends Base_Widget
 												//第一次通过不需要下标
 												$t['TName'].= ($j==0)?"":"*".($j+1);
 												$t['inTime'] = 0;
+												$t['CurrentDistense'] += $TimingPointList['Point'][$i]['CurrentDistense']+$TimingPointList['Point'][$i]['ToNext'];
 												//初始化通过的用户列表
 												$t['UserList'] = array();
 												$TimingPointList['Point'][$i+1] = $t;
@@ -978,7 +981,7 @@ class Xrace_Race extends Base_Widget
 								$RaceTeamInfo = $oTeam->getRaceTeamInfo($ApplyInfo['RaceTeamId']);
 								if(!isset($RaceTeamInfo['RaceTeamId']))
 								{
-									$RaceTeamInfo = array('RaceTeamName'=>"个人报名");
+									$RaceTeamInfo = array('RaceTeamName'=>"个人");
 								}
 								//存储用户信息
 								$TimingPointList['UserInfo'] = array('UserName'=>$UserInfo['name'],'UserId' => $UserInfo['user_id'],'RaceTeamId'=> $ApplyInfo['RaceTeamId'],'RaceTeamName'=>$RaceTeamInfo['RaceTeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
