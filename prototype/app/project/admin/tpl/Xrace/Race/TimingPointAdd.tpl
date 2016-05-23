@@ -31,12 +31,12 @@
   </tr>
   <tr>
     <th align="center" class="rowtip">
-      计时芯片序列号：<input type="text" name="ChipId" id="ChipId" value="" />
+      计时点序列号：<input type="text" name="ChipId" id="ChipId" value="" />
     </th>
   </tr>
   <tr>
     <th align="center" class="rowtip">
-      距下一计时点：<input type="text" name="ToNext" id="ToNext" value="" />米
+      距下一点：<input type="text" name="ToNext" id="ToNext" value="" />米
     </th>
   </tr>
   <tr>

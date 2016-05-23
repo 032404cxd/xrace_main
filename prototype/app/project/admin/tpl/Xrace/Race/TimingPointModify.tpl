@@ -15,12 +15,12 @@
   </tr>
   <tr>
     <th align="center" class="rowtip">
-      计时芯片序列号：<input type="text" name="ChipId" id="ChipId" value="{tpl:$TimingInfo.ChipId/}" />
+      计时点序列号：<input type="text" name="ChipId" id="ChipId" value="{tpl:$TimingInfo.ChipId/}" />
     </th>
   </tr>
   <tr>
     <th align="center" class="rowtip">
-      距下一计时点：<input type="text" name="ToNext" id="ToNext" value="{tpl:$TimingInfo.ToNext/}" />米
+      距下一点：<input type="text" name="ToNext" id="ToNext" value="{tpl:$TimingInfo.ToNext/}" />米
     </th>
   </tr>
   <tr>

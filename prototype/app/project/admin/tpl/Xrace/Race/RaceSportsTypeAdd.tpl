@@ -1,8 +1,6 @@
 {tpl:tpl contentHeader/}
 
 <form action="{tpl:$this.sign/}&ac=race.sports.type.insert" name="race_sports_type_add_form" id="race_sports_type_add_form" method="post">
-<input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageId/}" />
-  <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupId/}" />
   <input type="hidden" name="RaceId" id="RaceId" value="{tpl:$RaceId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped">
   <tr>
@@ -49,10 +47,8 @@
           divBox.alertBox(errors[jsonResponse.errno],function(){});
         } else {
           var message = '添加运动分段成功';
-          RaceStageId=$("#RaceStageId");
-          RaceGroupId=$("#RaceGroupId");
           RaceId=$("#RaceId");
-          divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=race.detail&RaceStageId=' + RaceStageId.val() + '&RaceGroupId=' + RaceGroupId.val() + '&RaceId=' + RaceId.val());}});
+          divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=race.detail&RaceId=' + RaceId.val());}});
         }
       }
     };

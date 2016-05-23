@@ -910,7 +910,7 @@ class XraceConfigController extends AbstractController
                             Base_Common::rebuildConfig($filePath, $fileName, $UserRaceInfo, "Timing");
 
                             $UserRaceInfoList = $this->oRace->getUserRaceInfoList($RaceId);
-                            $UserRaceInfoList['Point'][$i]['inTime'] = $UserRaceInfoList['Point'][$i]['inTime'] == 0 ? ($TimingInfo['ChipTime'] + $miliSec) : min(sprintf("%0.4f", $UserRaceInfoList['Point'][$i]['inTime']), $TimingInfo['ChipTime'] + $miliSec);
+                            $UserRaceInfoList['Point'][$i]['inTime'] = $UserRaceInfoList['Point'][$i]['inTime'] == 0 ? ($TimingInfo['ChipTime'] + $miliSec) : min(sprintf("%0.3f", $UserRaceInfoList['Point'][$i]['inTime']), $TimingInfo['ChipTime'] + $miliSec);
 
                             if (isset($UserRaceInfoList['Point'][$i]['UserList']) && count($UserRaceInfoList['Point'][$i]['UserList'])) {
                                 $UserRaceInfoList['Point'][$i]['UserList'][count($UserRaceInfoList['Point'][$i]['UserList']) + 1] = array("TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - strtotime($RaceInfo['StartTime'])),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
@@ -919,7 +919,7 @@ class XraceConfigController extends AbstractController
                             }
                             $t = array();
                             foreach ($UserRaceInfoList['Point'][$i]['UserList'] as $k => $v) {
-                                $UserRaceInfoList['Point'][$i]['UserList'][$k]['TimeLag'] = abs(sprintf("%0.4f", $UserRaceInfoList['Point'][$i]['inTime']) - $v['inTime']);
+                                $UserRaceInfoList['Point'][$i]['UserList'][$k]['TimeLag'] = abs(sprintf("%0.3f", $UserRaceInfoList['Point'][$i]['inTime']) - $v['inTime']);
                                 $t[$k] = $UserRaceInfoList['Point'][$i]['UserList'][$k]['TimeLag'];
                             }
                             array_multisort($t, SORT_ASC, $UserRaceInfoList['Point'][$i]['UserList']);
@@ -991,7 +991,7 @@ class XraceConfigController extends AbstractController
                             $fileName = $UserList[$TimingInfo['Chip']]['UserId'] . ".php";
                             //生成配置文件
                             Base_Common::rebuildConfig($filePath, $fileName, $UserRaceInfo, "Timing");
-                            $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['inTime'] = $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['inTime'] == 0 ? ($TimingInfo['ChipTime'] + $miliSec) : min(sprintf("%0.4f", $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['inTime']), $TimingInfo['ChipTime'] + $miliSec);
+                            $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['inTime'] = $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['inTime'] == 0 ? ($TimingInfo['ChipTime'] + $miliSec) : min(sprintf("%0.3f", $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['inTime']), $TimingInfo['ChipTime'] + $miliSec);
 
                             if (isset($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList']) && count($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'])) {
                                 $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][count($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList']) + 1] = array("TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - strtotime($RaceInfo['StartTime'])),"TotalNetTime" => ($TimingInfo['ChipTime'] + $miliSec - $StartTime), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
@@ -1000,7 +1000,7 @@ class XraceConfigController extends AbstractController
                             }
                             $t = array();
                             foreach ($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'] as $k => $v) {
-                                $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][$k]['TimeLag'] = abs(sprintf("%0.4f", $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['inTime']) - $v['inTime']);
+                                $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][$k]['TimeLag'] = abs(sprintf("%0.3f", $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['inTime']) - $v['inTime']);
                                 $t[$k] = $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][$k]['TimeLag'];
 
                             }

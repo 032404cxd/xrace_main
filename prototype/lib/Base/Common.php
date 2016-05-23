@@ -837,11 +837,24 @@ EOF;
 		}
 		else
 		{
-			$Text['Hour'] = "00";
+			//$Text['Hour'] = "00";
 		}
-		$Text['Minute'] = sprintf("%02d",(intval($T[0])-intval($Text['Hour'])*3600)/60);
-		$Text['Second'] = sprintf("%02d",intval($T[0])%60);
-		//return implode(":",$Text);
+		if(intval($T[0])>60)
+		{
+			$Text['Minute'] = sprintf("%02d",(intval($T[0])%3600)/60);
+		}
+		else
+		{
+			//$Text['Minute'] = "00";
+		}
+		if($T[0]>=10)
+		{
+			$Text['Second'] = sprintf("%02d",intval($T[0])%60);
+		}
+		else
+		{
+			$Text['Second'] = sprintf("%01d",intval($T[0])%60);
+		}
 		return implode(":",$Text).(isset($T[1])?".".$T[1]:"");
 	}
 	function cutstr($str,$len,$replace = '...')

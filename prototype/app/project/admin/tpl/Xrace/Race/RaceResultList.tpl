@@ -19,18 +19,32 @@
   <fieldset><legend>{tpl:$RaceInfo.RaceName/} 成绩列表 </legend>
 <table width="99%" align="center" class="table table-bordered table-striped">
   <tr>
-    <th align="center" class="rowtip">计时点</th>
-    <th align="center" class="rowtip" colspan="10">选手</th>
+    <th align="center" class="rowtip" colspan="2">计时点</th>
+    <th align="center" class="rowtip" colspan="10">选手名次</th>
   </tr>
-  {tpl:loop $RaceResultList.UserRaceTimingInfo.Point $Pid $PointInfo}
-  <tr>
-    <th align="center" class="rowtip">{tpl:$PointInfo.TName/}</th>
+
+  {tpl:loop $RaceResultList.UserRaceTimingInfo.Sports $Sid $SInfo}
+  <tr><th align="center" class="rowtip" rowspan="{tpl:$SInfo.TimingPointList func="count(@@)"/}">{tpl:$SInfo.SportsTypeInfo.SportsTypeName/}</th>
+    {tpl:loop $SInfo.TimingPointList $id $Tid}
+    {tpl:loop $RaceResultList.UserRaceTimingInfo.Point $Pid $PointInfo}
+    {tpl:if($Tid==$Pid)}
+    <th align="center" class="rowtip">{tpl:$PointInfo.TName/}<p>{tpl:$PointInfo.CurrentDistense/}</th>
+    {tpl:if(count($PointInfo.UserList)>=1)}
     {tpl:loop $PointInfo.UserList $id $UserInfo}
-    <th align="center" class="rowtip">{tpl:$UserInfo.Name/}/{tpl:$UserInfo.Rank/}{tpl:if($UserInfo.TimeLag>0)}<p>{tpl:$UserInfo.TimeLag func="Base_Common::parthTimeLag(sprintf('%10.3f',@@))"/}{/tpl:if}</th>
+    <th align="center" class="rowtip">{tpl:$UserInfo.Name/}<p>{tpl:$UserInfo.RaceTeamName/}<p>{tpl:$UserInfo.Rank/}{tpl:if($UserInfo.TimeLag>0)}/{tpl:$UserInfo.TimeLag func="Base_Common::parthTimeLag(sprintf('%10.3f',@@))"/}{/tpl:if}</th>
+  {/tpl:loop}
+  {tpl:else}
+    <th align="center" class="rowtip">无人过线</th>
+  {/tpl:if}
+    {/tpl:if}
+
     {/tpl:loop}
   </tr>
-  {/tpl:loop}
 
+{/tpl:loop}
+
+
+  {/tpl:loop}
 </table>
 </fieldset>
 </form>

@@ -652,7 +652,6 @@ class Xrace_User extends Base_Widget
 		}
 		if(isset($NeedDB))
 		{
-			echo "hhh";
 			//生成查询条件
 			$params = array('RaceId'=>$RaceId);
 			//获取选手名单

@@ -898,6 +898,8 @@ class Xrace_Race extends Base_Widget
 				//循环赛段信息
 				foreach($RaceInfo['comment']['DetailList'] as $SportsType => $TimingList)
 				{
+					//每个分段的距离初始化为0
+					$SectionDistence = 0;
 					//初始化空数组
 					$TimingPointList['Sports'][$SportsType]['TimingPointList'] = array();
 					//如果有配置计时点信息
@@ -939,7 +941,10 @@ class Xrace_Race extends Base_Widget
 												//第一次通过不需要下标
 												$t['TName'].= ($j==0)?"":"*".($j+1);
 												$t['inTime'] = 0;
-												$t['CurrentDistense'] += $TimingPointList['Point'][$i]['CurrentDistense']+$TimingPointList['Point'][$i]['ToNext'];
+												//每个分段内距离相互累加
+												$SectionDistence += $TimingPointList['Point'][$i]['ToNext'];
+												$t['CurrentDistense'] = $SectionDistence;
+												$t['SportsTypeName'] = $SportsTypeInfo['SportsTypeName'];
 												//初始化通过的用户列表
 												$t['UserList'] = array();
 												$TimingPointList['Point'][$i+1] = $t;
