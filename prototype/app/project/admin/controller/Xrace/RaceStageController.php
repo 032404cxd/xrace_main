@@ -1266,7 +1266,7 @@ class Xrace_RaceStageController extends AbstractController
 			//需要添加的运动类型置于哪个位置之后，默认为开头
 			$After = isset($this->request->After)?intval($this->request->After):-1;
 			//获取 页面参数
-			$bind = $this->request->from('TName','ToNext','AltAsc','AltDec','Round','ChipId');
+			$bind = $this->request->from('TName','ToNext','AltAsc','AltDec','Round','ChipId','TolaranceTime');
 			//添加计时点
 			$AddTimingPoint = $this->oRace->addTimingPoint($RaceStageId,$RaceGroupId,$RaceId,$SportsTypeId,$After,$bind);
 			$response = $AddTimingPoint ? array('errno' => 0) : array('errno' => $AddTimingPoint);
@@ -1436,8 +1436,7 @@ class Xrace_RaceStageController extends AbstractController
 			//计时点ID
 			$TimingId = isset($this->request->TimingId)?intval($this->request->TimingId):0;
 			//获取 页面参数
-			$bind = $this->request->from('TName','ToNext','AltAsc','AltDec','Round','ChipId');
-
+			$bind = $this->request->from('TName','ToNext','AltAsc','AltDec','Round','ChipId','TolaranceTime');
 			//更新计时点
 			$UpdateTimingPoint = $this->oRace->updateTimingPoint($RaceStageId,$RaceGroupId,$RaceId,$SportsTypeId,$TimingId,$bind);
 			$response = $UpdateTimingPoint ? array('errno' => 0) : array('errno' => $UpdateTimingPoint);

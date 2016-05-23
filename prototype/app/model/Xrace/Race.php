@@ -305,6 +305,8 @@ class Xrace_Race extends Base_Widget
 	//添加单个计时点信息
 	public function addTimingPoint($RaceStageId,$RaceGroupId,$RaceId,$SportsTypeId,$After,$bind)
 	{
+		//对计时点等待时间进行处理
+		$bind['TolaranceTime'] = abs(intval($bind['TolaranceTime']));
 		//获取当前分站信息
 		$RaceStageInfo = $this->getRaceStage($RaceStageId,'*');
 		//解包压缩数组
@@ -425,6 +427,8 @@ class Xrace_Race extends Base_Widget
 	//更新计时点数据
 	public function updateTimingPoint($RaceStageId,$RaceGroupId,$RaceId,$SportsTypeId,$TimingId,$bind)
 	{
+		//对计时点等待时间进行处理
+		$bind['TolaranceTime'] = abs(intval($bind['TolaranceTime']));
 		//获取当前分站信息
 		$RaceStageInfo = $this->getRaceStage($RaceStageId,'*');
 		//解包压缩数组
@@ -904,6 +908,7 @@ class Xrace_Race extends Base_Widget
 						//如果计时点数据获取成功
 						if(isset($TimingInfo['TimingId']))
 						{
+							unset($RaceInfo['comment']['DetailList']);
 							$TimingPointList['RaceInfo'] = $RaceInfo;
 							//数据解包
 							$TimingInfo['comment'] = json_decode($TimingInfo['comment'],true);

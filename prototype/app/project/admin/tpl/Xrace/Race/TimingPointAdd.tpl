@@ -54,6 +54,11 @@
       海拔下降：<input type="text" name="AltDec" id="AltDec" value="" />米
     </th>
   </tr>
+  <tr>
+    <th align="center" class="rowtip">
+      等待时间：<input type="text" name="TolaranceTime" id="TolaranceTime" value="60" />秒
+    </th>
+  </tr>
   <tr><th align="center" class="rowtip">
     <button type="submit" id="timing_point_add">提交</button>
     </th></tr>
