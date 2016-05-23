@@ -10,7 +10,7 @@ $config['style'] = '/style/';
 $config['companyName'] = "Xrace";
 $config['companyUrl'] = "http://www.xrace.cn";
 $config['projectName'] = "XraceWeb控制台";
-$config['currentVersion'] = "1.5";
+$config['currentVersion'] = "1.4";
 $config['apiUrl'] = "http://api.xrace.cn";
 
 return $config;
