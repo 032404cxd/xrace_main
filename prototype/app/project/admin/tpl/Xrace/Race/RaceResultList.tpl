@@ -16,7 +16,7 @@
 <form action="{tpl:$this.sign/}&ac=race.update" name="form" id="form" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
   <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupId/}" />
-  <fieldset><legend>{tpl:$RaceInfo.RaceName/} 成绩列表 </legend>
+  <fieldset><legend>{tpl:$RaceInfo.RaceName/} 成绩单{tpl:if(isset($UserInfo.user_id))} - {tpl:$UserInfo.name/}{/tpl:if}</legend>
 <table width="99%" align="center" class="table table-bordered table-striped">
   <tr>
     <th align="center" class="rowtip" colspan="2">计时点</th>
@@ -30,11 +30,13 @@
     {tpl:if($Tid==$Pid)}
     <th align="center" class="rowtip">{tpl:$PointInfo.TName/}<p>{tpl:$PointInfo.CurrentDistense/}</th>
     {tpl:if(count($PointInfo.UserList)>=1)}
-    {tpl:loop $PointInfo.UserList $id $UserInfo}
-    <th align="center" class="rowtip">{tpl:$UserInfo.Name/}<p>{tpl:$UserInfo.RaceTeamName/}<p>{tpl:$UserInfo.Rank/}{tpl:if($UserInfo.TimeLag>0)}/{tpl:$UserInfo.TimeLag func="Base_Common::parthTimeLag(sprintf('%10.3f',@@))"/}{/tpl:if}</th>
+    {tpl:loop $PointInfo.UserList $id $RaceUserInfo}
+    {tpl:if((isset($UserInfo.user_id) && ($RaceUserInfo.UserId==$UserInfo.user_id)) || !isset($UserInfo.user_id))}
+    <th align="center" class="rowtip">{tpl:$RaceUserInfo.Name/}<p>{tpl:$RaceUserInfo.RaceTeamName/}<p>{tpl:$RaceUserInfo.Rank/}{tpl:if($RaceUserInfo.TimeLag>0)}/+{tpl:$RaceUserInfo.TimeLag func="Base_Common::parthTimeLag(sprintf('%10.3f',@@))"/}{/tpl:if}</th>
+  {/tpl:if}
   {/tpl:loop}
-  {tpl:else}
-    <th align="center" class="rowtip">无人过线</th>
+    {tpl:else}
+    <th align="center" class="rowtip">尚未通过</th>
   {/tpl:if}
     {/tpl:if}
 

@@ -1506,9 +1506,9 @@ class Xrace_RaceStageController extends AbstractController
 			//赛事ID
 			$RaceStageId = intval($this->request->RaceStageId);
 			//获取赛站信息
-			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId);
+			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,"RaceStageId,comment");
 			//解包数组
-			$bing['comment'] = json_decode($RaceStageInfo['comment'],true);
+			$bind['comment'] = json_decode($RaceStageInfo['comment'],true);
 			if($RaceStageInfo['RaceStageId'])
 			{
 				//获取已经选定的商品列表
@@ -1781,7 +1781,7 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//用户退出比赛
+	//单场比赛的成绩单
 	public function raceResultListAction()
 	{
 		//检查权限
@@ -1791,6 +1791,10 @@ class Xrace_RaceStageController extends AbstractController
 			$oUser = new Xrace_User();
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
+			//用户ID
+			$UserId = intval($this->request->UserId);
+			//获取用户信息
+			$UserInfo = $oUser->getUserInfo($UserId,'user_id,name');
 			//获取比赛信息
 			$RaceInfo = $this->oRace->getRace($RaceId);
 			//获取成绩列表
