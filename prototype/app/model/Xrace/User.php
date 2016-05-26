@@ -619,7 +619,7 @@ class Xrace_User extends Base_Widget
 		$whereCondition = array($whereCatalog,$whereUser,$whereGroup,$whereRace);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
-		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by RaceTeamId,ApplyId desc";
+		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by BIB,RaceTeamId,ApplyId desc";
 		$return = $this->db->getAll($sql);
 		return $return;
 	}

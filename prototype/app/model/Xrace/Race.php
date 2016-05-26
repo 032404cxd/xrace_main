@@ -35,7 +35,16 @@ class Xrace_Race extends Base_Widget
 	public function getRaceTimingResultType($RaceResultType)
 	{
 		$raceTimingResultTypeList = $this->raceTimingResultType;
-		return $raceTimingResultTypeList[$RaceResultType];
+		if(isset($raceTimingResultTypeList[$RaceResultType]))
+		{
+			return $raceTimingResultTypeList[$RaceResultType];
+		}
+		else
+		{
+			return $raceTimingResultTypeList;
+		}
+
+
 	}
 
 	//获取所有赛事的列表

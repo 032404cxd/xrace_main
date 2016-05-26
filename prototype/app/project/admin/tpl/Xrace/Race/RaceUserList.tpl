@@ -15,7 +15,8 @@
 <input type="hidden" name="CurrentRaceGroupId" id="CurrentRaceGroupId" value="{tpl:$RaceGroupId/}" />
 
   <table width="99%" align="center" class="table table-bordered table-striped">
-  {tpl:if(count($RaceUserList))}
+    <tr><th align="center" class="rowtip" colspan="5">共计选手{tpl:$RaceUserList.RaceUserList func="count(@@)"/}</th></tr>
+    {tpl:if(count($RaceUserList))}
   <tr>
     <th align="center" class="rowtip">姓名</th>
     <th align="center" class="rowtip">所属队伍</th>

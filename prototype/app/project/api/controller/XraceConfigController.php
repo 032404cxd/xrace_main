@@ -83,12 +83,14 @@ class XraceConfigController extends AbstractController
                 //解包数组
                 $RaceCatalogInfo['comment'] = isset($RaceCatalogInfo['comment']) ? json_decode($RaceCatalogInfo['comment'], true) : array();
                 //如果有输出赛事图标的绝对路径
-                if (isset($RaceCatalogInfo['comment']['RaceCatalogIcon'])) {
+                if (isset($RaceCatalogInfo['comment']['RaceCatalogIcon']))
+                {
                     //删除
                     unset($RaceCatalogInfo['comment']['RaceCatalogIcon']);
                 }
                 //如果有输出赛事图标的相对路径
-                if (isset($RaceCatalogInfo['comment']['RaceCatalogIcon_root'])) {
+                if (isset($RaceCatalogInfo['comment']['RaceCatalogIcon_root']))
+                {
                     //拼接上ADMIN站点的域名
                     $RaceCatalogInfo['comment']['RaceCatalogIcon'] = $this->config->adminUrl . $RaceCatalogInfo['comment']['RaceCatalogIcon_root'];
                     //删除原有数据

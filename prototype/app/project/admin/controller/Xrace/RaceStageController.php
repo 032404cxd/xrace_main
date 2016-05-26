@@ -503,7 +503,7 @@ class Xrace_RaceStageController extends AbstractController
 			//解包压缩数组
 			$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
 			//如果当前分站未配置了当前分组
-			if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
+			if(!in_array($RaceGroupId,$RaceStageInfo['comment']['SelectedRaceGroup']))
 			{
 				$RaceGroupId = 0;
 			}
@@ -557,7 +557,7 @@ class Xrace_RaceStageController extends AbstractController
 			//获取当前赛事下的分组列表
 			$RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],"RaceGroupName,RaceGroupId");
 			//如果当前传入的分组ID没有配置
-			if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
+			if(!in_array($RaceGroupId,$RaceStageInfo['comment']['SelectedRaceGroup']))
 			{
 				//置为0
 				$RaceGroupId = 0;
@@ -565,9 +565,9 @@ class Xrace_RaceStageController extends AbstractController
 				foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $k => $v)
 				{
 					//如果查到就保留
-					if(isset($RaceGroupList[$k]))
+					if(isset($RaceGroupList[$v]))
 					{
-						$RaceStageInfo['comment']['SelectedRaceGroup'][$k] = $RaceGroupList[$k];
+						$RaceStageInfo['comment']['SelectedRaceGroup'][$k] = $RaceGroupList[$v];
 					}
 					//否则就删除
 					else
@@ -1694,11 +1694,18 @@ class Xrace_RaceStageController extends AbstractController
 					//以,为分隔符解开
 					$t = explode(",",$content);
 					$mobile = trim($t[5]);
-					//根据手机号码获取用户信息
-					$UserInfo = $oUser->getUserInfoByMobile($mobile,"user_id,name");
-					//print_R($UserInfo);
+					if($mobile=='tbd')
+					{
+						$new = 1;
+					}
+					else
+					{
+						//根据手机号码获取用户信息
+						$UserInfo = $oUser->getUserInfoByMobile($mobile,"user_id,name");
+						//print_R($UserInfo);
+					}
 					//如果用户没有获取到 并且手机号码不为空
-					if(!isset($UserInfo['user_id']) && $mobile!="")
+					if($new == 1 || (!isset($UserInfo['user_id']) && $mobile!=""))
 					{
 						//生成新用户ID
 						$NewUserId = $oUser->genNewUserId();
