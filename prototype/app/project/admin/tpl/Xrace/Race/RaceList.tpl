@@ -52,7 +52,7 @@
     <th align="center" class="rowtip">{tpl:if($RaceInfo.TeamUser==1)}{tpl:$RaceInfo.comment.TeamLimit/}队/{tpl:$RaceInfo.comment.TeamUserMin/}-{tpl:$RaceInfo.comment.TeamUserMax/}人 {tpl:else}不接受{/tpl:if}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.ApplyStartTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.ApplyEndTime/}</th>
-    <th align="center" class="rowtip">{tpl:$RaceInfo.StartTime/}</th>
+    <th align="center" class="rowtip">{tpl:$RaceInfo.StartTime/}.{tpl:$RaceInfo.comment.RaceStartMicro func="sprintf('%03d',@@)"/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.EndTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceStatus/}</th>    
     <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceModify('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceGroupId/}')">修改</a> | <a href="javascript:;" onclick="RaceUserUpload('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceGroupId/}')">导入报名</a>

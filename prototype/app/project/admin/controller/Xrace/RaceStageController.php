@@ -627,6 +627,7 @@ class Xrace_RaceStageController extends AbstractController
 				$RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType();
 				//解包数组
 				$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+				$RaceInfo['comment']['RaceStartMicro'] = isset($RaceInfo['comment']['RaceStartMicro'])?$RaceInfo['comment']['RaceStartMicro']:0;
 				//解包地图数组
 				$RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
 				//加载富文本编辑器
@@ -649,7 +650,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','MylapsTolaranceTime','RaceTimingType','RaceTimingResultType');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','MylapsTolaranceTime','RaceTimingType','RaceTimingResultType','RaceStartMicro');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -740,14 +741,15 @@ class Xrace_RaceStageController extends AbstractController
 			unset($bind['TeamUserMin']);
 			$bind['comment']['TeamUserMax'] = $bind['TeamUserMax'];
 			unset($bind['TeamUserMax']);
+			$bind['comment']['RaceStartMicro'] = intval(abs($bind['RaceStartMicro']));
+			$bind['comment']['RaceStartMicro'] = min(999,$bind['comment']['RaceStartMicro']);
+			unset($bind['RaceStartMicro']);
 			//保存mylaps计时数据表的前缀
 			$bind['RouteInfo']['MylapsPrefix'] = $bind['MylapsPrefix'];
 			unset($bind['MylapsPrefix']);
 			//保存百度地图信息
 			$bind['RouteInfo']['BaiDuMapID'] = $bind['BaiDuMapID'];
 			unset($bind['BaiDuMapID']);
-			$bind['RouteInfo']['MylapsPrefix'] = $bind['MylapsPrefix'];
-			unset($bind['MylapsPrefix']);
 			//保存单个计时点的忍耐时间（在该时间范围内的将被忽略）
 			$bind['RouteInfo']['MylapsTolaranceTime'] = abs(intval($bind['MylapsTolaranceTime']));
 			unset($bind['MylapsTolaranceTime']);
@@ -785,7 +787,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','MylapsTolaranceTime','RaceTimingType','RaceTimingResultType');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','MylapsTolaranceTime','RaceTimingType','RaceTimingResultType','RaceStartMicro');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -890,6 +892,9 @@ class Xrace_RaceStageController extends AbstractController
 			unset($bind['TeamUserMin']);
 			$bind['comment']['TeamUserMax'] = $bind['TeamUserMax'];
 			unset($bind['TeamUserMax']);
+			$bind['comment']['RaceStartMicro'] = intval(abs($bind['RaceStartMicro']));
+			$bind['comment']['RaceStartMicro'] = min(999,$bind['comment']['RaceStartMicro']);
+			unset($bind['RaceStartMicro']);
 			//保存mylaps计时数据表的前缀
 			$bind['RouteInfo']['MylapsPrefix'] = $bind['MylapsPrefix'];
 			unset($bind['MylapsPrefix']);

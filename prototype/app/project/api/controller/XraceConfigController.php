@@ -856,6 +856,9 @@ class XraceConfigController extends AbstractController
             die();
         }
         $RaceInfo = $this->oRace->getRace($RaceId);
+        $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+        $RaceStartTime = strtotime($RaceInfo['StartTime'])+$RaceInfo['comment']['RaceStartMicro']/1000;
+        echo "RaceStartTime:".$RaceStartTime."<br>";
         $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
         $RaceInfo['RouteInfo']['MylapsTolaranceTime'] = isset($RaceInfo['RouteInfo']['MylapsTolaranceTime'])?$RaceInfo['RouteInfo']['MylapsTolaranceTime']:60;
         $ResultType = ((isset($RaceInfo['RouteInfo']['RaceTimingResultType']) && ($RaceInfo['RouteInfo']['RaceTimingResultType']=="gunshot"))||!isset($RaceInfo['RouteInfo']['RaceTimingResultType']))?"gunshot":"net";
@@ -891,7 +894,8 @@ class XraceConfigController extends AbstractController
                 $TimingInfo['ChipTime'] = strtotime($TimingInfo['ChipTime']) - 8 * 3600;
                 $miliSec = substr($TimingInfo['MilliSecs'], -3) / 1000;
                 $TimingInfo['ChipTime'] = $miliSec>=0.5?($TimingInfo['ChipTime']-1):$TimingInfo['ChipTime'];
-                if ($TimingInfo['ChipTime'] >= strtotime($RaceInfo['StartTime'])) {
+
+                if ($TimingInfo['ChipTime'] >= ($RaceStartTime)) {
                     echo $TimingInfo['Location']."-".($TimingInfo['ChipTime'] + $miliSec) . "-" . date("Y-m-d H:i:s", $TimingInfo['ChipTime'] + $miliSec) . "<br>";
 
                     $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId, $UserList[$TimingInfo['Chip']]['UserId']);
@@ -915,9 +919,9 @@ class XraceConfigController extends AbstractController
                             $UserRaceInfoList['Point'][$i]['inTime'] = $UserRaceInfoList['Point'][$i]['inTime'] == 0 ? ($TimingInfo['ChipTime'] + $miliSec) : min(sprintf("%0.3f", $UserRaceInfoList['Point'][$i]['inTime']), $TimingInfo['ChipTime'] + $miliSec);
 
                             if (isset($UserRaceInfoList['Point'][$i]['UserList']) && count($UserRaceInfoList['Point'][$i]['UserList'])) {
-                                $UserRaceInfoList['Point'][$i]['UserList'][count($UserRaceInfoList['Point'][$i]['UserList']) + 1] = array("TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - strtotime($RaceInfo['StartTime'])),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
+                                $UserRaceInfoList['Point'][$i]['UserList'][count($UserRaceInfoList['Point'][$i]['UserList']) + 1] = array("TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - $RaceStartTime),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
                             } else {
-                                $UserRaceInfoList['Point'][$i]['UserList'][1] = array("TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - strtotime($RaceInfo['StartTime'])),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
+                                $UserRaceInfoList['Point'][$i]['UserList'][1] = array("TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - $RaceStartTime),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
                             }
                             $t = array();
                             foreach ($UserRaceInfoList['Point'][$i]['UserList'] as $k => $v) {
@@ -930,16 +934,16 @@ class XraceConfigController extends AbstractController
                                 $found = 0;
                                 foreach ($UserRaceInfoList['Total'] as $k => $v) {
                                     if ($v['UserId'] == $UserList[$TimingInfo['Chip']]['UserId']) {
-                                        $UserRaceInfoList['Total'][$k] = array("CurrentPosition" => 1, "TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - strtotime($RaceInfo['StartTime'])),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
+                                        $UserRaceInfoList['Total'][$k] = array("CurrentPosition" => 1, "TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - $RaceStartTime),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
                                         $found = 1;
                                         break;
                                     }
                                 }
                                 if ($found == 0) {
-                                    $UserRaceInfoList['Total'][count($UserRaceInfoList['Total']) + 1] = array("CurrentPosition" => 1, "TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - strtotime($RaceInfo['StartTime'])),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
+                                    $UserRaceInfoList['Total'][count($UserRaceInfoList['Total']) + 1] = array("CurrentPosition" => 1, "TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - $RaceStartTime),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
                                 }
                             } else {
-                                $UserRaceInfoList['Total'][1] = array("CurrentPosition" => 1, "TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - strtotime($RaceInfo['StartTime'])),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
+                                $UserRaceInfoList['Total'][1] = array("CurrentPosition" => 1, "TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - $RaceStartTime),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
                             }
                             $t = array();
                             foreach ($UserRaceInfoList['Total'] as $k => $v) {
@@ -966,7 +970,7 @@ class XraceConfigController extends AbstractController
                     //中间点
                     else
                     {
-                        $StartTime = $UserRaceInfo['Point'][1]['inTime']>0?$UserRaceInfo['Point'][1]['inTime']:strtotime($RaceInfo['StartTime']);
+                        $StartTime = $UserRaceInfo['Point'][1]['inTime']>0?$UserRaceInfo['Point'][1]['inTime']:$RaceStartTime;
                         $c = $UserRaceInfo['CurrentPoint'];
                         do {
                             if (isset($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]) && isset($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']+1]))
@@ -996,9 +1000,9 @@ class XraceConfigController extends AbstractController
                             $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['inTime'] = $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['inTime'] == 0 ? ($TimingInfo['ChipTime'] + $miliSec) : min(sprintf("%0.3f", $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['inTime']), $TimingInfo['ChipTime'] + $miliSec);
 
                             if (isset($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList']) && count($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'])) {
-                                $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][count($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList']) + 1] = array("TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - strtotime($RaceInfo['StartTime'])),"TotalNetTime" => ($TimingInfo['ChipTime'] + $miliSec - $StartTime), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
+                                $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][count($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList']) + 1] = array("TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - $RaceStartTime),"TotalNetTime" => ($TimingInfo['ChipTime'] + $miliSec - $StartTime), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
                             } else {
-                                $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][1] = array("TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - strtotime($RaceInfo['StartTime'])),"TotalNetTime" => ($TimingInfo['ChipTime'] + $miliSec - $StartTime), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
+                                $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][1] = array("TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - $RaceStartTime),"TotalNetTime" => ($TimingInfo['ChipTime'] + $miliSec - $StartTime), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
                             }
                             $t = array();
                             foreach ($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'] as $k => $v) {
@@ -1012,16 +1016,16 @@ class XraceConfigController extends AbstractController
                                 $found = 0;
                                 foreach ($UserRaceInfoList['Total'] as $k => $v) {
                                     if ($v['UserId'] == $UserList[$TimingInfo['Chip']]['UserId']) {
-                                        $UserRaceInfoList['Total'][$k] = array("CurrentPosition" => $UserRaceInfo['CurrentPoint'], "TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - strtotime($RaceInfo['StartTime'])),"TotalNetTime" => ($TimingInfo['ChipTime'] + $miliSec - $StartTime), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
+                                        $UserRaceInfoList['Total'][$k] = array("CurrentPosition" => $UserRaceInfo['CurrentPoint'], "TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - $RaceStartTime),"TotalNetTime" => ($TimingInfo['ChipTime'] + $miliSec - $StartTime), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
                                         $found = 1;
                                         break;
                                     }
                                 }
                                 if ($found == 0) {
-                                    $UserRaceInfoList['Total'][count($UserRaceInfoList['Total']) + 1] = array("CurrentPosition" => $UserRaceInfo['CurrentPoint'], "TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - strtotime($RaceInfo['StartTime'])),"TotalNetTime" => ($TimingInfo['ChipTime'] + $miliSec - $StartTime), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
+                                    $UserRaceInfoList['Total'][count($UserRaceInfoList['Total']) + 1] = array("CurrentPosition" => $UserRaceInfo['CurrentPoint'], "TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - $RaceStartTime),"TotalNetTime" => ($TimingInfo['ChipTime'] + $miliSec - $StartTime), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
                                 }
                             } else {
-                                $UserRaceInfoList['Total'][1] = array("CurrentPosition" => $UserRaceInfo['CurrentPoint'], "TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - strtotime($RaceInfo['StartTime'])),"TotalNetTime" => ($TimingInfo['ChipTime'] + $miliSec - $StartTime), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
+                                $UserRaceInfoList['Total'][1] = array("CurrentPosition" => $UserRaceInfo['CurrentPoint'], "TotalTime" => ($TimingInfo['ChipTime'] + $miliSec - $RaceStartTime),"TotalNetTime" => ($TimingInfo['ChipTime'] + $miliSec - $StartTime), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId']);
                             }
                             $t = array();
                             foreach ($UserRaceInfoList['Total'] as $k => $v) {

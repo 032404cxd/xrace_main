@@ -59,7 +59,7 @@
 <tr class="hover"><th align="center" class="rowtip">结束报名时间</th>
 	<th align="center" class="rowtip"><input type="text" name="ApplyEndTime" value="{tpl:$RaceInfo.ApplyEndTime/}" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
 <tr class="hover"><th align="center" class="rowtip">开始时间</th>
-	<th align="center" class="rowtip"><input type="text" name="StartTime" value="{tpl:$RaceInfo.StartTime/}" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
+	<th align="center" class="rowtip"><input type="text" name="StartTime" value="{tpl:$RaceInfo.StartTime/}" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >.<input name="RaceStartMicro" type="text" class="span1" id="RaceStartMicro" value = "{tpl:$RaceInfo.comment.RaceStartMicro func="sprintf('%03d',@@)"/}" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">结束时间</th>
 	<th align="center" class="rowtip"><input type="text" name="EndTime" value="{tpl:$RaceInfo.EndTime/}" value="" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
 	<tr class="hover"><td colspan = 2>比赛介绍</td></tr>

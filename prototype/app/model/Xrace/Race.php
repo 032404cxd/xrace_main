@@ -606,7 +606,7 @@ class Xrace_Race extends Base_Widget
 		//解包压缩数组
 		$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
 		//如果当前分站未配置了当前分组
-		if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceInfo['RaceGroupId']]))
+		if(!in_array($RaceInfo['RaceGroupId'],$RaceStageInfo['comment']['SelectedRaceGroup']))
 		{
 			return false;
 		}
