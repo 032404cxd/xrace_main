@@ -44,8 +44,10 @@ class Xrace_Mylaps extends Base_Widget
 		$oRace = new Xrace_Race();
 		//获取比赛信息
 		$RaceInfo = $oRace->getRace($RaceId);
+		//解包压缩的数据
+		$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
 		//预存比赛的开始和结束时间
-		$RaceStartTime = strtotime($RaceInfo['StartTime']);
+		$RaceStartTime = strtotime($RaceInfo['StartTime'])+$RaceInfo['comment']['RaceStartMicro']/1000;
 		$RaceEndTime = strtotime($RaceInfo['EndTime']);
 		//解包路径相关的信息
 		$RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
@@ -72,14 +74,14 @@ class Xrace_Mylaps extends Base_Widget
 				$UserList[$ApplyInfo['ChipId']] = $ApplyInfo;
 			}
 		}
-		echo "比赛时间：".$RaceInfo['StartTime']."~".$RaceInfo['EndTime']."<br>";
+		echo "比赛时间：".$RaceInfo['StartTime'].".".sprintf("%03d",isset($RaceInfo['comment']['RaceStartMicro'])?$RaceInfo['comment']['RaceStartMicro']:0)."~".$RaceInfo['EndTime']."<br>";
 		echo "芯片列表：".implode(",",$ChipList)."<br>";
 		//重新生成选手的mylaps排名数据
 		$oRace->genRaceLogToText($RaceId);
 		//初始化页码
 		$i = 1;
 		//单页记录数量
-		$pageSize = 100;
+		$pageSize = 1000;
 		//默认第一次有获取到
 		$Count = $pageSize;
 		//初始化当前芯片（选手）

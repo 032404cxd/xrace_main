@@ -888,9 +888,11 @@ class Xrace_Race extends Base_Widget
 	//根据报名记录生成指定场次比赛选手的计时记录到配置文件
 	public function genRaceLogToText($RaceId,$UserId = 0)
 	{
+		echo "Here";
 		$RaceId = intval($RaceId);
 		//获取比赛信息
 		$RaceInfo = $this->getRace($RaceId,"RaceId,RaceTypeId,RaceStageId,RaceGroupId,RaceName,comment,RouteInfo");
+		echo "here";
 		//如果获取到比赛信息
 		if(isset($RaceInfo['RaceId']))
 		{

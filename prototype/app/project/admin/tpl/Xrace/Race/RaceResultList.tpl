@@ -1,5 +1,8 @@
 {tpl:tpl contentHeader/}
 <script type="text/javascript">
+  function RaceResultList(rid,uid,rname){
+    RaceResultListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.result.list&RaceId=' + rid + '&UserId=' + uid, {title:rname+'成绩单',width:800,height:750});
+  }
   function RaceAdd(sid,gid){
     RaceAddBox = divBox.showBox('{tpl:$this.sign/}&ac=race.add&RaceGroupId=' + gid + '&RaceStageId=' + sid, {title:'添加比赛',width:800,height:750});
   }
@@ -19,6 +22,9 @@
   <fieldset><legend>{tpl:$RaceInfo.RaceName/} 成绩单{tpl:if(isset($UserInfo.user_id))} - {tpl:$UserInfo.name/}{/tpl:if}</legend>
 <table width="99%" align="center" class="table table-bordered table-striped">
   <tr>
+    <th align="center" class="rowtip" colspan="15">最后更新时间{tpl:$RaceResultList.UserRaceTimingInfo.LastUpdateTime func="date('Y-m-d H:i:s.u',@@)"/}</th>
+  </tr>
+  <tr>
     <th align="center" class="rowtip" colspan="2">计时点</th>
     <th align="center" class="rowtip" colspan="10">选手名次</th>
   </tr>
@@ -28,11 +34,11 @@
     {tpl:loop $SInfo.TimingPointList $id $Tid}
     {tpl:loop $RaceResultList.UserRaceTimingInfo.Point $Pid $PointInfo}
     {tpl:if($Tid==$Pid)}
-    <th align="center" class="rowtip">{tpl:$PointInfo.TName/}<p>{tpl:$PointInfo.CurrentDistense/}</th>
+    <th align="center" class="rowtip">{tpl:$PointInfo.TName/}<p>{tpl:$PointInfo.CurrentDistense/}米<p>{tpl:$PointInfo.UserList func="count(@@)"/}人通过</th>
     {tpl:if(count($PointInfo.UserList)>=1)}
     {tpl:loop $PointInfo.UserList $id $RaceUserInfo}
     {tpl:if((isset($UserInfo.user_id) && ($RaceUserInfo.UserId==$UserInfo.user_id)) || !isset($UserInfo.user_id))}
-    <th align="center" class="rowtip">{tpl:$RaceUserInfo.Name/}<p>{tpl:$RaceUserInfo.RaceTeamName/}<p>{tpl:$RaceUserInfo.Rank/}{tpl:if($RaceUserInfo.TimeLag>0)}/+{tpl:$RaceUserInfo.TimeLag func="Base_Common::parthTimeLag(sprintf('%10.3f',@@))"/}{/tpl:if}</th>
+    <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceUserInfo.UserId/}','{tpl:$RaceInfo.RaceName/}')">{tpl:$RaceUserInfo.Name/}</a><p>{tpl:$RaceUserInfo.RaceTeamName/}<p>{tpl:$RaceUserInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.Rank/}{tpl:if($RaceUserInfo.TimeLag>0)}/+{tpl:$RaceUserInfo.TimeLag func="Base_Common::parthTimeLag(@@)"/}{/tpl:if}</th>
   {/tpl:if}
   {/tpl:loop}
     {tpl:else}
