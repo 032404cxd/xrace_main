@@ -895,7 +895,7 @@ class XraceConfigController extends AbstractController
                 $miliSec = substr($TimingInfo['MilliSecs'], -3) / 1000;
                 $TimingInfo['ChipTime'] = $miliSec>=0.5?($TimingInfo['ChipTime']-1):$TimingInfo['ChipTime'];
 
-                if ($TimingInfo['ChipTime'] >= ($RaceStartTime)) {
+                if (($TimingInfo['ChipTime'] >= ($RaceStartTime)) && ($TimingInfo['ChipTime'] <= (strtotime($RaceInfo['EndTime'])))) {
                     echo $TimingInfo['Location']."-".($TimingInfo['ChipTime'] + $miliSec) . "-" . date("Y-m-d H:i:s", $TimingInfo['ChipTime'] + $miliSec) . "<br>";
 
                     $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId, $UserList[$TimingInfo['Chip']]['UserId']);
