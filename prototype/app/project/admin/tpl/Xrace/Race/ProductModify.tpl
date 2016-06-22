@@ -8,10 +8,15 @@
     <table width="99%" align="center" class="table table-bordered table-striped">
         {tpl:loop $ProductTypeInfo.ProductList $ProductId $ProductInfo}
                 <tr>
-                    <th align="center" class="rowtip"><input type="checkbox" name="ProductChecked[{tpl:$ProductId/}]" id="ProductChecked[{tpl:$ProductId/}]" value="{tpl:$ProductId/}" {tpl:if($ProductInfo.selected==1)}checked="checked"{/tpl:if}>{tpl:$ProductInfo.ProductName/}</th>
-                    <th align="center" class="rowtip">单价:<input type="text" name="ProductPrice[{tpl:$ProductId/}][ProductPrice]" id="ProductPrice[{tpl:$ProductId/}][ProductPrice]" value="{tpl:$ProductInfo.ProductPrice/}">0表示免费</th>
-					<th align="center" class="rowtip">限购数量:<input type="text" name="ProductPrice[{tpl:$ProductId/}][ProductLimit]" id="ProductPrice[{tpl:$ProductId/}][ProductLimit]" value="{tpl:$ProductInfo.ProductLimit/}"></th>
-                </tr>
+                    <th align="center" class="rowtip" colspan="5">{tpl:$ProductInfo.ProductName/}</th>
+					{tpl:loop $ProductInfo.ProductSkuList $ProductSkuId $ProductSkuInfo}
+					<tr>
+					<th align="center" class="rowtip" colspan="2">{tpl:$ProductSkuInfo.ProductSkuName/}</th>
+					<th align="center" class="rowtip">库存:<input type="text" class="span1" name="ProductPrice[{tpl:$ProductId/}][{tpl:$ProductSkuInfo.ProductSkuId/}][Stock]" id="ProductPrice[{tpl:$ProductId/}][{tpl:$ProductSkuInfo.ProductSkuId/}][Stock]" value="{tpl:$ProductSkuInfo.Stock/}"><br>0无库存限制</th>
+					<th align="center" class="rowtip">单价:<input type="text" class="span1"name="ProductPrice[{tpl:$ProductId/}][{tpl:$ProductSkuInfo.ProductSkuId/}][ProductPrice]" id="ProductPrice[{tpl:$ProductId/}][{tpl:$ProductSkuInfo.ProductSkuId/}][ProductPrice]" value="{tpl:$ProductSkuInfo.ProductPrice/}"><br>0表示免费</th>
+					<th align="center" class="rowtip">限购数量:<input type="text" class="span1" name="ProductPrice[{tpl:$ProductId/}][{tpl:$ProductSkuInfo.ProductSkuId/}][ProductLimit]" id="ProductPrice[{tpl:$ProductId/}][{tpl:$ProductSkuInfo.ProductSkuId/}][ProductLimit]" value="{tpl:$ProductSkuInfo.ProductLimit/}"></th>
+					{/tpl:loop}
+				</tr>
         {/tpl:loop}
     </table>
 </fieldset>

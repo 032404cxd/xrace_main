@@ -14,6 +14,7 @@ class Xrace_Race extends Base_Widget
 	protected $table_group = 'config_race_group';
 	protected $table_stage = 'config_race_stage';
 	protected $table_timing = 'config_timing_point';
+	protected $table_combination = 'config_race_combination';
 	protected $maxRaceDetail = 5;
 
 	protected $raceTimingType = array('mylaps'=>'myLaps芯片计时');
@@ -34,17 +35,18 @@ class Xrace_Race extends Base_Widget
 	}
 	public function getRaceTimingResultType($RaceResultType)
 	{
+		//获取预定义数组
 		$raceTimingResultTypeList = $this->raceTimingResultType;
+		//如果有指定分类
 		if(isset($raceTimingResultTypeList[$RaceResultType]))
 		{
 			return $raceTimingResultTypeList[$RaceResultType];
 		}
 		else
 		{
+			//否则返回整个列表
 			return $raceTimingResultTypeList;
 		}
-
-
 	}
 
 	//获取所有赛事的列表
@@ -206,7 +208,7 @@ class Xrace_Race extends Base_Widget
 			foreach($return as $key => $value)
 			{
 				$RaceTypeList[$value['RaceTypeId']] = $value;
-				$RaceTypeList[$value['RaceTypeId']]['comment'] = json_decode($RaceTypeList[$value['RaceTypeId']]['comment'],true);
+				$RaceTypeList[$value['RaceTypeId']]['comment'] = isset($RaceTypeList[$value['RaceTypeId']]['comment'])?json_decode($RaceTypeList[$value['RaceTypeId']]['comment'],true):array();
 			}
 		}
 		return $RaceTypeList;
@@ -323,24 +325,27 @@ class Xrace_Race extends Base_Widget
 		//如果当前分站未配置了当前分组
 		if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
 		{
+			echo "111";
 			return false;
 		}
 		else
 		{
 			//获取赛事分组信息
-			$RaceGroupInfo = $this->getRaceGroup($RaceGroupId,'*');
+			//$RaceGroupInfo = $this->getRaceGroup($RaceGroupId,'*');
 			//如果赛事分组尚未配置
-			if(!$RaceGroupInfo['RaceGroupId'])
-			{
-				return false;
-			}
-			else
+			//if(!$RaceGroupInfo['RaceGroupId'])
+			//{
+				//echo "222";
+				//return false;
+			//}
+			//else
 			{
 				//获取比赛信息
 				$RaceInfo = $this->getRace($RaceId);
 				//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
-				if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
+				if(isset($RaceInfo['RaceId']))
 				{
+					//echo "here";
 					//数据解包
 					$RaceInfo['comment'] = isset($RaceInfo['comment']) ? json_decode($RaceInfo['comment'], true) : array();
 					//获取运动类型的数据
@@ -640,7 +645,7 @@ class Xrace_Race extends Base_Widget
 		$EndTime = strtotime(trim($RaceInfo['EndTime']));
 		if($CurrentTime < $ApplyStartTime)
 		{
-			$RaceStatus = array('RaceStatus'=>1,'RaceStatusName'=>'未开始报名');
+			$RaceStatus = array('RaceStatus'=>1,'RaceStatusName'=>'即将报名');
 		}
 		elseif ($CurrentTime >= $ApplyStartTime && $CurrentTime < $ApplyEndTime)
 		{
@@ -888,11 +893,9 @@ class Xrace_Race extends Base_Widget
 	//根据报名记录生成指定场次比赛选手的计时记录到配置文件
 	public function genRaceLogToText($RaceId,$UserId = 0)
 	{
-		echo "Here";
 		$RaceId = intval($RaceId);
 		//获取比赛信息
 		$RaceInfo = $this->getRace($RaceId,"RaceId,RaceTypeId,RaceStageId,RaceGroupId,RaceName,comment,RouteInfo");
-		echo "here";
 		//如果获取到比赛信息
 		if(isset($RaceInfo['RaceId']))
 		{
@@ -1238,5 +1241,47 @@ class Xrace_Race extends Base_Widget
 		$url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.race.user.list.by.bib',array('RaceId'=>$RaceId));
 		$return = Base_Common::do_post($url);
 		return json_decode($return,true);
+	}
+	//添加单个套餐
+	public function insertRaceCombination(array $bind)
+	{
+		$table_to_process = Base_Widget::getDbTable($this->table_combination);
+		return $this->db->insert($table_to_process, $bind);
+	}
+	//获取单个套餐信息
+	public function getRaceCombination($RaceCombinationId, $fields = '*')
+	{
+		$RaceCombinationId = intval($RaceCombinationId);
+		$table_to_process = Base_Widget::getDbTable($this->table_combination);
+		return $this->db->selectRow($table_to_process, $fields, '`RaceCombinationId` = ?', $RaceCombinationId);
+	}
+	//更新单个赛事分站
+	public function updateRaceCombination($RaceCombinationId, array $bind)
+	{
+		$RaceCombinationId = intval($RaceCombinationId);
+		$table_to_process = Base_Widget::getDbTable($this->table_combination);
+		return $this->db->update($table_to_process, $bind, '`RaceCombinationId` = ?', $RaceCombinationId);
+	}
+	//获取所有套餐列表
+	public function getRaceCombinationList($params,$fields = "*")
+	{
+		//初始化查询条件
+		$whereCatalog = (isset($params['RaceCatalogId']) && ($params['RaceCatalogId'] >0))?(" RaceCatalogId = ".$params['RaceCatalogId']):"";
+		$whereStage = (isset($params['RaceStageId']) && ($params['RaceStageId'] >0))?(" RaceStageId = ".$params['RaceStageId']):"";
+		$whereCondition = array($whereCatalog,$whereStage);
+		//生成条件列
+		$where = Base_common::getSqlWhere($whereCondition);
+		$table_to_process = Base_Widget::getDbTable($this->table_combination);
+		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceCatalogId,RaceStageId desc,RaceCombinationId asc";
+		$return = $this->db->getAll($sql);
+		$RaceCombinationList = array();
+		if(count($return))
+		{
+			foreach($return as $key => $value)
+			{
+				$RaceCombinationList[$value['RaceCombinationId']] = $value;
+			}
+		}
+		return $RaceCombinationList;
 	}
 }

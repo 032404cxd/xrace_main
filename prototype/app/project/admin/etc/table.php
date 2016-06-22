@@ -46,6 +46,14 @@ $table['config_product_type']['num'] = 1;
 $table['config_product']['db'] = 'xrace_config';
 $table['config_product']['num'] = 1;
 
+#商品
+$table['config_product_sku']['db'] = 'xrace_config';
+$table['config_product_sku']['num'] = 1;
+
+#赛事报名套餐配置
+$table['config_race_combination']['db'] = 'xrace_config';
+$table['config_race_combination']['num'] = 1;
+
 #赛事分站
 $table['config_race_stage']['db'] = 'xrace_config';
 $table['config_race_stage']['num'] = 1;

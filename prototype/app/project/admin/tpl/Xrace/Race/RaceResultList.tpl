@@ -38,7 +38,7 @@
     {tpl:if(count($PointInfo.UserList)>=1)}
     {tpl:loop $PointInfo.UserList $id $RaceUserInfo}
     {tpl:if((isset($UserInfo.user_id) && ($RaceUserInfo.UserId==$UserInfo.user_id)) || !isset($UserInfo.user_id))}
-    <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceUserInfo.UserId/}','{tpl:$RaceInfo.RaceName/}')">{tpl:$RaceUserInfo.Name/}</a><p>{tpl:$RaceUserInfo.RaceTeamName/}<p>{tpl:$RaceUserInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.Rank/}{tpl:if($RaceUserInfo.TimeLag>0)}/+{tpl:$RaceUserInfo.TimeLag func="Base_Common::parthTimeLag(@@)"/}{/tpl:if}</th>
+    <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceUserInfo.UserId/}','{tpl:$RaceInfo.RaceName/}')">{tpl:$RaceUserInfo.Name/}</a><p>{tpl:$RaceUserInfo.RaceTeamName/}<p>{tpl:$RaceUserInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.Rank/}{tpl:if($RaceUserInfo.TimeLag>0)}/+{tpl:$RaceUserInfo.TimeLag func="Base_Common::parthTimeLag(@@)"/}{/tpl:if}{tpl:if($RaceUserInfo.NetTimeLag>0)}/+{tpl:$RaceUserInfo.NetTimeLag func="Base_Common::parthTimeLag(@@)"/}{/tpl:if}</th>
   {/tpl:if}
   {/tpl:loop}
     {tpl:else}
@@ -48,10 +48,23 @@
 
     {/tpl:loop}
   </tr>
-
 {/tpl:loop}
-
-
+  {/tpl:loop}
+  <tr><th  align="center" class="rowtip">名次</th>
+    <th  align="center" class="rowtip" colspan="2">姓名</th>
+    <th  align="center" class="rowtip" colspan="2">总时间</th>
+    <th  align="center" class="rowtip" colspan="2">总净时间</th>
+    <th  align="center" class="rowtip" colspan="2">BIB</th>
+    <th  align="center" class="rowtip" colspan="2">当前位置</th>
+  </tr>
+  {tpl:loop $RaceResultList.UserRaceTimingInfo.Total $Tid $TInfo}
+  <tr>
+    <th  align="center" class="rowtip">{tpl:$TInfo.Rank/}</th>
+    <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.Name/}</th>
+    <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}</th>
+    <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}</th>
+    <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.BIB/}</th>
+    <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.CurrentPositionName/}</th></tr>
   {/tpl:loop}
 </table>
 </fieldset>

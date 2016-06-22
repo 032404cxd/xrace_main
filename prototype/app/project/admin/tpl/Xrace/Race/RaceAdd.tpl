@@ -1,11 +1,6 @@
 {tpl:tpl contentHeader/}
-<div class="br_bottom"></div>
 <form id="race_add_form" name="race_add_form"" action="{tpl:$this.sign/}&ac=race.insert" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageId/}" />
-
-
-
-
 <table width="99%" align="center" class="table table-bordered table-striped">
 {tpl:if($RaceGroupId==0)}
 <tr class="hover"><th align="center" class="rowtip">赛事分组</th><th align="center" class="rowtip">

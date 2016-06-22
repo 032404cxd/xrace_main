@@ -19,7 +19,7 @@
 
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
   <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupInfo.RaceGroupId/}" />
-  <fieldset><legend>{tpl:$RaceStageInfo.RaceStageName/}-{tpl:$RaceGroupInfo.RaceGroupName/}-{tpl:$RaceInfo.RaceName/}详情配置 </legend>
+  <fieldset><legend>{tpl:$RaceStageInfo.RaceStageName/}-{tpl:$RaceGroupInfo.RaceGroupName/}-{tpl:$RaceInfo.RaceName/}详情配置 <a href="{tpl:$this.sign/}&ac=race.list&RaceStageId={tpl:$RaceStageInfo.RaceStageId/}&RaceGroupId={tpl:$RaceGroupInfo.RaceGroupId/}">返回</a></legend>
 <table width="99%" align="center" class="table table-bordered table-striped">
   {tpl:if(count($RaceInfo.comment.DetailList))}
   <tr>

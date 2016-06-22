@@ -1,5 +1,4 @@
 {tpl:tpl contentHeader/}
-<div class="br_bottom"></div>
 <form id="race_add_form" name="race_add_form" action="{tpl:$this.sign/}&ac=race.update" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceInfo.RaceStageId/}" />
 <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceInfo.RaceGroupId/}" />

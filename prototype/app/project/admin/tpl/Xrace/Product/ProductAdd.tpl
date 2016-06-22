@@ -4,7 +4,7 @@
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover">
 <td>商品名称</td>
-    <td align="left"><input type="text" class="span2" name="ProductName"  id="ProductName" value="" size="50" /></td>
+    <td align="left"><input type="text" class="span2" name="ProductName" id="ProductName" value="" /></td>
 </tr>
 <input type="hidden" name="ProductTypeId" id="ProductTypeId" value="{tpl:$ProductTypeId/}" />
 <tr class="noborder"><td></td>

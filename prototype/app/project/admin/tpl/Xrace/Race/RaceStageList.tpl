@@ -14,6 +14,9 @@
   function ProductModify(sid){
     modifyProductBox= divBox.showBox('{tpl:$this.sign/}&ac=product.modify&RaceStageId=' + sid, {title:'编辑产品',width:800,height:600});
   }
+  function Combination(sid){
+    modifyProductBox= divBox.showBox('{tpl:$this.sign/}&ac=race.combination.list&RaceStageId=' + sid, {title:'报名组合',width:600,height:400});
+  }
 </script>
 
 <fieldset><legend>操作</legend>
@@ -57,7 +60,7 @@
     <td align="center" class="rowtip" >{tpl:$RaceStageInfo.SelectedGroupList/}</td>
     <td align="center" class="rowtip" ><a href="javascript:;" onclick="ProductModify('{tpl:$RaceStageInfo.RaceStageId/}');">{tpl:$RaceStageInfo.SelectedProductList/}</a></td>
     <td align="center" class="rowtip" >{tpl:$RaceStageInfo.RaceStageStatus.StageStatusName/}</td>
-    <th align="center" class="rowtip" ><a  href="javascript:;" onclick="RaceStageDelete('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceStageInfo.RaceStageName/}');">删除</a> |  <a href="javascript:;" onclick="RaceStageModify('{tpl:$RaceStageInfo.RaceStageId/}');">修改</a> |  <a href="javascript:;" onclick="ProductModify('{tpl:$RaceStageInfo.RaceStageId/}');">产品</a></th></tr>
+    <th align="center" class="rowtip" ><a  href="javascript:;" onclick="RaceStageDelete('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceStageInfo.RaceStageName/}');">删除</a> |  <a href="javascript:;" onclick="RaceStageModify('{tpl:$RaceStageInfo.RaceStageId/}');">修改</a> | <a href="javascript:;" onclick="ProductModify('{tpl:$RaceStageInfo.RaceStageId/}');">产品</a> |  <a href="{tpl:$this.sign/}&ac=race.combination.list&RaceStageId={tpl:$RaceStageInfo.RaceStageId/}">套餐组合</a></th></tr>
 
   </tr>
   {/tpl:loop}

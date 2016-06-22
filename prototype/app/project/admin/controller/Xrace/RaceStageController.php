@@ -491,7 +491,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceListAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
 			//赛事分站ID
@@ -543,7 +543,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceAddAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
 			//赛事分站ID
@@ -606,7 +606,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceModifyAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
 			//比赛ID
@@ -938,11 +938,13 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceDetailAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
+			//赛事分组ID
+			$RaceGroupId = intval($this->request->RaceGroupId);
 			//获取比赛信息
 			$RaceInfo = $this->oRace->getRace($RaceId);
 			//如果有获取到比赛信息
@@ -953,9 +955,23 @@ class Xrace_RaceStageController extends AbstractController
 				//解包压缩数组
 				$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
 				//获取赛事分组信息
-				$RaceGroupInfo = $this->oRace->getRaceGroup($RaceInfo['RaceGroupId'],'*');
+				//$RaceGroupInfo = $this->oRace->getRaceGroup($RaceInfo['RaceGroupId'],'*');
 				//数据解包
 				$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+
+				//如果当前分站未配置了当前分组
+				if(!in_array($RaceGroupId,$RaceStageInfo['comment']['SelectedRaceGroup']))
+				{
+					$RaceGroupId = 0;
+				}
+				//获取赛事分组信息
+				$RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,'*');
+				//如果赛事分组尚未配置
+				if(!$RaceGroupInfo['RaceGroupId'])
+				{
+					$RaceGroupId = 0;
+				}
+
 				//初始运动类型信息列表
 				$RaceInfo['comment']['DetailList'] = isset($RaceInfo['comment']['DetailList'])?$RaceInfo['comment']['DetailList']:array();
 				$this->oSports = new Xrace_Sports();
@@ -1010,7 +1026,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceSportsTypeInsertAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("TimingPointModify");
 		if($PermissionCheck['return'])
 		{
 			//比赛ID
@@ -1076,7 +1092,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceSportsTypeAddAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
 			//比赛ID
@@ -1127,7 +1143,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceSportsTypeDeleteAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("TimingPointModify");
 		if($PermissionCheck['return'])
 		{
 			//分站ID
@@ -1206,7 +1222,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function timingPointInsertAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("TimingPointModify");
 		if($PermissionCheck['return'])
 		{
 			//分站ID
@@ -1221,6 +1237,8 @@ class Xrace_RaceStageController extends AbstractController
 			$After = isset($this->request->After)?intval($this->request->After):-1;
 			//获取 页面参数
 			$bind = $this->request->from('TName','ToNext','AltAsc','AltDec','Round','ChipId','TolaranceTime');
+			//echo "Stage:".$RaceStageId."<br>";
+			//echo "Group:".$RaceGroupId."<br>";
 			//添加计时点
 			$AddTimingPoint = $this->oRace->addTimingPoint($RaceStageId,$RaceGroupId,$RaceId,$SportsTypeId,$After,$bind);
 			$response = $AddTimingPoint ? array('errno' => 0) : array('errno' => $AddTimingPoint);
@@ -1236,7 +1254,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function timingPointAddAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("TimingPointModify");
 		if($PermissionCheck['return'])
 		{
 			//分站ID
@@ -1257,7 +1275,7 @@ class Xrace_RaceStageController extends AbstractController
 			if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
 			{
 				//跳转到分站列表页面
-				$this->response->redirect($this->sign);
+				//$this->response->redirect($this->sign);
 			}
 			//获取赛事分组信息
 			$RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,'*');
@@ -1265,7 +1283,7 @@ class Xrace_RaceStageController extends AbstractController
 			if(!$RaceGroupInfo['RaceGroupId'])
 			{
 				//跳转到分站列表页面
-				$this->response->redirect($this->sign);
+				//$this->response->redirect($this->sign);
 			}
 			$this->oSports = new Xrace_Sports();
 			//获取运动类型列表
@@ -1273,7 +1291,7 @@ class Xrace_RaceStageController extends AbstractController
 			//获取比赛信息
 			$RaceInfo = $this->oRace->getRace($RaceId);
 			//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
-			if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
+			if(isset($RaceInfo['RaceId']))
 			{
 				//数据解包
 				$RaceInfo['comment'] = isset($RaceInfo['comment'])?json_decode($RaceInfo['comment'],true):array();
@@ -1311,7 +1329,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function timingPointModifyAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("TimingPointModify");
 		if($PermissionCheck['return'])
 		{
 			//分站ID
@@ -1376,7 +1394,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function timingPointUpdateAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("TimingPointModify");
 		if($PermissionCheck['return'])
 		{
 			//分站ID
@@ -1406,7 +1424,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function timingPointDeleteAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("TimingPointModify");
 		if($PermissionCheck['return'])
 		{
 			//分站ID
@@ -1433,11 +1451,9 @@ class Xrace_RaceStageController extends AbstractController
 	public function productModifyAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("ProductModify");
 		if($PermissionCheck['return'])
 		{
-			//赛事ID
-			//$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
 			//赛事分站ID
 			$RaceStageId  = isset($this->request->RaceStageId)?intval($this->request->RaceStageId):0;
 			//获取赛站信息
@@ -1468,22 +1484,26 @@ class Xrace_RaceStageController extends AbstractController
 					//循环其下的产品列表
 					foreach($ProductTypeList[$ProductTypeId]['ProductList'] as $ProductId => $ProductInfo)
 					{
+						$ProductSkuList = $this->oProduct->getAllProductSkuList($ProductId);
 						//如果该产品已选中
-						if(isset($SelectedProductList[$ProductId]))
+						//if(isset($SelectedProductList[$ProductId]))
+						//{
+						foreach($ProductSkuList[$ProductId] as $ProductSkuId => $ProductSkuInfo)
 						{
-							//置入选中标签
-							$ProductTypeList[$ProductTypeId]['ProductList'][$ProductId]['selected'] = 1;
-							//获取已经设定的产品价格和限购数量
-							$ProductTypeList[$ProductTypeId]['ProductList'][$ProductId]['ProductPrice'] = $SelectedProductList[$ProductId]['ProductPrice'];
-							$ProductTypeList[$ProductTypeId]['ProductList'][$ProductId]['ProductLimit'] = $SelectedProductList[$ProductId]['ProductLimit'];
+							if(isset($SelectedProductList[$ProductId][$ProductSkuId]))
+							{
+								$ProductSkuList[$ProductId][$ProductSkuId]['Stock'] = 	$SelectedProductList[$ProductId][$ProductSkuId]['Stock'];
+								$ProductSkuList[$ProductId][$ProductSkuId]['ProductPrice'] = 	$SelectedProductList[$ProductId][$ProductSkuId]['ProductPrice'];
+								$ProductSkuList[$ProductId][$ProductSkuId]['ProductLimit'] = 	$SelectedProductList[$ProductId][$ProductSkuId]['ProductLimit'];
+							}
+							else
+							{
+								$ProductSkuList[$ProductId][$ProductSkuId]['Stock'] = 	0;
+								$ProductSkuList[$ProductId][$ProductSkuId]['ProductPrice'] = 	0;
+								$ProductSkuList[$ProductId][$ProductSkuId]['ProductLimit'] = 	0;
+							}
 						}
-						else
-						{
-							$ProductTypeList[$ProductTypeId]['ProductList'][$ProductId]['selected'] = 0;
-							//初始化产品价格和限购数量
-							$ProductTypeList[$ProductTypeId]['ProductList'][$ProductId]['ProductPrice'] = 0;
-							$ProductTypeList[$ProductTypeId]['ProductList'][$ProductId]['ProductLimit'] = 0;
-						}
+						$ProductTypeList[$ProductTypeId]['ProductList'][$ProductId]['ProductSkuList'] = $ProductSkuList[$ProductId];
 					}
 				}
 				else
@@ -1505,7 +1525,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function productUpdateAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("ProductModify");
 		if($PermissionCheck['return'])
 		{
 			//赛事ID
@@ -1517,37 +1537,28 @@ class Xrace_RaceStageController extends AbstractController
 			if($RaceStageInfo['RaceStageId'])
 			{
 				//获取已经选定的商品列表
-				$CheckedProduct = $this->request->from('ProductChecked');
+				//$CheckedProduct = $this->request->from('ProductChecked');
 				//获取已经选定的商品数据
 				$ProductPrice = $this->request->from('ProductPrice');
 				//循环已选择的产品列表
-				foreach($CheckedProduct['ProductChecked'] as $ProductId)
+				foreach($ProductPrice['ProductPrice'] as $ProductId => $ProductSkuList)
 				{
-					//如果有填写对应的价格和限购数量
-					if(isset($ProductPrice['ProductPrice'][$ProductId]))
+
+					foreach($ProductSkuList as $ProductSkuId => $ProductSkuInfo)
 					{
-						//如果价格填写复数或限购数量小于1
-						if($ProductPrice['ProductPrice'][$ProductId]['ProductPrice'] < 0 || $ProductPrice['ProductPrice'][$ProductId]['ProductLimit'] < 1)
+						if(intval($ProductSkuInfo['Stock'])<=0)
 						{
-							//删除选择
-							unset($CheckedProduct[$ProductId]);
+							unset($ProductPrice['ProductPrice'][$ProductId][$ProductSkuId]);
 						}
 						else
 						{
-							//格式化价格和限购数量
-							$ProductPrice['ProductPrice'][$ProductId]['ProductPrice'] = intval($ProductPrice['ProductPrice'][$ProductId]['ProductPrice'])>=9999?9999:intval($ProductPrice['ProductPrice'][$ProductId]['ProductPrice']);
-							$ProductPrice['ProductPrice'][$ProductId]['ProductLimit'] = intval($ProductPrice['ProductPrice'][$ProductId]['ProductLimit'])>=3?3:intval($ProductPrice['ProductPrice'][$ProductId]['ProductLimit']);
-							$CheckedProduct['ProductChecked'][$ProductId] = $ProductPrice['ProductPrice'][$ProductId];
+							$ProductPrice['ProductPrice'][$ProductId][$ProductSkuId]['ProductLimit'] = intval($ProductSkuInfo['ProductLimit'])>=3?3:intval($ProductSkuInfo['ProductLimit']);
 						}
-					}
-					else
-					{
-						unset($CheckedProduct['ProductChecked'][$ProductId]);
 					}
 				}
 			}
 			//存入数组中
-			$bind['comment']['SelectedProductList'] = $CheckedProduct['ProductChecked'];
+			$bind['comment']['SelectedProductList'] = $ProductPrice['ProductPrice'];
 			//数据打包
 			$bind['comment'] = json_encode($bind['comment']);
 			//更新赛事分站信息
@@ -1565,7 +1576,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUserListAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
 			//比赛ID
@@ -1593,7 +1604,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUserListUpdateAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
 			//比赛ID
@@ -1636,7 +1647,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUserUploadSubmitAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
 			//比赛ID
@@ -1662,9 +1673,8 @@ class Xrace_RaceStageController extends AbstractController
 	//报名记录上传
 	public function raceUserUploadAction()
 	{
-		//bib,groupName,name,sex(1,2),chip,mobile
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
 			//比赛ID
@@ -1776,7 +1786,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function userRaceDeleteAction()
 	{
 		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
 			$oUser = new Xrace_User();
@@ -1813,6 +1823,409 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceResultList = $this->oRace->getRaceResult($RaceId);
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceResultList');
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//套餐添加填写页面
+	public function raceCombinationAddAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+		if($PermissionCheck['return'])
+		{
+			//分站ID
+			$RaceStageId = intval($this->request->RaceStageId);
+			//获取比赛信息
+			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId);
+			//获取比赛列表
+			$RaceList = $this->oRace->getRaceList($RaceStageInfo['RaceStageId'],0,'RaceId,RaceName,RaceGroupId,RaceTypeId');
+			//获取比赛类型列表
+			$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
+			//赛事分组列表
+			$RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
+			//循环比赛列表
+			foreach($RaceList as $RaceId => $RaceInfo)
+			{
+				//获取比赛类型名称
+				$RaceList[$RaceId]['RaceGroupName'] = isset($RaceGroupList[$RaceInfo['RaceGroupId']]['RaceGroupName'])?$RaceGroupList[$RaceInfo['RaceGroupId']]['RaceGroupName']:"未配置";
+				//获取比赛类型名称
+				$RaceList[$RaceId]['RaceTypeName'] = isset($RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName'])?$RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName']:"未配置";
+			}
+			//解包数组
+			$RaceStageInfo['comment'] = isset($RaceStageInfo['comment']) ? json_decode($RaceStageInfo['comment'], true) : array();
+			if (isset($RaceStageInfo['comment']['SelectedProductList']))
+			{
+				//初始化一个空的产品列表
+				$ProductList = array();
+				//循环产品列表
+				foreach ($RaceStageInfo['comment']['SelectedProductList'] as $ProductId => $ProductSkuList)
+				{
+					//如果产品列表中没有此产品
+					if (!isset($ProductList[$ProductId]))
+					{
+						//获取产品信息
+						$ProductInfo = $this->oProduct->getProduct($ProductId, "ProductId,ProductName,comment");
+						//如果产品信息获取到
+						if(isset($ProductInfo['ProductId']))
+						{
+							$SkuList = $this->oProduct->getAllProductSkuList($ProductId);
+							$t = array();
+							foreach($SkuList[$ProductId] as $k => $v)
+							{
+								if(isset($ProductSkuList[$k]))
+								{
+									$t[$k] = $v['ProductSkuName'];
+								}
+							}
+							if(count($SkuList[$ProductId])>=1)
+							{
+								//存入产品名称
+								$RaceStageInfo['comment']['SelectedProductList'][$ProductId] = array('ProductName' => $ProductInfo['ProductName'],'ProductSkuList'=>implode("/",$t));
+							}
+							else
+							{
+								unset($RaceStageInfo['comment']['SelectedProductList'][$ProductId]);
+							}
+						}
+						else
+						{
+							unset($RaceStageInfo['comment']['SelectedProductList'][$ProductId]);
+						}
+					}
+					else
+					{
+						continue;
+					}
+				}
+			}
+			//渲染模板
+			include $this->tpl('Xrace_Race_RaceCombinationAdd');
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//套餐添加
+	public function raceCombinationInsertAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+		if($PermissionCheck['return'])
+		{
+			//获取 页面参数
+			$bind=$this->request->from('RaceStageId','RaceCombinationName','PriceList');
+			//获取已经选定的比赛列表
+			$RaceList = $this->request->from('RaceList');
+			//获取已经选定的产品列表
+			$ProductList = $this->request->from('ProductList');
+			//套餐名称不能为空
+			if(trim($bind['RaceCombinationName'])=="")
+			{
+				$response = array('errno' => 1);
+			}
+			else
+			{
+				//获取当前分站信息
+				$RaceStageInfo = $this->oRace->getRaceStage($bind['RaceStageId'],'*');
+				//如果有获取到分站信息
+				if(!isset($RaceStageInfo['RaceStageId']))
+				{
+					$response = array('errno' => 2);
+				}
+				else
+				{
+					//套餐内的比赛数量
+					$RaceCount = count($RaceList['RaceList']);
+					foreach($ProductList['ProductList'] as $ProductId => $ProductInfo)
+					{
+						if($ProductInfo['ProductCount']<1)
+						{
+							unset($ProductList['ProductList'][$ProductId]);
+						}
+					}
+					//套餐内产品数量
+					$ProductCount = count($ProductList['ProductList']);
+					//如果产品与比赛数量小于2
+					if(($RaceCount+$ProductCount)<2)
+					{
+						$response = array('errno' => 3);
+					}
+					else
+					{
+						$bind['ProductList'] = json_encode($ProductList['ProductList']);
+						$bind['RaceList'] = json_encode($RaceList['RaceList']);
+						$bind['RaceCatalogId'] = $RaceStageInfo['RaceCatalogId'];
+						//插入数据
+						$res = $this->oRace->insertRaceCombination($bind);
+						$response = $res ? array('errno' => 0) : array('errno' => 9);
+					}
+				}
+			}
+			echo json_encode($response);
+			return true;
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//比赛列表页面
+	public function raceCombinationListAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+		if($PermissionCheck['return'])
+		{
+			//赛事分站ID
+			$RaceStageId = intval($this->request->RaceStageId);
+			//获取当前分站信息
+			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'RaceStageId,RaceStageName,comment');
+			//解包压缩数组
+			$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
+			$params = array('RaceStageId'=>$RaceStageId);
+			//获取报名套餐列表
+			$RaceCombinationList = $this->oRace->getRaceCombinationList($params);
+			//循环套餐列表
+			foreach($RaceCombinationList as $RaceCombinationId => $RaceCombinationInfo)
+			{
+				//解压缩比赛列表和产品列表
+				$RaceCombinationList[$RaceCombinationId]['RaceList'] = json_decode($RaceCombinationInfo['RaceList'],true);
+				//如果有配置比赛
+				if(count($RaceCombinationList[$RaceCombinationId]['RaceList']))
+				{
+					//循环比赛列表
+					foreach($RaceCombinationList[$RaceCombinationId]['RaceList'] as $RaceId => $Race)
+					{
+						//获取比赛信息
+						$RaceInfo = $this->oRace->getRace($RaceId,"RaceId,RaceName,RaceGroupId");
+						//如果有获取到
+						if(isset($RaceInfo['RaceId']))
+						{
+							$RaceGroupInfo = $this->oRace->getRaceGroup($RaceInfo['RaceGroupId'],"RaceGroupId,RaceGroupName");
+							if(isset($RaceGroupInfo['RaceGroupId']))
+							{
+								$RaceInfo['RaceGroupInfo'] = $RaceGroupInfo;
+							}
+							//保存比赛信息
+							$RaceCombinationList[$RaceCombinationId]['RaceList'][$RaceId] = $RaceInfo;
+						}
+						else
+						{
+							//否则删除数据
+							unset($RaceCombinationList[$RaceCombinationId]['RaceList'][$RaceId]);
+						}
+					}
+				}
+				$RaceCombinationList[$RaceCombinationId]['ProductList'] = json_decode($RaceCombinationInfo['ProductList'],true);
+				//如果有配置比赛
+				if(count($RaceCombinationList[$RaceCombinationId]['ProductList']))
+				{
+					//循环比赛列表
+					foreach($RaceCombinationList[$RaceCombinationId]['ProductList'] as $ProductId => $Product)
+					{
+						if($Product['ProductCount']>=1)
+						{
+							//获取比赛信息
+							$ProductInfo = $this->oProduct->getProduct($ProductId,"ProductId,ProductName");
+							//如果有获取到
+							if(isset($ProductInfo['ProductId']))
+							{
+								//如果有找到配置的SKU列表
+								if(isset($RaceStageInfo['comment']['SelectedProductList'][$ProductId]))
+								{
+									$t = array();
+									//获取产品的SKU列表
+									$SkuList = $this->oProduct->getAllProductSkuList($ProductId);
+									//循环分站已配置的SKU列表
+									foreach($RaceStageInfo['comment']['SelectedProductList'][$ProductId] as $SkuId => $SkuInfo)
+									{
+										//如果SKU存在
+										if(isset($SkuList[$ProductId][$SkuId]))
+										{
+											$t[] = $SkuList[$ProductId][$SkuId]['ProductSkuName'];
+											//保存SKU名称
+											$RaceStageInfo['comment']['SelectedProductList'][$ProductId][$SkuId]['SkuName'] = $SkuList[$ProductId][$SkuId]['ProductSkuName'];
+										}
+									}
+									//生成显示用的SKU列表
+									$ProductInfo['SkuListText'] = "(".implode("/",$t).")";
+									//保存产品信息
+									$ProductInfo['SkuList'] = $RaceStageInfo['comment']['SelectedProductList'][$ProductId];
+								}
+								$ProductInfo['ProductCount'] = $Product['ProductCount'];
+								//保存比赛信息
+								$RaceCombinationList[$RaceCombinationId]['ProductList'][$ProductId] = $ProductInfo;
+							}
+							else
+							{
+								//否则删除数据
+								unset($RaceCombinationList[$RaceCombinationId]['ProductList'][$ProductId]);
+							}
+						}
+						else
+						{
+							//否则删除数据
+							unset($RaceCombinationList[$RaceCombinationId]['ProductList'][$ProductId]);
+						}
+					}
+				}
+			}
+			//渲染模板
+			include $this->tpl('Xrace_Race_RaceCombinationList');
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	public function raceCombinationModifyAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+		if($PermissionCheck['return'])
+		{
+			//分站ID
+			$RaceCombinationId = intval($this->request->RaceCombinationId);
+			//获取套餐信息
+			$RaceCombinationInfo = $this->oRace->getRaceCombination($RaceCombinationId);
+			//解包比赛列表
+			$RaceCombinationInfo['RaceList'] = json_decode($RaceCombinationInfo['RaceList'],true);
+			//解包产品列表
+			$RaceCombinationInfo['ProductList'] = json_decode($RaceCombinationInfo['ProductList'],true);
+			//获取比赛信息
+			$RaceStageInfo = $this->oRace->getRaceStage($RaceCombinationInfo['RaceStageId']);
+			//获取比赛列表
+			$RaceList = $this->oRace->getRaceList($RaceCombinationInfo['RaceStageId'],0,'RaceId,RaceName,RaceGroupId,RaceTypeId');
+			//获取比赛类型列表
+			$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
+			//赛事分组列表
+			$RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
+			//循环比赛列表
+			foreach($RaceList as $RaceId => $RaceInfo)
+			{
+				$RaceList[$RaceId]['selected'] = isset($RaceCombinationInfo['RaceList'][$RaceId])?1:0;
+				//获取比赛类型名称
+				$RaceList[$RaceId]['RaceGroupName'] = isset($RaceGroupList[$RaceInfo['RaceGroupId']]['RaceGroupName'])?$RaceGroupList[$RaceInfo['RaceGroupId']]['RaceGroupName']:"未配置";
+				//获取比赛类型名称
+				$RaceList[$RaceId]['RaceTypeName'] = isset($RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName'])?$RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName']:"未配置";
+			}
+			//解包数组
+			$RaceStageInfo['comment'] = isset($RaceStageInfo['comment']) ? json_decode($RaceStageInfo['comment'], true) : array();
+			if (isset($RaceStageInfo['comment']['SelectedProductList']))
+			{
+				//初始化一个空的产品列表
+				$ProductList = array();
+				//循环产品列表
+				foreach ($RaceStageInfo['comment']['SelectedProductList'] as $ProductId => $ProductSkuList)
+				{
+					//如果产品列表中没有此产品
+					if (!isset($ProductList[$ProductId]))
+					{
+						//获取产品信息
+						$ProductInfo = $this->oProduct->getProduct($ProductId, "ProductId,ProductName,comment");
+						//如果产品信息获取到
+						if(isset($ProductInfo['ProductId']))
+						{
+							$SkuList = $this->oProduct->getAllProductSkuList($ProductId);
+							$t = array();
+							foreach($SkuList[$ProductId] as $k => $v)
+							{
+								if(isset($ProductSkuList[$k]))
+								{
+									$t[$k] = $v['ProductSkuName'];
+								}
+							}
+							if(count($SkuList[$ProductId])>=1)
+							{
+								//存入产品名称
+								$RaceStageInfo['comment']['SelectedProductList'][$ProductId] = array('ProductName' => $ProductInfo['ProductName'],'ProductSkuList'=>implode("/",$t),'ProductCount'=>isset($RaceCombinationInfo['ProductList'][$ProductId])?$RaceCombinationInfo['ProductList'][$ProductId]['ProductCount']:0);
+							}
+							else
+							{
+								unset($RaceStageInfo['comment']['SelectedProductList'][$ProductId]);
+							}
+						}
+						else
+						{
+							unset($RaceStageInfo['comment']['SelectedProductList'][$ProductId]);
+						}
+					}
+					else
+					{
+						continue;
+					}
+				}
+			}
+			//渲染模板
+			include $this->tpl('Xrace_Race_RaceCombinationModify');
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//套餐添加
+	public function raceCombinationUpdateAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+		if($PermissionCheck['return'])
+		{
+			//获取 页面参数
+			$bind=$this->request->from('RaceCombinationId','RaceCombinationName','PriceList');
+			//获取已经选定的比赛列表
+			$RaceList = $this->request->from('RaceList');
+			//获取已经选定的产品列表
+			$ProductList = $this->request->from('ProductList');
+			//套餐名称不能为空
+			if(trim($bind['RaceCombinationName'])=="")
+			{
+				$response = array('errno' => 1);
+			}
+			else
+			{
+				//获取套餐信息
+				$RaceCombinationInfo = $this->oRace->getRaceCombination($bind['RaceCombinationId']);
+				//获取当前分站信息
+				$RaceStageInfo = $this->oRace->getRaceStage($RaceCombinationInfo['RaceStageId'],'*');
+				//套餐内的比赛数量
+				$RaceCount = count($RaceList['RaceList']);
+				foreach($ProductList['ProductList'] as $ProductId => $ProductInfo)
+				{
+					if($ProductInfo['ProductCount']<1)
+					{
+						unset($ProductList['ProductList'][$ProductId]);
+					}
+				}
+				//套餐内产品数量
+				$ProductCount = count($ProductList['ProductList']);
+				//如果产品与比赛数量小于2
+				if(($RaceCount+$ProductCount)<2)
+				{
+					$response = array('errno' => 3);
+				}
+				else
+				{
+					$bind['ProductList'] = json_encode($ProductList['ProductList']);
+					$bind['RaceList'] = json_encode($RaceList['RaceList']);
+					$bind['RaceCatalogId'] = $RaceStageInfo['RaceCatalogId'];
+					//插入数据
+					$res = $this->oRace->updateRaceCombination($bind['RaceCombinationId'],$bind);
+					$response = $res ? array('errno' => 0) : array('errno' => 9);
+				}
+
+			}
+			echo json_encode($response);
+			return true;
 		}
 		else
 		{
