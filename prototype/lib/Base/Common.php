@@ -855,7 +855,7 @@ EOF;
 		{
 			$Text['Second'] = sprintf("%01d",intval($T[0])%60);
 		}
-		return implode(":",$Text).(isset($T[1])?".".$T[1]:"");
+		return implode(":",$Text).(isset($T[1])?".".substr($T[1],0,4):"");
 	}
 	function cutstr($str,$len,$replace = '...')
 	{
@@ -1073,6 +1073,18 @@ EOF;
 			$res=mkdir($filePath,0777,true);
 		}
 		file_put_contents($filePath.$fileName,$text);
+	}
+	/**
+	 * 将一个数组写入配置文件
+	 * @param string $fields
+	 */
+	function appendLog($filePath,$fileName,$logText)
+	{
+		if (!is_dir($filePath))
+		{
+			$res=mkdir($filePath,0777,true);
+		}
+		file_put_contents($filePath.$fileName,$logText,FILE_APPEND);
 	}
 	/**
 	 * 将一个配置文件载入数组

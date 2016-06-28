@@ -515,7 +515,7 @@ class Xrace_RaceStageController extends AbstractController
 				$RaceGroupId = 0;
 			}
 			//获取比赛列表
-			$RaceList = $this->oRace->getRaceList($RaceStageId,$RaceGroupId);
+			$RaceList = $this->oRace->getRaceList(array("RaceStageId"=>$RaceStageId,"RaceGroupId"=>$RaceGroupId));
 			//获取比赛类型列表
 			$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
 			//赛事分组列表
@@ -1842,7 +1842,7 @@ class Xrace_RaceStageController extends AbstractController
 			//获取比赛信息
 			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId);
 			//获取比赛列表
-			$RaceList = $this->oRace->getRaceList($RaceStageInfo['RaceStageId'],0,'RaceId,RaceName,RaceGroupId,RaceTypeId');
+			$RaceList = $this->oRace->getRaceList(array("RaceStageId"=>$RaceStageInfo['RaceStageId']),'RaceId,RaceName,RaceGroupId,RaceTypeId');
 			//获取比赛类型列表
 			$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
 			//赛事分组列表

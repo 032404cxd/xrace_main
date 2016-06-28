@@ -248,7 +248,32 @@ class Xrace_Race extends Base_Widget
 		return $this->db->selectRow($table_to_process, $fields, '`RaceId` = ?', $RaceId);
 	}
 	//获取赛事分站和赛事组别获取比赛列表
-	public function getRaceList($RaceStageId,$RaceGroupId,$fields = '*')
+	public function getRaceList($params,$fields = '*')
+	{
+		$table_to_process = Base_Widget::getDbTable($this->table_race);
+		//初始化查询条件
+		$whereGroup = (isset($params['RaceGroupId']) && ($params['RaceGroupId'] >0))?(" RaceGroupId = ".$params['RaceGroupId']):"";
+		$whereStage = (isset($params['RaceStageId']) && ($params['RaceStageId'] >0))?(" RaceStageId = ".$params['RaceStageId']):"";
+		$whereEndTime = (isset($params['RaceEndTime']) && ($params['RaceEndTime'] >0))?(" unix_timestamp(EndTime) <= ".$params['RaceEndTime']):"";
+		$whereCondition = array($whereGroup,$whereStage,$whereEndTime);
+		//生成条件列
+		$where = Base_common::getSqlWhere($whereCondition);
+		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceId asc";
+		$return = $this->db->getAll($sql);
+		$RaceList = array();
+		foreach($return as $key => $value)
+		{
+			$RaceList[$value['RaceId']] = $value;
+			if(isset($RaceList[$value['RaceId']]['comment']))
+			{
+				$RaceList[$value['RaceId']]['comment'] = json_decode($RaceList[$value['RaceId']]['comment'],true);
+			}
+		}
+		return $RaceList;
+	}
+	
+	//获取赛事分站和赛事组别获取比赛列表
+	public function getRaceListBak($RaceStageId,$RaceGroupId,$fields = '*')
 	{
 		$RaceStageId = intval($RaceStageId);
 		$RaceGroupId = intval($RaceGroupId);
@@ -325,27 +350,16 @@ class Xrace_Race extends Base_Widget
 		//如果当前分站未配置了当前分组
 		if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
 		{
-			echo "111";
 			return false;
 		}
 		else
 		{
-			//获取赛事分组信息
-			//$RaceGroupInfo = $this->getRaceGroup($RaceGroupId,'*');
-			//如果赛事分组尚未配置
-			//if(!$RaceGroupInfo['RaceGroupId'])
-			//{
-				//echo "222";
-				//return false;
-			//}
-			//else
 			{
 				//获取比赛信息
 				$RaceInfo = $this->getRace($RaceId);
 				//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
 				if(isset($RaceInfo['RaceId']))
 				{
-					//echo "here";
 					//数据解包
 					$RaceInfo['comment'] = isset($RaceInfo['comment']) ? json_decode($RaceInfo['comment'], true) : array();
 					//获取运动类型的数据
@@ -434,7 +448,6 @@ class Xrace_Race extends Base_Widget
 				{
 					return false;
 				}
-
 			}
 		}
 	}
@@ -671,7 +684,7 @@ class Xrace_Race extends Base_Widget
 		//获取当前时间
 		$CurrentTime = time();
 		//转化时间为时间戳
-		$RaceList = $this->getRaceList($RaceStageId, $RaceGroupId, $fields = 'RaceId,ApplyStartTime,ApplyEndTime,StartTime,EndTime');
+		$RaceList = $this->getRaceList(array("RaceStageId"=>$RaceStageId, "RaceGroupId"=>$RaceGroupId), $fields = 'RaceId,ApplyStartTime,ApplyEndTime,StartTime,EndTime');
 		//最小开始报名时间
 		$MinApplyStartTime = 0;
 		//最大结束报名时间

@@ -378,7 +378,7 @@ class XraceConfigController extends AbstractController
         //赛事分站和赛事组别ID必须大于0
         if ($RaceStageId && $RaceGroupId) {
             //获得比赛列表
-            $RaceList = $this->oRace->getRaceList($RaceStageId, $RaceGroupId, "RaceId,RaceTypeId,RouteInfo,RaceName,PriceList,SingleUser,TeamUser,StartTime,EndTime,ApplyStartTime,ApplyEndTime,comment,RaceComment,MustSelect");
+            $RaceList = $this->oRace->getRaceList(array("RaceGroupId"=>$RaceStageId, "RaceGroupId"=>$RaceGroupId), "RaceId,RaceTypeId,RouteInfo,RaceName,PriceList,SingleUser,TeamUser,StartTime,EndTime,ApplyStartTime,ApplyEndTime,comment,RaceComment,MustSelect");
             if (!is_array($RaceList)) {
                 $RaceList = array();
             }
@@ -1058,7 +1058,7 @@ class XraceConfigController extends AbstractController
                             {
                                 if($k!=0)
                                 {
-                                    $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][$k]['NetTimeLag']= $v['TotalNetTime']-$UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][0]['TotalNetTime'];
+                                    $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][$k]['NetTimeLag']= sprintf("%0.3f",$v['TotalNetTime']-$UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][0]['TotalNetTime']);
                                 }
                                 else
                                 {

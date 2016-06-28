@@ -1048,16 +1048,143 @@ class Xrace_UserController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+	//用户密码更新提交页面
+	public function userPasswordUpdateSubmitAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("UserAuth");
+		if($PermissionCheck['return'])
+		{
+			//用户ID
+			$UserId = trim($this->request->UserId);
+			//获取用户信息
+			$UserInfo = $this->oUser->getUserInfo($UserId);
+			//模板渲染
+			include $this->tpl('Xrace_User_UserPasswordUpdate');
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//用户密码更新
+	public function userPasswordUpdateAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("UserAuth");
+		if($PermissionCheck['return'])
+		{
+			//批量获取页面参数
+			$Password = $this->request->from('UserPassword','UserPasswordRepeat');
+			$UserId = trim($this->request->UserId);
+			//页面参数预处理
+			$Password['UserPassword'] = substr(strtoupper(trim($Password['UserPassword'])),0,12);
+			//检查两边密码的一致性
+			if($Password['UserPassword'] != $Password['UserPasswordRepeat'])
+			{
+				$response = array('errno' => 2);
+			}
+			//密码长度不能小于6
+			elseif(strlen($Password['UserPassword'])<6)
+			{
+				$response = array('errno' => 3);
+			}
+			else
+			{
+				//获取用户信息
+				$UserInfo = $this->oUser->getUserInfo($UserId,'user_id,pwd');
+				//如果没找到
+				if(!isset($UserInfo['user_id']))
+				{
+					$response = array('errno' => 4);
+				}
+				//检查和之前的密码是否一致
+				elseif(md5($Password['UserPassword'])==$UserInfo['pwd'])
+				{
+					$response = array('errno' => 5);
+				}
+				else
+				{
+					$bind = array('pwd'=>md5($Password['UserPassword']));
+					//保存密码
+					$UserPasswordUpdate = $this->oUser->updateUserInfo($UserId, $bind);
+					$response = $UserPasswordUpdate ? array('errno' => 0) : array('errno' => 9);
 
-
-	//http://admin.xrace.cn/?ctl=xrace/user&ac=user_team_insert&RaceCatalogId=1&RaceGroupId=3&RaceTeamId=12&UserId=1
-/*
-<tr class="hover"><td>所属组别</td>
-<td align="left"><div id = "GroupList"><select name="RaceGroupId" id="RaceGroupId" size="1" class="span2">
-{tpl:loop $RaceGroupList $RaceGroupInfo}
-<option value="{tpl:$RaceGroupInfo.RaceGroupId/}" >{tpl:$RaceGroupInfo.RaceGroupName/}</option>
-				{/tpl:loop}
-			</select></div></td>
-	</tr>
-*/
+				}
+			}
+			echo json_encode($response);
+			return true;
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//手机号码更新提交页面
+	public function userMobileUpdateSubmitAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("UserAuth");
+		if($PermissionCheck['return'])
+		{
+			//用户ID
+			$UserId = trim($this->request->UserId);
+			//获取用户信息
+			$UserInfo = $this->oUser->getUserInfo($UserId);
+			//模板渲染
+			include $this->tpl('Xrace_User_UserMobileUpdate');
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
+	//用户实名认证信息
+	public function userMobileUpdateAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("UserAuth");
+		if($PermissionCheck['return'])
+		{
+			//批量获取页面参数
+			$bind = $this->request->from('phone');
+			$UserId = trim($this->request->UserId);
+			//格式化手机号码
+			$bind['phone'] = trim($bind['phone']);
+			//检查手机号码的长度
+			if((strlen($bind['phone'])<8)||(strlen($bind['phone'])>11))
+			{
+				$response = array('errno' => 3);
+			}
+			else
+			{
+				//获取用户信息
+				$UserInfo = $this->oUser->getUserInfo($UserId,'user_id,phone');
+				if(!isset($UserInfo['user_id']))
+				{
+					$response = array('errno' => 4);
+				}
+				elseif($bind['phone']==$UserInfo['phone'])
+				{
+					$response = array('errno' => 5);
+				}
+				else
+				{
+					//保存密码
+					$UserMobileUpdate = $this->oUser->updateUserInfo($UserId, $bind);
+					$response = $UserMobileUpdate ? array('errno' => 0) : array('errno' => 9);
+				}
+			}
+			echo json_encode($response);
+			return true;
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
 }
