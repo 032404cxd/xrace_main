@@ -2,18 +2,25 @@
 <form id="race_add_form" name="race_add_form"" action="{tpl:$this.sign/}&ac=race.insert" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped">
-{tpl:if($RaceGroupId==0)}
 <tr class="hover"><th align="center" class="rowtip">赛事分组</th><th align="center" class="rowtip">
+{tpl:if($RaceStageInfo.comment.RaceStructure=="race")}
+	{tpl:loop $RaceStageInfo.comment.SelectedRaceGroup $RaceGroupInfo}
+	<input type="checkbox"  name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}]" value="{tpl:$RaceGroupInfo.RaceGroupId/}" /> {tpl:$RaceGroupInfo.RaceGroupName/}
+	{/tpl:loop}
+		<input type="hidden" name="RaceGroupId" id="RaceGroupId" value="0" />
+		{tpl:else}
+	{tpl:if($RaceGroupId==0)}
 		<select name="RaceGroupId" size="1" class="span2">
 			{tpl:loop $RaceStageInfo.comment.SelectedRaceGroup $RaceGroupInfo}
 			<option value="{tpl:$RaceGroupInfo.RaceGroupId/}" >{tpl:$RaceGroupInfo.RaceGroupName/}</option>
 			{/tpl:loop}
 		</select>
-	</th></tr>
-{tpl:else}
+		<input type="hidden" name="SelectedRaceGroup" id="SelectedRaceGroup" value="" />
+{/tpl:if}
+</th></tr>
 <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupId/}" />
 {/tpl:if}
-	<tr class="hover"><th align="center" class="rowtip">比赛名称</th><th align="center" class="rowtip"><input name="RaceName" type="text" class="span2" id="RaceName" size="50" /></th></tr>
+<tr class="hover"><th align="center" class="rowtip">比赛名称</th><th align="center" class="rowtip"><input name="RaceName" type="text" class="span2" id="RaceName" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">比赛类型</th><th align="center" class="rowtip">
 			<select name="RaceTypeId" size="1" class="span2">
 				{tpl:loop $RaceTypeList $RaceTypeInfo}
@@ -58,6 +65,12 @@
 <tr class="hover"><th align="center" class="rowtip">结束报名时间</th><th align="center" class="rowtip"><input type="text" name="ApplyEndTime" value="{tpl:$ApplyEndTime/}" value="" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
 <tr class="hover"><th align="center" class="rowtip">开始时间</th><th align="center" class="rowtip"><input type="text" name="StartTime" value="{tpl:$StartTime/}" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >.<input name="RaceStartMicro" type="text" class="span1" id="RaceStartMicro" value = "000" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">结束时间</th><th align="center" class="rowtip"><input type="text" name="EndTime" value="{tpl:$EndTime/}" value="" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
+<tr class="hover"><th align="center" class="rowtip">起点</th><th align="center" class="rowtip"><input type="radio" name="NoStart" id="NoStart" value="1">无起点<input type="radio" name="NoStart" id="NoStart"  value="0"  checked>有起点</th></tr>
+<tr class="hover"><th align="center" class="rowtip">团队成绩名次</th><th align="center" class="rowtip"><select name="TeamResultRank" size="1" class="span2">
+			{tpl:loop $t $i }
+			<option value="{tpl:$i/}" >第{tpl:$i/}人</option>
+			{/tpl:loop}</select></tr>
+
 	<tr class="hover"><td colspan = 2>比赛介绍</td></tr>
 	<tr class="hover"><td colspan = 2><?php echo $editor->editor("RaceComment",""); ?></td>
 	</tr>	<tr class="noborder"><td></td>

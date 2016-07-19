@@ -80,6 +80,5 @@
   {/tpl:if}
 </table>
 </fieldset>
-  <td><button type="submit" id="race_stage_group_submit">提交</button></td>
 </form>
 {tpl:tpl contentFooter/}

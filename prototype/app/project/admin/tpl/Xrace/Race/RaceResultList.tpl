@@ -50,6 +50,7 @@
   </tr>
 {/tpl:loop}
   {/tpl:loop}
+  <tr><th  align="center" class="rowtip" colspan="6">个人排名</th></tr>
   <tr><th  align="center" class="rowtip">名次</th>
     <th  align="center" class="rowtip" colspan="2">姓名</th>
     <th  align="center" class="rowtip" colspan="2">总时间</th>
@@ -65,6 +66,23 @@
     <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.BIB/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.CurrentPositionName/}</th></tr>
+  {/tpl:loop}
+  <tr><th  align="center" class="rowtip" colspan="6">团队排名（每队第 {tpl:$RaceInfo.comment.TeamResultRank/} 人）</th></tr>
+  <tr><th  align="center" class="rowtip">名次</th>
+    <th  align="center" class="rowtip" colspan="2">团队（选手）</th>
+    <th  align="center" class="rowtip" colspan="2">总时间</th>
+    <th  align="center" class="rowtip" colspan="2">总净时间</th>
+    <th  align="center" class="rowtip" colspan="2">总时间差</th>
+    <th  align="center" class="rowtip" colspan="2">总净时间差</th>
+  </tr>
+  {tpl:loop $RaceResultList.UserRaceTimingInfo.Team $Tid $TeamInfo}
+  <tr>
+    <th  align="center" class="rowtip">{tpl:$Tid func="@@+1"/}</th>
+    <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.RaceTeamName/}({tpl:$TeamInfo.Name/})</th>
+    <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}</th>
+    <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}</th>
+    <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TimeLag func="Base_Common::parthTimeLag(@@)"/}</th>
+    <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.NetTimeLag func="Base_Common::parthTimeLag(@@)"/}</th>
   {/tpl:loop}
 </table>
 </fieldset>

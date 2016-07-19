@@ -47,6 +47,7 @@ class Xrace_Mylaps extends Base_Widget
 		$RaceInfo = $oRace->getRace($RaceId);
 		//解包压缩的数据
 		$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+		$RaceInfo['comment']['TeamResultRank'] = isset($RaceInfo['comment']['TeamResultRank'])?$RaceInfo['comment']['TeamResultRank']:3;
 		//预存比赛的开始和结束时间
 		$RaceStartTime = strtotime($RaceInfo['StartTime']) + $RaceInfo['comment']['RaceStartMicro']/1000;
 		$RaceEndTime = strtotime($RaceInfo['EndTime']);
@@ -179,7 +180,7 @@ class Xrace_Mylaps extends Base_Widget
 									//依次比对现在的用户ID，如果找到了，则更新
 									if ($v['UserId'] == $UserList[$TimingInfo['Chip']]['UserId'])
 									{
-										$UserRaceInfoList['Total'][$k] = array("CurrentPosition" => 1,"CurrentPositionName" => $UserRaceInfoList['Point'][1]['TName'], "TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => sprintf("%0.3f",$ChipTime), 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName']);
+										$UserRaceInfoList['Total'][$k] = array("CurrentPosition" => 1,"CurrentPositionName" => $UserRaceInfoList['Point'][1]['TName'], "TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => sprintf("%0.3f",$ChipTime), 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName'],'RaceTeamId'=>$UserList[$TimingInfo['Chip']]['RaceTeamId']);
 										$found = 1;
 										break;
 									}
@@ -187,13 +188,13 @@ class Xrace_Mylaps extends Base_Widget
 								//如果未找到，则新增
 								if ($found == 0)
 								{
-									$UserRaceInfoList['Total'][count($UserRaceInfoList['Total'])] = array("CurrentPosition" => 1,"CurrentPositionName" => $UserRaceInfoList['Point'][1]['TName'],"TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => sprintf("%0.3f",$ChipTime), 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName']);
+									$UserRaceInfoList['Total'][count($UserRaceInfoList['Total'])] = array("CurrentPosition" => 1,"CurrentPositionName" => $UserRaceInfoList['Point'][1]['TName'],"TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => sprintf("%0.3f",$ChipTime), 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName'],'RaceTeamId'=>$UserList[$TimingInfo['Chip']]['RaceTeamId']);
 								}
 							}
 							//新建排名数据
 							else
 							{
-								$UserRaceInfoList['Total'][0] = array("CurrentPosition" => 1,"CurrentPositionName" => $UserRaceInfoList['Point'][1]['TName'], "TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => sprintf("%0.3f",$ChipTime), 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName']);
+								$UserRaceInfoList['Total'][0] = array("CurrentPosition" => 1,"CurrentPositionName" => $UserRaceInfoList['Point'][1]['TName'], "TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => sprintf("%0.3f",$ChipTime), 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName'],'RaceTeamId'=>$UserList[$TimingInfo['Chip']]['RaceTeamId']);
 							}
 							$t = array();
 							//再次循环排名数组，依次取出当前位置，总时间，总净时间做排序依据
@@ -222,6 +223,95 @@ class Xrace_Mylaps extends Base_Widget
 						else
 						{
 							//ToDo 首个点未匹配上
+							//如果比赛配置为无起点
+							if(isset($RaceInfo['comment']['NoStart']) && ($RaceInfo['comment']['NoStart']==1))
+							{
+								//记录当前经过的点的位置
+								$UserRaceInfo['CurrentPoint'] = $i;
+								//将经过时间统一写成比赛开始时间
+								$ChipTime=$RaceStartTime;
+								//记录经过时间
+								$UserRaceInfo['Point'][$i]['inTime'] = sprintf("%0.3f", $ChipTime);
+								//保存个人当前计时点的信息
+								$filePath = __APP_ROOT_DIR__ . "Timing" . "/" . $RaceInfo['RaceId'] . "/" . "UserList" . "/";
+								$fileName = $UserList[$TimingInfo['Chip']]['UserId'] . ".php";
+								//生成配置文件
+								Base_Common::rebuildConfig($filePath, $fileName, $UserRaceInfo, "Timing");
+
+								//获取所有选手的比赛信息（计时）
+								$UserRaceInfoList = $oRace->getUserRaceInfoList($RaceId);
+								//将当前计时点最小的过线记录保存
+								$UserRaceInfoList['Point'][$i]['inTime'] = $UserRaceInfoList['Point'][$i]['inTime'] == 0 ? sprintf("%0.3f", $ChipTime) : sprintf("%0.3f", min($UserRaceInfoList['Point'][$i]['inTime'], $ChipTime));
+								//新增当前点的过线记录
+								$UserRaceInfoList['Point'][$i]['UserList'][count($UserRaceInfoList['Point'][$i]['UserList'])] = array("TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => sprintf("%0.3f",$ChipTime), 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName']);
+
+								//初始化一个空的数组
+								$t = array();
+								//循环每个人的过线记录
+								foreach ($UserRaceInfoList['Point'][$i]['UserList'] as $k => $v)
+								{
+									//计算每个人的过线记录和当前点最早记录的时间差
+									$UserRaceInfoList['Point'][$i]['UserList'][$k]['TimeLag'] = sprintf("%0.3f",abs(sprintf("%0.3f", $UserRaceInfoList['Point'][$i]['inTime']) - sprintf("%0.3f", $v['inTime'])));
+									//生成排序数组
+									$t[$k] = $UserRaceInfoList['Point'][$i]['UserList'][$k]['TimeLag'];
+								}
+								//根据时间差进行升序排序
+								array_multisort($t, SORT_ASC, $UserRaceInfoList['Point'][$i]['UserList']);
+								//如果现在已有总排名数组
+								if (isset($UserRaceInfoList['Total']) && count($UserRaceInfoList['Total']))
+								{
+									//初始设定为未找到
+									$found = 0;
+									//循环已有的排名数据
+									foreach ($UserRaceInfoList['Total'] as $k => $v)
+									{
+										//依次比对现在的用户ID，如果找到了，则更新
+										if ($v['UserId'] == $UserList[$TimingInfo['Chip']]['UserId'])
+										{
+											$UserRaceInfoList['Total'][$k] = array("CurrentPosition" => 1,"CurrentPositionName" => $UserRaceInfoList['Point'][1]['TName'], "TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => sprintf("%0.3f",$ChipTime), 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName'],'RaceTeamId'=>$UserList[$TimingInfo['Chip']]['RaceTeamId']);
+											$found = 1;
+											break;
+										}
+									}
+									//如果未找到，则新增
+									if ($found == 0)
+									{
+										$UserRaceInfoList['Total'][count($UserRaceInfoList['Total'])] = array("CurrentPosition" => 1,"CurrentPositionName" => $UserRaceInfoList['Point'][1]['TName'],"TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => sprintf("%0.3f",$ChipTime), 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName'],'RaceTeamId'=>$UserList[$TimingInfo['Chip']]['RaceTeamId']);
+									}
+								}
+								//新建排名数据
+								else
+								{
+									$UserRaceInfoList['Total'][0] = array("CurrentPosition" => 1,"CurrentPositionName" => $UserRaceInfoList['Point'][1]['TName'], "TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => sprintf("%0.3f",$ChipTime), 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName'],'RaceTeamId'=>$UserList[$TimingInfo['Chip']]['RaceTeamId']);
+								}
+								$t = array();
+								//再次循环排名数组，依次取出当前位置，总时间，总净时间做排序依据
+								foreach ($UserRaceInfoList['Total'] as $k => $v)
+								{
+									$t1[$k] = $v['CurrentPosition'];
+									$t2[$k] = $v['TotalTime'];
+									$t3[$k] = $v['TotalNetTime'];
+								}
+								//根据不同的计时类型进行排序
+								if($ResultType=="gunshot")
+								{
+									array_multisort($t1, SORT_DESC, $t2, SORT_ASC, $UserRaceInfoList['Total']);
+								}
+								else
+								{
+									array_multisort($t1, SORT_DESC, $t3, SORT_ASC, $UserRaceInfoList['Total']);
+								}
+								//保存数据
+								$filePath = __APP_ROOT_DIR__ . "Timing" . "/" . $RaceInfo['RaceId'] . "/";
+								$fileName = "Total" . ".php";
+								//生成配置文件
+								Base_Common::rebuildConfig($filePath, $fileName, $UserRaceInfoList, "Timing");
+								$num++;
+							}
+							else
+							{
+
+							}
 						}
 					}
 					else
@@ -311,7 +401,7 @@ class Xrace_Mylaps extends Base_Widget
 									//依次比对现在的用户ID，如果找到了，则更新
 									if ($v['UserId'] == $UserList[$TimingInfo['Chip']]['UserId'])
 									{
-										$UserRaceInfoList['Total'][$k] = array("CurrentPosition" => $UserRaceInfo['CurrentPoint'], "CurrentPositionName" => $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['TName'],"TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime" => sprintf("%0.3f",($ChipTime - $StartTime)), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => sprintf("%0.3f",$ChipTime), 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName']);
+										$UserRaceInfoList['Total'][$k] = array("CurrentPosition" => $UserRaceInfo['CurrentPoint'], "CurrentPositionName" => $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['TName'],"TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime" => sprintf("%0.3f",($ChipTime - $StartTime)), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => sprintf("%0.3f",$ChipTime), 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName'],'RaceTeamId'=>$UserList[$TimingInfo['Chip']]['RaceTeamId']);
 										$found = 1;
 										break;
 									}
@@ -319,13 +409,13 @@ class Xrace_Mylaps extends Base_Widget
 								//如果未找到，则新增
 								if ($found == 0)
 								{
-									$UserRaceInfoList['Total'][count($UserRaceInfoList['Total'])] = array("CurrentPosition" => $UserRaceInfo['CurrentPoint'], "CurrentPositionName" => $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['TName'],"TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime" => sprintf("%0.3f",($ChipTime - $StartTime)), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName']);
+									$UserRaceInfoList['Total'][count($UserRaceInfoList['Total'])] = array("CurrentPosition" => $UserRaceInfo['CurrentPoint'], "CurrentPositionName" => $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['TName'],"TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime" => sprintf("%0.3f",($ChipTime - $StartTime)), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName'],'RaceTeamId'=>$UserList[$TimingInfo['Chip']]['RaceTeamId']);
 								}
 							}
 							//新建排名数据
 							else
 							{
-								$UserRaceInfoList['Total'][0] = array("CurrentPosition" => $UserRaceInfo['CurrentPoint'], "CurrentPositionName" => $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['TName'],"TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime" => sprintf("%0.3f",($ChipTime - $StartTime)), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName']);
+								$UserRaceInfoList['Total'][0] = array("CurrentPosition" => $UserRaceInfo['CurrentPoint'], "CurrentPositionName" => $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['TName'],"TotalTime" => sprintf("%0.3f",($ChipTime - $RaceStartTime)),"TotalNetTime" => sprintf("%0.3f",($ChipTime - $StartTime)), "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'UserId' => $UserList[$TimingInfo['Chip']]['UserId'],'RaceTeamName'=>$UserList[$TimingInfo['Chip']]['RaceTeamName'],'RaceTeamId'=>$UserList[$TimingInfo['Chip']]['RaceTeamId']);
 							}
 							$t1 = array();
 							$t2 = array();
@@ -375,6 +465,81 @@ class Xrace_Mylaps extends Base_Widget
 			$TotalCount+=$Count;
 			$i++;
 		}
+		//重新获取比赛详情
+		$TeamRankList = array();
+		$UserRaceTimingInfo = $oRace->GetUserRaceTimingInfo($RaceId);
+		foreach($UserRaceTimingInfo['Total'] as $k => $v)
+		{
+			if(($v['RaceTeamId']>0) && ($v['CurrentPosition'] == count($UserRaceTimingInfo['Point'])))
+			{
+				if(isset($TeamRankList[$v['RaceTeamId']]) && count($TeamRankList[$v['RaceTeamId']]['UserList'])<$RaceInfo['comment']['TeamResultRank'])
+				{
+					$TeamRankList[$v['RaceTeamId']]['UserList'][count($TeamRankList[$v['RaceTeamId']]['UserList'])+1] = $v;
+				}
+				else
+				{
+					$TeamRankList[$v['RaceTeamId']]['RaceTeamName'] = $v['RaceTeamName'];
+					$TeamRankList[$v['RaceTeamId']]['UserList'][1] = $v;
+				}
+			}
+		}
+		$TeamRank = array();$i=1;
+		$t1 = array();$t2=array();
+		foreach($TeamRankList as $k => $v)
+		{
+			if(isset($TeamRankList[$k]['UserList'][$RaceInfo['comment']['TeamResultRank']]))
+			{
+				$TeamRank[$i] = $TeamRankList[$k]['UserList'][$RaceInfo['comment']['TeamResultRank']];
+				$t1[$k] = $v['TotalTime'];
+				$t2[$k] = $v['TotalNetTime'];
+				//根据不同的计时类型进行排序
+				if($ResultType=="gunshot")
+				{
+					array_multisort( $t1, SORT_ASC, $TeamRank);
+				}
+				else
+				{
+					array_multisort( $t2, SORT_ASC, $TeamRank);
+				}
+
+
+				$i++;
+			}
+		}
+		foreach($TeamRank as $k => $v)
+		{
+			if($k>0)
+			{
+				//根据不同的计时类型进行排序
+				if($ResultType=="gunshot")
+				{
+					$TeamRank[$k]['TimeLag'] = sprintf("%0.3f",$TeamRank[$k]['TotalTime']- $TeamRank[0]['TotalTime']);
+				}
+				else
+				{
+					$TeamRank[$k]['NetTimeLag'] = sprintf("%0.3f",$TeamRank[$k]['TotalNetTime']- $TeamRank[0]['TotalNetTime']);
+				}
+			}
+			else
+			{
+				//根据不同的计时类型进行排序
+				if($ResultType=="gunshot")
+				{
+					$TeamRank[0]['TimeLag'] = 0;
+				}
+				else
+				{
+					$TeamRank[0]['NetTimeLag'] = 0;
+				}
+			}
+		}
+		$UserRaceTimingInfo['Team'] = $TeamRank;
+		$filePath = __APP_ROOT_DIR__ . "Timing" . "/" . $RaceInfo['RaceId'] . "/";
+		$fileName = "Total" . ".php";
+		$num++;
+		//生成配置文件
+		Base_Common::rebuildConfig($filePath, $fileName, $UserRaceTimingInfo, "Timing");
+
 		$GenEnd = microtime(true);
 		$Text = "RaceId:".$RaceId."\n";
 		$Text.= "TotalCount:".$TotalCount."\n";

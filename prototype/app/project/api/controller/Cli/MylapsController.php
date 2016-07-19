@@ -20,7 +20,7 @@ class Cli_MylapsController extends Base_Controller_Action{
 		}
 		else
 		{
-			$RaceList = $this->oRace->getRaceList(array("RaceEndTime"=>(time()-1800)),"RaceId");
+			$RaceList = $this->oRace->getRaceList(array("inRun"=>1),"RaceId");
 			foreach($RaceList as $RaceId => $RaceInfo)
 			{
 				echo "RaceId:".$RaceId."\n";

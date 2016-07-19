@@ -17,10 +17,15 @@ class Xrace_Race extends Base_Widget
 	protected $table_combination = 'config_race_combination';
 	protected $maxRaceDetail = 5;
 
+	protected $raceStructure = array('race'=>'比赛-分组','group'=>'分组-比赛');
 	protected $raceTimingType = array('mylaps'=>'myLaps芯片计时');
 	protected $raceTimingResultType = array('gunshot'=>'发枪时间','net'=>'净时间');
 	protected $raceLicenseType = array('manager'=>'管理员审核','birthday'=>'生日','sex'=>'性别');
 
+	public function getRaceStructure()
+	{
+		return $this->raceStructure;
+	}
 	public function getTimingType()
 	{
 		return $this->raceTimingType;
@@ -164,6 +169,10 @@ class Xrace_Race extends Base_Widget
 		{
 			foreach($return as $key => $value)
 			{
+				if(isset($value['comment']))
+				{
+					$value['comment'] = json_decode($value['comment'],true);
+				}
 				$RaceStageList[$value['RaceStageId']] = $value;
 			}
 		}
@@ -254,8 +263,10 @@ class Xrace_Race extends Base_Widget
 		//初始化查询条件
 		$whereGroup = (isset($params['RaceGroupId']) && ($params['RaceGroupId'] >0))?(" RaceGroupId = ".$params['RaceGroupId']):"";
 		$whereStage = (isset($params['RaceStageId']) && ($params['RaceStageId'] >0))?(" RaceStageId = ".$params['RaceStageId']):"";
-		$whereEndTime = (isset($params['RaceEndTime']) && ($params['RaceEndTime'] >0))?(" unix_timestamp(EndTime) <= ".$params['RaceEndTime']):"";
-		$whereCondition = array($whereGroup,$whereStage,$whereEndTime);
+		//$whereStartTime = (isset($params['RaceStartTime']) && ($params['RaceStartTime'] >0))?(" unix_timestamp(StartTime) >= ".$params['RaceStartTime']):"";
+		//$whereEndTime = (isset($params['RaceEndTime']) && ($params['RaceEndTime'] >0))?(" unix_timestamp(EndTime) <= ".$params['RaceEndTime']):"";
+		$whereIn = (isset($params['inRun']) && ($params['inRun']==1))?("((EndTime >= '".date("Y-m-d H:i:s",time()-1800)."') and (StartTime <= '".date("Y-m-d H:i:s",time()+1800). "'))"):"";
+		$whereCondition = array($whereGroup,$whereStage,$whereIn);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceId asc";
@@ -298,12 +309,19 @@ class Xrace_Race extends Base_Widget
 		return $RaceList;
 	}
 	//获取赛事分站和赛事组别获取比赛数量
-	public function getRaceCount($RaceStageId,$RaceGroupId)
+	public function getRaceCount($RaceStageId,$RaceGroupId=0)
 	{
 		$RaceStageId = intval($RaceStageId);
 		$RaceGroupId = intval($RaceGroupId);
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
-		return $this->db->selectOne($table_to_process, "count(RaceId) as RaceCount", '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
+		if($RaceGroupId)
+		{
+			return $this->db->selectOne($table_to_process, "count(RaceId) as RaceCount", '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
+		}
+		else
+		{
+			return $this->db->selectOne($table_to_process, "count(RaceId) as RaceCount", '`RaceStageId` = ?', $RaceStageId);
+		}
 	}
 	//新增单个比赛信息
 	public function insertRace(array $bind)
@@ -339,181 +357,137 @@ class Xrace_Race extends Base_Widget
 		return $this->db->update($table_to_process, $bind,'`TimingId` = ?', $TimingId);
 	}
 	//添加单个计时点信息
-	public function addTimingPoint($RaceStageId,$RaceGroupId,$RaceId,$SportsTypeId,$After,$bind)
+	public function addTimingPoint($RaceId,$SportsTypeId,$After,$bind)
 	{
 		//对计时点等待时间进行处理
 		$bind['TolaranceTime'] = abs(intval($bind['TolaranceTime']));
-		//获取当前分站信息
-		$RaceStageInfo = $this->getRaceStage($RaceStageId,'*');
-		//解包压缩数组
-		$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
-		//如果当前分站未配置了当前分组
-		if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
+		//获取比赛信息
+		$RaceInfo = $this->getRace($RaceId);
+		//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
+		if(isset($RaceInfo['RaceId']))
 		{
-			return false;
+			//数据解包
+			$RaceInfo['comment'] = isset($RaceInfo['comment']) ? json_decode($RaceInfo['comment'], true) : array();
+			//获取运动类型的数据
+			$SportsTypeInfo = $RaceInfo['comment']['DetailList'][$SportsTypeId];
+			//默认不新建数据
+			$NewDetail = 0;
+			//如果有存储对应计时点信息
+			if(isset($SportsTypeInfo['TimingId']) && ($SportsTypeInfo['TimingId']>0))
+			{
+				$SportsTypeInfo['TimingDetailList'] = $this->getTimingDetail($SportsTypeInfo['TimingId']);
+				if(!is_array($SportsTypeInfo['TimingDetailList']))
+				{
+					$NewDetail = 1;
+				}
+			}
+			else
+			{
+				$NewDetail = 1;
+			}
+			//初始化运动类型下的计时点列表
+			$SportsTypeInfo['TimingDetailList']['comment'] = isset($SportsTypeInfo['TimingDetailList']['comment'])?json_decode($SportsTypeInfo['TimingDetailList']['comment'],true):array();
+			$RaceInfo['comment']['DetailList'] = isset($RaceInfo['comment']['DetailList'])?$RaceInfo['comment']['DetailList']:array();
+			ksort($RaceInfo['comment']['DetailList']);
+			//如果添加在某个元素之后 且 元素下标不越界
+			if($After>=0 && $After <= count($SportsTypeInfo['TimingDetailList']['comment']))
+			{
+				//添加元素
+				$SportsTypeInfo['TimingDetailList']['comment'] = Base_Common::array_insert($SportsTypeInfo['TimingDetailList']['comment'],$bind,$After+1);
+			}
+			//如果在头部添加
+			elseif($After == -1)
+			{
+				//添加元素
+				$SportsTypeInfo['TimingDetailList']['comment'] = Base_Common::array_insert($SportsTypeInfo['TimingDetailList']['comment'],$bind,$After+1);
+			}
+			else
+			{
+				//默认为在表尾部添加元素
+				$SportsTypeInfo['TimingDetailList']['comment'][count($SportsTypeInfo['TimingDetailList']['comment'])] = $bind;
+			}
+			$this->db->begin();
+			//如果认为需要新建数据
+			if($NewDetail == 1)
+			{
+				$insertBind['comment'] = json_encode($SportsTypeInfo['TimingDetailList']['comment']);
+				$TimingId = $this->insertTimingDetail($insertBind);
+				if($TimingId)
+				{
+					$RaceInfo['comment']['DetailList'][$SportsTypeId]['TimingId'] = $TimingId;
+					$RaceInfo['comment'] = json_encode($RaceInfo['comment']);
+					$RaceStageGroupModify = $this->updateRace($RaceId,$RaceInfo);
+					if($RaceStageGroupModify)
+					{
+						$this->db->commit();
+						return true;
+					}
+					else
+					{
+						$this->db->rollback();
+						return false;
+					}
+				}
+				else
+				{
+					$this->db->rollback();
+					return false;
+				}
+			}
+			else
+			{
+				$updateBind = array('comment' => json_encode($SportsTypeInfo['TimingDetailList']['comment']));
+				$TimingDetailUpdate = $this->updateTimingDetail($SportsTypeInfo['TimingId'],$updateBind);
+				if($TimingDetailUpdate)
+				{
+					$this->db->commit();
+					return true;
+				}
+				else
+				{
+					$this->db->rollback();
+					return false;
+				}
+			}
 		}
 		else
 		{
+			return false;
+		}
+	}
+	//更新计时点数据
+	public function updateTimingPoint($RaceId,$SportsTypeId,$TimingId,$bind)
+	{
+		//对计时点等待时间进行处理
+		$bind['TolaranceTime'] = abs(intval($bind['TolaranceTime']));
+		//获取比赛信息
+		$RaceInfo = $this->getRace($RaceId);
+		//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
+		if(isset($RaceInfo['RaceId']))
+		{
+			$RaceInfo['comment'] = isset($RaceInfo['comment']) ? json_decode($RaceInfo['comment'], true) : array();
+			//获取运动分段的数据
+			$SportsTypeInfo = $RaceInfo['comment']['DetailList'][$SportsTypeId];
+			//如果有存储对应计时点信息
+			if(isset($SportsTypeInfo['TimingId']) && ($SportsTypeInfo['TimingId']>0))
 			{
-				//获取比赛信息
-				$RaceInfo = $this->getRace($RaceId);
-				//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
-				if(isset($RaceInfo['RaceId']))
+				//获取计时点数据
+				$SportsTypeInfo['TimingDetailList'] = $this->getTimingDetail($SportsTypeInfo['TimingId']);
+				//如果有获取到计时点数据
+				if(is_array($SportsTypeInfo['TimingDetailList']))
 				{
-					//数据解包
-					$RaceInfo['comment'] = isset($RaceInfo['comment']) ? json_decode($RaceInfo['comment'], true) : array();
-					//获取运动类型的数据
-					$SportsTypeInfo = $RaceInfo['comment']['DetailList'][$SportsTypeId];
-					//默认不新建数据
-					$NewDetail = 0;
-					//如果有存储对应计时点信息
-					if(isset($SportsTypeInfo['TimingId']) && ($SportsTypeInfo['TimingId']>0))
+					//解包数据
+					$SportsTypeInfo['TimingDetailList']['comment'] = json_decode($SportsTypeInfo['TimingDetailList']['comment'],true);
+					//如果需要被更新的计时点数据存在
+					if(isset($SportsTypeInfo['TimingDetailList']['comment'][$TimingId]))
 					{
-						$SportsTypeInfo['TimingDetailList'] = $this->getTimingDetail($SportsTypeInfo['TimingId']);
-						if(!is_array($SportsTypeInfo['TimingDetailList']))
-						{
-							$NewDetail = 1;
-						}
-					}
-					else
-					{
-						$NewDetail = 1;
-					}
-					//初始化运动类型下的计时点列表
-					$SportsTypeInfo['TimingDetailList']['comment'] = isset($SportsTypeInfo['TimingDetailList']['comment'])?json_decode($SportsTypeInfo['TimingDetailList']['comment'],true):array();
-					$RaceInfo['comment']['DetailList'] = isset($RaceInfo['comment']['DetailList'])?$RaceInfo['comment']['DetailList']:array();
-					ksort($RaceInfo['comment']['DetailList']);
-					//如果添加在某个元素之后 且 元素下标不越界
-					if($After>=0 && $After <= count($SportsTypeInfo['TimingDetailList']['comment']))
-					{
-						//添加元素
-						$SportsTypeInfo['TimingDetailList']['comment'] = Base_Common::array_insert($SportsTypeInfo['TimingDetailList']['comment'],$bind,$After+1);
-					}
-					//如果在头部添加
-					elseif($After == -1)
-					{
-						//添加元素
-						$SportsTypeInfo['TimingDetailList']['comment'] = Base_Common::array_insert($SportsTypeInfo['TimingDetailList']['comment'],$bind,$After+1);
-					}
-					else
-					{
-						//默认为在表尾部添加元素
-						$SportsTypeInfo['TimingDetailList']['comment'][count($SportsTypeInfo['TimingDetailList']['comment'])] = $bind;
-					}
-					$this->db->begin();
-					//如果认为需要新建数据
-					if($NewDetail == 1)
-					{
-						$insertBind['comment'] = json_encode($SportsTypeInfo['TimingDetailList']['comment']);
-						$TimingId = $this->insertTimingDetail($insertBind);
-						if($TimingId)
-						{
-							$RaceInfo['comment']['DetailList'][$SportsTypeId]['TimingId'] = $TimingId;
-							$RaceInfo['comment'] = json_encode($RaceInfo['comment']);
-							$RaceStageGroupModify = $this->updateRace($RaceId,$RaceInfo);
-							if($RaceStageGroupModify)
-							{
-								$this->db->commit();
-								return true;
-							}
-							else
-							{
-								$this->db->rollback();
-								return false;
-							}
-						}
-						else
-						{
-							$this->db->rollback();
-							return false;
-						}
-					}
-					else
-					{
+						//替换内容
+						$SportsTypeInfo['TimingDetailList']['comment'][$TimingId] = $bind;
+						//重新打包计时点数据
 						$updateBind = array('comment' => json_encode($SportsTypeInfo['TimingDetailList']['comment']));
+						//更新计时点数据
 						$TimingDetailUpdate = $this->updateTimingDetail($SportsTypeInfo['TimingId'],$updateBind);
-						if($TimingDetailUpdate)
-						{
-							$this->db->commit();
-							return true;
-						}
-						else
-						{
-							$this->db->rollback();
-							return false;
-						}
-					}
-				}
-				else
-				{
-					return false;
-				}
-			}
-		}
-	}
-	//更新计时点数据
-	public function updateTimingPoint($RaceStageId,$RaceGroupId,$RaceId,$SportsTypeId,$TimingId,$bind)
-	{
-		//对计时点等待时间进行处理
-		$bind['TolaranceTime'] = abs(intval($bind['TolaranceTime']));
-		//获取当前分站信息
-		$RaceStageInfo = $this->getRaceStage($RaceStageId,'*');
-		//解包压缩数组
-		$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
-		//如果当前分站未配置了当前分组
-		if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
-		{
-			return false;
-		}
-		else
-		{
-			//获取赛事分组信息
-			$RaceGroupInfo = $this->getRaceGroup($RaceGroupId,'*');
-			//如果赛事分组尚未配置
-			if(!$RaceGroupInfo['RaceGroupId'])
-			{
-				return false;
-			}
-			else
-			{
-				//获取比赛信息
-				$RaceInfo = $this->getRace($RaceId);
-				//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
-				if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
-				{
-					$RaceInfo['comment'] = isset($RaceInfo['comment']) ? json_decode($RaceInfo['comment'], true) : array();
-					//获取运动分段的数据
-					$SportsTypeInfo = $RaceInfo['comment']['DetailList'][$SportsTypeId];
-					//如果有存储对应计时点信息
-					if(isset($SportsTypeInfo['TimingId']) && ($SportsTypeInfo['TimingId']>0))
-					{
-						//获取计时点数据
-						$SportsTypeInfo['TimingDetailList'] = $this->getTimingDetail($SportsTypeInfo['TimingId']);
-						//如果有获取到计时点数据
-						if(is_array($SportsTypeInfo['TimingDetailList']))
-						{
-							//解包数据
-							$SportsTypeInfo['TimingDetailList']['comment'] = json_decode($SportsTypeInfo['TimingDetailList']['comment'],true);
-							//如果需要被更新的计时点数据存在
-							if(isset($SportsTypeInfo['TimingDetailList']['comment'][$TimingId]))
-							{
-								//替换内容
-								$SportsTypeInfo['TimingDetailList']['comment'][$TimingId] = $bind;
-								//重新打包计时点数据
-								$updateBind = array('comment' => json_encode($SportsTypeInfo['TimingDetailList']['comment']));
-								//更新计时点数据
-								$TimingDetailUpdate = $this->updateTimingDetail($SportsTypeInfo['TimingId'],$updateBind);
-								return $TimingDetailUpdate;
-							}
-							else
-							{
-								return false;
-							}
-						}
-						else
-						{
-							return false;
-						}
+						return $TimingDetailUpdate;
 					}
 					else
 					{
@@ -525,94 +499,76 @@ class Xrace_Race extends Base_Widget
 					return false;
 				}
 			}
-		}
-	}
-	//更新计时点数据
-	public function deleteTimingPoint($RaceStageId,$RaceGroupId,$RaceId,$SportsTypeId,$TimingId)
-	{
-		//获取当前分站信息
-		$RaceStageInfo = $this->getRaceStage($RaceStageId,'*');
-		//解包压缩数组
-		$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
-		//如果当前分站未配置了当前分组
-		if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
-		{
-			return false;
-		}
-		else
-		{
-			//获取赛事分组信息
-			$RaceGroupInfo = $this->getRaceGroup($RaceGroupId,'*');
-			//如果赛事分组尚未配置
-			if(!$RaceGroupInfo['RaceGroupId'])
+			else
 			{
 				return false;
 			}
-			else
+		}
+	}
+	//更新计时点数据
+	public function deleteTimingPoint($RaceId,$SportsTypeId,$TimingId)
+	{
+		//获取比赛信息
+		$RaceInfo = $this->getRace($RaceId);
+		//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
+		if(isset($RaceInfo['RaceId']))
+		{
+			$RaceInfo['comment'] = isset($RaceInfo['comment']) ? json_decode($RaceInfo['comment'], true) : array();
+			//获取运动分段的数据
+			$SportsTypeInfo = $RaceInfo['comment']['DetailList'][$SportsTypeId];
+			//如果有存储对应计时点信息
+			if(isset($SportsTypeInfo['TimingId']) && ($SportsTypeInfo['TimingId']>0))
 			{
-				//获取比赛信息
-				$RaceInfo = $this->getRace($RaceId);
-				//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
-				if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
+				//获取计时点数据
+				$SportsTypeInfo['TimingDetailList'] = $this->getTimingDetail($SportsTypeInfo['TimingId']);
+				//如果有获取到计时点数据
+				if(is_array($SportsTypeInfo['TimingDetailList']))
 				{
-					$RaceInfo['comment'] = isset($RaceInfo['comment']) ? json_decode($RaceInfo['comment'], true) : array();
-					//获取运动分段的数据
-					$SportsTypeInfo = $RaceInfo['comment']['DetailList'][$SportsTypeId];
-					//如果有存储对应计时点信息
-					if(isset($SportsTypeInfo['TimingId']) && ($SportsTypeInfo['TimingId']>0))
+					//解包数据
+					$SportsTypeInfo['TimingDetailList']['comment'] = json_decode($SportsTypeInfo['TimingDetailList']['comment'],true);
+					//如果需要被更新的计时点数据存在
+					if(isset($SportsTypeInfo['TimingDetailList']['comment'][$TimingId]))
 					{
-						//获取计时点数据
-						$SportsTypeInfo['TimingDetailList'] = $this->getTimingDetail($SportsTypeInfo['TimingId']);
-						//如果有获取到计时点数据
-						if(is_array($SportsTypeInfo['TimingDetailList']))
+						$deleted = 0;
+						//循环检查数据
+						foreach($SportsTypeInfo['TimingDetailList']['comment'] as $Key => $TimingPointInfo)
 						{
-							//解包数据
-							$SportsTypeInfo['TimingDetailList']['comment'] = json_decode($SportsTypeInfo['TimingDetailList']['comment'],true);
-							//如果需要被更新的计时点数据存在
-							if(isset($SportsTypeInfo['TimingDetailList']['comment'][$TimingId]))
+							//如果遇到需要被删除的数据
+							if($Key == $TimingId)
 							{
-								$deleted = 0;
-								//循环检查数据
-								foreach($SportsTypeInfo['TimingDetailList']['comment'] as $Key => $TimingPointInfo)
-								{
-									//如果遇到需要被删除的数据
-									if($Key == $TimingId)
-									{
-										//删除
-										unset($SportsTypeInfo['TimingDetailList']['comment'][$Key]);
-										//标记为已删除
-										$deleted = 1;
-									}
-									//如果已删除 且 后面的数据存在
-									if($deleted == 1 && isset($SportsTypeInfo['TimingDetailList']['comment'][$Key+1]))
-									{
-										//数据向前复制
-										$SportsTypeInfo['TimingDetailList']['comment'][($Key)] = $SportsTypeInfo['TimingDetailList']['comment'][$Key+1];
-										//删除后面的数据
-										unset($SportsTypeInfo['TimingDetailList']['comment'][$Key+1]);
-									}
-								}
-								//重新打包计时点数据
-								$updateBind = array('comment' => json_encode($SportsTypeInfo['TimingDetailList']['comment']));
-								//更新计时点数据
-								$TimingDetailUpdate = $this->updateTimingDetail($SportsTypeInfo['TimingId'],$updateBind);
-								return $TimingDetailUpdate;
+								//删除
+								unset($SportsTypeInfo['TimingDetailList']['comment'][$Key]);
+								//标记为已删除
+								$deleted = 1;
 							}
-							else
+							//如果已删除 且 后面的数据存在
+							if($deleted == 1 && isset($SportsTypeInfo['TimingDetailList']['comment'][$Key+1]))
 							{
-								return false;
+								//数据向前复制
+								$SportsTypeInfo['TimingDetailList']['comment'][($Key)] = $SportsTypeInfo['TimingDetailList']['comment'][$Key+1];
+								//删除后面的数据
+								unset($SportsTypeInfo['TimingDetailList']['comment'][$Key+1]);
 							}
 						}
-						else
-						{
-							return false;
-						}
+						//重新打包计时点数据
+						$updateBind = array('comment' => json_encode($SportsTypeInfo['TimingDetailList']['comment']));
+						//更新计时点数据
+						$TimingDetailUpdate = $this->updateTimingDetail($SportsTypeInfo['TimingId'],$updateBind);
+						return $TimingDetailUpdate;
 					}
 					else
 					{
 						return false;
 					}
 				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return false;
 			}
 		}
 	}
@@ -620,30 +576,28 @@ class Xrace_Race extends Base_Widget
 	public function addRace($RaceInfo)
 	{
 		//获取当前分站信息
-		$RaceStageInfo = $this->getRaceStage($RaceInfo['RaceStageId'],'*');
+		$RaceStageInfo = $this->getRaceStage($RaceInfo['RaceStageId'],'RaceStageId,comment');
 		//解包压缩数组
 		$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
+		//比赛-分组的层级规则
+		$RaceStructureList  = $this->getRaceStructure();
+		//如果没有配置比赛结构 或者 比赛结构配置不在配置列表中
+		if(!isset($RaceStageInfo['comment']['RaceStructure']) || !isset($RaceStructureList[$RaceStageInfo['comment']['RaceStructure']]))
+		{
+			//默认为分组优先
+			$RaceStageInfo['comment']['RaceStructure'] = "group";
+		}
 		//如果当前分站未配置了当前分组
-		if(!in_array($RaceInfo['RaceGroupId'],$RaceStageInfo['comment']['SelectedRaceGroup']))
+		if(!in_array($RaceInfo['RaceGroupId'],$RaceStageInfo['comment']['SelectedRaceGroup']) && ($RaceStageInfo['comment']['RaceStructure'] =="group") )
 		{
 			return false;
 		}
 		else
 		{
-			//获取赛事分组信息
-			$RaceGroupInfo = $this->getRaceGroup($RaceInfo['RaceGroupId'],'*');
-			//如果赛事分组尚未配置
-			if(!$RaceGroupInfo['RaceGroupId'])
-			{
-				return false;
-			}
-			else
-			{
-				$RaceInfo['SingleUser'] = in_array($RaceInfo['SingleUser'],array(0,1))?$RaceInfo['SingleUser']:0;
-				$RaceInfo['TeamUser'] = in_array($RaceInfo['TeamUser'],array(0,1))?$RaceInfo['TeamUser']:0;
-				$RaceInsert = $this->insertRace($RaceInfo);
-				return $RaceInsert;
-			}
+			$RaceInfo['SingleUser'] = in_array($RaceInfo['SingleUser'],array(0,1))?$RaceInfo['SingleUser']:0;
+			$RaceInfo['TeamUser'] = in_array($RaceInfo['TeamUser'],array(0,1))?$RaceInfo['TeamUser']:0;
+			$RaceInsert = $this->insertRace($RaceInfo);
+			return $RaceInsert;
 		}
 	}
 	//根据当前时间获取比赛的状态

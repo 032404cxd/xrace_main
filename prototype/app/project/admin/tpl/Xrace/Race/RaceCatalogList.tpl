@@ -13,6 +13,9 @@ function RaceCatalogDelete(p_id, p_name){
 function RaceCatalogModify(mid){
 	modifyRaceCatalogBox = divBox.showBox('{tpl:$this.sign/}&ac=race.catalog.modify&RaceCatalogId=' + mid, {title:'修改赛事',width:700,height:600});
 }
+function RaceCatalogDisclaimerModify(mid){
+    modifyRaceCatalogDisclaimerBox = divBox.showBox('{tpl:$this.sign/}&ac=race.catalog.disclaimer.modify&RaceCatalogId=' + mid, {title:'免责声明',width:700,height:600});
+}
 
 </script>
 
@@ -34,7 +37,7 @@ function RaceCatalogModify(mid){
     <td align="center">{tpl:$RaceCatalogInfo.RaceCatalogId/}</td>
     <td align="center">{tpl:$RaceCatalogInfo.RaceCatalogName/}</td>
     <td align="center">{tpl:if($RaceCatalogInfo.comment.RaceCatalogIcon_root=="")}未定义{tpl:else}<img src="{tpl:$RootUrl/}{tpl:$RaceCatalogInfo.comment.RaceCatalogIcon_root/}" width='150' height='130'/>{/tpl:if}</td>    </td>
-    <td align="center"><a  href="javascript:;" onclick="RaceCatalogDelete('{tpl:$RaceCatalogInfo.RaceCatalogId/}','{tpl:$RaceCatalogInfo.RaceCatalogName/}')">删除</a> |  <a href="javascript:;" onclick="RaceCatalogModify('{tpl:$RaceCatalogInfo.RaceCatalogId/}');">修改</a></td>
+    <td align="center"><a  href="javascript:;" onclick="RaceCatalogDelete('{tpl:$RaceCatalogInfo.RaceCatalogId/}','{tpl:$RaceCatalogInfo.RaceCatalogName/}')">删除</a> |  <a href="javascript:;" onclick="RaceCatalogModify('{tpl:$RaceCatalogInfo.RaceCatalogId/}');">修改</a> |  <a href="javascript:;" onclick="RaceCatalogDisclaimerModify('{tpl:$RaceCatalogInfo.RaceCatalogId/}');">免责声明</a></td>
   </tr>
 {/tpl:loop}
 </table>

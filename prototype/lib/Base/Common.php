@@ -1065,7 +1065,7 @@ EOF;
 	 */
 	function rebuildConfig($filePath,$fileName,$dataArr,$arrName)
 	{
-		$dataArr['LastUpdateTime'] = microtime(true);
+		$dataArr['LastUpdateTime'] = sprintf("%0.3f",microtime(true));
 		$var = var_export($dataArr,true);
 		$text ='<?php $'.$arrName.'='.$var.'; return $'.$arrName.';?>';
 		if (!is_dir($filePath))

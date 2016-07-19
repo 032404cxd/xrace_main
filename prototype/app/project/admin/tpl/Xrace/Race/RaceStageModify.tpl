@@ -23,6 +23,13 @@ function RaceStageIconDelete(sid,name,logo_id){
 			{/tpl:loop}
 		</select></td>
 </tr>
+<tr class="hover"><td>赛事结构</td>
+	<td align="left">	<select name="RaceStructure"  id="RaceStructure" size="1">
+			{tpl:loop $RaceStructureList $RaceStructure $RaceStructureName}
+			<option value="{tpl:$RaceStructure/}" {tpl:if($RaceStructure==$RaceStageInfo.comment.RaceStructure)}selected="selected"{/tpl:if}>{tpl:$RaceStructureName/}</option>
+			{/tpl:loop}
+		</select></td>
+</tr>
 	<tr>
 		<th><label >开始结止时间</label></th>
 		<td>
@@ -40,10 +47,6 @@ function RaceStageIconDelete(sid,name,logo_id){
 			<input type="checkbox"  name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}]" value="{tpl:$RaceGroupInfo.RaceGroupId/}" {tpl:if($RaceGroupInfo.selected == 1)}checked{/tpl:if} /> {tpl:$RaceGroupInfo.RaceGroupName/}
 			{/tpl:loop}
 		</div></td>
-	</tr>
-	<tr class="hover">
-		<td>人数/价格对应<p>(人数;单价|人数:单价)</td>
-		<td align="left"><input name="PriceList" type="text" class="span4" id="PriceList" value="{tpl:$RaceStageInfo.comment.PriceList/}" size="50" /></td>
 	</tr>
         <tr class="hover"><td>赛事分站图片1</td>
             <td align="left">

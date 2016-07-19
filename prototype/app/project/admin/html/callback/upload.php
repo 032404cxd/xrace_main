@@ -12,7 +12,7 @@ $config['img']=array("jpg","bmp","gif","png");	//img允许后缀
 $config['flash']=array("flv","swf");	//flash允许后缀
 
 $config['flash_size']=200;	//上传flash大小上限 单位：KB
-$config['img_size']=2000;	//上传img大小上限 单位：KB
+$config['img_size']=4000;	//上传img大小上限 单位：KB
 
 $config['message']="上传成功";	//上传成功后显示的消息，若为空则不显示
 

@@ -175,6 +175,38 @@ class Xrace_RaceCatalogController extends AbstractController
 		echo json_encode($response);
 		return true;
 	}
+	//更新赛事信息
+	public function raceCatalogDisclaimerUpdateAction()
+	{
+		//获取页面参数
+		$bind=$this->request->from('RaceCatalogId','Disclaimer');
+		$bind['Disclaimer'] = urlencode($bind['Disclaimer']);
+		//修改赛事记录
+		$res = $this->oRace->updateRaceCatalog($bind['RaceCatalogId'],$bind);
+		$response = $res ? array('errno' => 0) : array('errno' => 9);
+		echo json_encode($response);
+		return true;
+	}
+	//修改赛事免责声明页面
+	public function raceCatalogDisclaimerModifyAction()
+	{
+		//检查权限
+		$PermissionCheck = $this->manager->checkMenuPermission("RaceCatalogModify");
+		if($PermissionCheck['return'])
+		{
+			//赛事ID
+			$RaceCatalogId = trim($this->request->RaceCatalogId);
+			//获取赛事信息
+			$RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId,'RaceCatalogId,RaceCatalogName,Disclaimer');
+			//渲染模板
+			include $this->tpl('Xrace_Race_RaceCatalogDisclaimerModify');
+		}
+		else
+		{
+			$home = $this->sign;
+			include $this->tpl('403');
+		}
+	}
 
 	//删除赛事
 	public function raceCatalogDeleteAction()
