@@ -34,6 +34,16 @@
 				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd'})" >
 		</td>
 	</tr>
+	<tr>
+		<th><label >报名时间</label></th>
+		<td>
+			<input type="text" name="ApplyStartTime"  class="input-medium"
+				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >
+			---
+			<input type="text" name="ApplyEndTime"  class="input-medium"
+				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >
+		</td>
+	</tr>
 	<tr class="hover"><td>赛事分站图片1</td>
 			<td align="left"><input name="RaceStageIcon[1]" type="file" class="span4" id="RaceStageIcon[1]" /></td>
 	</tr>

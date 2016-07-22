@@ -39,6 +39,16 @@ function RaceStageIconDelete(sid,name,logo_id){
 			<input type="text" name="StageEndDate" value="{tpl:$RaceStageInfo.StageEndDate/}" value="" class="input-medium"
 				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd'})" >
 		</td>
+</tr>
+	<tr>
+	<th><label >报名时间</label></th>
+		<td>
+			<input type="text" name="ApplyStartTime" value="{tpl:$RaceStageInfo.ApplyStartTime/}" class="input-medium"
+				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >
+		---
+			<input type="text" name="ApplyEndTime" value="{tpl:$RaceStageInfo.ApplyEndTime/}" class="input-medium"
+				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >
+		</td>
 	</tr>
 	<tr>
 	<td>赛事分组列表</td>

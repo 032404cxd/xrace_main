@@ -253,7 +253,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure');
+		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -371,7 +371,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageUpdateAction()
 	{
 		//获取 页面参数
-		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure');
+		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -426,7 +426,6 @@ class Xrace_RaceStageController extends AbstractController
 			$bind['comment'] = json_encode($bind['comment']);
 			//图片数据压缩
 			$bind['RaceStageIcon'] = json_encode($bind['RaceStageIcon']);
-			//更新数据
 			$res = $this->oRace->updateRaceStage($bind['RaceStageId'],$bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
 		}
@@ -569,7 +568,6 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
 			//赛事分组列表
 			$RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
-			//print_R($RaceGroupList);
 			foreach($RaceList as $RaceId => $RaceInfo)
 			{
 				//获取比赛当前状态
@@ -618,7 +616,7 @@ class Xrace_RaceStageController extends AbstractController
 			//赛事分组ID
 			$RaceGroupId = intval($this->request->RaceGroupId);
 			//获取赛事分站信息
-			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,"RaceStageId,RaceStageName,RaceCatalogId,comment");
+			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,"RaceStageId,RaceStageName,RaceCatalogId,comment,ApplyStartTime,ApplyEndTime");
 			//数据解包
 			$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
 			//如果没有配置比赛结构 或者 比赛结构配置不在配置列表中
@@ -655,9 +653,10 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceTimingTypeList = $this->oRace->getTimingType();
 			//获取计时成绩计算方式
 			$RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType();
-			//初始化开始和结束时间 报名开始与结束时间
-			$ApplyStartTime = date("Y-m-d H:i:s",time()+86400);
-			$ApplyEndTime = date("Y-m-d H:i:s",time()+86400*8);
+			//报名时间调用分站的报名时间
+			$ApplyStartTime = $RaceStageInfo['ApplyStartTime'];
+			$ApplyEndTime = $RaceStageInfo['ApplyEndTime'];
+			//初始化开始和结束时间
 			$StartTime = date("Y-m-d H:i:s",time()+86400*15);
 			$EndTime = date("Y-m-d H:i:s",time()+86400*16);
 			//加载富文本编辑器
@@ -1696,13 +1695,14 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceGroupId = intval($this->request->RaceGroupId);
 			//获取比赛信息
 			$RaceInfo = $this->oRace->getRace($RaceId);
+			$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
 			//格式化分组ID
-			$RaceGroupId = in_array($RaceGroupId,array(0,$RaceInfo['RaceGroupId']))?$RaceGroupId:0;
+			$RaceGroupId = (in_array($RaceGroupId,array(0,$RaceInfo['RaceGroupId'])) || in_array($RaceGroupId,$RaceInfo['comment']['SelectedRaceGroup']))?$RaceGroupId:0;
 			//生成查询条件
 			$params = array('RaceId'=>$RaceInfo['RaceId']);
 			$oUser = new Xrace_User();
 			//获取选手名单
-			$RaceUserList = $oUser->getRaceUserListByRace($RaceInfo['RaceId'],0,0);
+			$RaceUserList = $oUser->getRaceUserListByRace($RaceInfo['RaceId'],$RaceGroupId,0,0);
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceUserList');
 		}
@@ -1829,7 +1829,6 @@ class Xrace_RaceStageController extends AbstractController
 					{
 						//根据手机号码获取用户信息
 						$UserInfo = $oUser->getUserInfoByMobile($mobile,"user_id,name");
-						//print_R($UserInfo);
 					}
 					//如果用户没有获取到 并且手机号码不为空
 					if($new == 1 || (!isset($UserInfo['user_id']) && $mobile!=""))

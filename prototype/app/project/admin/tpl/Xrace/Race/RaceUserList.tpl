@@ -19,6 +19,7 @@
     {tpl:if(count($RaceUserList))}
   <tr>
     <th align="center" class="rowtip">姓名</th>
+    <th align="center" class="rowtip">分组</th>
     <th align="center" class="rowtip">所属队伍</th>
     <th align="center" class="rowtip">报名时间</th>
     <th align="center" class="rowtip">选手号码</th>
@@ -30,6 +31,7 @@
   <tr>
     <input type="hidden" name="UserList[{tpl:$Aid/}][ApplyId]" id="UserList[{tpl:$UserInfo.UserId/}][ApplyId]" value="{tpl:$UserInfo.ApplyId/}" />
     <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$UserInfo.UserId/}','{tpl:$RaceInfo.RaceName/}')">{tpl:$UserInfo.Name/}</a>  <a href="javascript:void(0);" onclick="UserRaceDelete('{tpl:$UserInfo.Name/}','{tpl:$UserInfo.ApplyId/}')">退赛</a></th>
+    <th align="center" class="rowtip">{tpl:$UserInfo.RaceGroupName/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.RaceTeamName/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.ApplyTime/}</th>
     <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$Aid/}][BIB]" id="UserList[{tpl:$UserInfo.UserId/}][BIB]" value="{tpl:$UserInfo.BIB/}" /></th>
