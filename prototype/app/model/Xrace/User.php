@@ -612,7 +612,7 @@ class Xrace_User extends Base_Widget
 		//获得用户ID
 		$whereUser = (isset($params['UserId']) && $params['UserId']!="0")?" UserId = '".$params['UserId']."' ":"";
 		//获得组别ID
-		$whereGroup = isset($params['RaceGroupId'])?" RaceGroupId = '".$params['RaceGroupId']."' ":"";
+		$whereGroup = (isset($params['RaceGroupId'])  && $params['RaceGroupId']!=0)?" RaceGroupId = '".$params['RaceGroupId']."' ":"";
 		//获得赛事ID
 		$whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
 		//所有查询条件置入数组
@@ -624,7 +624,7 @@ class Xrace_User extends Base_Widget
 		return $return;
 	}
 	//获取某场比赛的报名名单
-	public function getRaceUserListByRace($RaceId,$TeamId=0,$Cache = 1)
+	public function getRaceUserListByRace($RaceId,$RaceGroupId,$TeamId=0,$Cache = 1)
 	{
 		$oMemCache = new Base_Cache_Memcache("B5M");
 		//如果需要获取缓存
@@ -653,7 +653,7 @@ class Xrace_User extends Base_Widget
 		if(isset($NeedDB))
 		{
 			//生成查询条件
-			$params = array('RaceId'=>$RaceId);
+			$params = array('RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId);
 			//获取选手名单
 			$UserList = $this->getRaceUserList($params);
 			//初始化空的返回值列表
@@ -662,6 +662,9 @@ class Xrace_User extends Base_Widget
 			if(count($UserList))
 			{
 				$oTeam = new Xrace_Team();
+				$oRace = new Xrace_Race();
+				//初始化空的分组列表
+				$RaceGroupList = array();
 				foreach($UserList as $ApplyId => $ApplyInfo)
 				{
 					//获取用户信息
@@ -671,6 +674,19 @@ class Xrace_User extends Base_Widget
 					{
 						//存储报名数据
 						$RaceUserList['RaceUserList'][$ApplyId] = $ApplyInfo;
+						//如果列表中没有分组信息
+						if(!isset($RaceGroupList[$ApplyInfo['RaceGroupId']]))
+						{
+							//获取分组信息
+							$RaceGroupInfo = $oRace->getRaceGroup($ApplyInfo['RaceGroupId'],"RaceGroupId,RaceGroupName");
+							//如果合法则保存
+							if(isset($RaceGroupInfo['RaceGroupId']))
+							{
+								$RaceGroupList[$ApplyInfo['RaceGroupId']] = $RaceGroupInfo;
+							}
+						}
+						//保存分组信息
+						$RaceUserList['RaceUserList'][$ApplyId]['RaceGroupName'] = $RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupName'];
 						//获取用户名
 						$RaceUserList['RaceUserList'][$ApplyId]['Name'] = $UserInfo['name'];
 						if(!isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']]))

@@ -862,7 +862,7 @@ class Xrace_Race extends Base_Widget
 	{
 		$RaceId = intval($RaceId);
 		//获取比赛信息
-		$RaceInfo = $this->getRace($RaceId,"RaceId,RaceTypeId,RaceStageId,RaceGroupId,RaceName,comment,RouteInfo");
+		$RaceInfo = $this->getRace($RaceId,"RaceId,RaceTypeId,StartTime,EndTime,RaceStageId,RaceGroupId,RaceName,comment,RouteInfo");
 		//如果获取到比赛信息
 		if(isset($RaceInfo['RaceId']))
 		{
