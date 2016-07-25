@@ -232,7 +232,10 @@ class XraceConfigController extends AbstractController
         $RaceStageId = isset($this->request->RaceStageId) ? abs(intval($this->request->RaceStageId)) : 0;
         //格式化用户ID,默认为空
         $UserId = isset($this->request->UserId) ? trim($this->request->UserId) : "";
-        //赛事分站D必须大于0
+        //筛选单人比赛
+        $SingleUser = isset($this->request->SingleUser) ? abs(intval($this->request->SingleUser)) : 1;
+        //筛选团队比赛
+        $TeamUser = isset($this->request->TeamUser) ? abs(intval($this->request->TeamUser)) : 1;
         if($RaceStageId)
         {
             //获得分站信息
@@ -304,6 +307,29 @@ class XraceConfigController extends AbstractController
                             //提取分组名称
                             unset($RaceGroupInfo['comment']);
                             $RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId] = $RaceGroupInfo;
+                            $RaceList  = $this->oRace->getRaceList(array("RaceStageId"=>$RaceStageId,"RaceGroupId"=>$RaceGroupId),$fields = 'RaceId,TeamUser,SingleUser');
+                            if(count($RaceList))
+                            {
+                                foreach($RaceList as $RaceId => $RaceInfo)
+                                {
+                                    if($SingleUser == 1 && $RaceInfo['SingleUser'] == 1)
+                                    {
+                                        break;
+                                    }
+                                    elseif($TeamUser == 1 && $RaceInfo['TeamUser'] == 1)
+                                    {
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        unset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                unset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]);
+                            }
                         }
                         else
                         {
@@ -865,7 +891,7 @@ class XraceConfigController extends AbstractController
             //检测主键存在,否则值为空
             if (isset($RaceInfo['RaceId'])) {
                 //获取选手和车队名单
-                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, $TeamId, 1);
+                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,$TeamId, 1);
                 if (count($RaceUserList['RaceUserList'])) {
                     //返回车手名单和车队列表
                     $result = array("return" => 1, "RaceUserList" => $RaceUserList['RaceUserList'], "RaceTeamList" => $RaceUserList['RaceTeamList']);
@@ -1019,7 +1045,7 @@ class XraceConfigController extends AbstractController
             //检测主键存在,否则值为空
             if (isset($RaceInfo['RaceId'])) {
                 //获取选手和车队名单
-                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0, 1);
+                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,0, 1);
                 if (count($RaceUserList['RaceUserList']))
                 {
                     $t = array();
@@ -1097,7 +1123,7 @@ class XraceConfigController extends AbstractController
         echo "result:".$ResultType;
         $this->oRace->genRaceLogToText($RaceId);
         //获取选手和车队名单
-        $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0, 0);
+        $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,0, 0);
         $ChipList = array();
         $UserList = array();
         foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)

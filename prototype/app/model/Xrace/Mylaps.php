@@ -39,15 +39,19 @@ class Xrace_Mylaps extends Base_Widget
 	//根据比赛ID生成该场比赛的MYLAPS计时数据
 	public function genMylapsTimingInfo($RaceId)
 	{
-		$TotalCount = 0;
-		$GenStart = microtime(true);
-		$oUser = new Xrace_User();
-		$oRace = new Xrace_Race();
+        $oUser = new Xrace_User();
+        $oRace = new Xrace_Race();
+        //array_merge_recursive
+	    //总记录数量
+        $TotalCount = 0;
+		//程序执行开始时间
+        $GenStart = microtime(true);
 		//获取比赛信息
 		$RaceInfo = $oRace->getRace($RaceId);
 		//解包压缩的数据
 		$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
-		$RaceInfo['comment']['TeamResultRank'] = isset($RaceInfo['comment']['TeamResultRank'])?$RaceInfo['comment']['TeamResultRank']:3;
+        //车队排名的名次数据
+        $RaceInfo['comment']['TeamResultRank'] = isset($RaceInfo['comment']['TeamResultRank'])?$RaceInfo['comment']['TeamResultRank']:3;
 		//预存比赛的开始和结束时间
 		$RaceStartTime = strtotime($RaceInfo['StartTime']) + $RaceInfo['comment']['RaceStartMicro']/1000;
 		$RaceEndTime = strtotime($RaceInfo['EndTime']);
@@ -144,8 +148,8 @@ class Xrace_Mylaps extends Base_Widget
 							$UserRaceInfo['CurrentPoint'] = $i;
 							//记录经过时间
 							$UserRaceInfo['Point'][$i]['inTime'] = sprintf("%0.3f", $ChipTime);
-							$UserRaceInfo['Point'][$i]['PointTime'] = sprintf("%0.3f",($UserRaceInfo['Point'][$i-1]['inTime'])?$UserRaceInfo['Point'][$i]['inTime']-$UserRaceInfo['Point'][$i-1]['inTime']:0);
-							$UserRaceInfo['Point'][$i]['TotalNetTime'] = sprintf("%0.3f",($UserRaceInfo['Point'][$i-1]['TotalNetTime'])?$UserRaceInfo['Point'][$i-1]['TotalNetTime']+$UserRaceInfo['Point'][$i]['PointTime']:$UserRaceInfo['Point'][$i]['PointTime']);
+							$UserRaceInfo['Point'][$i]['PointTime'] = isset($UserRaceInfo['Point'][$i-1]['inTime'])?sprintf("%0.3f",($UserRaceInfo['Point'][$i]['inTime']-$UserRaceInfo['Point'][$i-1]['inTime'])):0;
+							$UserRaceInfo['Point'][$i]['TotalNetTime'] = isset($UserRaceInfo['Point'][$i-1]['TotalNetTime'])?sprintf("%0.3f",($UserRaceInfo['Point'][$i-1]['TotalNetTime']+$UserRaceInfo['Point'][$i]['PointTime'])):sprintf("%0.3f",$UserRaceInfo['Point'][$i]['PointTime']);
 							if($i==1)
 							{
 								$UserRaceInfo['Point'][$i]['TotalTime'] = sprintf("%0.3f",$UserRaceInfo['Point'][$i]['inTime']-$RaceStartTime);
@@ -181,6 +185,16 @@ class Xrace_Mylaps extends Base_Widget
 							}
 							//根据时间差进行升序排序
 							array_multisort($t, SORT_ASC, $UserRaceInfoList['Point'][$i]['UserList']);
+                            //初始化一个空的分组排名数组
+                            $DivisionList = array();
+                            //循环当前计时点排名
+                            foreach($UserRaceInfoList['Point'][$i]['UserList'] as $key => $UserInfo)
+                            {
+                                //依次填入分组数据
+                                $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
+                                //排名保存
+                                $UserRaceInfoList['Point'][$i]['UserList'][$key]['GroupRank'] = count($DivisionList[$UserInfo['RaceGroupId']]);
+                            }
 							//如果现在已有总排名数组
 							if (isset($UserRaceInfoList['Total']) && count($UserRaceInfoList['Total']))
 							{
@@ -228,7 +242,13 @@ class Xrace_Mylaps extends Base_Widget
 							//保存数据
 							$filePath = __APP_ROOT_DIR__ . "Timing" . "/" . $RaceInfo['RaceId'] . "/";
 							$fileName = "Total" . ".php";
-							//生成配置文件
+							$DivisionList = array();
+                            foreach($UserRaceInfoList['Total'] as $key => $UserInfo)
+                            {
+                                $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
+                                $UserRaceInfoList['Total'][$key]['GroupRank'] = count($DivisionList[$UserInfo['RaceGroupId']]);
+                            }
+                            //生成配置文件
 							Base_Common::rebuildConfig($filePath, $fileName, $UserRaceInfoList, "Timing");
 							$num++;
 						}
@@ -280,6 +300,16 @@ class Xrace_Mylaps extends Base_Widget
 								}
 								//根据时间差进行升序排序
 								array_multisort($t, SORT_ASC, $UserRaceInfoList['Point'][$i]['UserList']);
+                                //初始化一个空的分组排名数组
+                                $DivisionList = array();
+                                //循环当前计时点排名
+                                foreach($UserRaceInfoList['Point'][$i]['UserList'] as $key => $UserInfo)
+                                {
+                                    //依次填入分组数据
+                                    $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
+                                    //排名保存
+                                    $UserRaceInfoList['Point'][$i]['UserList'][$key]['GroupRank'] = count($DivisionList[$UserInfo['RaceGroupId']]);
+                                }
 								//如果现在已有总排名数组
 								if (isset($UserRaceInfoList['Total']) && count($UserRaceInfoList['Total']))
 								{
@@ -324,6 +354,12 @@ class Xrace_Mylaps extends Base_Widget
 								{
 									array_multisort($t1, SORT_DESC, $t3, SORT_ASC, $UserRaceInfoList['Total']);
 								}
+                                $DivisionList = array();
+                                foreach($UserRaceInfoList['Total'] as $key => $UserInfo)
+                                {
+                                    $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
+                                    $UserRaceInfoList['Total'][$key]['GroupRank'] = count($DivisionList[$UserInfo['RaceGroupId']]);
+                                }
 								//保存数据
 								$filePath = __APP_ROOT_DIR__ . "Timing" . "/" . $RaceInfo['RaceId'] . "/";
 								$fileName = "Total" . ".php";
@@ -419,6 +455,16 @@ class Xrace_Mylaps extends Base_Widget
 							{
 								array_multisort($t2, SORT_ASC, $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList']);
 							}
+                            //初始化一个空的分组排名数组
+                            $DivisionList = array();
+                            //循环当前计时点排名
+                            foreach($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'] as $key => $UserInfo)
+                            {
+                                //依次填入分组数据
+                                $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
+                                //排名保存
+                                $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][$key]['GroupRank'] = count($DivisionList[$UserInfo['RaceGroupId']]);
+                            }
 							//循环总成绩数组
 							if (isset($UserRaceInfoList['Total']) && count($UserRaceInfoList['Total']))
 							{
@@ -478,7 +524,13 @@ class Xrace_Mylaps extends Base_Widget
 							$filePath = __APP_ROOT_DIR__ . "Timing" . "/" . $RaceInfo['RaceId'] . "/";
 							$fileName = "Total" . ".php";
 							$num++;
-							//生成配置文件
+                            $DivisionList = array();
+                            foreach($UserRaceInfoList['Total'] as $key => $UserInfo)
+                            {
+                                $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
+                                $UserRaceInfoList['Total'][$key]['GroupRank'] = count($DivisionList[$UserInfo['RaceGroupId']]);
+                            }
+                            //生成配置文件
 							Base_Common::rebuildConfig($filePath, $fileName, $UserRaceInfoList, "Timing");
 							$UserRaceInfo['NextPoint'] = $UserRaceInfo['CurrentPoint'];
 						}
