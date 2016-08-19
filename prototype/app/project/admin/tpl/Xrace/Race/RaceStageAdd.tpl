@@ -4,7 +4,10 @@
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover">
 <td>赛事分站名称</td>
-	<td align="left"><input type="text" class="span4" name="RaceStageName"  id="RaceStageName" value="" size="50" /></td>
+	<td align="left"><input type="text" class="span3" name="RaceStageName"  id="RaceStageName" value=""  /></td>
+</tr>
+<td>分站通票价格</td>
+<td align="left"><input name="PriceList" type="text" class="span3" id="PriceList" value="0" /></td>
 </tr>
 <tr class="hover"><td>所属赛事</td>
 	<td align="left">	<select name="RaceCatalogId" id="RaceCatalogId" size="1" onchange="getGroupList()">

@@ -11,7 +11,10 @@ function RaceStageIconDelete(sid,name,logo_id){
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">
 <td>赛事分站名称</td>
-<td align="left"><input name="RaceStageName" type="text" class="span4" id="RaceStageName" value="{tpl:$RaceStageInfo.RaceStageName/}" size="50" /></td>
+<td align="left"><input name="RaceStageName" type="text" class="span3" id="RaceStageName" value="{tpl:$RaceStageInfo.RaceStageName/}"/></td>
+</tr>
+<td>分站通票价格</td>
+<td align="left"><input name="PriceList" type="text" class="span3" id="PriceList" value="{tpl:$RaceStageInfo.comment.PriceList/}"/></td>
 </tr>
 <tr class="hover"><td>赛事分站Id</td>
 <td align="left">{tpl:$RaceStageInfo.RaceStageId/}</td>

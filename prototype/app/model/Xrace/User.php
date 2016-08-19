@@ -692,7 +692,7 @@ class Xrace_User extends Base_Widget
 						if(!isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']]))
 						{
 							//队伍信息
-							$RaceTeamInfo = $oTeam->getRaceTeamInfo($ApplyInfo['RaceTeamId'],'RaceTeamId,RaceTeamName');
+							$RaceTeamInfo = $oTeam->getRaceTeamInfo($ApplyInfo['RaceTeamId'],'team_id as RaceTeamId,name as RaceTeamName');
 							//如果在队伍列表中有获取到队伍信息
 							if(isset($RaceTeamInfo['RaceTeamId']))
 							{

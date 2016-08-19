@@ -922,8 +922,9 @@ class Xrace_Race extends Base_Widget
 												//第一次通过不需要下标
 												$t['TName'].= ($j==0)?"":"*".($j+1);
 												$t['inTime'] = 0;
-												//每个分段内距离相互累加
-												$SectionDistence += $TimingPointList['Point'][$i]['ToNext'];
+												//每个分段内距离相互累加 如果距离为正数
+                                                $t['ToNext'] = intval($t['ToNext']);
+                                                $SectionDistence += ($TimingPointList['Point'][$i]['ToNext']>0)?$TimingPointList['Point'][$i]['ToNext']:0;
 												$t['CurrentDistense'] = $SectionDistence;
 												$t['SportsTypeName'] = $SportsTypeInfo['SportsTypeName'];
 												//初始化通过的用户列表
@@ -1206,7 +1207,7 @@ class Xrace_Race extends Base_Widget
 	{
 		//拼接URL
 		$url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.race.user.list.by.bib',array('RaceId'=>$RaceId));
-		$return = Base_Common::do_post($url);
+        $return = Base_Common::do_post($url);
 		return json_decode($return,true);
 	}
 	//添加单个套餐

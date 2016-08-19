@@ -253,7 +253,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime');
+		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -275,6 +275,7 @@ class Xrace_RaceStageController extends AbstractController
 		}
 		else
 		{
+
 			//记录分组信息
 			$bind['comment']['SelectedRaceGroup'] = $SelectedRaceGroup['SelectedRaceGroup'];
 			//文件上传
@@ -295,6 +296,10 @@ class Xrace_RaceStageController extends AbstractController
 			$bind['comment']['RaceStructure'] = $bind['RaceStructure'];
 			//删除原有数据
 			unset($bind['RaceStructure']);
+            //价格对应列表
+            $bind['comment']['PriceList'] = $this->oRace->getPriceList(trim($bind['PriceList']),1);
+            //删除原有数据
+            unset($bind['PriceList']);
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//图片数据压缩
@@ -371,7 +376,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageUpdateAction()
 	{
 		//获取 页面参数
-		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime');
+		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -422,6 +427,10 @@ class Xrace_RaceStageController extends AbstractController
 			$bind['comment']['RaceStructure'] = $bind['RaceStructure'];
 			//删除原有数据
 			unset($bind['RaceStructure']);
+            //价格对应列表
+            $bind['comment']['PriceList'] = $this->oRace->getPriceList(trim($bind['PriceList']),1);
+            //删除原有数据
+            unset($bind['PriceList']);
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//图片数据压缩
@@ -1163,8 +1172,8 @@ class Xrace_RaceStageController extends AbstractController
 						//循环计时点列表
 						foreach($RaceInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'] as $tid => $tinfo)
 						{
-							//累加里程
-							$RaceInfo['comment']['DetailList'][$Key]['Total']['Distence'] += $tinfo['ToNext']*	$tinfo['Round'];
+							//累加里程,如果距离为正数
+							$RaceInfo['comment']['DetailList'][$Key]['Total']['Distence'] += (($tinfo['ToNext']>0)?($tinfo['ToNext']):0)*	$tinfo['Round'];
 							//累加计时点数量
 							$RaceInfo['comment']['DetailList'][$Key]['Total']['ChipCount'] += $tinfo['Round'];
 							//累加海拔上升
@@ -1869,7 +1878,7 @@ class Xrace_RaceStageController extends AbstractController
 						//$RaceTeamName = trim($t[6]);
 						$RaceTeamName = trim(iconv('GB2312', 'UTF-8//IGNORE', $t[6]));
 						//获取车队信息
-						$RaceTeamInfo = $oTeam->getRaceTeamInfoByName($RaceTeamName,$RaceStageInfo['RaceCatalogId'],'RaceTeamId,RaceTeamName');
+						$RaceTeamInfo = $oTeam->getRaceTeamInfoByName($RaceTeamName,'team_id as RaceTeamId,name as RaceTeamName');
 						//判断车队是否获取到
 						$RaceTeamId = isset($RaceTeamInfo['RaceTeamId'])?$RaceTeamInfo['RaceTeamId']:0;
 						//初始化新报名记录的信息
@@ -1877,7 +1886,7 @@ class Xrace_RaceStageController extends AbstractController
 						//如果存在，则更新部分信息
 						$ApplyUpdateInfo = array("ApplyTime"=>$CurrentTime,"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"RaceTeamId"=>$RaceTeamId);
 						//创建/更新报名记录
-						$Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
+                        $Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
 						if($Apply)
 						{
 							$ApplyCount ++;
@@ -1934,7 +1943,7 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
 			//获取成绩列表
 			$RaceResultList = $this->oRace->getRaceResult($RaceId);
-			//渲染模板
+            //渲染模板
 			include $this->tpl('Xrace_Race_RaceResultList');
 		}
 		else

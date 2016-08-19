@@ -34,7 +34,7 @@
   </tr>
   <tr>
     <th align="center" class="rowtip">
-      距下一点：<input type="text" name="ToNext" id="ToNext" value="" />米
+      距下一点：<input type="text" name="ToNext" id="ToNext" value="" />米（负数为不计时）
     </th>
   </tr>
   <tr>

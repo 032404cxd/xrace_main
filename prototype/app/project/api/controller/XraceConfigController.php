@@ -236,6 +236,8 @@ class XraceConfigController extends AbstractController
         $SingleUser = isset($this->request->SingleUser) ? abs(intval($this->request->SingleUser)) : 1;
         //筛选团队比赛
         $TeamUser = isset($this->request->TeamUser) ? abs(intval($this->request->TeamUser)) : 1;
+        //筛选通票/单场
+        $RacePriceMode = isset($this->request->RacePriceMode) ? trim($this->request->RacePriceMode) : "";
         if($RaceStageId)
         {
             //获得分站信息
@@ -248,6 +250,8 @@ class XraceConfigController extends AbstractController
                 $RaceStageInfo['RaceStageComment'] = urldecode($RaceStageInfo['RaceStageComment']);
                 //解包数组
                 $RaceStageInfo['comment'] = isset($RaceStageInfo['comment']) ? json_decode($RaceStageInfo['comment'], true) : array();
+                //处理价格列表
+                $RaceStageInfo["comment"]['PriceList'] = $this->oRace->getPriceList($RaceStageInfo["comment"]['PriceList']);
                 //如果没有配置比赛结构 或者 比赛结构配置不在配置列表中
                 if(!isset($RaceStageInfo['comment']['RaceStructure']) || !isset($RaceStructureList[$RaceStageInfo['comment']['RaceStructure']]))
                 {
@@ -274,7 +278,6 @@ class XraceConfigController extends AbstractController
                     //循环图片列表
                     foreach ($RaceStageInfo['comment']['SelectedRaceGroup'] as $RaceGroupId)
                     {
-
                         //获取赛事分组基本信息
                         $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId, "RaceGroupId,RaceGroupName,comment");
                         //如果有获取到分组信息
@@ -307,22 +310,49 @@ class XraceConfigController extends AbstractController
                             //提取分组名称
                             unset($RaceGroupInfo['comment']);
                             $RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId] = $RaceGroupInfo;
-                            $RaceList  = $this->oRace->getRaceList(array("RaceStageId"=>$RaceStageId,"RaceGroupId"=>$RaceGroupId),$fields = 'RaceId,TeamUser,SingleUser');
+                            //获取比赛列表
+                            $RaceList  = $this->oRace->getRaceList(array("RaceStageId"=>$RaceStageId,"RaceGroupId"=>$RaceGroupId),$fields = 'RaceId,TeamUser,SingleUser,PriceList');
+                            //如果有比赛
                             if(count($RaceList))
                             {
+                                //循环比赛列表
                                 foreach($RaceList as $RaceId => $RaceInfo)
                                 {
+                                    //如果选定了担任比赛
                                     if($SingleUser == 1 && $RaceInfo['SingleUser'] == 1)
                                     {
                                         break;
                                     }
+                                    //如果选定了团队比赛
                                     elseif($TeamUser == 1 && $RaceInfo['TeamUser'] == 1)
+                                    {
+                                        break;
+                                    }
+                                    //如果不限定价
+                                    elseif($RacePriceMode == "")
+                                    {
+                                        break;
+                                    }
+                                    //如果选定了只要比赛独立定价 且 比赛独立定价
+                                    elseif($RacePriceMode == "race" && $RaceInfo['PriceList'] != "")
+                                    {
+                                        break;
+                                    }
+                                    //如果选定了只要分站通票定价 且 比赛未独立定价
+                                    elseif($RacePriceMode == "stage" && $RaceInfo['PriceList'] == "")
                                     {
                                         break;
                                     }
                                     else
                                     {
-                                        unset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]);
+                                        //删除当前比赛
+                                        unset($RaceList[$RaceId]);
+                                        //如果比赛列表为空
+                                        if(!count($RaceList))
+                                        {
+                                            //删除当前分组
+                                            unset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]);
+                                        }
                                     }
                                 }
                             }
@@ -433,6 +463,8 @@ class XraceConfigController extends AbstractController
         //格式化赛事分站和赛事组别ID,默认为0
         $RaceStageId = isset($this->request->RaceStageId) ? abs(intval($this->request->RaceStageId)) : 0;
         $RaceGroupId = isset($this->request->RaceGroupId) ? abs(intval($this->request->RaceGroupId)) : 0;
+        //筛选通票/单场
+        $RacePriceMode = isset($this->request->RacePriceMode) ? trim($this->request->RacePriceMode) : "";
         //获得分站信息
         $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId);
         //数据解包
@@ -462,6 +494,23 @@ class XraceConfigController extends AbstractController
                 //解包数组
                 foreach ($RaceList as $RaceId => $RaceInfo)
                 {
+                        //如果不限定价
+                    if($RacePriceMode == "")
+                    {
+
+                    }
+                    //如果选定了只要比赛独立定价 且 比赛独立定价
+                    elseif($RacePriceMode == "stage" && $RaceInfo['PriceList'] != "")
+                    {
+                        unset($RaceList[$RaceId]);
+                        break;
+                    }
+                    //如果选定了只要分站通票定价 且 比赛未独立定价
+                    elseif($RacePriceMode == "race" && $RaceInfo['PriceList'] == "")
+                    {
+                        unset($RaceList[$RaceId]);
+                        break;
+                    }
                     //说明文字解码
                     $RaceList[$RaceId]['RaceComment'] = urldecode($RaceInfo['RaceComment']);
                     //解包地图数据数组
@@ -497,9 +546,11 @@ class XraceConfigController extends AbstractController
                     if (isset($RaceInfo['comment']['DetailList']))
                     {
                         //循环运动分段
-                        foreach ($RaceInfo['comment']['DetailList'] as $detailId => $detailInfo) {
+                        foreach ($RaceInfo['comment']['DetailList'] as $detailId => $detailInfo)
+                        {
                             //如果有配置过该运动分段
-                            if (isset($SportsTypeList[$detailInfo['SportsTypeId']])) {
+                            if (isset($SportsTypeList[$detailInfo['SportsTypeId']]))
+                            {
                                 //获取运动类型名称
                                 $RaceList[$RaceId]['comment']['DetailList'][$detailId]['SportsTypeName'] = $SportsTypeList[$detailInfo['SportsTypeId']]['SportsTypeName'];
                                 //初始化运动分段的长度
