@@ -54,25 +54,58 @@ class Xrace_Race extends Base_Widget
 		}
 	}
 
-	//获取所有赛事的列表
-	public function getRaceCatalogList($Display = 0,$fields = "*")
+	//获取所有赛事的列表(已缓存)
+	public function getRaceCatalogList($Display = 0,$fields = "*",$Cache = 0)
 	{
-		$table_to_process = Base_Widget::getDbTable($this->table);
-		$whereDisplay = $Display == 1?" and Display = '1'":"";
-		$sql = "SELECT $fields FROM " . $table_to_process . " where 1 ".$whereDisplay." ORDER BY RaceCatalogId ASC";
-		$return = $this->db->getAll($sql);
-		$RaceCatalogList = array();
-		if(count($return))
-		{
-			foreach($return as $key => $value)
-			{
-				$RaceCatalogList[$value['RaceCatalogId']] = $value;
-				if(isset($RaceCatalogList[$value['RaceCatalogId']]['comment']))
-				{
-					$RaceCatalogList[$value['RaceCatalogId']]['comment'] = json_decode($RaceCatalogList[$value['RaceCatalogId']]['comment'],true);
-				}
-			}
-		}
+        $oMemCache = new Base_Cache_Memcache("B5M");
+        //如果需要获取缓存
+        if($Cache == 1)
+        {
+            //获取缓存
+            $m = $oMemCache->get("RaceCatalogList");
+            //缓存解开
+            $RaceCatalogList = json_decode($m,true);
+            //如果数据为空
+            if(count($RaceCatalogList)==0)
+            {
+                //需要从数据库获取
+                $NeedDB = 1;
+            }
+            else
+            {
+                //echo "cached";
+            }
+        }
+        else
+        {
+            //需要从数据库获取
+            $NeedDB = 1;
+        }
+        if(isset($NeedDB))
+        {
+            $table_to_process = Base_Widget::getDbTable($this->table);
+            $whereDisplay = $Display == 1?" and Display = '1'":"";
+            $sql = "SELECT $fields FROM " . $table_to_process . " where 1 ".$whereDisplay." ORDER BY RaceCatalogId ASC";
+            $return = $this->db->getAll($sql);
+            $RaceCatalogList = array();
+            if(count($return))
+            {
+                foreach($return as $key => $value)
+                {
+                    $RaceCatalogList[$value['RaceCatalogId']] = $value;
+                    if(isset($RaceCatalogList[$value['RaceCatalogId']]['comment']))
+                    {
+                        $RaceCatalogList[$value['RaceCatalogId']]['comment'] = json_decode($RaceCatalogList[$value['RaceCatalogId']]['comment'],true);
+                    }
+                }
+            }
+        }
+        //如果有获取到最新赛事列表
+        if(count($RaceCatalogList))
+        {
+            //写入缓存
+            $oMemCache -> set('RaceCatalogList',json_encode($RaceCatalogList),86400);
+        }
 		return $RaceCatalogList;
 	}
 	//获取单个赛事信息

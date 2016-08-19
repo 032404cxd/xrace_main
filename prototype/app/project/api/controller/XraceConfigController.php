@@ -35,7 +35,7 @@ class XraceConfigController extends AbstractController
         //是否显示说明注释 默认为1
         $GetComment = isset($this->request->GetComment) ? abs(intval($this->request->GetComment)) : 1;
         //获得赛事列表
-        $RaceCatalogList = $this->oRace->getRaceCatalogList(1);
+        $RaceCatalogList = $this->oRace->getRaceCatalogList(1,"*",1);
         //如果没有返回值,默认为空数组
         if (!is_array($RaceCatalogList))
         {

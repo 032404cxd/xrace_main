@@ -27,11 +27,10 @@ class Xrace_Team extends Base_Widget
 	 * @param string $fields 所要获取的数据列
 	 * @return array
 	 */
-	public function getRaceTeamInfoByName($RaceTeamName,$RaceCatalogId,$fields = '*')
+	public function getRaceTeamInfoByName($RaceTeamName,$fields = '*')
 	{
-		$TeamId = intval($RaceTeamName);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->selectRow($table_to_process, $fields, '`RaceTeamName` = ? and `RaceCatalogId` = ?',array($RaceTeamName,$RaceCatalogId));
+		return $this->db->selectRow($table_to_process, $fields, '`name` = ?',array($RaceTeamName));
 	}
 	/**
 	 * 获取队伍列表
