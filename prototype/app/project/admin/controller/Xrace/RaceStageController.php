@@ -43,9 +43,9 @@ class Xrace_RaceStageController extends AbstractController
 			//赛事ID
 			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
 			//赛事分站列表
-			$RaceStageArr = $this->oRace->getRaceStageList($RaceCatalogId,"RaceStageId,RaceStageName,RaceCatalogId,comment,StageStartDate,StageEndDate,RaceStageIcon");
+			$RaceStageArr = $this->oRace->getRaceStageList($RaceCatalogId,"RaceStageId,RaceStageName,RaceCatalogId,comment,StageStartDate,StageEndDate,RaceStageIcon,Display");
 			//比赛-分组的层级规则
 			$RaceStructureList  = $this->oRace->getRaceStructure();
 			//赛事分组列表
@@ -210,6 +210,7 @@ class Xrace_RaceStageController extends AbstractController
 					$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceStageList'][$RaceStageId]['RaceStageIconList'] = '未上传';
 				}
 				$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceStageList'][$RaceStageId]['RaceStageStatus'] = $this->oRace->getRaceStageTimeStatus($RaceStageId,0);
+                $RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceStageList'][$RaceStageId]['RaceStageName'].=($RaceStageInfo['Display'])?"":"(隐藏)";
 			}
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceStageList');
@@ -237,7 +238,7 @@ class Xrace_RaceStageController extends AbstractController
 			$StageStartDate = date("Y-m-d",time()+30*86400);
 			$StageEndDate = date("Y-m-d",time()+32*86400);
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
 			//比赛-分组的层级规则
 			$RaceStructureList  = $this->oRace->getRaceStructure();
 			//渲染模板
@@ -253,11 +254,11 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList');
+		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','Display');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
-		$RaceCatalogList  = $this->oRace->getRaceCatalogList();
+		$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
 		//分站名称不能为空
 		if(trim($bind['RaceStageName'])=="")
 		{
@@ -323,7 +324,7 @@ class Xrace_RaceStageController extends AbstractController
 			//分站ID
 			$RaceStageId = intval($this->request->RaceStageId);
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
 			//分站数据
 			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'*');
 			//分组列表
@@ -376,11 +377,11 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageUpdateAction()
 	{
 		//获取 页面参数
-		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList');
+		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','Display');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
-		$RaceCatalogList  = $this->oRace->getRaceCatalogList();
+		$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
 		//分站名称不能为空
 		if(trim($bind['RaceStageName'])=="")
 		{

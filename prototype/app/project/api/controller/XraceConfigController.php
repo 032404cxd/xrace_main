@@ -28,14 +28,16 @@ class XraceConfigController extends AbstractController
     }
 
     /**
-     *获取所有赛事的列表
+     *获取所有赛事的列表(缓存)
      */
     public function getRaceCatalogListAction()
     {
+        //是否调用缓存
+        $Cache = isset($this->request->Cache) ? abs(intval($this->request->Cache)) : 1;
         //是否显示说明注释 默认为1
         $GetComment = isset($this->request->GetComment) ? abs(intval($this->request->GetComment)) : 1;
         //获得赛事列表
-        $RaceCatalogList = $this->oRace->getRaceCatalogList(1,"*",1);
+        $RaceCatalogList = $this->oRace->getRaceCatalogList(1,"*",$Cache);
         //如果没有返回值,默认为空数组
         if (!is_array($RaceCatalogList))
         {
@@ -75,6 +77,8 @@ class XraceConfigController extends AbstractController
      */
     public function getRaceCatalogInfoAction()
     {
+        //是否调用缓存
+        $Cache = isset($this->request->Cache) ? abs(intval($this->request->Cache)) : 1;
         //是否显示说明注释 默认为1
         $GetComment = isset($this->request->GetComment) ? abs(intval($this->request->GetComment)) : 1;
         //格式化赛事ID,默认为0
@@ -82,7 +86,7 @@ class XraceConfigController extends AbstractController
         //赛事ID必须大于0
         if ($RaceCatalogId) {
             //获取赛事信息
-            $RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId);
+            $RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId,"*",$Cache);
             //检测主键存在,否则值为空
             if (isset($RaceCatalogInfo['RaceCatalogId']))
             {
@@ -105,7 +109,7 @@ class XraceConfigController extends AbstractController
                 //根据赛事获取组别列表
                 $RaceGroupList = isset($RaceCatalogInfo['RaceCatalogId']) ? $this->oRace->getRaceGroupList($RaceCatalogInfo['RaceCatalogId'], "RaceGroupId,RaceGroupName") : array();
                 //根据赛事获取分站列表
-                $RaceStageList = isset($RaceCatalogInfo['RaceCatalogId']) ? $this->oRace->getRaceStageList($RaceCatalogInfo['RaceCatalogId'], "RaceStageId,RaceStageName") : array();
+                $RaceStageList = isset($RaceCatalogInfo['RaceCatalogId']) ? $this->oRace->getRaceStageList($RaceCatalogInfo['RaceCatalogId'], "RaceStageId,RaceStageName",1) : array();
                 //如果参数不显示说明文字
                 if ($GetComment != 1)
                 {
@@ -144,7 +148,7 @@ class XraceConfigController extends AbstractController
         if ($RaceCatalogId)
         {
             //获得分站列表
-            $RaceStageList = $this->oRace->getRaceStageList($RaceCatalogId);
+            $RaceStageList = $this->oRace->getRaceStageList($RaceCatalogId,"*",1);
             //如果没有返回值,默认为空数组
             if (!is_array($RaceStageList))
             {
@@ -851,14 +855,33 @@ class XraceConfigController extends AbstractController
                     if (isset($RaceInfo['comment']['SelectedRaceGroup']))
                     {
                         //获取当前赛事下的分组列表
-                        $RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],"RaceGroupName,RaceGroupId");
+                        $RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],"RaceGroupName,RaceGroupId,comment");
                         //寻源已经选定的分组列表
                         foreach($RaceInfo['comment']['SelectedRaceGroup'] as $k => $v)
                         {
                             //如果查到就保留
                             if(isset($RaceGroupList[$v]))
                             {
-                                $RaceInfo['comment']['SelectedRaceGroup'][$k] = $RaceGroupList[$v];
+                                $RaceGroupInfo = $RaceGroupList[$v];
+                                //默认当前组别可选
+                                $RaceGroupInfo['checkable'] = true;
+                                //数据解包
+                                $RaceGroupInfo['comment'] = json_decode($RaceGroupInfo['comment'], true);
+                                //执照条件的审核
+                                $RaceGroupInfo['LicenseList'] = $this->oRace->raceLicenseCheck($RaceGroupInfo['comment']['LicenseList'], 0, $RaceStageInfo, $RaceGroupInfo);
+                                foreach ($RaceGroupInfo['LicenseList'] as $k => $v)
+                                {
+                                    //如果发现条件为不可选
+                                    if (isset($v['checked']) && $v['checked'] == false)
+                                    {
+                                        //将当前组别置为不可选
+                                        $RaceGroupInfo['checkable'] = false;
+                                        break;
+                                    }
+                                }
+                                //格式化执照的条件，供显示
+                                $LicenseListText = $this->oRace->ParthRaceLicenseListToHtml($RaceGroupInfo['LicenseList'], 0, 0, 1);
+                                $RaceInfo['comment']['SelectedRaceGroup'][$k] = $RaceGroupInfo;
                             }
                             //否则就删除
                             else
@@ -894,7 +917,7 @@ class XraceConfigController extends AbstractController
         //赛事ID必须大于0
         if ($RaceCatalogId) {
             //获取赛事信息
-            $RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId);
+            $RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId,"*",1);
             //检测主键存在,否则值为空
             if (isset($RaceCatalogInfo['RaceCatalogId'])) {
                 //获取赛事组别信息

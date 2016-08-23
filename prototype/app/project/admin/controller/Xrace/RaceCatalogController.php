@@ -37,7 +37,7 @@ class Xrace_RaceCatalogController extends AbstractController
 			//当前站点根域名
 			$RootUrl = "http://".$_SERVER['HTTP_HOST'];
 			//获取赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
 			foreach($RaceCatalogList as $RaceCatalogId => $RaceCatalogInfo)
 			{
 				$RaceCatalogList[$RaceCatalogId]['RaceCatalogName'].=($RaceCatalogInfo['Display'])?"":"(隐藏)";
@@ -117,7 +117,7 @@ class Xrace_RaceCatalogController extends AbstractController
 			//赛事ID
 			$RaceCatalogId = trim($this->request->RaceCatalogId);
 			//获取赛事信息
-			$RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId,'*');
+			$RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId,'*',0);
 			//加载富文本编辑器
 			include('Third/ckeditor/ckeditor.php');
 			$editor =  new CKEditor();
@@ -152,7 +152,7 @@ class Xrace_RaceCatalogController extends AbstractController
 		else
 		{
 			//获取原有数据
-			$RaceCatalogInfo = $this->oRace->getRaceCatalog($bind['RaceCatalogId'],'*');
+			$RaceCatalogInfo = $this->oRace->getRaceCatalog($bind['RaceCatalogId'],'*',0);
 			//数据解包
 			$bind['comment'] = json_decode($RaceCatalogInfo['comment'],true);
 			//文件上传
@@ -197,7 +197,7 @@ class Xrace_RaceCatalogController extends AbstractController
 			//赛事ID
 			$RaceCatalogId = trim($this->request->RaceCatalogId);
 			//获取赛事信息
-			$RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId,'RaceCatalogId,RaceCatalogName,Disclaimer');
+			$RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId,'RaceCatalogId,RaceCatalogName,Disclaimer',0);
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceCatalogDisclaimerModify');
 		}

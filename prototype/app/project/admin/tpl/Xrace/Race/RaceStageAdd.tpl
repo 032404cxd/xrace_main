@@ -16,6 +16,10 @@
 			{/tpl:loop}
 		</select></td>
 </tr>
+<tr class="hover"><th align="center" class="rowtip">是否显示</th><th align="center" class="rowtip">
+		<input type="radio" name="Display" id="Display" value="1" >是
+		<input type="radio" name="Display" id="Display" value="0" checked>否</th>
+</tr>
 <tr class="hover"><td>赛事结构</td>
 	<td align="left">	<select name="RaceStructure"  id="RaceStructure" size="1">
 			{tpl:loop $RaceStructureList $RaceStructure $RaceStructureName}

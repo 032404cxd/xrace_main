@@ -486,7 +486,7 @@ class Xrace_UserController extends AbstractController
 				//获得赛组名称
 				$UserLicenseList['UserLicenseList'][$UserLicenseId]['RaceGroupName'] = $RaceGroupInfo['RaceGroupName'];
 				//获得赛组信息
-				$RaceCatalogInfo = $this->oRace->getRaceCatalog($UserLicenseInfo['RaceCatalogId'], 'RaceCatalogName');
+				$RaceCatalogInfo = $this->oRace->getRaceCatalog($UserLicenseInfo['RaceCatalogId'], 'RaceCatalogName',0);
 				//获得赛组名称
 				$UserLicenseList['UserLicenseList'][$UserLicenseId]['RaceCatalogName'] = $RaceCatalogInfo['RaceCatalogName'];
 				//获得管理员信息
@@ -514,7 +514,7 @@ class Xrace_UserController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,'RaceCatalogId,RaceCatalogName');
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,'RaceCatalogId,RaceCatalogName',0);
 			//获得需要添加执照的用户ID
 			$UserId = trim($this->request->UserId);
 			//模板渲染
@@ -613,7 +613,7 @@ class Xrace_UserController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,'RaceCatalogId,RaceCatalogName');
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,'RaceCatalogId,RaceCatalogName',0);
 			//获得执照ID
 			$LicenseId = trim($this->request->LicenseId);
 			//获得执照信息
@@ -752,7 +752,7 @@ class Xrace_UserController extends AbstractController
 			$LicenseId = trim($this->request->LicenseId);
 			//获得执照信息
 			$UserLicenseInfo = $this->oUser->getUserLicense($LicenseId,'*');
-			$RaceCatalogInfo = $this->oRace->getRaceCatalog($UserLicenseInfo['RaceCatalogId'],'RaceCatalogId,RaceCatalogName');
+			$RaceCatalogInfo = $this->oRace->getRaceCatalog($UserLicenseInfo['RaceCatalogId'],'RaceCatalogId,RaceCatalogName',0);
 			$UserLicenseInfo['RaceCatalogName'] = $RaceCatalogInfo['RaceCatalogName'];
 			$RaceGroupInfo = $this->oRace->getRaceGroup($UserLicenseInfo['RaceGroupId'],'RaceGroupId,RaceGroupName');
 			$UserLicenseInfo['RaceGroupName'] = $RaceGroupInfo['RaceGroupName'];
@@ -842,7 +842,7 @@ class Xrace_UserController extends AbstractController
 			$LicenseId = trim($this->request->LicenseId);
 			//获得执照信息
 			$UserLicenseInfo = $this->oUser->getUserLicense($LicenseId,'*');
-			$RaceCatalogInfo = $this->oRace->getRaceCatalog($UserLicenseInfo['RaceCatalogId'],'RaceCatalogId,RaceCatalogName');
+			$RaceCatalogInfo = $this->oRace->getRaceCatalog($UserLicenseInfo['RaceCatalogId'],'RaceCatalogId,RaceCatalogName',0);
 			$UserLicenseInfo['RaceCatalogName'] = $RaceCatalogInfo['RaceCatalogName'];
 			$RaceGroupInfo = $this->oRace->getRaceGroup($UserLicenseInfo['RaceGroupId'],'RaceGroupId,RaceGroupName');
 			$UserLicenseInfo['RaceGroupName'] = $RaceGroupInfo['RaceGroupName'];
@@ -908,7 +908,7 @@ class Xrace_UserController extends AbstractController
 					if(!isset($RaceCatalogList[$UserTeamInfo['RaceCatalogId']]))
 					{
 						//获取赛事信息
-						$RaceCatalogInfo = $this->oRace->getRaceCatalog($UserTeamInfo['RaceCatalogId'],'RaceCatalogId,RaceCatalogName');
+						$RaceCatalogInfo = $this->oRace->getRaceCatalog($UserTeamInfo['RaceCatalogId'],'RaceCatalogId,RaceCatalogName',0);
 						//如果有获取到赛事信息
 						if(isset($RaceCatalogInfo['RaceCatalogId']))
 						{
@@ -972,7 +972,7 @@ class Xrace_UserController extends AbstractController
 			//获取用户信息
 			$UserInfo = $this->oUser->getUserInfo($UserId);
 			//获取赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
 			//获取第一个赛事的信息
 			$FirstRaceCatalog = current($RaceCatalogList);
 			$oTeam = new Xrace_Team();

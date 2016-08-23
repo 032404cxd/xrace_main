@@ -26,6 +26,10 @@ function RaceStageIconDelete(sid,name,logo_id){
 			{/tpl:loop}
 		</select></td>
 </tr>
+<tr class="hover"><th align="center" class="rowtip">是否显示</th><th align="center" class="rowtip">
+		<input type="radio" name="Display" id="Display" value="1" {tpl:if($RaceStageInfo.Display=="1")}checked{/tpl:if}>是
+		<input type="radio" name="Display" id="Display" value="0" {tpl:if($RaceStageInfo.Display=="0")}checked{/tpl:if}>否</th>
+</tr>
 <tr class="hover"><td>赛事结构</td>
 	<td align="left">	<select name="RaceStructure"  id="RaceStructure" size="1">
 			{tpl:loop $RaceStructureList $RaceStructure $RaceStructureName}

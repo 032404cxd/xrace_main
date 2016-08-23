@@ -104,16 +104,50 @@ class Xrace_Race extends Base_Widget
         if(count($RaceCatalogList))
         {
             //写入缓存
-            $oMemCache -> set('RaceCatalogList',json_encode($RaceCatalogList),86400);
+            $oMemCache -> set('RaceCatalogList',json_encode($RaceCatalogList),3600);
         }
 		return $RaceCatalogList;
 	}
 	//获取单个赛事信息
-	public function getRaceCatalog($RaceCatalogId, $fields = '*')
+	public function getRaceCatalog($RaceCatalogId, $fields = '*',$Cache = 0)
 	{
-		$RaceCatalogId = intval($RaceCatalogId);
-		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->selectRow($table_to_process, $fields, '`RaceCatalogId` = ?', $RaceCatalogId);
+        $RaceCatalogId = intval($RaceCatalogId);
+        $oMemCache = new Base_Cache_Memcache("B5M");
+        //如果需要获取缓存
+        if($Cache == 1)
+        {
+            //获取缓存
+            $m = $oMemCache->get("RaceCatalogInfo_".$RaceCatalogId);
+            //缓存解开
+            $RaceCatalogInfo = json_decode($m,true);
+            //如果数据为空
+            if(count($RaceCatalogInfo)==0)
+            {
+                //需要从数据库获取
+                $NeedDB = 1;
+            }
+            else
+            {
+                //echo "cached";
+            }
+        }
+        else
+        {
+            //需要从数据库获取
+            $NeedDB = 1;
+        }
+        if(isset($NeedDB))
+        {
+            $table_to_process = Base_Widget::getDbTable($this->table);
+            $RaceCatalogInfo =  $this->db->selectRow($table_to_process, $fields, '`RaceCatalogId` = ?', $RaceCatalogId);
+        }
+        //如果有获取到最新赛事信息
+        if($RaceCatalogInfo['RaceCatalogId'])
+        {
+            //写入缓存
+            $oMemCache -> set("RaceCatalogInfo_".$RaceCatalogId,json_encode($RaceCatalogInfo),3600);
+        }
+        return $RaceCatalogInfo;
 	}
 	//更新单个赛事信息
 	public function updateRaceCatalog($RaceCatalogId, array $bind)
@@ -186,17 +220,19 @@ class Xrace_Race extends Base_Widget
 		return $this->db->delete($table_to_process, '`RaceGroupId` = ?', $RaceGroupId);
 	}
 	//根据赛事获取所有分站列表
-	public function getRaceStageList($RaceCatalogId,$fields = "*")
+	public function getRaceStageList($RaceCatalogId,$fields = "*",$Display = 0)
 	{
 		$RaceCatalogId = trim($RaceCatalogId);
 		//初始化查询条件
 		$whereCatalog = ($RaceCatalogId != 0)?" RaceCatalogId = $RaceCatalogId":"";
-		$whereCondition = array($whereCatalog);
+        $whereDisplay = $Display == 1?" Display = '1'":"";
+
+		$whereCondition = array($whereCatalog,$whereDisplay);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$table_to_process = Base_Widget::getDbTable($this->table_stage);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceCatalogId,RaceStageId ASC";
-		$return = $this->db->getAll($sql);
+        $return = $this->db->getAll($sql);
 		$RaceStageList = array();
 		if(count($return))
 		{

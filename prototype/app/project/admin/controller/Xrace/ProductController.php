@@ -37,7 +37,7 @@ class Xrace_ProductController extends AbstractController
 			//对应赛事ID
 			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
 			//获取赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
 			//获取商品类型列表
 			$ProductTypeArr = $this->oProduct->getProductTypeList($RaceCatalogId);
 			//初始空的产品类型列表
@@ -77,7 +77,7 @@ class Xrace_ProductController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
 			//渲染模板
 			include $this->tpl('Xrace_Product_ProductTypeAdd');
 		}
@@ -128,7 +128,7 @@ class Xrace_ProductController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList();
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
 			//商品类型ID
 			$ProductTypeId = intval($this->request->ProductTypeId);
 			//获取商品类型信息
