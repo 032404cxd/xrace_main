@@ -868,11 +868,11 @@ class XraceConfigController extends AbstractController
                                 //数据解包
                                 $RaceGroupInfo['comment'] = json_decode($RaceGroupInfo['comment'], true);
                                 //执照条件的审核
-                                $RaceGroupInfo['LicenseList'] = $this->oRace->raceLicenseCheck($RaceGroupInfo['comment']['LicenseList'], 0, $RaceStageInfo, $RaceGroupInfo);
-                                foreach ($RaceGroupInfo['LicenseList'] as $k => $v)
+                                $RaceGroupInfo['comment']['LicenseList'] = $this->oRace->raceLicenseCheck($RaceGroupInfo['comment']['LicenseList'], 0, $RaceStageInfo, $RaceGroupInfo);
+                                foreach ($RaceGroupInfo['comment']['LicenseList'] as $k2 => $v2)
                                 {
                                     //如果发现条件为不可选
-                                    if (isset($v['checked']) && $v['checked'] == false)
+                                    if (isset($v2['checked']) && $v2['checked'] == false)
                                     {
                                         //将当前组别置为不可选
                                         $RaceGroupInfo['checkable'] = false;
@@ -880,7 +880,14 @@ class XraceConfigController extends AbstractController
                                     }
                                 }
                                 //格式化执照的条件，供显示
-                                $LicenseListText = $this->oRace->ParthRaceLicenseListToHtml($RaceGroupInfo['LicenseList'], 0, 0, 1);
+                                $LicenseListText = $this->oRace->ParthRaceLicenseListToHtml($RaceGroupInfo['comment']['LicenseList'], 0, 0, 1);
+                                foreach($LicenseListText as $k3 => $v3)
+                                {
+                                    if(isset($RaceGroupInfo['comment']['LicenseList'][$k3]))
+                                    {
+                                        $RaceGroupInfo['comment']['LicenseList'][$k3]['LicenseListText'] = $v3;
+                                    }
+                                }
                                 $RaceInfo['comment']['SelectedRaceGroup'][$k] = $RaceGroupInfo;
                             }
                             //否则就删除

@@ -20,7 +20,7 @@ class Xrace_Race extends Base_Widget
 	protected $raceStructure = array('race'=>'比赛-分组','group'=>'分组-比赛');
 	protected $raceTimingType = array('mylaps'=>'myLaps芯片计时');
 	protected $raceTimingResultType = array('gunshot'=>'发枪时间','net'=>'净时间');
-	protected $raceLicenseType = array('manager'=>'管理员审核','birthday'=>'生日','sex'=>'性别');
+	protected $raceLicenseType = array('manager'=>'管理员审核','birthday'=>'生日','sex'=>'性别','age'=>"年龄");
 
 	public function getRaceStructure()
 	{
@@ -883,6 +883,29 @@ class Xrace_Race extends Base_Widget
 		}
 		return $text;
 	}
+    //年龄
+    public function ageConditionToHtml($key,$LicenseInfo,$ReturnType = 1)
+    {
+        if(!count($LicenseInfo))
+        {
+            $LicenseInfo  = array("LicenseType"=>"age","License"=>array("equal"=>">=","age"=>18));
+        }
+        if($ReturnType==1)
+        {
+            $text = '<input type="hidden" name="'.$key.'[LicenseType]" id="'.$key.'[LicenseType]" value="age"><select name="'.$key.'[License][equal]" size="1" class="span2">';
+            $equalList = Base_common::equalList();
+            foreach ($equalList as $value) {
+                $text .= '<option value="' . $value . '" ' . ((isset($LicenseInfo['License']['equal']) && $LicenseInfo['License']['equal'] == $value) ? 'selected' : "") . '>' . $value . '</option>';
+            }
+            $text .= "</select>";
+            $text .= '<input type="text" class="span1" name="'.$key.'[License][Age]" value="' . $LicenseInfo['License']['Age'] . '">';
+        }
+        else
+        {
+            $text = $LicenseInfo['License']['equal'].$LicenseInfo['License']['Age'];
+        }
+        return $text;
+    }
 	//处理价格列表
 	public function getPriceList($PriceList,$Revert = 0)
 	{

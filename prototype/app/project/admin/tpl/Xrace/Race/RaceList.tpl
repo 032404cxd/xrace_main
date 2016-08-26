@@ -39,7 +39,10 @@
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceId/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceName/}/{tpl:$RaceInfo.RaceTypeName/}</th>
     <th align="center" class="rowtip">{tpl:if($RaceInfo.MustSelect==1)}是{tpl:else}否{/tpl:if}/{tpl:if($RaceInfo.SingleSelect==1)}是{tpl:else}否{/tpl:if}</th>
-    <th align="center" class="rowtip" width="10%">{tpl:if($RaceInfo.SingleUser==1)}{tpl:$RaceInfo.comment.SingleUserLimit/}人 {tpl:else}不接受{/tpl:if}<p>{tpl:if($RaceInfo.TeamUser==1)}{tpl:$RaceInfo.comment.TeamLimit/}队/{tpl:$RaceInfo.comment.TeamUserMin/}-{tpl:$RaceInfo.comment.TeamUserMax/}人 {tpl:else}不接受{/tpl:if}</th>
+    <th align="center" class="rowtip" width="10%">{tpl:if($RaceInfo.SingleUser==1)}{tpl:$RaceInfo.comment.SingleUserLimit/}人 {tpl:else}不接受{/tpl:if}<p>{tpl:if($RaceInfo.TeamUser==1)}{tpl:$RaceInfo.comment.TeamLimit/}队/{tpl:$RaceInfo.comment.TeamUserMin/}-{tpl:$RaceInfo.comment.TeamUserMax/}人 {tpl:else}不接受{/tpl:if}
+      <p>男：{tpl:if($RaceInfo.comment.SexUser.Min.1==0)}不限{tpl:else}{tpl:$RaceInfo.comment.SexUser.Min.1/}{/tpl:if} - {tpl:if($RaceInfo.comment.SexUser.Max.1==0)}不限{tpl:else}{tpl:$RaceInfo.comment.SexUser.Max.1/}人 {/tpl:if}
+      <p>女：{tpl:if($RaceInfo.comment.SexUser.Min.2==0)}不限{tpl:else}{tpl:$RaceInfo.comment.SexUser.Min.2/}{/tpl:if} - {tpl:if($RaceInfo.comment.SexUser.Max.2==0)}不限{tpl:else}{tpl:$RaceInfo.comment.SexUser.Max.2/}人 {/tpl:if}
+    </th>
     <th align="center" class="rowtip" width="15%">{tpl:$RaceInfo.ApplyStartTime/}<br>~<br>{tpl:$RaceInfo.ApplyEndTime/}</th>
     <th align="center" class="rowtip" width="18%">{tpl:$RaceInfo.StartTime/}.{tpl:$RaceInfo.comment.RaceStartMicro func="sprintf('%03d',@@)"/}<br>~<br>{tpl:$RaceInfo.EndTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceStatus/}</th>

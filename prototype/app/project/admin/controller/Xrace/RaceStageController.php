@@ -725,7 +725,7 @@ class Xrace_RaceStageController extends AbstractController
 				$RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType();
 				//数据解包
 				$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
-				//解包数组
+                //解包数组
 				$RaceInfo['comment']['RaceStartMicro'] = isset($RaceInfo['comment']['RaceStartMicro'])?$RaceInfo['comment']['RaceStartMicro']:0;
 				//解包地图数组
 				$RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
@@ -775,7 +775,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','MylapsTolaranceTime','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','MylapsTolaranceTime','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -884,6 +884,8 @@ class Xrace_RaceStageController extends AbstractController
 				unset($bind['TeamUserMin']);
 				$bind['comment']['TeamUserMax'] = $bind['TeamUserMax'];
 				unset($bind['TeamUserMax']);
+                $bind['comment']['SexUser'] = $bind['SexUser'];
+                unset($bind['SexUser']);
 				$bind['comment']['RaceStartMicro'] = intval(abs($bind['RaceStartMicro']));
 				$bind['comment']['RaceStartMicro'] = min(999,$bind['comment']['RaceStartMicro']);
 				unset($bind['RaceStartMicro']);
@@ -941,8 +943,8 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','MylapsTolaranceTime','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank');
-		//转化时间为时间戳
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','BaiDuMapID','BaiDuMapStartTime','BaiDuMapEndTime','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','MylapsTolaranceTime','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank');
+        //转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
 		$StartTime = strtotime(trim($bind['StartTime']));
@@ -1063,6 +1065,8 @@ class Xrace_RaceStageController extends AbstractController
 				unset($bind['TeamUserMin']);
 				$bind['comment']['TeamUserMax'] = $bind['TeamUserMax'];
 				unset($bind['TeamUserMax']);
+                $bind['comment']['SexUser'] = $bind['SexUser'];
+                unset($bind['SexUser']);
 				$bind['comment']['RaceStartMicro'] = intval(abs($bind['RaceStartMicro']));
 				$bind['comment']['RaceStartMicro'] = min(999,$bind['comment']['RaceStartMicro']);
 				unset($bind['RaceStartMicro']);
