@@ -401,16 +401,25 @@ class XraceConfigController extends AbstractController
                         $ProductSkuList = $this->oProduct->getAllProductSkuList($ProductId);
                         foreach($SkuList as $ProductSkuId => $ProductSkuInfo)
                         {
-                            if(isset($ProductSkuList[$ProductId][$ProductSkuId]))
+                            if(isset($ProductSkuList[$ProductId][$ProductSkuId]) && $ProductSkuInfo['Stock']>0)
                             {
                                 $SkuList[$ProductSkuId]['ProductSkuName'] =  $ProductSkuList[$ProductId][$ProductSkuId]['ProductSkuName'];
                             }
-
+                            else
+                            {
+                                unset($SkuList[$ProductSkuId]);
+                            }
                         }
-                        $Product = array("SkuList"=>$SkuList,'ProductName'=>$ProductInfo['ProductName']);
-
-                        //存入产品名称
-                        $RaceStageInfo['comment']['SelectedProductList'][$ProductId] = $Product;
+                        if(count($SkuList)>0)
+                        {
+                            $Product = array("SkuList"=>$SkuList,'ProductName'=>$ProductInfo['ProductName']);
+                            //存入产品名称
+                            $RaceStageInfo['comment']['SelectedProductList'][$ProductId] = $Product;
+                        }
+                        else
+                        {
+                            unset($RaceStageInfo['comment']['SelectedProductList'][$ProductId]);
+                        }
                     }
                 }
                 //获取当前比赛的时间状态信息
@@ -1117,6 +1126,8 @@ class XraceConfigController extends AbstractController
     {
         //比赛ID
         $RaceId = abs(intval($this->request->RaceId));
+        //比赛ID
+        $RaceGroupId = abs(intval($this->request->RaceGroupId));
         //BIB号码
         $BIB = trim($this->request->BIB);
         //赛事ID必须大于0
@@ -1124,7 +1135,9 @@ class XraceConfigController extends AbstractController
             //获取比赛信息
             $RaceInfo = $this->oRace->getRace($RaceId);
             //检测主键存在,否则值为空
-            if (isset($RaceInfo['RaceId'])) {
+            if (isset($RaceInfo['RaceId']))
+            {
+                $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
                 //获取选手和车队名单
                 $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,0, 1);
                 if (count($RaceUserList['RaceUserList']))
@@ -1132,21 +1145,23 @@ class XraceConfigController extends AbstractController
                     $t = array();
                     foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
                     {
-                        if (((strlen($BIB)>0) && strstr($ApplyInfo['BIB'], $BIB)) || (strlen($BIB)==0))
+                        if ((((strlen($BIB)>0) && strstr($ApplyInfo['BIB'], $BIB)) || (strlen($BIB)==0)) && (($RaceGroupId == 0) || (($RaceGroupId >0) && ($RaceGroupId == $ApplyInfo['RaceGroupId']))))
                         {
                             $t[] = $ApplyInfo;
                         }
                     }
                     $RaceUserList['RaceUserList'] = $t;
-
                     //重新获取比赛详情
                     $UserRaceTimingInfo = $this->oRace->GetUserRaceTimingInfo($RaceId);
                     foreach($UserRaceTimingInfo['Point'] as $k => $v)
                     {
                         foreach($v['UserList'] as $k2 => $v2)
                         {
-                            $UserRaceTimingInfo['Point'][$k]['UserList'][$k2]['Rank'] = $k2+1;
-                            if ((strlen(trim($BIB)) && !strstr( $v2['BIB'], $BIB)))
+                            if(($RaceGroupId == 0) || (($RaceGroupId >0) && ($RaceGroupId == $v2['RaceGroupId'])))
+                            {
+                                $UserRaceTimingInfo['Point'][$k]['UserList'][$k2]['Rank'] = $k2+1;
+                            }
+                            if ((strlen(trim($BIB)) && !strstr( $v2['BIB'], $BIB)) || (($RaceGroupId >0) && ($RaceGroupId != $v2['RaceGroupId'])))
                             {
                                 unset($UserRaceTimingInfo['Point'][$k]['UserList'][$k2]);
                             }
@@ -1155,30 +1170,36 @@ class XraceConfigController extends AbstractController
                     }
                     foreach($UserRaceTimingInfo['Total'] as $k => $v)
                     {
-                        $UserRaceTimingInfo['Total'][$k]['Rank'] = $k+1;
-                        if ((strlen(trim($BIB)) && !strstr( $v['BIB'], $BIB)))
+                        if(($RaceGroupId == 0) || (($RaceGroupId >0) && ($RaceGroupId == $v['RaceGroupId'])))
+                        {
+                            $UserRaceTimingInfo['Total'][$k]['Rank'] = $k+1;
+                        }
+                        if ((strlen(trim($BIB)) && !strstr( $v['BIB'], $BIB)) || (($RaceGroupId >0) && ($RaceGroupId != $v['RaceGroupId'])))
                         {
                             unset($UserRaceTimingInfo['Total'][$k]);
                         }
                     }
                     $UserRaceTimingInfo['Total'] = array_values($UserRaceTimingInfo['Total']);
                     //返回车手名单和车队列表
-                    $result = array("return" => 1, "RaceUserList" => $RaceUserList['RaceUserList'], "UserRaceTimingInfo" => $UserRaceTimingInfo);
+                    $result = array("return" => 1, "RaceUserList" => count($UserRaceTimingInfo['Total'])==0?$RaceUserList['RaceUserList']:array(), "UserRaceTimingInfo" => $UserRaceTimingInfo);
                 } else {
                     //全部置为空
                     $result = array("return" => 0, "RaceUserList" => array(), "RaceTeamList" => array(), "comment" => "尚无选手报名");
                 }
-            } else {
+            }
+            else
+            {
                 //全部置为空
                 $result = array("return" => 0, "RaceUserList" => array(), "RaceTeamList" => array(), "comment" => "请指定一个有效的比赛ID");
             }
-        } else {
+        }
+        else
+        {
             //全部置为空
             $result = array("return" => 0, "RaceUserList" => array(), "RaceTeamList" => array(), "comment" => "请指定一个有效的赛事ID");
         }
         echo json_encode($result);
     }
-
     /*
     * 测试生成计时点
     */

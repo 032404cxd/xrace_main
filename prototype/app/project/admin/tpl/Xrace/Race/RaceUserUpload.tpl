@@ -26,7 +26,7 @@ $('#race_add_submit').click(function(){
 
 				divBox.alertBox(errors[jsonResponse.errno],function(){});
 			} else {
-				var message = '导入完毕，更新'+jsonResponse.ApplyCount+ '条数据';
+				var message = '导入完毕，更新'+jsonResponse.ApplyCount+ '条数据。<br>以下选手姓名有误：<br>'+jsonResponse.NameErrorUser;
 				RaceStageId=$("#RaceStageId");
 				RaceGroupId=$("#CurrentRaceGroupId");
 				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=race.list&RaceStageId=' + RaceStageId.val() + '&RaceGroupId=' + RaceGroupId.val());}});

@@ -20,7 +20,15 @@
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
   <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupId/}" />
   <fieldset><legend>{tpl:$RaceInfo.RaceName/} 成绩单{tpl:if(isset($UserInfo.user_id))} - {tpl:$UserInfo.name/}{/tpl:if}</legend>
-<table width="99%" align="center" class="table table-bordered table-striped">
+   {tpl:if(count($RaceGroupList))}
+    <fieldset><legend>
+        {tpl:loop $RaceGroupList $GInfo}
+        {tpl:$GInfo/}/
+        {/tpl:loop}
+      </legend>
+    {/tpl:if}
+
+      <table width="99%" align="center" class="table table-bordered table-striped">
   <tr>
     <th align="center" class="rowtip" colspan="15">最后更新时间{tpl:$RaceResultList.UserRaceTimingInfo.LastUpdateTime func="date('Y-m-d H:i:s.u',@@)"/}</th>
   </tr>

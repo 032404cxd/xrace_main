@@ -6,6 +6,18 @@
 <tr class="hover">
 <td>运动类型名称</td>
 <td align="left"><input name="SportsTypeName" type="text" class="span2" id="SportsTypeName" value="{tpl:$SportsTypeInfo.SportsTypeName/}" size="50" /></td>
+</tr>
+<tr class="hover">
+<td>速度显示单位</td>
+<td align="left">
+<select name="SpeedDisplayType" size="1" class="span2">
+	<option value="0" {tpl:if(0==$SportsTypeInfo.SpeedDisplayType)}selected="selected"{/tpl:if}>不显示</option>
+	{tpl:loop $SpeedDisplayTypeList $SpeedDisplayType}
+	<option value="{tpl:$SpeedDisplayType/}" {tpl:if($SpeedDisplayType==$SportsTypeInfo.SpeedDisplayType)}selected="selected"{/tpl:if}>{tpl:$SpeedDisplayType/}</option>
+	{/tpl:loop}
+</select>
+</td>
+</tr>
 <tr class="noborder"><td></td>
 <td><button type="submit" id="sports_type_update_submit">提交</button></td>
 </tr>

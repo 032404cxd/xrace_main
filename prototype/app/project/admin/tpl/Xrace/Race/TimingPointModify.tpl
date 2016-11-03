@@ -7,41 +7,34 @@
 
 <table width="99%" align="center" class="table table-bordered table-striped">
   <tr>
-    <th align="center" class="rowtip">
-      计时点名称：<input type="text" name="TName" id="TName" value="{tpl:$TimingInfo.TName/}" />
-    </th>
+    <th align="center" class="rowtip">计时点名称</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="TName" id="TName" value="{tpl:$TimingInfo.TName/}" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">
-      计时点序列号：<input type="text" name="ChipId" id="ChipId" value="{tpl:$TimingInfo.ChipId/}" />
-    </th>
+    <th align="center" class="rowtip">计时点序列号</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="ChipId" id="ChipId" value="{tpl:$TimingInfo.ChipId/}" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">
-      距下一点：<input type="text" name="ToNext" id="ToNext" value="{tpl:$TimingInfo.ToNext/}" />米（负数为不计时）
-    </th>
+    <th align="center" class="rowtip">距下一点<br>(米，负数不计时)</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="ToNext" id="ToNext" value="{tpl:$TimingInfo.ToNext/}" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">
-      圈数：<input type="text" name="Round" id="Round" value="{tpl:$TimingInfo.Round/}" />次
-    </th>
+    <th align="center" class="rowtip">圈数(次)</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="Round" id="Round" value="{tpl:$TimingInfo.Round/}" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">
-      海拔上升：<input type="text" name="AltAsc" id="AltAsc" value="{tpl:$TimingInfo.AltAsc/}" />米
-    </th>
+    <th align="center" class="rowtip">海拔上升(米)</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="AltAsc" id="AltAsc" value="{tpl:$TimingInfo.AltAsc/}" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">
-      海拔下降：<input type="text" name="AltDec" id="AltDec" value="{tpl:$TimingInfo.AltDec/}" />米
-    </th>
+    <th align="center" class="rowtip">海拔下降(米)</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="AltDec" id="AltDec" value="{tpl:$TimingInfo.AltDec/}" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">
-      等待时间：<input type="text" name="TolaranceTime" id="TolaranceTime" value="{tpl:$TimingInfo.TolaranceTime/}" />秒
-    </th>
+    <th align="center" class="rowtip">等待时间(秒)</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="TolaranceTime" id="TolaranceTime" value="{tpl:$TimingInfo.TolaranceTime/}" /></th>
   </tr>
-  <tr><th align="center" class="rowtip">
+  <tr><th align="center" class="rowtip" colspan="2">
     <button type="submit" id="timing_point_modify">提交</button>
     </th></tr>
   <tr>

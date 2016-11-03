@@ -14,6 +14,7 @@ class Xrace_User extends Base_Widget
 	protected $table_license = 'user_license';
 	protected $table_race = 'user_race';
 	protected $table_race_user_team = 'user_team';
+    protected $table_stage_checkin = 'user_stage_checkin';
 	//性别列表
 	protected $sex = array('1'=>"男","2"=>"女");
 	//实名认证状态
@@ -24,8 +25,12 @@ class Xrace_User extends Base_Widget
 	protected $auth_status_log = array('0'=>"拒绝","2"=>"通过");
 	//实名认证用到的证件类型列表
 	protected $auth_id_type = array('1'=>"身份证","2"=>"护照");
-        //用户执照状态
+    //用户执照状态
 	protected $user_license_status = array('1'=>"生效中",'2'=>"已过期",'3'=>"即将生效",'4'=>"已删除");
+    //用户签到状态
+    protected $user_checkin_status = array('0'=>'全部','2'=>"未签到",'1'=>"已签到");
+    //用户签到短信发送状态
+    protected $user_checkin_sms_sent_status = array('3'=>"不需发送",'1'=>"待发送",'2'=>"已发送");
         //获取性别列表
 	public function getSexList()
 	{
@@ -59,6 +64,16 @@ class Xrace_User extends Base_Widget
 	{
 		return $this->user_license_status;
 	}
+    //获得用户签到状态列表
+    public function getUserCheckInStatus()
+    {
+        return $this->user_checkin_status;
+    }
+    //获得用户签到短信发送状态列表
+    public function getUserCheckInSmsSentStatus()
+    {
+        return $this->user_checkin_sms_sent_status;
+    }
 	//创建用户
 	public function insertUser(array $bind)
 	{
@@ -586,6 +601,22 @@ class Xrace_User extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
 		return $this->db->insert_update($table_to_process, $bind,$bind_update);
 	}
+    //删除用户报名信息
+    public function deleteRaceApplyUserInfo($RaceId,$UserId)
+    {
+        $UserId = intval($UserId);
+        $RaceId = intval($RaceId);
+        $table_to_process = Base_Widget::getDbTable($this->table_race);
+        //如果指定用户
+        if($UserId)
+        {
+            return $this->db->delete($table_to_process, '`UserId` = ? and `RaceId` = ?', array($UserId,$RaceId));
+        }
+        else
+        {
+            return $this->db->delete($table_to_process, '`RaceId` = ?', $RaceId);
+        }
+    }
 	//获得用户报名信息
 	public function getRaceApplyUserInfo($ApplyId, $fields = '*')
 	{
@@ -811,4 +842,39 @@ class Xrace_User extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
 		return $this->db->delete($table_to_process, '`ApplyId` = ?', $ApplyId);
 	}
+    //用户退出比赛
+    public function deleteUserRaceByRace($RaceId,$RaceGroupId = 0)
+    {
+        $RaceId = intval($RaceId);
+        $RaceGroupId = intval($RaceGroupId);
+        $table_to_process = Base_Widget::getDbTable($this->table_race);
+        if($RaceGroupId>0)
+        {
+            return $this->db->delete($table_to_process, '`RaceId` = ? and `RaceGroupId` = ?', array($RaceId,$RaceGroupId));
+        }
+        else
+        {
+            return $this->db->delete($table_to_process, '`RaceId` = ?', $RaceId);
+        }
+    }
+    //获取报名记录
+    public function getRaceUserCheckInList($params,$fields = array('*'))
+    {
+        //生成查询列
+        $fields = Base_common::getSqlFields($fields);
+        //获取需要用到的表名
+        $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
+        //获得比赛ID
+        $whereRaceStage = isset($params['RaceStageId'])?" RaceStageId = '".$params['RaceStageId']."' ":"";
+        //获得赛事ID
+        $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
+        //所有查询条件置入数组
+        $whereCondition = array($whereCatalog,$whereRaceStage);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by RaceCatalogId,RaceStageId,UserId desc";
+        $return = $this->db->getAll($sql);
+        return $return;
+    }
+    //ALTER TABLE `user_race` ADD `ApplySource` TINYINT(3) UNSIGNED NOT NULL COMMENT '报名数据来源：1|线上|2线下|待扩充' AFTER `ApplyId`;
 }

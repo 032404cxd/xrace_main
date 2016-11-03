@@ -152,6 +152,8 @@ class Xrace_Mylaps extends Base_Widget
 							$UserRaceInfo['Point'][$i]['inTime'] = $inTime;
 							//如果前一点的距离为非负数，则取当前时间和前一点差值作为经过时间，否则不计时
                             $UserRaceInfo['Point'][$i]['PointTime'] = isset($UserRaceInfo['Point'][$i-1]['ToNext'])&&intval($UserRaceInfo['Point'][$i-1]['ToNext'])>=0?(isset($UserRaceInfo['Point'][$i-1]['inTime'])?sprintf("%0.3f",($UserRaceInfo['Point'][$i]['inTime']-$UserRaceInfo['Point'][$i-1]['inTime'])):0):0;
+                            $UserRaceInfo['Point'][$i]['PointSpeed'] = Base_Common::speedDisplayParth($UserRaceInfo['Point'][$i-1]['SpeedDisplayType'],$UserRaceInfo['Point'][$i]['PointTime'],($UserRaceInfo['Point'][$i-1]['ToNext'])>=0?$UserRaceInfo['Point'][$i-1]['ToNext']:0)  ;//($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['ToNext'])>=0?(sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime'])?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['inTime']-$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime']:0)):0;
+
                             $TotalNetTime = isset($UserRaceInfo['Point'][$i-1]['TotalNetTime'])?sprintf("%0.3f",($UserRaceInfo['Point'][$i-1]['TotalNetTime']+$UserRaceInfo['Point'][$i]['PointTime'])):sprintf("%0.3f",$UserRaceInfo['Point'][$i]['PointTime']);
 							if($i==1)
 							{
@@ -271,6 +273,7 @@ class Xrace_Mylaps extends Base_Widget
 								$UserRaceInfo['Point'][$i]['inTime'] = $inTime;
                                 //如果前一点的距离为非负数，则取当前时间和前一点差值作为经过时间，否则不计时
                                 $UserRaceInfo['Point'][$i]['PointTime'] = intval($UserRaceInfo['Point'][$i-1]['ToNext'])>=0?(sprintf("%0.3f",($UserRaceInfo['Point'][$i-1]['inTime'])?$UserRaceInfo['Point'][$i]['inTime']-$UserRaceInfo['Point'][$i-1]['inTime']:0)):0;
+                                $UserRaceInfo['Point'][$i]['PointSpeed'] = Base_Common::speedDisplayParth($UserRaceInfo['Point'][$i-1]['SpeedDisplayType'],$UserRaceInfo['Point'][$i]['PointTime'],($UserRaceInfo['Point'][$i-1]['ToNext'])>=0?$UserRaceInfo['Point'][$i-1]['ToNext']:0)  ;//($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['ToNext'])>=0?(sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime'])?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['inTime']-$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime']:0)):0;
                                 $TotalNetTime = isset($UserRaceInfo['Point'][$i-1]['TotalNetTime'])?sprintf("%0.3f",($UserRaceInfo['Point'][$i-1]['TotalNetTime']+$UserRaceInfo['Point'][$i]['PointTime'])):sprintf("%0.3f",$UserRaceInfo['Point'][$i]['PointTime']);
                                 if($i==1)
 								{
@@ -423,6 +426,8 @@ class Xrace_Mylaps extends Base_Widget
 							$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['inTime'] = sprintf("%0.3f",$ChipTime);
                             //如果前一点的距离为非负数，则取当前时间和前一点差值作为经过时间，否则不计时
                             $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime'] = ($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['ToNext'])>=0?(sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime'])?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['inTime']-$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime']:0)):0;
+                            $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointSpeed'] = Base_Common::speedDisplayParth($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['SpeedDisplayType'],$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime'],($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['ToNext'])>=0?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['ToNext']:0)  ;//($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['ToNext'])>=0?(sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime'])?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['inTime']-$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime']:0)):0;
+
                             $TotalTime = sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['TotalTime'])?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['TotalTime']+$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime']:$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime']);
                             $TotalNetTime = isset($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['TotalNetTime'])?sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['TotalNetTime']+$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime'])):sprintf("%0.3f",$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime']);
                             echo "Pos:".$UserRaceInfo['CurrentPoint']."-".$TotalNetTime."<br>";

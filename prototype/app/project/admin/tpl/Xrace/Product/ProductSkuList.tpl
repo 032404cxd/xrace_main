@@ -24,7 +24,7 @@
     <td align="center" class="rowtip">{tpl:$ProductSkuInfo.ProductSkuId/}</th>
     <td align="center" class="rowtip">{tpl:$ProductSkuInfo.ProductSkuName/}</th>
     <td align="center" class="rowtip">{tpl:$ProductSkuInfo.comment.ProductSkuComment/}</th>
-    <td align="center"><a href="javascript:;" onclick="ProductSkuDelete('{tpl:$ProductSkuInfo.ProductSkuId/}','{tpl:$ProductInfo.ProductName/}','{tpl:$ProductSkuInfo.ProductSkuName/}')">删除</a> |  <a href="javascript:;" onclick="ProductModify('{tpl:$ProductSkuInfo.ProductSkuId/}');">修改</a></td>
+    <td align="center"><a href="javascript:;" onclick="ProductSkuDelete('{tpl:$ProductSkuInfo.ProductSkuId/}','{tpl:$ProductInfo.ProductName/}','{tpl:$ProductSkuInfo.ProductSkuName/}')">删除</a> |  <a href="javascript:;" onclick="ProductSkuModify('{tpl:$ProductSkuInfo.ProductSkuId/}');">修改</a></td>
   </tr>
   {/tpl:loop}
   <tr>

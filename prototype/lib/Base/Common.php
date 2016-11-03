@@ -830,7 +830,7 @@ EOF;
 	}
 	function parthTimeLag($TimeLag)
 	{
-		$T = explode(".",$TimeLag);
+	    $T = explode(".",$TimeLag);
 		if(intval($T[0])>=3600)
 		{
 			$Text['Hour'] = intval($T[0]/3600);
@@ -845,7 +845,7 @@ EOF;
 		}
 		else
 		{
-			//$Text['Minute'] = "00";
+			$Text['Minute'] = "00";
 		}
 		if($T[0]>=10)
 		{
@@ -853,7 +853,7 @@ EOF;
 		}
 		else
 		{
-			$Text['Second'] = sprintf("%01d",intval($T[0])%60);
+			$Text['Second'] = sprintf("%02d",intval($T[0])%60);
 		}
 		return implode(":",$Text).(isset($T[1])?".".substr($T[1],0,4):"");
 	}
@@ -1180,4 +1180,32 @@ EOF;
 		$Version = implode(".",$t);
 		return $Version;
 	}
+	function speedDisplayParth($SpeedDisplayType,$Time,$Distance)
+    {
+        if($SpeedDisplayType=="km/h")
+        {
+            return (($Time>0)?(sprintf("%0.4f",$Distance*3600/1000/$Time)):0)."km/h";
+        }
+        elseif($SpeedDisplayType=="mile/h")
+        {
+            return (($Time>0)?(sprintf("%0.4f",$Distance*3600/1000/1.60934/$Time)):0)."mile/h";
+        }
+        elseif($SpeedDisplayType=="time/100m")
+        {
+            return Base_Common::parthTimeLag(($Distance>0)?(intval($Time/$Distance*100)):0)."/100m";
+        }
+        elseif($SpeedDisplayType=="time/km")
+        {
+            return Base_Common::parthTimeLag(($Distance>0)?(intval($Time/$Distance*1000)):0)."/km";
+        }
+        elseif($SpeedDisplayType=="time/mile")
+        {
+            return Base_Common::parthTimeLag(($Distance>0)?(intval($Time/$Distance*1000*1.60934)):0)."/mile";
+        }
+        else
+        {
+            return "";
+        }
+
+    }
 }

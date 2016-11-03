@@ -122,5 +122,13 @@ $table['hs_order']['num'] = 1;
 $table['hs_order_detail']['db'] = 'xrace_bm';
 $table['hs_order_detail']['num'] = 1;
 
+#积分类目
+$table['config_credit']['db'] = 'xrace_config';
+$table['config_credit']['num'] = 1;
+
+#积分类目
+$table['user_stage_checkin']['db'] = 'xrace';
+$table['user_stage_checkin']['num'] = 1;
+
 
 return $table;

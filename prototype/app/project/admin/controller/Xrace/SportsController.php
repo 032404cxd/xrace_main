@@ -1,4 +1,6 @@
 <?php
+//ALTER TABLE `config_sports_type` ADD `SpeedDisplayType` VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '速度显示单位' AFTER `SportsTypeName`;
+
 /**
  * 运动管理
  * @author Chen<cxd032404@hotmail.com>
@@ -52,6 +54,8 @@ class Xrace_SportsController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("SportsTypeInsert");
 		if($PermissionCheck['return'])
 		{
+            //获取速度显示单位
+            $SpeedDisplayTypeList = $this->oSports->getSpeedDisplayList();
 			//渲染模版
 			include $this->tpl('Xrace_Sports_SportsTypeAdd');
 		}
@@ -66,7 +70,7 @@ class Xrace_SportsController extends AbstractController
 	public function sportsTypeInsertAction()
 	{
 		//检查权限
-		$bind=$this->request->from('SportsTypeName');
+		$bind=$this->request->from('SportsTypeName','SpeedDisplayType');
 		//运动类型名称不能为空
 		if(trim($bind['SportsTypeName'])=="")
 		{
@@ -93,7 +97,9 @@ class Xrace_SportsController extends AbstractController
 			$SportsTypeId = intval($this->request->SportsTypeId);
 			//获取运动类型信息
 			$SportsTypeInfo = $this->oSports->getSportsType($SportsTypeId,'*');
-			//渲染模版
+			//获取速度显示单位
+            $SpeedDisplayTypeList = $this->oSports->getSpeedDisplayList();
+            //渲染模版
 			include $this->tpl('Xrace_Sports_SportsTypeModify');
 		}
 		else
@@ -107,7 +113,7 @@ class Xrace_SportsController extends AbstractController
 	public function sportsTypeUpdateAction()
 	{
 		//接收页面参数
-		$bind=$this->request->from('SportsTypeId','SportsTypeName');
+		$bind=$this->request->from('SportsTypeId','SportsTypeName','SpeedDisplayType');
 		//运动类型名称不能为空
 		if(trim($bind['SportsTypeName'])=="")
 		{

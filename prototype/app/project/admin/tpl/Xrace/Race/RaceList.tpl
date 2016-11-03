@@ -15,6 +15,9 @@
   function RaceResultList(rid,rname){
     RaceResultListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.result.list&RaceId=' + rid, {title:rname+'成绩单',width:800,height:750});
   }
+  function RaceDelete(r_id, r_name){
+    deleteAppBox = divBox.confirmBox({content:'是否删除 ' + r_name + '?<p>关联的报名记录和计时点配置将同时删除',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.delete&RaceId=' + r_id;}});
+  }
 </script>
 <form action="{tpl:$this.sign/}&ac=race.update" name="form" id="form" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
@@ -47,7 +50,7 @@
     <th align="center" class="rowtip" width="18%">{tpl:$RaceInfo.StartTime/}.{tpl:$RaceInfo.comment.RaceStartMicro func="sprintf('%03d',@@)"/}<br>~<br>{tpl:$RaceInfo.EndTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceStatus/}</th>
     <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceModify('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceGroupId/}')">修改</a> | <a href="javascript:;" onclick="RaceUserUpload('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceGroupId/}')">导入报名</a>
-     | <a href="{tpl:$this.sign/}&ac=race.detail&RaceId={tpl:$RaceInfo.RaceId/}&RaceGroupId={tpl:$RaceInfo.RaceGroupId/}">计时点</a> | <a href="javascript:;" onclick="RaceUserList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceInfo.RaceGroupName/}')">选手名单</a> | <a target = "_blank" href="http://api.xrace.cn/?ctl=xrace.config&ac=timing.text&RaceId={tpl:$RaceInfo.RaceId/}">成绩更新</a> | <a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">成绩单</a></th>
+     | <a href="{tpl:$this.sign/}&ac=race.detail&RaceId={tpl:$RaceInfo.RaceId/}&RaceGroupId={tpl:$RaceInfo.RaceGroupId/}">计时点</a> | <a href="javascript:;" onclick="RaceUserList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceInfo.RaceGroupName/}')">选手名单</a> | <a target = "_blank" href="http://api.xrace.cn/?ctl=xrace.config&ac=timing.text&RaceId={tpl:$RaceInfo.RaceId/}">成绩更新</a> | <a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">成绩单</a> | <a  href="javascript:;" onclick="RaceDelete('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">删除</a></th>
     </th>
   </tr>
   {/tpl:loop}
