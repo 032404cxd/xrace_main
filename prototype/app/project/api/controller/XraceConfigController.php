@@ -1040,13 +1040,15 @@ class XraceConfigController extends AbstractController
     */
     public function getUserRaceListAction()
     {
-        //比赛ID
+        //用户ID
         $UserId = abs(intval($this->request->UserId));
-        if ($UserId) {
+        if ($UserId)
+        {
             //获取用户信息
-            $UserInfo = $this->oUser->getUserInfo($UserId, 'user_id,name');
-            //如果有获取到用户信息
-            if ($UserInfo['user_id']) {
+                $UserInfo = $this->oUser->getUserInfo($UserId, 'user_id,name');
+                //如果有获取到用户信息
+                if ($UserInfo['user_id'])
+                {
                 //根据用户获取报名记录
                 $UserApplyList = $this->oUser->getRaceUserList(array('UserId' => $UserInfo['user_id']));
                 //获取赛事列表
@@ -1074,46 +1076,62 @@ class XraceConfigController extends AbstractController
                             }
                         }
                         $UserApplyList[$key]['RaceGroupName'] = $RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupName'];
-
-                        if (!isset($RaceStageList[$ApplyInfo['RaceStageId']])) {
+                        if (!isset($RaceStageList[$ApplyInfo['RaceStageId']]))
+                        {
                             $RaceStageInfo = $this->oRace->getRaceStage($ApplyInfo['RaceStageId'], 'RaceStageId,RaceStageName');
-                            if (isset($RaceStageInfo['RaceStageId'])) {
+                            if (isset($RaceStageInfo['RaceStageId']))
+                            {
                                 $RaceStageList[$ApplyInfo['RaceStageId']] = $RaceStageInfo;
-                            } else {
+                            }
+                            else
+                                {
                                 unset($UserApplyList[$key]);
                             }
                         }
                         $UserApplyList[$key]['RaceStageName'] = $RaceStageList[$ApplyInfo['RaceStageId']]['RaceStageName'];
 
                         $RaceInfo = $this->oRace->getRace($ApplyInfo['RaceId'], "*");
-                        if (isset($RaceInfo['RaceId'])) {
+                        if (isset($RaceInfo['RaceId']))
+                        {
                             $UserApplyList[$key]['RaceName'] = $RaceInfo['RaceName'];
-                            if (!isset($RaceTypeList[$RaceInfo['RaceTypeId']])) {
+                            if (!isset($RaceTypeList[$RaceInfo['RaceTypeId']]))
+                            {
                                 $RaceTypeInfo = $this->oRace->getRaceType($RaceInfo['RaceTypeId'], '*');
-                                if (isset($RaceTypeInfo['RaceTypeId'])) {
+                                if (isset($RaceTypeInfo['RaceTypeId']))
+                                {
                                     $RaceTypeInfo['comment'] = json_decode($RaceTypeInfo['comment'], true);
                                     //拼接上ADMIN站点的域名
                                     $RaceTypeInfo['comment']['RaceTypeIcon'] = $this->config->adminUrl . $RaceTypeInfo['comment']['RaceTypeIcon_root'];
                                     $RaceTypeList[$RaceInfo['RaceTypeId']] = $RaceTypeInfo;
-                                } else {
+                                }
+                                else
+                                {
                                     unset($UserApplyList[$key]);
                                 }
                             }
                             $UserApplyList[$key]['RaceTypeIcon'] = $RaceTypeList[$RaceInfo['RaceTypeId']]['comment']['RaceTypeIcon'];
                             $UserApplyList[$key]['RaceTypeName'] = $RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName'];
                             $UserApplyList[$key]['RaceStatus'] = $this->oRace->getUserRaceStatus($this->oRace->getUserRaceInfo($ApplyInfo['RaceId'], $UserId));
-                        } else {
+                        }
+                        else
+                        {
                             unset($UserApplyList[$key]);
                         }
-                    } else {
+                    }
+                    else
+                    {
                         unset($UserApplyList[$key]);
                     }
                 }
                 $result = array("return" => 1, "UserRaceList" => $UserApplyList);
-            } else {
+            }
+            else
+            {
                 $result = array("return" => 0, "UserRaceList" => array(), "comment" => "无此用户");
             }
-        } else {
+        }
+        else
+        {
             $result = array("return" => 0, "UserRaceList" => array(), "comment" => "请指定一个有效的用户ID");
         }
         echo json_encode($result);
@@ -1440,5 +1458,96 @@ class XraceConfigController extends AbstractController
             $i++;
         }
     }
+    /*
+    * 获取指定选手指定分站的签到信息
+    */
+    public function getRaceUserCheckInAction()
+    {
+        //用户ID
+        $UserId = abs(intval($this->request->UserId));
+        //分站ID
+        $RaceStageId = abs(intval($this->request->RaceStageId));
+        //获取用户签到信息
+        $UserCheckInInfo = $this->oUser->getUserCheckInInfo($UserId,$RaceStageId);
+        //如果找到记录
+        if($UserCheckInInfo['RaceStageId'])
+        {
+            //获得分站信息
+            $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,"RaceStageId,RaceStageName");
+            //如果获取到分站信息
+            if(!$RaceStageInfo['RaceStageId'])
+            {
+                $RaceStageInfo = array();
+            }
+            //获取用户信息
+            $UserInfo = $this->oUser->getUserInfo($UserCheckInInfo['UserId'], 'user_id,name');
+            //如果有获取到用户信息
+            if (!$UserInfo['user_id'])
+            {
+                $UserInfo = array();
+            }
+            //根据用户获取报名记录
+            $UserRaceList = $this->oUser->getRaceUserList(array('UserId' => $UserInfo['user_id'],'RaceStageId'=>$RaceStageInfo['RaceStageId']));
+            //初始化空的比赛列表
+            $RaceList = array();
+            //初始化空的分组列表
+            $RaceGroupList = array();
+            //循环报名记录
+            foreach($UserRaceList as $key => $ApplyInfo)
+            {
+                if(!isset($RaceList[$ApplyInfo['RaceId']]))
+                {
+                    $RaceInfo = $this->oRace->getRace($ApplyInfo['RaceId'], "RaceId,RaceName");
+                    if (isset($RaceInfo['RaceId']))
+                    {
+                        $RaceList[$ApplyInfo['RaceId']] = $RaceInfo;
+                    }
+                }
+                if(!isset($RaceGroupList[$ApplyInfo['RaceGroupId']]))
+                {
+                    $RaceGroupInfo = $this->oRace->getRaceGroup($ApplyInfo['RaceGroupId'], "RaceGroupId,RaceGroupName");
+                    if (isset($RaceGroupInfo['RaceGroupId']))
+                    {
+                        $RaceGroupList[$ApplyInfo['RaceGroupId']] = $RaceGroupInfo;
+                    }
+                }
+                $UserRaceList[$key]['RaceName'] = $RaceList[$ApplyInfo['RaceId']]['RaceName'];
+                $UserRaceList[$key]['RaceGroupName'] = $RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupName'];
+            }
+            //全部置为空
+            $result = array("return" => 1, "UserInfo" => $UserInfo, "RaceStageInfo" => $RaceStageInfo);
+        }
+        else
+        {
+            //全部置为空
+            $result = array("return" => 0, "UserInfo" => array(), "RaceStageInfo" => array(), "comment" => "签到信息有误");
+        }
+        echo json_encode($result);
+    }
+    /*
+ * 获取指定选手指定分站的签到信息
+ */
+    public function getRaceUserCheckInListAction()
+    {
+        //用户ID
+        $UserId = abs(intval($this->request->UserId));
+        //获取用户签到信息
+        $UserCheckInList = $this->oUser->getRaceUserCheckInList(array('UserId'=>$UserId));
+        //初始化空的分站列表
+        $RaceStageList = array();
+        foreach($UserCheckInList as $key => $CheckInInfo)
+        {
+            if(!isset($RaceStageList[$CheckInInfo['RaceStageId']]))
+            {
+                $RaceStageInfo = $this->oRace->getRaceStage($CheckInInfo['RaceStageId'], "RaceStageId,RaceStageName");
+                if(isset($RaceStageInfo['RaceStageId']))
+                {
+                    $RaceStageList[$CheckInInfo['RaceStageId']] = $RaceStageInfo;
+                }
+            }
+            $UserCheckInList[$key]['RaceStageName'] = $RaceStageList[$CheckInInfo['RaceStageId']]['RaceStageName'];
+        }
+        $result = array("return" => 1, "UserCheckInList" => $UserCheckInList);
+        echo json_encode($result);
+    }
 }
-    //insert into xrace.user_race (RaceCatalogId,UserId,BIB,ChipId,RaceGroupId,RaceStageId,RaceId) select 10,u.user_id,BIB,r.chipcode,g.RaceGroupId,g.RaceStageId,g.RaceId from mylaps.zs_user as r,xrace_config.config_race as g,xrace.user_profile as u where r.Race=g.RaceName and u.name=r.Name}

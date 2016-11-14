@@ -12,9 +12,30 @@
     <title>同时加载两个地图</title>
 </head>
 <body>
-<div id="r-result">请输入:<input type="text" id="suggestId" size="20" value="百度" style="width:150px;" /></div>
+<table width="99%" align="center" class="table table-bordered table-striped">
+    <tr><td>
+            <p>update 2016.11.14
+<p>更新：
+<p>更新了签到信息页面的部分样式，增加了“去签到”的链接
+<p>更新了给前端的用户签到详情接口 get.race.user.check.in
+            <p>update 2016.10.13
+<p>更新：
+<p>更新了Mylaps计时程序的排名规则
+<p>更新了比赛配置页面比赛时间的配置显示规范
+<p>更新了比赛-分组模式下各个组别各自的起止时间配置
+<p>更新了比赛配置页面部分排版
+<p>更新了Mylaps部分程序的执行效率
+<p>更新了报名记录的来源字段ApplySource
+<p>新功能：
+<p>新增了赛事下积分类目的配置
+<p>新增了各个计时点积分的配置
+<p>新增了分站赛签到的数据配置表xarce.user_stage_checkin
+<p>新增了签到状态列表页面
+                </td><tr></table>
+
+<!--  <div id="r-result">请输入:<input type="text" id="suggestId" size="20" value="百度" style="width:150px;" /></div>
 <div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
-<div id="map1_container"><div id="allmap1"></div></div>
+<div id="map1_container"><div id="allmap1"></div></div> -->
 </body>
 </html>
 <script type="text/javascript">

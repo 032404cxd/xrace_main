@@ -1897,8 +1897,8 @@ class Xrace_RaceStageController extends AbstractController
 			$oUser = new Xrace_User();
 			//获取选手名单
 			$RaceUserList = $oUser->getRaceUserListByRace($RaceInfo['RaceId'],$RaceGroupId,0,0);
-			//渲染模板
-			include $this->tpl('Xrace_Race_RaceUserList');
+            //渲染模板
+			include $this->tpl('Xrace_Race_chen');
 		}
 		else
 		{
@@ -2667,6 +2667,7 @@ class Xrace_RaceStageController extends AbstractController
             {
                 $CheckInStatus[$Status]['StatusUrl'] = $StatusInfo['CheckInStatusName'].":"."<a href='".Base_Common::getUrl('','xrace/race.stage','user.check.in.status',array('RaceStageId'=>$RaceStageInfo['RaceStageId'],'UserCheckInStatus'=>$Status)) ."'>".$StatusInfo['UserCount']."人</a>";
             }
+            $CheckInUrl = "<a href='".Base_Common::getUrl('','xrace/race.stage','user.check.in',array('RaceStageId'=>$RaceStageInfo['RaceStageId'])) ."'>去签到</a>";
             //渲染模板
             include $this->tpl('Xrace_Race_RaceUserCheckInList');
         }

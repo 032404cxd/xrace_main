@@ -15,6 +15,8 @@ class Xrace_User extends Base_Widget
 	protected $table_race = 'user_race';
 	protected $table_race_user_team = 'user_team';
     protected $table_stage_checkin = 'user_stage_checkin';
+    //性别列表
+    protected $raceApplySourceList = array('0'=>"未知",'1'=>"线上","2"=>"线下");
 	//性别列表
 	protected $sex = array('1'=>"男","2"=>"女");
 	//实名认证状态
@@ -73,6 +75,11 @@ class Xrace_User extends Base_Widget
     public function getUserCheckInSmsSentStatus()
     {
         return $this->user_checkin_sms_sent_status;
+    }
+    //获得用户签到短信发送状态列表
+    public function getRaceApplySourceList()
+    {
+        return $this->raceApplySourceList;
     }
 	//创建用户
 	public function insertUser(array $bind)
@@ -638,6 +645,8 @@ class Xrace_User extends Base_Widget
 		$fields = Base_common::getSqlFields($fields);
 		//获取需要用到的表名
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
+        //获得比赛ID
+        $whereStage = isset($params['RaceStageId'])?" RaceStageId = '".$params['RaceStageId']."' ":"";
 		//获得比赛ID
 		$whereRace = isset($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
 		//获得用户ID
@@ -647,7 +656,7 @@ class Xrace_User extends Base_Widget
 		//获得赛事ID
 		$whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
 		//所有查询条件置入数组
-		$whereCondition = array($whereCatalog,$whereUser,$whereGroup,$whereRace);
+		$whereCondition = array($whereCatalog,$whereUser,$whereGroup,$whereRace,$whereStage);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by BIB,RaceTeamId,ApplyId desc";
@@ -694,7 +703,8 @@ class Xrace_User extends Base_Widget
 			{
 				$oTeam = new Xrace_Team();
 				$oRace = new Xrace_Race();
-				//初始化空的分组列表
+				$RaceApplySourceList = $this->getRaceApplySourceList();
+                //初始化空的分组列表
 				$RaceGroupList = array();
 				foreach($UserList as $ApplyId => $ApplyInfo)
 				{
@@ -734,6 +744,7 @@ class Xrace_User extends Base_Widget
 						$RaceUserList['RaceUserList'][$ApplyId]['RaceTeamName'] = isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']])?$RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']]['RaceTeamName']:"个人";
 						$RaceUserList['RaceUserList'][$ApplyId]['RaceTeamId'] = isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']])?$ApplyInfo['RaceTeamId']:0;
 						$RaceUserList['RaceUserList'][$ApplyId]['comment'] = json_decode($ApplyInfo['comment'],true);
+                        $RaceUserList['RaceUserList'][$ApplyId]['ApplySourceName'] = $RaceApplySourceList[$ApplyInfo['ApplySource']];
 					}
 				}
 				//如果有获取到最新版本信息
@@ -865,16 +876,32 @@ class Xrace_User extends Base_Widget
         //获取需要用到的表名
         $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
         //获得比赛ID
-        $whereRaceStage = isset($params['RaceStageId'])?" RaceStageId = '".$params['RaceStageId']."' ":"";
+        $whereUser = isset($params['UserId'])?" UserId = ".$params['UserId']:"";
+        //获得比赛ID
+        $whereRaceStage = isset($params['RaceStageId'])?" RaceStageId = ".$params['RaceStageId']:"";
         //获得赛事ID
-        $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
+        $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = ".$params['RaceCatalogId']:"";
         //所有查询条件置入数组
-        $whereCondition = array($whereCatalog,$whereRaceStage);
+        $whereCondition = array($whereUser,$whereCatalog,$whereRaceStage);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
-        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by RaceCatalogId,RaceStageId,UserId desc";
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by CheckInStatus,RaceCatalogId,RaceStageId,UserId desc";
         $return = $this->db->getAll($sql);
         return $return;
+    }
+    /**
+     * 获取单个用户签到记录
+     * @param char $UserId 用户ID
+     * @param char $RaceStageId 分站ID
+     * @param string $fields 所要获取的数据列
+     * @return array
+     */
+    public function getUserCheckInInfo($UserId,$RaceStageId,$fields = '*')
+    {
+        $UserId = trim($UserId);
+        $RaceStageId = intval($RaceStageId);
+        $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
+        return $this->db->selectRow($table_to_process, $fields, '`UserId` = ? and `RaceStageId` = ?', array($UserId,$RaceStageId));
     }
     //ALTER TABLE `user_race` ADD `ApplySource` TINYINT(3) UNSIGNED NOT NULL COMMENT '报名数据来源：1|线上|2线下|待扩充' AFTER `ApplyId`;
 }

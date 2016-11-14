@@ -114,7 +114,8 @@ $table['hs_order']['num'] = 1;
 $table['times']['db'] = 'mylaps';
 $table['times']['num'] = 1;
 
-//用户参加队伍列表
-#$table['zs_times']['db'] = 'mylaps';
-#$table['zs_times']['num'] = 1;
+#签到记录
+$table['user_stage_checkin']['db'] = 'xrace';
+$table['user_stage_checkin']['num'] = 1;
+
 return $table;

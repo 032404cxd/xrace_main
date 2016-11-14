@@ -25,25 +25,23 @@
     {tpl:if(count($RaceUserList))}
   <tr>
     <th align="center" class="rowtip">姓名</th>
+    <th align="center" class="rowtip">报名来源</th>
     <th align="center" class="rowtip">分组</th>
     <th align="center" class="rowtip">所属队伍</th>
     <th align="center" class="rowtip">报名时间</th>
     <th align="center" class="rowtip">选手号码</th>
     <th align="center" class="rowtip">计时芯片ID</th>
-    <th align="center" class="rowtip">XP追踪链接</th>
-    <th align="center" class="rowtip">北斗魔盒设备ID</th>
   </tr>
   {tpl:loop $RaceUserList.RaceUserList $Aid $UserInfo}
   <tr>
     <input type="hidden" name="UserList[{tpl:$Aid/}][ApplyId]" id="UserList[{tpl:$UserInfo.UserId/}][ApplyId]" value="{tpl:$UserInfo.ApplyId/}" />
     <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$UserInfo.UserId/}','{tpl:$RaceInfo.RaceName/}')">{tpl:$UserInfo.Name/}</a>  <a href="javascript:void(0);" onclick="UserRaceDelete('{tpl:$UserInfo.Name/}','{tpl:$UserInfo.ApplyId/}')">退赛</a></th>
+    <th align="center" class="rowtip">{tpl:$UserInfo.ApplySourceName/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.RaceGroupName/} {tpl:if($UserInfo.RaceGroupId>0)}<a href="javascript:void(0);" onclick="UserRaceDeleteByGroup('{tpl:$RaceInfo.RaceId/}','{tpl:$UserInfo.RaceGroupId/}','{tpl:$UserInfo.RaceGroupName/}')">退赛</a>{/tpl:if}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.RaceTeamName/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.ApplyTime/}</th>
     <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$Aid/}][BIB]" id="UserList[{tpl:$UserInfo.UserId/}][BIB]" value="{tpl:$UserInfo.BIB/}" /></th>
     <th align="center" class="rowtip"><input type="text" class="span2" name="UserList[{tpl:$Aid/}][ChipId]" id="UserList[{tpl:$UserInfo.UserId/}][ChipId]" value="{tpl:$UserInfo.ChipId/}" /></th>
-    <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$Aid/}][XpUrl]" id="UserList[{tpl:$UserInfo.UserId/}][XpUrl]" value="{tpl:$UserInfo.comment.XpUrl/}" /></th>
-    <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$Aid/}][BDDeviceId]" id="UserList[{tpl:$UserInfo.UserId/}][BDDeviceId]" value="{tpl:$UserInfo.comment.BDDeviceId/}" /></th>
   </tr>
   {/tpl:loop}
   <tr class="noborder"><td colspan = 7><button type="submit" id="race_user_list_update_submit">提交</button></td>
