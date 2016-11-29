@@ -7,6 +7,7 @@
 <tr class="hover"><th align="center" class="rowtip">赛事分组</th><th align="center" class="rowtip">
 {tpl:if($RaceStageInfo.comment.RaceStructure=="race")}
 		<table width="99%" align="center" class="table table-bordered table-striped">
+			<input type="hidden" name="RaceGroupId" id="RaceGroupId" value="0" />
 			{tpl:loop $RaceStageInfo.comment.SelectedRaceGroup $RaceGroupInfo}
 			<tr class="hover">
 				<th align="center" class="rowtip"><input type="checkbox"  name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][Selected]"  {tpl:if($RaceGroupInfo.Selected > 0)}checked{/tpl:if} value="{tpl:$RaceGroupInfo.RaceGroupId/}" /> {tpl:$RaceGroupInfo.RaceGroupName/}</th>

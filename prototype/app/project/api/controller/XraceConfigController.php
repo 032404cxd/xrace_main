@@ -851,6 +851,10 @@ class XraceConfigController extends AbstractController
                     //默认为分组优先
                     $RaceStageInfo['comment']['RaceStructure'] = "group";
                 }
+                else
+                {
+                    $RaceStageInfo['comment']['RaceStructure'] = "race";
+                }
                 //复写赛事结构
                 $RaceInfo['RaceStructure'] = $RaceStageInfo['comment']['RaceStructure'];
                 //赛事结构为分组优先
@@ -869,9 +873,9 @@ class XraceConfigController extends AbstractController
                         foreach($RaceInfo['comment']['SelectedRaceGroup'] as $k => $v)
                         {
                             //如果查到就保留
-                            if(isset($RaceGroupList[$v]))
+                            if(isset($RaceGroupList[$k]))
                             {
-                                $RaceGroupInfo = $RaceGroupList[$v];
+                                $RaceGroupInfo = $RaceGroupList[$k];
                                 //默认当前组别可选
                                 $RaceGroupInfo['checkable'] = true;
                                 //数据解包
@@ -1515,7 +1519,7 @@ class XraceConfigController extends AbstractController
                 $UserRaceList[$key]['RaceGroupName'] = $RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupName'];
             }
             //全部置为空
-            $result = array("return" => 1, "UserInfo" => $UserInfo, "RaceStageInfo" => $RaceStageInfo);
+            $result = array("return" => 1, "UserCheckInInfo"=>$UserCheckInInfo,"UserRaceList"=>$UserRaceList, "UserInfo" => $UserInfo, "RaceStageInfo" => $RaceStageInfo);
         }
         else
         {
@@ -1525,8 +1529,8 @@ class XraceConfigController extends AbstractController
         echo json_encode($result);
     }
     /*
- * 获取指定选手指定分站的签到信息
- */
+     * 获取指定选手指定分站的签到信息
+     */
     public function getRaceUserCheckInListAction()
     {
         //用户ID

@@ -21,7 +21,7 @@ class Xrace_Race extends Base_Widget
 	protected $raceTimingType = array('mylaps'=>'myLaps芯片计时');
 	protected $raceTimingResultType = array('gunshot'=>'发枪时间','net'=>'净时间');
 	protected $raceLicenseType = array('manager'=>'管理员审核','birthday'=>'生日','sex'=>'性别','age'=>"年龄");
-
+    protected $applySourceList = array(1=>"线上",2=>"线下");
 	public function getRaceStructure()
 	{
 		return $this->raceStructure;
@@ -53,6 +53,10 @@ class Xrace_Race extends Base_Widget
 			return $raceTimingResultTypeList;
 		}
 	}
+    public function getAppSourceList()
+    {
+        return $this->raceLicenseType;
+    }
 
 	//获取所有赛事的列表(已缓存)
 	public function getRaceCatalogList($Display = 0,$fields = "*",$Cache = 0)
@@ -181,7 +185,7 @@ class Xrace_Race extends Base_Widget
 		$where = Base_common::getSqlWhere($whereCondition);
 		$table_to_process = Base_Widget::getDbTable($this->table_group);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceCatalogId desc,RaceGroupId asc";
-		$return = $this->db->getAll($sql);
+        $return = $this->db->getAll($sql);
 		$RaceGroupList = array();
 		if(count($return))
 		{
@@ -1514,4 +1518,44 @@ class Xrace_Race extends Base_Widget
 		}
 		return $RaceCombinationList;
 	}
+	public function CheckIn($RaceStageId,$CheckInCode)
+    {
+        //分解签到码
+        $t = explode("|",$CheckInCode);
+        //用户ID
+        $U = hexdec($t[1]);
+        //分站ID
+        $S = hexdec($t[0]);
+        $oUser = new Xrace_User();
+        //获取签到信息
+        $UserCheckInInfo = $oUser->getUserCheckInInfo($U,$S);
+        //检查签到码
+        if(trim($CheckInCode) == trim($UserCheckInInfo['CheckinCode']))
+        {
+            //如果已经签到，直接返回成功
+            if($UserCheckInInfo['CheckinStatus'] == 1)
+            {
+                return $U;
+            }
+            else
+            {
+                //更新
+                $oUser->updateUserCheckInInfo($U,$S,array('CheckinStatus'=>1,'CheckInTime'=>date("Y-m-d H:i:s",time())));
+                //复查数据
+                $UserCheckInInfo = $oUser->getUserCheckInInfo($U,$S);
+                if($UserCheckInInfo['CheckinStatus'] == 1)
+                {
+                    return $U;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

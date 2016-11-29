@@ -791,7 +791,6 @@ class Xrace_User extends Base_Widget
 	{
 		$ApplyId = intval($ApplyId);
 		$table_to_process = Base_Widget::getDbTable($this->table_race);
-		echo $table_to_process;
 		return $this->db->update($table_to_process, $bind, '`ApplyId` = ?', $ApplyId);
 	}
 	//根据BIB获得用户报名信息
@@ -902,6 +901,30 @@ class Xrace_User extends Base_Widget
         $RaceStageId = intval($RaceStageId);
         $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
         return $this->db->selectRow($table_to_process, $fields, '`UserId` = ? and `RaceStageId` = ?', array($UserId,$RaceStageId));
+    }
+    /**
+     * 更新单个用户签到记录
+     * @param char $UserId 用户ID
+     * @param char $RaceStageId 分站ID
+     * @param string $bind 所要更新的数据列
+     * @return array
+     */
+    public function updateUserCheckInInfo($UserId,$RaceStageId,$bind)
+    {
+        $UserId = trim($UserId);
+        $RaceStageId = intval($RaceStageId);
+        $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
+        return $this->db->update($table_to_process, $bind, '`UserId` = ? and `RaceStageId` = ?', array($UserId,$RaceStageId));
+    }
+    /**
+     * 新增单个用户签到记录
+     * @param string $fields 所要添加的数据列
+     * @return array
+     */
+    public function insertUserCheckInInfo($bind)
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
+        return $this->db->insert($table_to_process, $bind);
     }
     //ALTER TABLE `user_race` ADD `ApplySource` TINYINT(3) UNSIGNED NOT NULL COMMENT '报名数据来源：1|线上|2线下|待扩充' AFTER `ApplyId`;
 }
