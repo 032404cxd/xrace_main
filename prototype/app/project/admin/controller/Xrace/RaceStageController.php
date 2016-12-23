@@ -2015,7 +2015,7 @@ class Xrace_RaceStageController extends AbstractController
 					$content= fgets($handle, 8080);
 					//以,为分隔符解开
 					$t = explode(",",$content);
-					$mobile = trim($t[5]);
+                    $mobile = trim($t[5]);
 					//如果手机号码默认不填
                     if($mobile=='tbd')
 					{
@@ -2057,7 +2057,7 @@ class Xrace_RaceStageController extends AbstractController
 					//如果检测到用户ID
 					if(isset($UserInfo['user_id']))
 					{
-						//如果姓名为空
+					    //如果姓名为空
 						if($UserInfo['name']=="")
 						{
 							//$bind = array('name'=>trim($t[2]),'sex'=>intval($t[3]));
@@ -2078,8 +2078,8 @@ class Xrace_RaceStageController extends AbstractController
 						//获取车队信息
 						$RaceTeamInfo = $oTeam->getRaceTeamInfoByName($RaceTeamName,'team_id as RaceTeamId,name as RaceTeamName');
 						//判断车队是否获取到
-						$RaceTeamId = isset($RaceTeamInfo['RaceTeamId'])?$RaceTeamInfo['RaceTeamId']:0;
-						if($RaceGroupId==0)
+						$RaceTeamId = isset($RaceTeamInfo['RaceTeamId'])?$RaceTeamInfo['RaceTeamId']:$oTeam->insertRaceTeam(array("name"=>$RaceTeamName,"crt_time"=>date("Y-m-d H:i:s",time()),"is_open"=>0));
+                        if($RaceGroupId==0)
                         {
                             if(!isset($RaceGroupList[trim(iconv('GB2312', 'UTF-8//IGNORE', $t[1]))]))
                             {
@@ -2770,7 +2770,7 @@ class Xrace_RaceStageController extends AbstractController
         if($PermissionCheck['return'])
         {
             //比赛ID
-            $RaceStageId = intval($this->request->RaceId);
+            $RaceStageId = intval($this->request->RaceStageId);
             //获取BIB号码列表
             $UserRaceList = $this->request->from('UserRaceList');
             $oUser = new Xrace_User();
@@ -2793,7 +2793,77 @@ class Xrace_RaceStageController extends AbstractController
             include $this->tpl('403');
         }
     }
-
+    //批量下载Mylaps用的用户名单
+    public function mylpasListDownloadAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            //分站ID
+            $RaceStageId = intval($this->request->RaceStageId);
+            //生成查询条件
+            $params = array('RaceStageId'=>$RaceStageId);
+            $oUser = new Xrace_User();
+            $oTeam = new Xrace_Team();
+            //获取选手名单
+            $RaceUserList = $oUser->getRaceUserList($params);
+            $filename = 'xxx.txt';
+            header("Content-Type: application/octet-stream");
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            foreach ($RaceUserList as $key => $ApplyInfo)
+            {
+                $t = array();
+                $t['BIB'] = $ApplyInfo['BIB'];
+                if(!isset($UserList[$ApplyInfo['UserId']]))
+                {
+                    $UserInfo = $oUser->getUserInfo($ApplyInfo['UserId'],"user_id,name,sex");
+                }
+                else
+                {
+                    $UserInfo = $UserList[$ApplyInfo['UserId']];
+                }
+                if(!isset($RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupId']))
+                {
+                    $RaceGroupInfo = $this->oRace->getRaceGroup($ApplyInfo['RaceGroupId'],'RaceGroupId,RaceGroupName');
+                }
+                else
+                {
+                    $RaceGroupInfo = $RaceGroupList[$ApplyInfo['RaceGroupId']];
+                }
+                if(!isset($RaceList[$ApplyInfo['RaceId']]['RaceId']))
+                {
+                    $RaceInfo = $this->oRace->getRace($ApplyInfo['RaceId'],'RaceId,RaceName');
+                }
+                else
+                {
+                    $RaceInfo = $RaceList[$ApplyInfo['RaceId']];
+                }
+                if(!isset($TeamList[$ApplyInfo['RaceTeamId']]['team_id']))
+                {
+                    $TeamInfo = $oTeam->getRaceTeamInfo($ApplyInfo['RaceTeamId'],'team_id,name');
+                }
+                else
+                {
+                    $TeamInfo = $TeamList[$ApplyInfo['RaceTeamId']];
+                }
+                $t['Name'] = $UserInfo['name'];
+                $t['sex'] = $UserInfo['sex'];
+                $t['RaceGroupName'] = $RaceGroupInfo['RaceGroupName'];
+                $t['RaceName'] = $RaceInfo['RaceName'];
+                $t['ChipId'] = $ApplyInfo['ChipId'];
+                $t['TeamName'] = $TeamInfo['name'];
+                echo implode(",",$t)."\r\n";
+            }
+            $response = array('errno' => 0);
+            echo json_encode($response);
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
 
 
 }

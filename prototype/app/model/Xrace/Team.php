@@ -21,6 +21,12 @@ class Xrace_Team extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		return $this->db->selectRow($table_to_process, $fields, '`team_id` = ?', $RaceTeamId);
 	}
+    //添加单个队伍
+    public function insertRaceTeam(array $bind)
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table);
+        return $this->db->insert($table_to_process, $bind);
+    }
 	/**
 	 * 获取单个队伍记录
 	 * @param char $TeamId 队伍ID
@@ -108,7 +114,7 @@ class Xrace_Team extends Base_Widget
 	 */
 	public function getRaceTeamListByGroup($RaceGroupInfo,$Cache = 1)
 	{
-		$oMemCache = new Base_Cache_Memcache("B5M");
+		$oMemCache = new Base_Cache_Memcache("xrace");
 		$CacheKey = "TeamList_".$RaceGroupInfo['RaceGroupId'];
 		//如果需要获取缓存
 		if($Cache == 1)

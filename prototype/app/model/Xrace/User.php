@@ -15,6 +15,7 @@ class Xrace_User extends Base_Widget
 	protected $table_race = 'user_race';
 	protected $table_race_user_team = 'user_team';
     protected $table_stage_checkin = 'user_stage_checkin';
+    protected $table_team = 'team';
     //性别列表
     protected $raceApplySourceList = array('0'=>"未知",'1'=>"线上","2"=>"线下");
 	//性别列表
@@ -660,13 +661,13 @@ class Xrace_User extends Base_Widget
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by BIB,RaceTeamId,ApplyId desc";
-		$return = $this->db->getAll($sql);
+        $return = $this->db->getAll($sql);
 		return $return;
 	}
 	//获取某场比赛的报名名单
 	public function getRaceUserListByRace($RaceId,$RaceGroupId,$TeamId=0,$Cache = 1)
 	{
-		$oMemCache = new Base_Cache_Memcache("B5M");
+		$oMemCache = new Base_Cache_Memcache("xrace");
 		//如果需要获取缓存
 		if($Cache == 1)
 		{
@@ -925,6 +926,18 @@ class Xrace_User extends Base_Widget
     {
         $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
         return $this->db->insert($table_to_process, $bind);
+    }
+    /**
+     * 获取单个队伍记录
+     * @param char $TeamId 队伍ID
+     * @param string $fields 所要获取的数据列
+     * @return array
+     */
+    public function getTeamInfo($TeamId, $fields = '*')
+    {
+        $TeamId = intval($TeamId);
+        $table_to_process = Base_Widget::getDbTable($this->table_team);
+        return $this->db->selectRow($table_to_process, $fields, '`team_id` = ?', $TeamId);
     }
     //ALTER TABLE `user_race` ADD `ApplySource` TINYINT(3) UNSIGNED NOT NULL COMMENT '报名数据来源：1|线上|2线下|待扩充' AFTER `ApplyId`;
 }

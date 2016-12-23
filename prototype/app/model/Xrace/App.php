@@ -243,7 +243,7 @@ class Xrace_App extends Base_Widget
 	 */
 	public function getNewestVersionList($Cache = 1)
 	{
-		$oMemCache = new Base_Cache_Memcache("B5M");
+		$oMemCache = new Base_Cache_Memcache("xrace");
 		//如果需要获取缓存
 		if($Cache == 1)
 		{

@@ -61,7 +61,7 @@ class Xrace_Race extends Base_Widget
 	//获取所有赛事的列表(已缓存)
 	public function getRaceCatalogList($Display = 0,$fields = "*",$Cache = 0)
 	{
-        $oMemCache = new Base_Cache_Memcache("B5M");
+        $oMemCache = new Base_Cache_Memcache("xrace");
         //如果需要获取缓存
         if($Cache == 1)
         {
@@ -116,7 +116,7 @@ class Xrace_Race extends Base_Widget
 	public function getRaceCatalog($RaceCatalogId, $fields = '*',$Cache = 0)
 	{
         $RaceCatalogId = intval($RaceCatalogId);
-        $oMemCache = new Base_Cache_Memcache("B5M");
+        $oMemCache = new Base_Cache_Memcache("xrace");
         //如果需要获取缓存
         if($Cache == 1)
         {
@@ -1285,7 +1285,7 @@ class Xrace_Race extends Base_Widget
 	public function raceLicenseCheck($RaceLicenseList,$UserId,$RaceStageInfo,$RaceGroupInfo)
 	{
 		$oUser = new Xrace_User();
-		$oMemCache = new Base_Cache_Memcache("B5M");
+		$oMemCache = new Base_Cache_Memcache("xrace");
 		{
 			//获取缓存
 			$m = $oMemCache->get("UserInfo_".$UserId);

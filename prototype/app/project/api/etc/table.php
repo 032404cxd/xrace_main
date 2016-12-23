@@ -6,6 +6,18 @@
 
 $table = array();
 
+#系统更新记录
+$table['UploadLog']['db'] = 'xrace_config';
+$table['UploadLog']['num'] = 1;
+
+#用户信息状态
+$table['UserInfo']['db'] = 'xrace_user';
+$table['UserInfo']['num'] = 1;
+
+#用户审核状态
+$table['UserReg']['db'] = 'xrace_user';
+$table['UserReg']['num'] = 1;
+
 #用户审核状态
 $table['user_auth']['db'] = 'xrace';
 $table['user_auth']['num'] = 1;

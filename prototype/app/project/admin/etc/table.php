@@ -6,6 +6,10 @@
 
 $table = array();
 
+#系统更新记录
+$table['UpdateLog']['db'] = 'xrace_config';
+$table['UpdateLog']['num'] = 1;
+
 #用户审核状态
 $table['user_auth']['db'] = 'xrace';
 $table['user_auth']['num'] = 1;
@@ -129,6 +133,5 @@ $table['config_credit']['num'] = 1;
 #签到记录
 $table['user_stage_checkin']['db'] = 'xrace';
 $table['user_stage_checkin']['num'] = 1;
-
 
 return $table;
