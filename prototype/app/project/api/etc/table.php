@@ -6,6 +6,18 @@
 
 $table = array();
 
+#积分类目
+$table['credit_user']['db'] = 'xrace_credit';
+$table['credit_user']['num'] = 1;
+
+#积分类目
+$table['config_credit']['db'] = 'xrace_config';
+$table['config_credit']['num'] = 1;
+
+#动作
+$table['config_action']['db'] = 'xrace_config';
+$table['config_action']['num'] = 1;
+
 #系统更新记录
 $table['UploadLog']['db'] = 'xrace_config';
 $table['UploadLog']['num'] = 1;

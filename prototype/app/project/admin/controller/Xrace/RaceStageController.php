@@ -65,8 +65,6 @@ class Xrace_RaceStageController extends AbstractController
 				{
 					//获取赛事ID
 					$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceCatalogName'] = isset($RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceCatalogName'])?$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceCatalogName']:$RaceCatalogList[$RaceStageInfo['RaceCatalogId']]['RaceCatalogName'];
-					//获取比赛结构名称
-					$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceStageList'][$RaceStageId]['RaceStructureName'] = $RaceStructureList[$RaceStageInfo['comment']['RaceStructure']];
 					//解包压缩数组
 					$RaceStageInfo['RaceStageIcon'] = json_decode($RaceStageInfo['RaceStageIcon'],true);
 					$t = array();
@@ -198,6 +196,8 @@ class Xrace_RaceStageController extends AbstractController
 							}
 						}
 					}
+                    //获取比赛结构名称
+                    $RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceStageList'][$RaceStageId]['RaceStructureName'] = $RaceStructureList[$RaceStageInfo['comment']['RaceStructure']];
 					//拼接页面显示的数量
 					$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceStageList'][$RaceStageId]['SelectedProductList'] = count($t2)>0?implode("/", $t2):"尚未配置";
 				}

@@ -46,5 +46,13 @@ $db['xrace_user'][0] = array(
 	'port' => PORT_LOCAL,
 	'database' => 'xrace_user',
 );
+
+$db['xrace_credit'][0] = array(
+	'host' => HOST_LOCAL,
+	'user' => USER_LOCAL,
+	'password' => PASSWORD_LOCAL,
+	'port' => PORT_LOCAL,
+	'database' => 'xrace_credit',
+);
 return $db;
 ?>

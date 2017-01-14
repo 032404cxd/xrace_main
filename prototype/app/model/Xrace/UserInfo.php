@@ -90,7 +90,7 @@ class Xrace_UserInfo extends Base_Widget
             }
             else
             {
-                //echo "cahced";
+                //echo "UserInfo cahced";
             }
         }
         if($Cache == 0)
@@ -146,6 +146,18 @@ class Xrace_UserInfo extends Base_Widget
         return $this->db->insert($table_to_process, $bind);
     }
     /**
+     * 更新单个用户记录
+     * @param char $UserId 用户ID
+     * @param array $bind 更新的数据列表
+     * @return boolean
+     */
+    public function updateUser($UserId, array $bind)
+    {
+        $UserId = trim($UserId);
+        $table_to_process = Base_Widget::getDbTable($this->table);
+        return $this->db->update($table_to_process, $bind, '`UserId` = ?', $UserId);
+    }
+    /**
      * 根据指定字段获取单个用户记录
      * @param char $UserId 用户ID
      * @param string $fields 所要获取的数据列
@@ -186,9 +198,7 @@ class Xrace_UserInfo extends Base_Widget
                 $Time = time();
                 //创建用户
                 $UserRegInfo = array("RegPlatform"=>"Mobile","RegKey"=>$Mobile,"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>$ValidateCode,'ExceedTime'=>date("Y-m-d H:i:s",$Time+3600));
-                print_R($UserRegInfo);
                 $RegId = $this->insertRegInfo($UserRegInfo);
-                echo "RegId:".$RegId;
             }
         }
         else
@@ -216,45 +226,104 @@ class Xrace_UserInfo extends Base_Widget
      */
     public function ThirdPartyLogin($LoginData,$LoginSource)
     {
-        echo "LoginSource:".$LoginSource;
         $oMemCache = new Base_Cache_Memcache("xrace");
         switch ($LoginSource)
         {
             case "WeChat":
                 if(isset($LoginData['openid']))
                 {
-                    echo "openId:".$LoginData['openid']."<br>";
                     //获取缓存
                     $m = $oMemCache->get("ThirdParty_".$LoginSource."_".$LoginData['openid']);
+                    //缓存数据解包
+                    $m = json_decode($m,true);
                     //如果获取到的数据为0
-                    if(intval($m)==0)
+                    if(intval($m['UserId'])==0)
                     {
                         //根据第三方平台ID查询用户
-                        $UserInfo = $this->getUserByColumn("WeChatId",$LoginData['openid']);
+                        $UserInfo = $this->getUserByColumn("WeChatId",$LoginData['openid'],"UserId,WeChatInfo");
                         //如果查询到
                         if(isset($UserInfo['UserId']))
                         {
+                            //微信数据解包
+                            $UserInfo['WeChatInfo'] = json_decode($UserInfo['WeChatInfo'],true);
                             //用户数据比对
+                            if(($UserInfo['WeChatInfo']['UserImg'] = $LoginData['headimgurl']) && ($UserInfo['WeChatInfo']['NickName'] = $LoginData['nickname']))
+                            {
+                                echo "UserInfo Cached";
+                            }
+                            else
+                            {
+                                //更新用户数据
+                                $WeChatInfo = array('NickName' => $LoginData['nickname'],'UserImg' => $LoginData['headimgurl']);
+                                $UserInfoUpdate = array('WeChatInfo' => json_encode($WeChatInfo));
+                                $this->updateUser($UserInfo['UserId'], $UserInfoUpdate);
+                            }
                             //写缓存
+                            $UserInfoCache = array("UserId"=>$UserInfo['UserId'],'NickName'=>$LoginData['nickname'],'UserImg'=>$LoginData['headimgurl']);
+                            $oMemCache->set("ThirdParty_".$LoginSource."_".$LoginData['openid'],json_encode($UserInfoCache),86400);
+                            return $UserInfoCache;
                         }
                         else
                         {
-                            //创建用户
-                            //写缓存
+                            //获取当前时间
+                            $Time = time();
+                            //创建用户注册记录
+                            $UserRegInfo = array("RegPlatform"=>"WeChat","RegKey"=>$LoginData['openid'],"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>"");
+                            $RegId = $this->insertRegInfo($UserRegInfo);
+                            //如果写入成功
+                            if($RegId)
+                            {
+                                //通知前端需要进一步获取手机
+                                return array('RegId'=>$RegId,'NeedMobile'=>1);
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                     }
-                    else
+                    else//没拿到缓存
                     {
-                        $UserInfo = $this->getUserInfo($m);
+                        //获取用户信息
+                        $UserInfo = $this->getUserInfo($m['UserId']);
                         if(isset($UserInfo['UserId']))
                         {
+                            //微信数据解包
+                            $UserInfo['WeChatInfo'] = json_decode($UserInfo['WeChatInfo'],true);
                             //用户数据比对
+                            if(($UserInfo['WeChatInfo']['UserImg'] = $LoginData['headimgurl']) && ($UserInfo['WeChatInfo']['NickName'] = $LoginData['nickname']))
+                            {
+                                //echo "UserInfo Cached";
+                            }
+                            else
+                            {
+                                //更新用户数据
+                                $WeChatInfo = array('NickName' => $LoginData['nickname'],'UserImg' => $LoginData['headimgurl']);
+                                $UserInfoUpdate = array('WeChatInfo' => json_encode($WeChatInfo));
+                                $this->updateUser($UserInfo['UserId'], $UserInfoUpdate);
+                            }
                             //写缓存
+                            $UserInfoCache = array("UserId"=>$UserInfo['UserId'],'NickName'=>$LoginData['nickname'],'UserImg'=>$LoginData['headimgurl']);
+                            $oMemCache->set("ThirdParty_".$LoginSource."_".$LoginData['openid'],json_encode($UserInfoCache),86400);
+                            return $UserInfoCache;
                         }
                         else
                         {
-                            //创建用户
-                            //写缓存
+                            //获取当前时间
+                            $Time = time();
+                            //创建用户注册记录
+                            $UserRegInfo = array("RegPlatform"=>"WeChat","RegKey"=>$LoginData['openid'],"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>"");
+                            $RegId = $this->insertRegInfo($UserRegInfo);
+                            //如果写入成功
+                            if($RegId)
+                            {
+                                //通知前端需要进一步获取手机
+                                return array('RegId'=>$RegId,'NeedMobile'=>1);
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
@@ -262,6 +331,168 @@ class Xrace_UserInfo extends Base_Widget
                 {
                     return false;
                 }
+            case "Weibo":
+                if(isset($LoginData['openid']))
+                {
+                    //获取缓存
+                    $m = $oMemCache->get("ThirdParty_".$LoginSource."_".$LoginData['UID']);
+                    //缓存数据解包
+                    $m = json_decode($m,true);
+                    //如果获取到的数据为0
+                    if(intval($m['UserId'])==0)
+                    {
+                        //根据第三方平台ID查询用户
+                        $UserInfo = $this->getUserByColumn("WeiboId",$LoginData['openid'],"UserId,WeiboInfo");
+                        //如果查询到
+                        if(isset($UserInfo['UserId']))
+                        {
+                            //微信数据解包
+                            $UserInfo['WeiboInfo'] = json_decode($UserInfo['WeiboInfo'],true);
+                            //用户数据比对
+                            if(($UserInfo['WeiboInfo']['UserImg'] = $LoginData['headimgurl']) && ($UserInfo['WeiboInfo']['NickName'] = $LoginData['nickname']))
+                            {
+                                echo "UserInfo Cached";
+                            }
+                            else
+                            {
+                                //更新用户数据
+                                $WeChatInfo = array('NickName' => $LoginData['nickname'],'UserImg' => $LoginData['headimgurl']);
+                                $UserInfoUpdate = array('WeiboInfo' => json_encode($WeChatInfo));
+                                $this->updateUser($UserInfo['UserId'], $UserInfoUpdate);
+                            }
+                            //写缓存
+                            $UserInfoCache = array("UserId"=>$UserInfo['UserId'],'NickName'=>$LoginData['nickname'],'UserImg'=>$LoginData['headimgurl']);
+                            $oMemCache->set("ThirdParty_".$LoginSource."_".$LoginData['UID'],json_encode($UserInfoCache),86400);
+                            return $UserInfoCache;
+                        }
+                        else
+                        {
+                            //获取当前时间
+                            $Time = time();
+                            //创建用户注册记录
+                            $UserRegInfo = array("RegPlatform"=>"Weibo","RegKey"=>$LoginData['UID'],"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>"");
+                            $RegId = $this->insertRegInfo($UserRegInfo);
+                            //如果写入成功
+                            if($RegId)
+                            {
+                                //通知前端需要进一步获取手机
+                                return array('RegId'=>$RegId,'NeedMobile'=>1);
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                    else//没拿到缓存
+                    {
+                        //获取用户信息
+                        $UserInfo = $this->getUserInfo($m['UserId']);
+                        if(isset($UserInfo['UserId']))
+                        {
+                            //微信数据解包
+                            $UserInfo['WeiboInfo'] = json_decode($UserInfo['WeChatInfo'],true);
+                            //用户数据比对
+                            if(($UserInfo['WeiboInfo']['UserImg'] = $LoginData['headimgurl']) && ($UserInfo['WeiboInfo']['NickName'] = $LoginData['nickname']))
+                            {
+                                //echo "UserInfo Cached";
+                            }
+                            else
+                            {
+                                //更新用户数据
+                                $WeChatInfo = array('NickName' => $LoginData['nickname'],'UserImg' => $LoginData['headimgurl']);
+                                $UserInfoUpdate = array('WeiboInfo' => json_encode($WeChatInfo));
+                                $this->updateUser($UserInfo['UserId'], $UserInfoUpdate);
+                            }
+                            //写缓存
+                            $UserInfoCache = array("UserId"=>$UserInfo['UserId'],'NickName'=>$LoginData['nickname'],'UserImg'=>$LoginData['headimgurl']);
+                            $oMemCache->set("ThirdParty_".$LoginSource."_".$LoginData['UID'],json_encode($UserInfoCache),86400);
+                            return $UserInfoCache;
+                        }
+                        else
+                        {
+                            //获取当前时间
+                            $Time = time();
+                            //创建用户注册记录
+                            $UserRegInfo = array("RegPlatform"=>"Weibo","RegKey"=>$LoginData['UID'],"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>"");
+                            $RegId = $this->insertRegInfo($UserRegInfo);
+                            //如果写入成功
+                            if($RegId)
+                            {
+                                //通知前端需要进一步获取手机
+                                return array('RegId'=>$RegId,'NeedMobile'=>1);
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+        }
+    }
+    /**
+     * 第三方登录时绑定手机
+     * @param string $Mobile 用户手机号码
+     * @param string $RegId 注册ID
+     * @return array
+     */
+    public function thirdPartyRegMobile($RegId,$Mobile)
+    {
+        //获取注册记录
+        $RegInfo = $this->getRegInfo($RegId);
+        //如果找到记录
+        if(isset($RegInfo['RegId']))
+        {
+            //如果在有效期内
+            if(strtotime($RegInfo['ExceedTime'])>=time())
+            {
+                //验证通过，注册
+                $UserInfo = array('Mobile'=>$Mobile,'RegTime'=>$RegInfo['RegTime'],'LastLoginTime'=>date("Y-m-d H:i:s"));
+                if($RegInfo['RegPlatform'] == "WeChat")
+                {
+                    $UserInfo['WeChatId'] = $RegInfo['RegPlatform'];
+                }
+                elseif($RegInfo['RegPlatform'] == "Weibo")
+                {
+                    $UserInfo['WeiboId'] = $RegInfo['RegPlatform'];
+                }
+                elseif($RegInfo['RegPlatform'] == "QQ")
+                {
+                    $UserInfo['QQ'] = $RegInfo['RegPlatform'];
+                }
+                elseif($RegInfo['RegPlatform'] == "Mobile")
+                {
+                    //手机注册只保留密码
+                    $UserInfo['Password'] = md5($RegInfo['Password']);
+                }
+                //创建用户
+                $UserId = $this->insertUser($UserInfo);
+                return $UserId;
+            }
+            else
+            {
+                //更新注册记录，生成新的验证码和过期时间
+                $bind = array('ExceedTime'=>date("Y-m-d H:i:s",time()+3600),'ValidateCode' => sprintf("%06d",rand(1,999999)));
+                $Update = $this->updateRegInfo($RegInfo['RegId'],$bind);
+                //更新成功
+                if($Update)
+                {
+                    return -1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+        else
+        {
+            return 0;
         }
     }
     /**

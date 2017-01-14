@@ -1,6 +1,6 @@
 <?php
 /**
- * 产品管理
+ * 积分管理
  * @author Chen<cxd032404@hotmail.com>
  */
 
@@ -27,7 +27,7 @@ class Xrace_CreditController extends AbstractController
 		$this->oCredit = new Xrace_Credit();
 		$this->oRace = new Xrace_Race();
 	}
-	//商品类型列表页面
+	//积分列表页面
 	public function indexAction()
 	{
 		//检查权限
@@ -38,16 +38,16 @@ class Xrace_CreditController extends AbstractController
 			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
 			//获取赛事列表
 			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
-			//获取商品类型列表
+			//获取积分列表
 			$CreditArr = $this->oCredit->getCreditList($RaceCatalogId);
-			//初始空的产品类型列表
+			//初始空的积分列表
 			$CreditList = array();
-			//循环产品类型列表
+			//循环积分列表
 			foreach($CreditArr as $CreditId => $CreditInfo)
 			{
-				//获取产品类型信息
+				//获取积分信息
 				$CreditList[$CreditInfo['RaceCatalogId']]['CreditList'][$CreditId] = $CreditInfo;
-				//计算商品类型数量
+				//计算积分数量
 				$CreditList[$CreditInfo['RaceCatalogId']]['CreditCount'] = isset($CreditList[$CreditInfo['RaceCatalogId']]['CreditCount'])?$CreditList[$CreditInfo['RaceCatalogId']]['CreditCount']+1:1;
 				//如果对应赛事有配置
 				if(isset($RaceCatalogList[$CreditInfo['RaceCatalogId']]))
@@ -69,7 +69,7 @@ class Xrace_CreditController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//添加产品配置填写配置页面
+	//添加积分配置填写配置页面
 	public function creditAddAction()
 	{
 		//检查权限
@@ -87,7 +87,7 @@ class Xrace_CreditController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//添加新产品类型
+	//添加新积分
 	public function creditInsertAction()
 	{
 		//检查权限
@@ -96,7 +96,7 @@ class Xrace_CreditController extends AbstractController
 		{
 			//获取页面参数
 			$bind=$this->request->from('CreditName','RaceCatalogId');
-			//商品类型名称不能为空
+			//积分名称不能为空
 			if(trim($bind['CreditName'])=="")
 			{
 				$response = array('errno' => 1);
@@ -120,7 +120,7 @@ class Xrace_CreditController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//修改商品类型页面
+	//修改积分页面
 	public function creditModifyAction()
 	{
 		//检查权限
@@ -129,9 +129,9 @@ class Xrace_CreditController extends AbstractController
 		{
 			//赛事列表
 			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
-			//商品类型ID
+			//积分ID
 			$CreditId = intval($this->request->CreditId);
-			//获取商品类型信息
+			//获取积分信息
 			$CreditInfo = $this->oCredit->getCredit($CreditId,'*');
 			//渲染模板
 			include $this->tpl('Xrace_Credit_CreditModify');
@@ -142,7 +142,7 @@ class Xrace_CreditController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//更新商品类型
+	//更新积分
 	public function creditUpdateAction()
 	{
 		//检查权限
@@ -152,7 +152,7 @@ class Xrace_CreditController extends AbstractController
 
 			//获取页面参数
 			$bind=$this->request->from('CreditId','CreditName','RaceCatalogId');
-			//商品类型名称不能为空
+			//积分名称不能为空
 			if(trim($bind['CreditName'])=="")
 			{
 				$response = array('errno' => 1);
@@ -176,7 +176,7 @@ class Xrace_CreditController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//删除产品类型信息
+	//删除积分信息
 	public function creditDeleteAction()
 	{
 		//检查权限
@@ -193,4 +193,74 @@ class Xrace_CreditController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+    //根据赛事获取积分类目列表
+    public function getCreditListByCatalogAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("CreditModify");
+        if($PermissionCheck['return'])
+        {
+            //赛事ID
+            $RaceCatalogId = intval($this->request->RaceCatalogId);
+            //获取积分列表
+            $CreditList = $this->oCredit->getCreditList($RaceCatalogId,"CreditId,CreditName");
+            //循环积分列表
+            foreach($CreditList as $CreditId => $CreditInfo)
+            {
+                echo  "<option value= '".$CreditId."'>".$CreditInfo['CreditName']."</option>";
+            }
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //根据赛事获取积分类目列表
+    public function getFrequencyConditionAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("CreditModify");
+        if($PermissionCheck['return'])
+        {
+            $this->oAction = new Xrace_Action();
+            //频率
+            $Frequence = trim(urldecode($this->request->Frequence));
+            //动作ID
+            $ActionId = intval($this->request->ActionId);
+            //积分ID
+            $CId = intval($this->request->CId);
+            //动作信息
+            $ActionInfo = $this->oAction->getAction($ActionId,'*');
+            //积分数组解包
+            $ActionInfo['CreditList'] = json_decode($ActionInfo['CreditList'],true);
+            //获取当前选中的积分配置
+            $Credit = $ActionInfo['CreditList'][$CId];
+            //获取可选频率列表
+            $CreditFrequenceList  = $this->oCredit->getCreditFrequenceList();
+            if(isset($CreditFrequenceList[$Frequence]))
+            {
+                if($Credit['Frequency']==$Frequence)
+                {
+                    $params = $Credit['ParamList'];
+                }
+                elseif($Frequence == "dateRange")
+                {
+                    $params['StartDate'] = date("Y-m-d", time());
+                    $params['EndDate'] = date('Y-m-d', time() + 86400);
+                }
+                else
+                {
+                    $params = array();
+                }
+                $ConditionText = $this->oCredit->parthFrequenceConditioToHtml($CreditFrequenceList[$Frequence],$params);
+                echo $ConditionText;
+            }
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
 }

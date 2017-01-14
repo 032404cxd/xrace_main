@@ -734,5 +734,31 @@ class Base_Db
 	{
 	    return $this->error;
 	}
+    public function createTable($table_to_copy,$table_suffix)
+    {
+        $table_to_check = Base_Widget::getDbTable($table_to_copy);
+        $table_to_process = $table_to_check."_".$table_suffix;
+        $exist = $this->checkTableExist($table_to_process);
+        if($exist>0)
+        {
+            return $table_to_process;
+        }
+        else
+        {
+            $sql = "SHOW CREATE TABLE " . $table_to_check;
+            $row = $this->getRow($sql);
+            $sql = $row['Create Table'];
+            $sql = str_replace('`' . $table_to_copy . '`', 'IF NOT EXISTS ' . $table_to_process, $sql);
+            $create = $this->query($sql);
+            if($create)
+            {
+                return $table_to_process;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
 
 }

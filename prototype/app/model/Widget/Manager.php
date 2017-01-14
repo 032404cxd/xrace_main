@@ -484,13 +484,13 @@ class Widget_Manager extends Base_Widget
 				}
                                 $bind['operation_flag'] = 0;
                                 $this->logUserMenuOperation($bind);
-				$return = array('return'=>0,'message'=>"对不起,您没有执行 ".$action." 的权限!");
+				$return = array('return'=>0,'message'=>"对不起,您没有执行 ".$operation.".-.".$action." 的权限!");
 			}
 			else
 			{
                                 $bind['operation_flag'] = 0;
                                 $this->logUserMenuOperation($bind);
-				$return = array('return'=>0,'message'=>"无此权限!");
+				$return = array('return'=>0,'message'=>"无此".$operation."权限!");
 			}
 		}
 		return $return;

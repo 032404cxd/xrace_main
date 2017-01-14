@@ -8,7 +8,6 @@
 class Xrace_Mylaps extends Base_Widget
 {
 	//声明所用到的表
-	#protected $table = 'zs_times';
 	protected $table = 'times';
 
 	/**

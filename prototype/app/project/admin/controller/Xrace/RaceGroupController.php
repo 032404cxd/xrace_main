@@ -64,7 +64,7 @@ class Xrace_RaceGroupController extends AbstractController
 					$RaceGroupList[$value['RaceCatalogId']]['RaceCatalogName'] = 	"未定义";
 				}
 				//数据解包
-				$RaceGroupList[$value['RaceCatalogId']]['RaceGroupList'][$key]['comment'] = json_decode($RaceGroupList[$value['RaceCatalogId']]['RaceGroupList'][$key]['comment'],true);
+				//$RaceGroupList[$value['RaceCatalogId']]['RaceGroupList'][$key]['comment'] = json_decode($RaceGroupList[$value['RaceCatalogId']]['RaceGroupList'][$key]['comment'],true);
 			}
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceGroupList');
