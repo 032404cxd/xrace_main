@@ -162,7 +162,7 @@ class Xrace_Credit extends Base_Widget
         //更新汇总表
         $CreditSum = $this->db->insert_update($table_user,$bind,$bindUpdate);
         //新增记录表
-        $CreditLog = $this->db->insert($table_user_log, $bind);
+        $CreditLog = $this->db->insert($table_user_log, $bindLog);
         //如果同时成功
         if($CreditSum && $CreditLog)
         {
