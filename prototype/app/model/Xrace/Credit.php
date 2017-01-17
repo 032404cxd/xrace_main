@@ -9,7 +9,8 @@ class Xrace_Credit extends Base_Widget
 {
 	//声明所用到的表
 	protected $table = 'config_credit';
-    protected $table_credit_user = 'credit_user';
+    protected $table_credit_update_log = 'user_credit_log';
+    protected $table_credit_user = 'user_credit_sum';
 
     protected $creditFrequenceList = array("day"=>array("Name"=>"每日","ParamList"=>array()),
         "week"=>array("Name"=>"每周","ParamList"=>array()),
@@ -143,9 +144,37 @@ class Xrace_Credit extends Base_Widget
         }
         return implode(" ",$t);
     }
-    public function Credit($CreditInfo,$UserId)
+    public function Credit($CreditInfo,$ActionId,$UserId)
     {
+        $this->db->begin();
+        //计算所在用户分表的后缀
         $suffix = substr(md5($UserId),0,1);
-        $this->db->createTable($this->table_credit_user,$suffix);
+        //检测用户积分变更表是否存在
+        $table_user_log = $this->db->createTable($this->table_credit_update_log,$suffix);
+        //检测用户积分汇总表是否存在
+        $table_user = $this->db->createTable($this->table_credit_user,$suffix);
+        //积分变更表的数据
+        $bindLog = array("ActionId"=>$ActionId,"UserId"=>$UserId,"CreditId"=>$CreditInfo['CreditId'],"Time"=>date("Y-m-d H:i:s",time()),"Credit"=>$CreditInfo['Credit']);
+        //积分表的变更数据
+        $bindUpdate = array("Credit"=>"_Credit+(".$CreditInfo['Credit'].")");
+        //积分表的新增数据
+        $bind = array("UserId"=>$UserId,"CreditId"=>$CreditInfo['CreditId'],"Credit"=>$CreditInfo['Credit']);
+        //更新汇总表
+        $CreditSum = $this->db->insert_update($table_user,$bind,$bindUpdate);
+        //新增记录表
+        $CreditLog = $this->db->insert($table_user_log, $bind);
+        //如果同时成功
+        if($CreditSum && $CreditLog)
+        {
+            //提交
+            $this->db->commit();
+            return true;
+        }
+        else
+        {
+            //回滚
+            $this->db->rollBack();
+            return false;
+        }
     }
 }

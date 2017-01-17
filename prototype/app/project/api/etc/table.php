@@ -6,9 +6,13 @@
 
 $table = array();
 
-#积分类目
-$table['credit_user']['db'] = 'xrace_credit';
-$table['credit_user']['num'] = 1;
+#用户积分汇总表
+$table['user_credit_sum']['db'] = 'xrace_user';
+$table['user_credit_sum']['num'] = 1;
+
+#用户积分变更记录
+$table['user_credit_log']['db'] = 'xrace_user';
+$table['user_credit_log']['num'] = 1;
 
 #积分类目
 $table['config_credit']['db'] = 'xrace_config';

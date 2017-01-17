@@ -108,15 +108,22 @@ class Xrace_Action extends Base_Widget
         {
             //解包关联数组
             $ActionInfo['CreditList'] = json_decode($ActionInfo['CreditList'],true);
+            //初始化积分变更成功数量
+            $Succeed = 0;
+            $oCredit = new Xrace_Credit();
+            //循环积分数组
             foreach($ActionInfo['CreditList'] as $key => $CreditInfo)
             {
-                $oCredit = new Xrace_Credit();
-                $Credit = $oCredit->Credit($CreditInfo,$UserId);
+                //积分变更操作
+                $Credit = $oCredit->Credit($CreditInfo,$ActionInfo['ActionId'],$UserId);
+                //如果成功
+                if($Credit)
                 {
-
+                    //累加成功数量
+                    $Succeed ++;
                 }
-
             }
+            return $Succeed;
         }
         else
         {
