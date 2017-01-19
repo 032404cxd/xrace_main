@@ -1049,12 +1049,12 @@ class XraceConfigController extends AbstractController
         if ($UserId)
         {
             //获取用户信息
-                $UserInfo = $this->oUser->getUserInfo($UserId, 'user_id,name');
+                $UserInfo = $this->oUser->getUserInfo($UserId, 'UserId,name');
                 //如果有获取到用户信息
-                if ($UserInfo['user_id'])
+                if ($UserInfo['UserId'])
                 {
                 //根据用户获取报名记录
-                $UserApplyList = $this->oUser->getRaceUserList(array('UserId' => $UserInfo['user_id']));
+                $UserApplyList = $this->oUser->getRaceUserList(array('UserId' => $UserInfo['UserId']));
                 //获取赛事列表
                 $RaceCatalogList = $this->oRace->getRaceCatalogList(0,"RaceCatalogId,RaceCatalogName");
                 $RaceGroupList = array();
@@ -1484,14 +1484,14 @@ class XraceConfigController extends AbstractController
                 $RaceStageInfo = array();
             }
             //获取用户信息
-            $UserInfo = $this->oUser->getUserInfo($UserCheckInInfo['UserId'], 'user_id,name');
+            $UserInfo = $this->oUser->getUserInfo($UserCheckInInfo['UserId'], 'UserId,name');
             //如果有获取到用户信息
-            if (!$UserInfo['user_id'])
+            if (!$UserInfo['UserId'])
             {
                 $UserInfo = array();
             }
             //根据用户获取报名记录
-            $UserRaceList = $this->oUser->getRaceUserList(array('UserId' => $UserInfo['user_id'],'RaceStageId'=>$RaceStageInfo['RaceStageId']));
+            $UserRaceList = $this->oUser->getRaceUserList(array('UserId' => $UserInfo['UserId'],'RaceStageId'=>$RaceStageInfo['RaceStageId']));
             //初始化空的比赛列表
             $RaceList = array();
             //初始化空的分组列表

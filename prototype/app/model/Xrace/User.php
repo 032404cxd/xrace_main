@@ -21,11 +21,11 @@ class Xrace_User extends Base_Widget
 	//性别列表
 	protected $sex = array('1'=>"男","2"=>"女");
 	//实名认证状态
-	protected $auth_status = array('0'=>"未审核",'1'=>"审核中",'2'=>"已审核");
+	protected $authStatus = array('0'=>"未认证",'1'=>"待认证",'2'=>"已认证");
 	//提交时对应的实名认证状态名
-	protected $auth_status_submit = array('0'=>"不通过",'2'=>"审核通过");
+	protected $authStatus_submit = array('0'=>"不通过",'2'=>"审核通过");
 	//认证记录中对应的实名认证状态名
-	protected $auth_status_log = array('0'=>"拒绝","2"=>"通过");
+	protected $authStatus_log = array('0'=>"拒绝","2"=>"通过");
 	//实名认证用到的证件类型列表
 	protected $auth_id_type = array('1'=>"身份证","2"=>"护照");
     //用户执照状态
@@ -98,7 +98,7 @@ class Xrace_User extends Base_Widget
 	{
 		$UserId = trim($UserId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->selectRow($table_to_process, $fields, '`user_id` = ?', $UserId);
+		return $this->db->selectRow($table_to_process, $fields, '`UserId` = ?', $UserId);
 	}
 	/**
 	 * 获取单个用户记录
@@ -120,7 +120,7 @@ class Xrace_User extends Base_Widget
 	public function genNewUserId()
 	{
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		$sql = "select xrace.nextval('user_id')";
+		$sql = "select xrace.nextval('UserId')";
 		return $this->db->getOne($sql);
 	}
 	/**
@@ -133,7 +133,7 @@ class Xrace_User extends Base_Widget
 	{
 		$UserId = trim($UserId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->update($table_to_process, $bind, '`user_id` = ?', $UserId);
+		return $this->db->update($table_to_process, $bind, '`UserId` = ?', $UserId);
 	}
 	/**
 	 * 更新单个用户的实名认证状态记录
@@ -145,7 +145,7 @@ class Xrace_User extends Base_Widget
 	{
 		$UserId = trim($UserId);
 		$table_to_process = Base_Widget::getDbTable($this->table_auth);
-		return $this->db->update($table_to_process, $bind, '`user_id` = ?', $UserId);
+		return $this->db->update($table_to_process, $bind, '`UserId` = ?', $UserId);
 	}
 	/**
 	 * 插入一条用户的实名认证记录
@@ -167,59 +167,9 @@ class Xrace_User extends Base_Widget
 	{
 		$UserId = trim($UserId);
 		$table_to_process = Base_Widget::getDbTable($this->table_auth);
-		return $this->db->selectRow($table_to_process, $fields, '`user_id` = ?', $UserId);
+		return $this->db->selectRow($table_to_process, $fields, '`UserId` = ?', $UserId);
 	}
-	/**
-	 * 获取用户列表
-	 * @param $fields  所要获取的数据列
-	 * @param $params 传入的条件列表
-	 * @return array
-	 */
-	public function getUserList($params,$fields = array("*"))
-	{
-		//生成查询列
-		$fields = Base_common::getSqlFields($fields);
-		//获取需要用到的表名
-		$table_to_process = Base_Widget::getDbTable($this->table);
-		//性别判断
-		$whereSex = isset($this->sex[$params['Sex']])?" sex = ".$params['Sex']." ":"";
-		//实名认证判断
-		$whereAuth = isset($this->auth_status[$params['AuthStatus']])?" auth_state = ".$params['AuthStatus']." ":"";
-		//姓名
-		$whereName = (isset($params['Name']) && trim($params['Name']))?" name like '%".$params['Name']."%' ":"";
-		//昵称
-		$whereNickName = (isset($params['NickName']) && trim($params['NickName']))?" nick_name like '%".$params['NickName']."%' ":"";
-		//所有查询条件置入数组
-		$whereCondition = array($whereSex,$whereName,$whereNickName,$whereAuth);
-		//生成条件列
-		$where = Base_common::getSqlWhere($whereCondition);
-		//获取用户数量
-		if(isset($params['getCount'])&&$params['getCount']==1)
-		{
-			$UserCount = $this->getUserCount($params);
-		}
-		else
-		{
-			$UserCount = 0;
-		}
-		$limit  = isset($params['Page'])&&$params['Page']?" limit ".($params['Page']-1)*$params['PageSize'].",".$params['PageSize']." ":"";
-		$order = " ORDER BY crt_time desc";
-		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." ".$order." ".$limit;
-		$return = $this->db->getAll($sql);
-		$UserList = array('UserList'=>array(),'UserCount'=>$UserCount);
-		if(count($return))
-		{
-			foreach($return as $key => $value)
-			{
-				$UserList['UserList'][$value['user_id']] = $value;
-			}
-		}
-		else
-		{
-			return $UserList;
-		}
-		return $UserList;
-	}
+
 	/**
 	 * 获取用户数量
 	 * @param $fields  所要获取的数据列
@@ -229,7 +179,7 @@ class Xrace_User extends Base_Widget
 	public function getUserCount($params)
 	{
 		//生成查询列
-		$fields = Base_common::getSqlFields(array("UserCount"=>"count(user_id)"));
+		$fields = Base_common::getSqlFields(array("UserCount"=>"count(UserId)"));
 
 		//获取需要用到的表名
 		$table_to_process = Base_Widget::getDbTable($this->table);
@@ -321,7 +271,7 @@ class Xrace_User extends Base_Widget
 	{
 		$UserId = trim($UserId);
 		$table_to_process = Base_Widget::getDbTable($this->table_auth_log);
-		$sql = "select $fields from $table_to_process where  `user_id` = ? order by op_time desc";
+		$sql = "select $fields from $table_to_process where  `UserId` = ? order by op_time desc";
 		return $this->db->getAll($sql,  $UserId);
 	}
 	/**
@@ -664,129 +614,7 @@ class Xrace_User extends Base_Widget
         $return = $this->db->getAll($sql);
 		return $return;
 	}
-	//获取某场比赛的报名名单
-	public function getRaceUserListByRace($RaceId,$RaceGroupId,$TeamId=0,$Cache = 1)
-	{
-		$oMemCache = new Base_Cache_Memcache("xrace");
-		//如果需要获取缓存
-		if($Cache == 1)
-		{
-			//获取缓存
-			$m = $oMemCache->get("RaceUserList_".$RaceId);
-			//缓存解开
-			$RaceUserList = json_decode($m,true);
-			//如果数据为空
-			if(count($RaceUserList['RaceUserList'])==0)
-			{
-				//需要从数据库获取
-				$NeedDB = 1;
-			}
-			else
-			{
-				//echo "cached";
-			}
-		}
-		else
-		{
-			//需要从数据库获取
-			$NeedDB = 1;
-		}
-		if(isset($NeedDB))
-		{
-			//生成查询条件
-			$params = array('RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId);
-			//获取选手名单
-			$UserList = $this->getRaceUserList($params);
-			//初始化空的返回值列表
-			$RaceTeamList = array('RaceUserList'=>array(),'RaceTeamList'=>array());
-			//如果获取到选手名单
-			if(count($UserList))
-			{
-				$oTeam = new Xrace_Team();
-				$oRace = new Xrace_Race();
-				$RaceApplySourceList = $this->getRaceApplySourceList();
-                //初始化空的分组列表
-				$RaceGroupList = array();
-				foreach($UserList as $ApplyId => $ApplyInfo)
-				{
-					//获取用户信息
-					$UserInfo = $this->getUserInfo( $ApplyInfo["UserId"],'user_id,name');
-					//如果获取到用户
-					if($UserInfo['user_id'])
-					{
-						//存储报名数据
-						$RaceUserList['RaceUserList'][$ApplyId] = $ApplyInfo;
-						//如果列表中没有分组信息
-						if(!isset($RaceGroupList[$ApplyInfo['RaceGroupId']]))
-						{
-							//获取分组信息
-							$RaceGroupInfo = $oRace->getRaceGroup($ApplyInfo['RaceGroupId'],"RaceGroupId,RaceGroupName");
-							//如果合法则保存
-							if(isset($RaceGroupInfo['RaceGroupId']))
-							{
-								$RaceGroupList[$ApplyInfo['RaceGroupId']] = $RaceGroupInfo;
-							}
-						}
-						//保存分组信息
-						$RaceUserList['RaceUserList'][$ApplyId]['RaceGroupName'] = $RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupName'];
-						//获取用户名
-						$RaceUserList['RaceUserList'][$ApplyId]['Name'] = $UserInfo['name'];
-						if(!isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']]))
-						{
-							//队伍信息
-							$RaceTeamInfo = $oTeam->getRaceTeamInfo($ApplyInfo['RaceTeamId'],'team_id as RaceTeamId,name as RaceTeamName');
-							//如果在队伍列表中有获取到队伍信息
-							if(isset($RaceTeamInfo['RaceTeamId']))
-							{
-								$RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']] = $RaceTeamInfo;
-							}
-						}
-						//格式化用户的队伍名称和队伍ID
-						$RaceUserList['RaceUserList'][$ApplyId]['RaceTeamName'] = isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']])?$RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']]['RaceTeamName']:"个人";
-						$RaceUserList['RaceUserList'][$ApplyId]['RaceTeamId'] = isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']])?$ApplyInfo['RaceTeamId']:0;
-						$RaceUserList['RaceUserList'][$ApplyId]['comment'] = json_decode($ApplyInfo['comment'],true);
-                        $RaceUserList['RaceUserList'][$ApplyId]['ApplySourceName'] = $RaceApplySourceList[$ApplyInfo['ApplySource']];
-					}
-				}
-				//如果有获取到最新版本信息
-				if(count($RaceUserList['RaceUserList']))
-				{
-					//写入缓存
-					$oMemCache -> set("RaceUserList_".$RaceId,json_encode($RaceUserList),86400);
-				}
-			}
-		}
-		//如果需要筛选的队伍ID在队伍列表中
-		if(isset($RaceUserList['RaceTeamList'][$TeamId]))
-		{
-			//循环名单
-			foreach($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
-			{
 
-				//如果不是想要的队伍
-				if($ApplyInfo['RaceTeamId'] != $TeamId)
-				{
-					//删除数据
-					unset($RaceUserList['RaceUserList'][$ApplyId]);
-				}
-			}
-		}
-		//如果只要个人报名选手
-		elseif($TeamId == -1)
-		{
-			//循环名单
-			foreach($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
-			{
-				//如果不是想要的队伍
-				if($ApplyInfo['RaceTeamId'] != 0)
-				{
-					//删除数据
-					unset($RaceUserList['RaceUserList'][$ApplyId]);
-				}
-			}
-		}
-		return $RaceUserList;
-	}
 	//更新用户报名信息
 	public function updateRaceUserApply($ApplyId, array $bind)
 	{

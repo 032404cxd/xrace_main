@@ -207,10 +207,14 @@ class Xrace_RaceStageController extends AbstractController
 				}
 				if(isset($RaceStageInfo['RaceStageIcon']) && is_array($RaceStageInfo['RaceStageIcon']) && count($RaceStageInfo['RaceStageIcon']))
 				{
-					foreach ($RaceStageInfo['RaceStageIcon'] as $k => $v)
+                    $RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceStageList'][$RaceStageId]['RaceStageIconList'] = "";
+				    //循环图标列表
+                    foreach ($RaceStageInfo['RaceStageIcon'] as $k => $v)
 					{
-						$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceStageList'][$RaceStageId]['RaceStageIconList'] .= "<a href='".$RootUrl.$v['RaceStageIcon_root']."' target='_blank'>图标".$k."</a>/";
+						//依次叠加
+					    $RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceStageList'][$RaceStageId]['RaceStageIconList'] .= "<a href='".$RootUrl.$v['RaceStageIcon_root']."' target='_blank'>图标".$k."</a>/";
 					}
+					//格式化处理
 					$RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceStageList'][$RaceStageId]['RaceStageIconList'] = rtrim($RaceStageList[$RaceStageInfo['RaceCatalogId']]['RaceStageList'][$RaceStageId]['RaceStageIconList'], "/");
 				}
 				else
@@ -1894,7 +1898,7 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceGroupId = (in_array($RaceGroupId,array(0,$RaceInfo['RaceGroupId'])) || in_array($RaceGroupId,$RaceInfo['comment']['SelectedRaceGroup']))?$RaceGroupId:0;
 			//生成查询条件
 			$params = array('RaceId'=>$RaceInfo['RaceId']);
-			$oUser = new Xrace_User();
+			$oUser = new Xrace_UserInfo();
 			//获取选手名单
 			$RaceUserList = $oUser->getRaceUserListByRace($RaceInfo['RaceId'],$RaceGroupId,0,0);
             //渲染模板
@@ -2029,10 +2033,10 @@ class Xrace_RaceStageController extends AbstractController
 					elseif($mobile!="")
 					{
 						//根据手机号码获取用户信息
-						$UserInfo = $oUser->getUserInfoByMobile($mobile,"user_id,name");
+						$UserInfo = $oUser->getUserInfoByMobile($mobile,"UserId,name");
 					}
 					//如果用户没有获取到 并且手机号码不为空
-					if($new == 1 || (!isset($UserInfo['user_id']) && $mobile!=""))
+					if($new == 1 || (!isset($UserInfo['UserId']) && $mobile!=""))
 					{
 						//生成新用户ID
 						$NewUserId = $oUser->genNewUserId();
@@ -2040,7 +2044,7 @@ class Xrace_RaceStageController extends AbstractController
 						if($NewUserId )
 						{
 							//生成用户信息
-							$UserInfo = array('user_id'=>$NewUserId,'name'=>trim(iconv('GB2312', 'UTF-8//IGNORE', $t[2])),'sex'=>intval($t[3]),'phone'=>$mobile,'pwd'=>'tbd','crt_time'=>$CurrentTime);
+							$UserInfo = array('UserId'=>$NewUserId,'name'=>trim(iconv('GB2312', 'UTF-8//IGNORE', $t[2])),'sex'=>intval($t[3]),'phone'=>$mobile,'pwd'=>'tbd','crt_time'=>$CurrentTime);
 							//创建 用户
 							$InsertUser = $oUser->insertUser($UserInfo);
 							//如果创建不成功
@@ -2055,7 +2059,7 @@ class Xrace_RaceStageController extends AbstractController
 						}
 					}
 					//如果检测到用户ID
-					if(isset($UserInfo['user_id']))
+					if(isset($UserInfo['UserId']))
 					{
 					    //如果姓名为空
 						if($UserInfo['name']=="")
@@ -2064,7 +2068,7 @@ class Xrace_RaceStageController extends AbstractController
 							//$bind = array('name'=>trim(iconv('GB2312', 'UTF-8//IGNORE', $t[2])));
 
 							$bind = array('name'=>trim(iconv('GB2312', 'UTF-8//IGNORE', $t[2])),'sex'=>intval($t[3]));
-							$oUser->updateUserInfo($UserInfo['user_id'], $bind);
+							$oUser->updateUserInfo($UserInfo['UserId'], $bind);
 						}
 						elseif($UserInfo['name']!=trim(iconv('GB2312', 'UTF-8//IGNORE', $t[2])))
                         {
@@ -2092,7 +2096,7 @@ class Xrace_RaceStageController extends AbstractController
                             if(isset($RaceGroupList[trim(iconv('GB2312', 'UTF-8//IGNORE', $t[1]))]))
                             {
                                 //初始化新报名记录的信息
-                                $ApplyInfo = array("ApplyTime"=>$CurrentTime,"UserId"=>$UserInfo['user_id'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupList[trim(iconv('GB2312', 'UTF-8//IGNORE', $t[1]))]['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"RaceTeamId"=>$RaceTeamId);
+                                $ApplyInfo = array("ApplyTime"=>$CurrentTime,"UserId"=>$UserInfo['UserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupList[trim(iconv('GB2312', 'UTF-8//IGNORE', $t[1]))]['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"RaceTeamId"=>$RaceTeamId);
                             }
                             else
                             {
@@ -2102,7 +2106,7 @@ class Xrace_RaceStageController extends AbstractController
                         else
                         {
                             //初始化新报名记录的信息
-                            $ApplyInfo = array("ApplyTime"=>$CurrentTime,"UserId"=>$UserInfo['user_id'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"RaceTeamId"=>$RaceTeamId);
+                            $ApplyInfo = array("ApplyTime"=>$CurrentTime,"UserId"=>$UserInfo['UserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"RaceTeamId"=>$RaceTeamId);
                         }
 						//如果存在，则更新部分信息
 						$ApplyUpdateInfo = array("ApplyTime"=>$CurrentTime,"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"RaceTeamId"=>$RaceTeamId);
@@ -2112,7 +2116,7 @@ class Xrace_RaceStageController extends AbstractController
                         if($Apply)
 						{
 						    //添加用户的签到记录
-                            $CheckInInfo = array("UserId"=>$UserInfo['user_id'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"Mobile"=>$mobile,"CheckinCode"=>sprintf("%06x",$RaceInfo['RaceStageId'])."|".sprintf("%08x",$UserInfo['user_id']));
+                            $CheckInInfo = array("UserId"=>$UserInfo['UserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"Mobile"=>$mobile,"CheckinCode"=>sprintf("%06x",$RaceInfo['RaceStageId'])."|".sprintf("%08x",$UserInfo['UserId']));
                             $oUser->insertUserCheckInInfo($CheckInInfo);
 						    //成功数量递增
 						    $ApplyCount ++;
@@ -2189,7 +2193,7 @@ class Xrace_RaceStageController extends AbstractController
             //用户ID
 			$UserId = intval($this->request->UserId);
 			//获取用户信息
-			$UserInfo = $oUser->getUserInfo($UserId,'user_id,name');
+			$UserInfo = $oUser->getUserInfo($UserId,'UserId,name');
 			//获取比赛信息
 			$RaceInfo = $this->oRace->getRace($RaceId);
 			//数据解包
@@ -2649,9 +2653,9 @@ class Xrace_RaceStageController extends AbstractController
             foreach($UserCheckInStatusList as $key => $CheckInInfo)
             {
                 //获取用户信息
-                $UserInfo = $oUser->getUserInfo($CheckInInfo['UserId'],"user_id,name");
+                $UserInfo = $oUser->getUserInfo($CheckInInfo['UserId'],"UserId,name");
                 //如果未获取到用户信息
-                if(!isset($UserInfo['user_id']))
+                if(!isset($UserInfo['UserId']))
                 {
                     unset($UserCheckInStatusList[$key]);
                 }
@@ -2735,7 +2739,7 @@ class Xrace_RaceStageController extends AbstractController
             $RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
             $oUser = new Xrace_User();
             //获取用户信息
-            $UserInfo = $oUser->getUserInfo($UserId,'user_id,name');
+            $UserInfo = $oUser->getUserInfo($UserId,'UserId,name');
             $params = array('RaceStageId'=>$RaceStageId,'UserId'=>$UserId);
             //获取选手报名记录
             $UserRaceList = $oUser->getRaceUserList($params);
@@ -2817,7 +2821,7 @@ class Xrace_RaceStageController extends AbstractController
                 $t['BIB'] = $ApplyInfo['BIB'];
                 if(!isset($UserList[$ApplyInfo['UserId']]))
                 {
-                    $UserInfo = $oUser->getUserInfo($ApplyInfo['UserId'],"user_id,name,sex");
+                    $UserInfo = $oUser->getUserInfo($ApplyInfo['UserId'],"UserId,name,sex");
                 }
                 else
                 {

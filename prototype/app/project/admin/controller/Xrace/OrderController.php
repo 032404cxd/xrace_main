@@ -57,7 +57,7 @@ class Xrace_OrderController extends AbstractController
 			if(strlen($params['Name']))
 			{
 				//模糊查询用户列表
-				$UserList = $this->oUser->getUserList(array('Name'=>$params['Name'],'getCount'=>0),array("user_id"));
+				$UserList = $this->oUser->getUserList(array('Name'=>$params['Name'],'getCount'=>0),array("UserId"));
 				//如果有查找到用户
 				if(count($UserList['UserList']))
 				{
@@ -84,12 +84,12 @@ class Xrace_OrderController extends AbstractController
 				if(!isset($UserList[$OrderInfo['member_id']]))
 				{
 					//获取用户数据
-					$UserInfo = $this->oUser->getUserInfo($OrderInfo['member_id'],"user_id,name");
+					$UserInfo = $this->oUser->getUserInfo($OrderInfo['member_id'],"UserId,name");
 					//如果获取到用户数据
-					if(isset($UserInfo['user_id']))
+					if(isset($UserInfo['UserId']))
 					{
 						//保存到用户列表
-						$UserList[$UserInfo['user_id']] = $UserInfo;
+						$UserList[$UserInfo['UserId']] = $UserInfo;
 					}
 				}
 				//获取用户姓名
@@ -148,7 +148,7 @@ class Xrace_OrderController extends AbstractController
 				{
 					//生成单行数据
 					$t = array();
-					$t['user_id'] = $OrderInfo['user_id'];
+					$t['UserId'] = $OrderInfo['UserId'];
 					$t['open_wx_id'] = $OrderInfo['wx_open_id'];
 					$t['open_wx_id'] = $OrderInfo['wx_open_id'];
 					$t['name'] = $OrderInfo['name'];
@@ -188,9 +188,9 @@ class Xrace_OrderController extends AbstractController
 			//获取赛事信息
 			$RaceCatalogInfo = $this->oRace->getRaceCatalog($OrderInfo['active_id'],'*',0);
 			//获取用户数据
-			$UserInfo = $this->oUser->getUserInfo($OrderInfo['member_id'],"user_id,name");
+			$UserInfo = $this->oUser->getUserInfo($OrderInfo['member_id'],"UserId,name");
 			//获取用户姓名
-			$OrderInfo['Name'] = isset($UserInfo['user_id'])?$UserInfo['name']:"未知用户";
+			$OrderInfo['Name'] = isset($UserInfo['UserId'])?$UserInfo['name']:"未知用户";
 			//获取订单支付状态
 			$OrderInfo['PayStatusName'] = isset($PayStatusList[$OrderInfo['isPay']])?$PayStatusList[$OrderInfo['isPay']]:"未定义";
 			//获取订单取消状态

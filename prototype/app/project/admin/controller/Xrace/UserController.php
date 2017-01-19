@@ -24,7 +24,8 @@ class Xrace_UserController extends AbstractController
 	{
 		parent::init();
 		$this->oUser = new Xrace_User();
-		$this->oManager = new Widget_Manager();
+        $this->oUserInfo = new Xrace_UserInfo();
+        $this->oManager = new Widget_Manager();
 		$this->oRace = new Xrace_Race();
 
 	}
@@ -36,13 +37,13 @@ class Xrace_UserController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//获取性别列表
-			$SexList = $this->oUser->getSexList();
-			//获取实名认证状态列表
-			$AuthStatusList = $this->oUser->getAuthStatus();
-			//获取实名认证证件类型列表
+			$SexList = $this->oUserInfo->getSexList();
+            //获取实名认证状态列表
+			$AuthStatusList = $this->oUserInfo->getAuthStatus();
+            //获取实名认证证件类型列表
 			$AuthIdTypesList = $this->oUser->getAuthIdType();
-			//页面参数预处理
-			$params['Sex'] = isset($SexList[intval($this->request->Sex)])?intval($this->request->Sex):0;
+            //页面参数预处理
+			$params['Sex'] = isset($SexList[intval($this->request->Sex)])?intval($this->request->Sex):-1;
 			$params['Name'] = urldecode(trim($this->request->Name))?substr(urldecode(trim($this->request->Name)),0,8):"";
 			$params['NickName'] = urldecode(trim($this->request->NickName))?substr(urldecode(trim($this->request->NickName)),0,8):"";
 			$params['AuthStatus'] = isset($AuthStatusList[$this->request->AuthStatus])?intval($this->request->AuthStatus):-1;
@@ -52,7 +53,7 @@ class Xrace_UserController extends AbstractController
 			//获取用户列表时需要获得记录总数
 			$params['getCount'] = 1;
 			//获取用户列表
-			$UserList = $this->oUser->getUserList($params);
+			$UserList = $this->oUserInfo->getUserList($params);
 			//导出EXCEL链接
 			$export_var = "<a href =".(Base_Common::getUrl('','xrace/user','user.list.download',$params))."><导出表格></a>";
 			//翻页参数
@@ -60,14 +61,26 @@ class Xrace_UserController extends AbstractController
 			$page_content =  base_common::multi($UserList['UserCount'], $page_url, $params['Page'], $params['PageSize'], 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');
 			foreach($UserList['UserList'] as $UserId => $UserInfo)
 			{
-				//用户性别
-				$UserList['UserList'][$UserId]['sex'] = isset($SexList[$UserInfo['sex']])?$SexList[$UserInfo['sex']]:"保密";
-				//实名认证状态
-				$UserList['UserList'][$UserId]['AuthStatus'] = isset($AuthStatusList[$UserInfo['auth_state']])?$AuthStatusList[$UserInfo['auth_state']]:"未知";
-				//如果当前已经认证，则同时拼接上认证的证件类型
-				$UserList['UserList'][$UserId]['AuthStatus'] = ($UserInfo['auth_state'] == 2 && isset($AuthIdTypesList[intval($UserInfo['id_type'])]))?$UserList['UserList'][$UserId]['AuthStatus']."/".$AuthIdTypesList[intval($UserInfo['id_type'])]:$UserList['UserList'][$UserId]['AuthStatus'];
+			    //用户性别
+				$UserList['UserList'][$UserId]['Sex'] = isset($SexList[$UserInfo['Sex']])?$SexList[$UserInfo['Sex']]:"保密";
+                //实名认证状态
+                if(isset($AuthStatusList[$UserInfo['AuthStatus']]))
+                {
+                    if($UserInfo['AuthStatus'] == 2 && isset($AuthIdTypesList[intval($UserInfo['IdType'])]))
+                    {
+                        //如果当前已经认证，则同时拼接上认证的证件类型
+                        $UserList['UserList'][$UserId]['AuthStatus'] = $AuthStatusList[$UserInfo['AuthStatus']]."/".$AuthIdTypesList[intval($UserInfo['IdType'])];
+                    }
+                    else
+                    {
+                        $UserList['UserList'][$UserId]['AuthStatus'] = $AuthStatusList[$UserInfo['AuthStatus']];
+                    }
+                }
+                //实名认证状态
+				//$UserList['UserList'][$UserId]['AuthStatus'] = isset($AuthStatusList[$UserInfo['AuthStatus']])?$AuthStatusList[$UserInfo['AuthStatus']]:"未知";
+				//$UserList['UserList'][$UserId]['AuthStatus'] = ($UserInfo['auth_state'] == 2 && isset($AuthIdTypesList[intval($UserInfo['id_type'])]))?$UserList['UserList'][$UserId]['AuthStatus']."/".$AuthIdTypesList[intval($UserInfo['id_type'])]:$UserList['UserList'][$UserId]['AuthStatus'];
 				//用户生日
-				$UserList['UserList'][$UserId]['Birthday'] = is_null($UserInfo['birth_day'])?"未知":$UserInfo['birth_day'];
+				$UserList['UserList'][$UserId]['Birthday'] = is_null($UserInfo['Birthday'])?"未知":$UserInfo['Birthday'];
 				//用户执照
 				$UserList['UserList'][$UserId]['License'] = "<a href='".Base_Common::getUrl('','xrace/user','license.list',array('UserId'=>$UserId)) ."'>执照</a>";
 				//用户执照
@@ -91,13 +104,13 @@ class Xrace_UserController extends AbstractController
 		{
 			//获取性别列表
 			$SexList = $this->oUser->getSexList();
-			//获取实名认证状态列表
-			$AuthStatusList = $this->oUser->getAuthStatus();
-			//获取实名认证证件类型列表
-			$AuthIdTypesList = $this->oUser->getAuthIdType();
+            //获取实名认证状态列表
+            $AuthStatusList = $this->oUserInfo->getAuthStatus();
+            //获取实名认证证件类型列表
+            $AuthIdTypesList = $this->oUser->getAuthIdType();
 
 			//页面参数预处理
-			$params['Sex'] = isset($SexList[intval($this->request->Sex)])?intval($this->request->Sex):0;
+			$params['Sex'] = isset($SexList[intval($this->request->Sex)])?intval($this->request->Sex):-1;
 			$params['Name'] = urldecode(trim($this->request->Name))?substr(urldecode(trim($this->request->Name)),0,8):"";
 			$params['NickName'] = urldecode(trim($this->request->NickName))?substr(urldecode(trim($this->request->NickName)),0,8):"";
 			$params['AuthStatus'] = isset($AuthStatusList[$this->request->AuthStatus])?intval($this->request->AuthStatus):-1;
@@ -109,24 +122,35 @@ class Xrace_UserController extends AbstractController
 			$FileName= ($this->manager->name().'用户列表');
 			$oExcel->download($FileName)->addSheet('用户');
 			//标题栏
-			$title = array("用户ID","微信openId","姓名","昵称","性别","出生年月","实名认证状态");
+			$title = array("用户ID","姓名","昵称","性别","出生年月","实名认证状态");
 			$oExcel->addRows(array($title));
 			$Count = 1;$params['Page'] =1;
 			do
 			{
-				$UserList = $this->oUser->getUserList($params);
+				$UserList = $this->oUserInfo->getUserList($params);
 				$Count = count($UserList['UserList']);
 				foreach($UserList['UserList'] as $UserId => $UserInfo)
 				{
 					//生成单行数据
 					$t = array();
-					$t['user_id'] = $UserInfo['user_id'];
-					$t['open_wx_id'] = $UserInfo['wx_open_id'];
-					$t['open_wx_id'] = $UserInfo['wx_open_id'];
-					$t['name'] = $UserInfo['name'];
-					$t['nick_name'] = $UserInfo['nick_name'];
-					$t['sex'] = isset($SexList[$UserInfo['sex']])?$SexList[$UserInfo['sex']]:"保密";
-					$t['AuthStatus'] = isset($AuthStatusList[$UserInfo['auth_state']])?$AuthStatusList[$UserInfo['auth_state']]:"未知";
+					$t['UserId'] = $UserInfo['UserId'];
+					$t['Name'] = $UserInfo['Name'];
+					$t['NickName'] = $UserInfo['NickName'];
+					$t['Sex'] = isset($SexList[$UserInfo['Sex']])?$SexList[$UserInfo['Sex']]:"保密";
+                    $t['Birthday'] = $UserInfo['Birthday'];
+                    //实名认证状态
+                    if(isset($AuthStatusList[$UserInfo['AuthStatus']]))
+                    {
+                        if($UserInfo['AuthStatus'] == 2 && isset($AuthIdTypesList[intval($UserInfo['IdType'])]))
+                        {
+                            //如果当前已经认证，则同时拼接上认证的证件类型
+                            $t['AuthStatus'] = $AuthStatusList[$UserInfo['AuthStatus']]."/".$AuthIdTypesList[intval($UserInfo['IdType'])];
+                        }
+                        else
+                        {
+                            $t['AuthStatus'] = $AuthStatusList[$UserInfo['AuthStatus']];
+                        }
+                    }
 
 					$oExcel->addRows(array($t));
 					unset($t);
@@ -157,22 +181,21 @@ class Xrace_UserController extends AbstractController
 			$AuthIdTypesList = $this->oUser->getAuthIdType();
 			$UserId = trim($this->request->UserId);
 			//获取用户信息
-			$UserInfo = $this->oUser->getUserInfo($UserId);
+			$UserInfo = $this->oUserInfo->getUser($UserId);
 			//用户性别
-			$UserInfo['sex'] = isset($SexList[$UserInfo['sex']])?$SexList[$UserInfo['sex']]:"保密";
+			$UserInfo['Sex'] = isset($SexList[$UserInfo['Sex']])?$SexList[$UserInfo['Sex']]:"保密";
 			//实名认证状态
-			$UserInfo['AuthStatus'] = isset($AuthStatusList[$UserInfo['auth_state']])?$AuthStatusList[$UserInfo['auth_state']]:"未知";
-			//证件有效期
-			$UserInfo['AuthExpireDate'] = !is_null($UserInfo['expire_day'])?$UserInfo['expire_day']:"未知";
-			//证件有效期
-			$UserInfo['Birthday'] = !is_null($UserInfo['birth_day'])?$UserInfo['birth_day']:"未知";
+			$UserInfo['AuthStatus'] = isset($AuthStatusList[$UserInfo['AuthStatus']])?$AuthStatusList[$UserInfo['AuthStatus']]:"未知";
+			//证件生日
+			$UserInfo['Birthday'] = !is_null($UserInfo['Birthday'])?$UserInfo['Birthday']:"未知";
 			//用户头像
-			$UserInfo['thumb'] = urldecode($UserInfo['thumb']);
+			$UserInfo['UserImg'] = urldecode($UserInfo['UserImg']);
 			//实名认证证件类型
-			$UserInfo['AuthIdType'] = isset($AuthIdTypesList[intval($UserInfo['id_type'])])?$AuthIdTypesList[intval($UserInfo['id_type'])]:"未知";
+			$UserInfo['AuthIdType'] = isset($AuthIdTypesList[intval($UserInfo['IdType'])])?$AuthIdTypesList[intval($UserInfo['IdType'])]:"未知";
 			//获取用户实名认证记录
-			$UserInfo['UserAuthLog'] = $this->oUser->getUserAuthLog($UserId,'submit_time,op_time,op_uid,auth_result,auth_resp');
-			if(count($UserInfo['UserAuthLog']))
+			//$UserInfo['UserAuthLog'] = $this->oUser->getUserAuthLog($UserId,'submit_time,op_time,op_uid,auth_result,auth_resp');
+            $UserInfo['UserAuthLog'] = array();
+            if(count($UserInfo['UserAuthLog']))
 			{
 				//初始化一个空的后台管理员列表
 				$ManagerList = array();
@@ -346,7 +369,7 @@ class Xrace_UserController extends AbstractController
 				//获取用户信息
 				$User = $this->oUser->getUserInfo($UserId);
 				//未获取到用户信息
-				if(!isset($User['user_id']))
+				if(!isset($User['UserId']))
 				{
 					$response = array('errno' => 1);
 				}
@@ -420,14 +443,14 @@ class Xrace_UserController extends AbstractController
 				$AuthLog['AuthLog'][$AuthId]['ManagerName'] = isset($ManagerList[$LogInfo['op_uid']])? $ManagerList[$LogInfo['op_uid']]['name']:"未知";
 				$AuthLog['AuthLog'][$AuthId]['AuthResultName'] = isset($AuthLogIdStatusList[$LogInfo['auth_result']])?$AuthLogIdStatusList[$LogInfo['auth_result']]:"未知";
 				// 如果管理员记录已经获取到
-				if(isset($UserList[$LogInfo['user_id']]))
+				if(isset($UserList[$LogInfo['UserId']]))
 				{
-					$ManagerInfo = $UserList[$LogInfo['user_id']];
+					$ManagerInfo = $UserList[$LogInfo['UserId']];
 				}
 				//否则重新获取
 				else
 				{
-					$ManagerInfo = $this->oUser->getUserInfo($LogInfo['user_id'], "name");
+					$ManagerInfo = $this->oUser->getUserInfo($LogInfo['UserId'], "name");
 				}
 				$AuthLog['AuthLog'][$AuthId]['UserName'] = $ManagerInfo['name'];
 				//实名认证提交的照片
@@ -454,7 +477,7 @@ class Xrace_UserController extends AbstractController
 			//获得需要添加执照的用户ID
 			$UserId = trim($this->request->UserId);
 			//获取用户信息
-			$UserInfo = $this->oUser->getUserInfo($UserId,"user_id,name");
+			$UserInfo = $this->oUser->getUserInfo($UserId,"UserId,name");
 			$params = array('UserId' => $UserId);
 			//获得用户执照列表
 			$UserLicenseList = $this->oUser->getUserLicenseList($params,array('UserId','RaceCatalogId','RaceGroupId','LicenseId','LicenseStartDate','LicenseEndDate','ManagerId','LicenseAddTime','LastUpdateTime','LicenseStatus'));
@@ -889,9 +912,9 @@ class Xrace_UserController extends AbstractController
 			//获取用户信息
 			$UserInfo = $this->oUser->getUserInfo($UserId);
 			//如果有获取到用户信息
-			if($UserInfo['user_id'])
+			if($UserInfo['UserId'])
 			{
-				$params = array('UserId'=>$UserInfo['user_id']);
+				$params = array('UserId'=>$UserInfo['UserId']);
 				//获取用户入队记录
 				$UserTeamList = $this->oUser->getUserTeamList($params);
 				//初始化空的赛事列表
@@ -1093,9 +1116,9 @@ class Xrace_UserController extends AbstractController
 			else
 			{
 				//获取用户信息
-				$UserInfo = $this->oUser->getUserInfo($UserId,'user_id,pwd');
+				$UserInfo = $this->oUser->getUserInfo($UserId,'UserId,pwd');
 				//如果没找到
-				if(!isset($UserInfo['user_id']))
+				if(!isset($UserInfo['UserId']))
 				{
 					$response = array('errno' => 4);
 				}
@@ -1162,8 +1185,8 @@ class Xrace_UserController extends AbstractController
 			else
 			{
 				//获取用户信息
-				$UserInfo = $this->oUser->getUserInfo($UserId,'user_id,phone');
-				if(!isset($UserInfo['user_id']))
+				$UserInfo = $this->oUser->getUserInfo($UserId,'UserId,phone');
+				if(!isset($UserInfo['UserId']))
 				{
 					$response = array('errno' => 4);
 				}

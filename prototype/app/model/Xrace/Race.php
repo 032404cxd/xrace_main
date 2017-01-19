@@ -1215,7 +1215,7 @@ class Xrace_Race extends Base_Widget
 						//生成配置文件
 						Base_Common::rebuildConfig($filePath,$fileName,$TimingPointList,"Timing");
 					}
-					$oUser = new Xrace_User();
+					$oUser = new Xrace_UserInfo();
 					$oTeam = new Xrace_Team();
 					//获取选手名单
 					$RaceUserList = $oUser->getRaceUserList($params);
@@ -1226,9 +1226,9 @@ class Xrace_Race extends Base_Widget
 						foreach($RaceUserList as $ApplyId => $ApplyInfo)
 						{
 							//获取用户信息
-							$UserInfo = $oUser->getUserInfo($ApplyInfo["UserId"],'user_id,name');
+							$UserInfo = $oUser->getUserInfo($ApplyInfo["UserId"],'UserId,Name');
 							//如果获取到用户
-							if($UserInfo['user_id'])
+							if($UserInfo['UserId'])
 							{
 								$RaceTeamInfo = $oTeam->getRaceTeamInfo($ApplyInfo['RaceTeamId']);
 								if(!isset($RaceTeamInfo['RaceTeamId']))
@@ -1236,7 +1236,7 @@ class Xrace_Race extends Base_Widget
 									$RaceTeamInfo = array('RaceTeamName'=>"个人");
 								}
 								//存储用户信息
-								$TimingPointList['UserInfo'] = array('UserName'=>$UserInfo['name'],'UserId' => $UserInfo['user_id'],'RaceTeamId'=> $ApplyInfo['RaceTeamId'],'RaceTeamName'=>$RaceTeamInfo['RaceTeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
+								$TimingPointList['UserInfo'] = array('UserName'=>$UserInfo['Name'],'UserId' => $UserInfo['UserId'],'RaceTeamId'=> $ApplyInfo['RaceTeamId'],'RaceTeamName'=>$RaceTeamInfo['RaceTeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
 								//数据解包
 								$ApplyInfo['comment'] = json_decode($ApplyInfo['comment'],true);
 								//如果有关联的订单数据
@@ -1259,7 +1259,7 @@ class Xrace_Race extends Base_Widget
 								//存储报名信息
 								//$TimingPointList['ApplyInfo'] = $ApplyInfo;
 								$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/"."UserList"."/";
-								$fileName = $UserInfo['user_id'].".php";
+								$fileName = $UserInfo['UserId'].".php";
 								//生成配置文件
 								Base_Common::rebuildConfig($filePath,$fileName,$TimingPointList,"Timing");
 							}
@@ -1284,7 +1284,7 @@ class Xrace_Race extends Base_Widget
 	//根据分组信息判断用户是否符合组别的报名规则
 	public function raceLicenseCheck($RaceLicenseList,$UserId,$RaceStageInfo,$RaceGroupInfo)
 	{
-		$oUser = new Xrace_User();
+		$oUser = new Xrace_UserInfo();
 		$oMemCache = new Base_Cache_Memcache("xrace");
 		{
 			//获取缓存
@@ -1292,7 +1292,7 @@ class Xrace_Race extends Base_Widget
 			//缓存解开
 			$m = json_decode($m,true);
 			//如果获取到的用户信息有效
-			if(isset($m['user_id']))
+			if(isset($m['UserId']))
 			{
 				$UserInfo = $m;
 			}
@@ -1301,7 +1301,7 @@ class Xrace_Race extends Base_Widget
 				//从数据库获取用户信息你
 				$UserInfo = $oUser->getUserInfo($UserId);
 				//如果获取到的用户信息有效
-				if(isset($UserInfo['user_id']))
+				if(isset($UserInfo['UserId']))
 				{
 					//写入缓存
 					$oMemCache -> set("UserInfo_".$UserId,json_encode($UserInfo),86400);
@@ -1344,7 +1344,7 @@ class Xrace_Race extends Base_Widget
 	public function birthdayConditionCheck($LicenseInfo,$UserInfo)
 	{
 		//如果获取到的用户信息有效
-		if(isset($UserInfo['user_id']) && ($LicenseInfo['LicenseType']=="birthday"))
+		if(isset($UserInfo['UserId']) && ($LicenseInfo['LicenseType']=="birthday"))
 		{
 			//判断结果
 			$text = '$return=$UserInfo['."'birth_day'".']'.$LicenseInfo['License']['equal']."'".$LicenseInfo['License']['Date']."'?true:false;";
@@ -1360,7 +1360,7 @@ class Xrace_Race extends Base_Widget
 	public function sexConditionCheck($LicenseInfo,$UserInfo)
 	{
 		//如果获取到的用户信息有效
-		if(isset($UserInfo['user_id']) && ($LicenseInfo['LicenseType']=="sex"))
+		if(isset($UserInfo['UserId']) && ($LicenseInfo['LicenseType']=="sex"))
 		{
 			//判断结果
 			$text = '$return=$UserInfo['."'sex'".']=='.$LicenseInfo['License']."?true:false;";
@@ -1376,12 +1376,12 @@ class Xrace_Race extends Base_Widget
 	public function managerConditionCheck($LicenseInfo,$UserInfo,$RaceStageInfo,$RaceGroupInfo)
 	{
 		//如果获取到的用户信息有效
-		if(isset($UserInfo['user_id']) && ($LicenseInfo['LicenseType']=="manager"))
+		if(isset($UserInfo['UserId']) && ($LicenseInfo['LicenseType']=="manager"))
 		{
 			//判断结果
 			$oUser = new Xrace_User();
 			//检查指定时间段，指定分组范围内有没有执照
-			$params = array('UserId'=>$UserInfo['user_id'],'RaceGroupId'=>$RaceGroupInfo['RaceGroupId'],'DuringDate'=>array('StartDate'=>$RaceStageInfo['StageStartDate'],'EndDate'=>$RaceStageInfo['StageEndDate']));
+			$params = array('UserId'=>$UserInfo['UserId'],'RaceGroupId'=>$RaceGroupInfo['RaceGroupId'],'DuringDate'=>array('StartDate'=>$RaceStageInfo['StageStartDate'],'EndDate'=>$RaceStageInfo['StageEndDate']));
 			//获取用户的有效执照的数量
 			$UserLicenseCount = $oUser->getUserLicenseCount($params);
 			return $UserLicenseCount>0?true:false;

@@ -8,29 +8,25 @@
         </tr>
         <tr class="hover">
             <th align="center" class="rowtip">用户昵称</th>
-            <td align="left">{tpl:$UserInfo.nick_name/}</td>
+            <td align="left">{tpl:$UserInfo.NickName/}</td>
         </tr>
         <tr class="hover">
             <th align="center" class="rowtip">用户姓名</th>
-            <td align="left">{tpl:$UserInfo.name/}</td>
+            <td align="left">{tpl:$UserInfo.Name/}</td>
         </tr>
         <tr class="hover">
             <th align="center" class="rowtip">用户性别</th>
-            <td align="left">{tpl:$UserInfo.sex/}</td>
+            <td align="left">{tpl:$UserInfo.Sex/}</td>
         </tr>
         <tr class="hover">
             <th align="center" class="rowtip">联系电话</th>
-            <td align="left">{tpl:$UserInfo.phone/}</td>
+            <td align="left">{tpl:$UserInfo.Mobile/}</td>
         </tr>
         <tr class="hover">
             <th align="center" class="rowtip">实名认证状态</th>
             <td align="left">{tpl:$UserInfo.AuthStatus/}</td>
         </tr>
-        <tr class="hover">
-            <th align="center" class="rowtip">微信openId</th>
-            <td align="left">{tpl:$UserInfo.wx_open_id/}</td>
-        </tr>
-        {tpl:if($UserInfo.id_number!="")}
+        {tpl:if($UserInfo.IdNo!="")}
         <tr class="hover">
             <th align="center" class="rowtip">证件类型</th>
             <td align="left">{tpl:$UserInfo.AuthIdType/}</td>
@@ -39,7 +35,7 @@
         </tr>
         <tr class="hover">
             <th align="center" class="rowtip">证件号码</th>
-            <td align="left">{tpl:$UserInfo.id_number/}</td>
+            <td align="left">{tpl:$UserInfo.IdNo/}</td>
             <th align="center" class="rowtip">证件有效期</th>
             <td align="left">{tpl:$UserInfo.AuthExpireDate/}</td>
         </tr>

@@ -21,7 +21,7 @@ class XraceUserController extends AbstractController
         $this->oUser = new Xrace_UserInfo();
     }
 
-    //insert into xrace_user.UserInfo (UserId,Name,Birthday,Sex,WeChatId,Mobile) SELECT user_id,name,birth_day,sex,wx_open_id,phone FROM `user_profile` where phone != '' and phone != 'tbd' and phone not in (select Mobile from xrace_user.UserInfo) limit 50
+    //insert into xrace_user.UserInfo (UserId,Name,Birthday,Sex,WeChatId,Mobile) SELECT UserId,name,birth_day,sex,wx_open_id,phone FROM `user_profile` where phone != '' and phone != 'tbd' and phone not in (select Mobile from xrace_user.UserInfo) limit 50
     /**
      *获取所用户信息(缓存)
      */
@@ -32,7 +32,7 @@ class XraceUserController extends AbstractController
         //是否显示说明注释 默认为1
         $UserId = isset($this->request->UserId) ? abs(intval($this->request->UserId)) : 0;
         //获得赛事列表
-        $UserInfo = $this->oUser->getUserInfo($UserId,"Mobile",$Cache);
+        $UserInfo = $this->oUser->getUserInfo($UserId,"*",$Cache);
         //结果数组 如果列表中有数据则返回成功，否则返回失败
         $result = array("return" => isset($UserInfo['UserId']) ? 1 : 0, "UserInfo" => $UserInfo);
         echo json_encode($result);

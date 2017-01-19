@@ -138,4 +138,12 @@ $table['config_action']['num'] = 1;
 $table['user_stage_checkin']['db'] = 'xrace';
 $table['user_stage_checkin']['num'] = 1;
 
+#用户信息状态
+$table['UserInfo']['db'] = 'xrace_user';
+$table['UserInfo']['num'] = 1;
+
+#用户审核状态
+$table['UserReg']['db'] = 'xrace_user';
+$table['UserReg']['num'] = 1;
+
 return $table;

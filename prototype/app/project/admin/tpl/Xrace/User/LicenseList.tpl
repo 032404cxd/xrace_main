@@ -14,7 +14,7 @@
   }
 </script>
 <form action="{tpl:$this.sign/}&ac=license.update" name="form" id="form" method="post">
-  <fieldset><legend> {tpl:$UserInfo.name/}的执照列表 </legend>
+  <fieldset><legend> {tpl:$UserInfo.Name/}的执照列表 </legend>
 <table width="99%" align="center" class="table table-bordered table-striped">
   {tpl:if(count($UserLicenseList['UserLicenseList']))}
   <tr>
