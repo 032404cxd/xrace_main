@@ -8,16 +8,16 @@
 	<td align="left">{tpl:$UserInfo.name/}</td>
 </tr>
 <tr class="hover"><td>所属赛事</td>
-	<td align="left">	<select name="RaceCatalogId" id="RaceCatalogId" size="1" class="span2" onchange='getRaceTeamList()'>
+	<td align="left">	<select name="RaceCatalogId" id="RaceCatalogId" size="1" class="span2" onchange='getTeamList()'>
 			{tpl:loop $RaceCatalogList $RaceCatalogInfo}
 			<option value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" >{tpl:$RaceCatalogInfo.RaceCatalogName/}</option>
 			{/tpl:loop}
 		</select></td>
 </tr>
 	<tr class="hover"><td>队伍</td>
-		<td align="left"><div id = "TeamList"><select name="RaceTeamId" id="RaceTeamId" size="1" class="span2"  onchange='getRaceGroupList()'>
-				{tpl:loop $RaceTeamList.RaceTeamList $RaceTeamInfo}
-				<option value="{tpl:$RaceTeamInfo.RaceTeamId/}" >{tpl:$RaceTeamInfo.RaceTeamName/}</option>
+		<td align="left"><div id = "TeamList"><select name="TeamId" id="TeamId" size="1" class="span2"  onchange='getRaceGroupList()'>
+				{tpl:loop $TeamList.TeamList $TeamInfo}
+				<option value="{tpl:$TeamInfo.TeamId/}" >{tpl:$TeamInfo.TeamName/}</option>
 				{/tpl:loop}
 			</select></div></td>
 	</tr>
@@ -31,7 +31,7 @@
 </table>
 </form>
 <script type="text/javascript">
-	function getRaceTeamList()
+	function getTeamList()
 	{
 		catalog=$("#RaceCatalogId");
 		$.ajax
@@ -40,17 +40,17 @@
 			url: "?ctl=xrace/team&ac=get.team.by.catalog&RaceCatalogId="+catalog.val(),
 			success: function(msg)
 			{
-				$("#RaceTeamId").html(msg);
+				$("#TeamId").html(msg);
 			}
 		});
 	}
 	function getRaceGroupList()
 	{
-		team=$("#RaceTeamId");
+		team=$("#TeamId");
 		$.ajax
 		({
 			type: "GET",
-			url: "?ctl=xrace/team&ac=get.group.by.team&RaceTeamId="+team.val(),
+			url: "?ctl=xrace/team&ac=get.group.by.team&TeamId="+team.val(),
 			success: function(msg)
 			{
 				$("#RaceGroupId").html(msg);

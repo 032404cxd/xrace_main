@@ -46,7 +46,7 @@
     {tpl:if(count($PointInfo.UserList)>=1)}
     {tpl:loop $PointInfo.UserList $id $RaceUserInfo}
     {tpl:if((isset($UserInfo.user_id) && ($RaceUserInfo.UserId==$UserInfo.user_id)) || !isset($UserInfo.user_id))}
-    <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceUserInfo.UserId/}','{tpl:$RaceInfo.RaceName/}')">{tpl:$RaceUserInfo.Name/}</a><p>{tpl:$RaceUserInfo.RaceTeamName/}<p>{tpl:$RaceUserInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.Rank/}{tpl:if($RaceUserInfo.TimeLag>0)}/+{tpl:$RaceUserInfo.TimeLag func="Base_Common::parthTimeLag(@@)"/}{/tpl:if}{tpl:if($RaceUserInfo.NetTimeLag>0)}/+{tpl:$RaceUserInfo.NetTimeLag func="Base_Common::parthTimeLag(@@)"/}{/tpl:if}</th>
+    <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceUserInfo.UserId/}','{tpl:$RaceInfo.RaceName/}')">{tpl:$RaceUserInfo.Name/}</a><p>{tpl:$RaceUserInfo.TeamName/}<p>{tpl:$RaceUserInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.Rank/}{tpl:if($RaceUserInfo.TimeLag>0)}/+{tpl:$RaceUserInfo.TimeLag func="Base_Common::parthTimeLag(@@)"/}{/tpl:if}{tpl:if($RaceUserInfo.NetTimeLag>0)}/+{tpl:$RaceUserInfo.NetTimeLag func="Base_Common::parthTimeLag(@@)"/}{/tpl:if}</th>
   {/tpl:if}
   {/tpl:loop}
     {tpl:else}
@@ -86,7 +86,7 @@
   {tpl:loop $RaceResultList.UserRaceTimingInfo.Team $Tid $TeamInfo}
   <tr>
     <th  align="center" class="rowtip">{tpl:$Tid func="@@+1"/}</th>
-    <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.RaceTeamName/}({tpl:$TeamInfo.Name/})</th>
+    <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TeamName/}({tpl:$TeamInfo.Name/})</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TimeLag func="Base_Common::parthTimeLag(@@)"/}</th>

@@ -31,7 +31,7 @@ class XraceUserController extends AbstractController
         $Cache = isset($this->request->Cache) ? abs(intval($this->request->Cache)) : 1;
         //是否显示说明注释 默认为1
         $UserId = isset($this->request->UserId) ? abs(intval($this->request->UserId)) : 0;
-        //获得赛事列表
+        //获得用户信息
         $UserInfo = $this->oUser->getUserInfo($UserId,"*",$Cache);
         //结果数组 如果列表中有数据则返回成功，否则返回失败
         $result = array("return" => isset($UserInfo['UserId']) ? 1 : 0, "UserInfo" => $UserInfo);

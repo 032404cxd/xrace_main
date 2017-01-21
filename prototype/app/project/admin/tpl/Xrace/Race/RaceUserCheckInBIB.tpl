@@ -57,7 +57,7 @@
     <th align="center" class="rowtip">{tpl:$UserInfo.RaceGroupName/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.RaceName/}</th>
     {/tpl:if}
-    <th align="center" class="rowtip">{tpl:$UserInfo.RaceTeamName/}</th>
+    <th align="center" class="rowtip">{tpl:$UserInfo.TeamName/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.ApplyTime/}</th>
     <th align="center" class="rowtip td-edit"><span class="text">{tpl:$UserInfo.BIB/}</span><input type="text" class="span1 hidden1" name="UserRaceList[{tpl:$Aid/}][BIB]" id="UserRaceList[{tpl:$UserInfo.UserId/}][BIB]" value="{tpl:$UserInfo.BIB/}" /> <a href="#" class="btn-edit">编辑</a></th>
     <th align="center" class="rowtip"><input type="text" class="span2 chip-txt" name="UserRaceList[{tpl:$Aid/}][ChipId]" id="UserRaceList[{tpl:$UserInfo.UserId/}][ChipId]" value="{tpl:$UserInfo.ChipId/}" /></th>

@@ -127,8 +127,8 @@ $table['user_race']['db'] = 'xrace';
 $table['user_race']['num'] = 1;
 
 //队伍列表
-$table['team']['db'] = 'xrace';
-$table['team']['num'] = 1;
+$table['race_team']['db'] = 'xrace';
+$table['race_team']['num'] = 1;
 
 //用户参加队伍列表
 $table['user_team']['db'] = 'xrace';

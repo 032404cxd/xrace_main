@@ -923,7 +923,7 @@ class Xrace_UserController extends AbstractController
 				$RaceGroupList  = array();
 				$oTeam = new Xrace_Team();
 				//初始化空的队伍列表
-				$RaceTeamList  = array();
+				$TeamList  = array();
 				//循环用户的队伍列表
 				foreach($UserTeamList as $key => $UserTeamInfo)
 				{
@@ -958,19 +958,19 @@ class Xrace_UserController extends AbstractController
 					$UserTeamList[$key]['RaceGroupName'] = isset($RaceGroupList[$UserTeamInfo['RaceGroupId']])?$RaceGroupList[$UserTeamInfo['RaceGroupId']]['RaceGroupName']:"未定义";
 
 					//如果队伍列表里面没有找到当前队伍
-					if(!isset($RaceTeamList[$UserTeamInfo['RaceTeamId']]))
+					if(!isset($TeamList[$UserTeamInfo['TeamId']]))
 					{
 						//获取队伍信息
-						$RaceTeamInfo = $oTeam->getRaceTeamInfo($UserTeamInfo['RaceTeamId'],'RaceTeamId,RaceTeamName');
+						$TeamInfo = $oTeam->getTeamInfo($UserTeamInfo['TeamId'],'TeamId,TeamName');
 						//如果有获取到队伍信息
-						if(isset($RaceTeamInfo['RaceTeamId']))
+						if(isset($TeamInfo['TeamId']))
 						{
 							//存入组别队伍列表
-							$RaceTeamList[$UserTeamInfo['RaceTeamId']] = $RaceTeamInfo;
+							$TeamList[$UserTeamInfo['TeamId']] = $TeamInfo;
 						}
 					}
 					//保存队伍信息
-					$UserTeamList[$key]['RaceTeamName'] = isset($RaceTeamList[$UserTeamInfo['RaceTeamId']])?$RaceTeamList[$UserTeamInfo['RaceTeamId']]['RaceTeamName']:"未定义";
+					$UserTeamList[$key]['TeamName'] = isset($TeamList[$UserTeamInfo['TeamId']])?$TeamList[$UserTeamInfo['TeamId']]['TeamName']:"未定义";
 					$UserTeamList[$key]['UserTeamDelete'] = "<a href='".Base_Common::getUrl('','xrace/user','user.team.delete',array('LogId'=>$UserTeamInfo['LogId'])) ."'>退出</a>";
 				}
 			}
@@ -1000,7 +1000,7 @@ class Xrace_UserController extends AbstractController
 			$FirstRaceCatalog = current($RaceCatalogList);
 			$oTeam = new Xrace_Team();
 			//获取第一个赛事对应的队伍列表
-			$RaceTeamList = $oTeam->getRaceTeamList($FirstRaceCatalog['RaceCatalogId'],array("RaceTeamId","RaceTeamName"));
+			$TeamList = $oTeam->getTeamList($FirstRaceCatalog['RaceCatalogId'],array("TeamId","TeamName"));
 			//渲染模板
 			include $this->tpl('Xrace_User_UserTeamAdd');
 		}
@@ -1018,19 +1018,19 @@ class Xrace_UserController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//获取 页面参数
-			$bind = $this->request->from('RaceGroupId','UserId','RaceTeamId');
+			$bind = $this->request->from('RaceGroupId','UserId','TeamId');
 			$oTeam = new Xrace_Team();
 			//获取队伍数据
-			$RaceTeamInfo = $oTeam->getRaceTeamInfo($bind['RaceTeamId']);
+			$TeamInfo = $oTeam->getTeamInfo($bind['TeamId']);
 			//如果有获取到队伍信息
-			if(isset($RaceTeamInfo['RaceTeamId']))
+			if(isset($TeamInfo['TeamId']))
 			{
 				//保存赛事ID
-				$bind['RaceCatalogId'] = $RaceTeamInfo['RaceCatalogId'];
+				$bind['RaceCatalogId'] = $TeamInfo['RaceCatalogId'];
 				//数据解包
-				$RaceTeamInfo['comment'] = json_decode($RaceTeamInfo['comment'],true);
+				$TeamInfo['comment'] = json_decode($TeamInfo['comment'],true);
 				//如果选定的分组不在队伍已选队列中
-				if(!in_array($bind['RaceGroupId'],$RaceTeamInfo['comment']['SelectedRaceGroup']))
+				if(!in_array($bind['RaceGroupId'],$TeamInfo['comment']['SelectedRaceGroup']))
 				{
 					$response = array('errno' => 1);
 				}

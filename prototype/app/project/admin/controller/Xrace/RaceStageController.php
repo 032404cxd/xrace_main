@@ -2077,12 +2077,12 @@ class Xrace_RaceStageController extends AbstractController
                             continue;
                         }
 						//获取车队名称
-						//$RaceTeamName = trim($t[6]);
-						$RaceTeamName = trim(iconv('GB2312', 'UTF-8//IGNORE', $t[6]));
+						//$TeamName = trim($t[6]);
+						$TeamName = trim(iconv('GB2312', 'UTF-8//IGNORE', $t[6]));
 						//获取车队信息
-						$RaceTeamInfo = $oTeam->getRaceTeamInfoByName($RaceTeamName,'team_id as RaceTeamId,name as RaceTeamName');
+						$TeamInfo = $oTeam->getTeamInfoByName($TeamName,'TeamId as TeamId,name as TeamName');
 						//判断车队是否获取到
-						$RaceTeamId = isset($RaceTeamInfo['RaceTeamId'])?$RaceTeamInfo['RaceTeamId']:$oTeam->insertRaceTeam(array("name"=>$RaceTeamName,"crt_time"=>date("Y-m-d H:i:s",time()),"is_open"=>0));
+						$TeamId = isset($TeamInfo['TeamId'])?$TeamInfo['TeamId']:$oTeam->insertTeam(array("name"=>$TeamName,"crt_time"=>date("Y-m-d H:i:s",time()),"is_open"=>0));
                         if($RaceGroupId==0)
                         {
                             if(!isset($RaceGroupList[trim(iconv('GB2312', 'UTF-8//IGNORE', $t[1]))]))
@@ -2096,7 +2096,7 @@ class Xrace_RaceStageController extends AbstractController
                             if(isset($RaceGroupList[trim(iconv('GB2312', 'UTF-8//IGNORE', $t[1]))]))
                             {
                                 //初始化新报名记录的信息
-                                $ApplyInfo = array("ApplyTime"=>$CurrentTime,"UserId"=>$UserInfo['UserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupList[trim(iconv('GB2312', 'UTF-8//IGNORE', $t[1]))]['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"RaceTeamId"=>$RaceTeamId);
+                                $ApplyInfo = array("ApplyTime"=>$CurrentTime,"UserId"=>$UserInfo['UserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupList[trim(iconv('GB2312', 'UTF-8//IGNORE', $t[1]))]['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
                             }
                             else
                             {
@@ -2106,10 +2106,10 @@ class Xrace_RaceStageController extends AbstractController
                         else
                         {
                             //初始化新报名记录的信息
-                            $ApplyInfo = array("ApplyTime"=>$CurrentTime,"UserId"=>$UserInfo['UserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"RaceTeamId"=>$RaceTeamId);
+                            $ApplyInfo = array("ApplyTime"=>$CurrentTime,"UserId"=>$UserInfo['UserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
                         }
 						//如果存在，则更新部分信息
-						$ApplyUpdateInfo = array("ApplyTime"=>$CurrentTime,"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"RaceTeamId"=>$RaceTeamId);
+						$ApplyUpdateInfo = array("ApplyTime"=>$CurrentTime,"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
 						//创建/更新报名记录
                         $Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
 						//如果创建成功
@@ -2843,13 +2843,13 @@ class Xrace_RaceStageController extends AbstractController
                 {
                     $RaceInfo = $RaceList[$ApplyInfo['RaceId']];
                 }
-                if(!isset($TeamList[$ApplyInfo['RaceTeamId']]['team_id']))
+                if(!isset($TeamList[$ApplyInfo['TeamId']]['TeamId']))
                 {
-                    $TeamInfo = $oTeam->getRaceTeamInfo($ApplyInfo['RaceTeamId'],'team_id,name');
+                    $TeamInfo = $oTeam->getTeamInfo($ApplyInfo['TeamId'],'TeamId,name');
                 }
                 else
                 {
-                    $TeamInfo = $TeamList[$ApplyInfo['RaceTeamId']];
+                    $TeamInfo = $TeamList[$ApplyInfo['TeamId']];
                 }
                 $t['Name'] = $UserInfo['name'];
                 $t['sex'] = $UserInfo['sex'];

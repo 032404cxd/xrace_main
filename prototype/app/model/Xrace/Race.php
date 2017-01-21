@@ -1230,13 +1230,13 @@ class Xrace_Race extends Base_Widget
 							//如果获取到用户
 							if($UserInfo['UserId'])
 							{
-								$RaceTeamInfo = $oTeam->getRaceTeamInfo($ApplyInfo['RaceTeamId']);
-								if(!isset($RaceTeamInfo['RaceTeamId']))
+								$TeamInfo = $oTeam->getTeamInfo($ApplyInfo['TeamId']);
+								if(!isset($TeamInfo['TeamId']))
 								{
-									$RaceTeamInfo = array('RaceTeamName'=>"个人");
+									$TeamInfo = array('TeamName'=>"个人");
 								}
 								//存储用户信息
-								$TimingPointList['UserInfo'] = array('UserName'=>$UserInfo['Name'],'UserId' => $UserInfo['UserId'],'RaceTeamId'=> $ApplyInfo['RaceTeamId'],'RaceTeamName'=>$RaceTeamInfo['RaceTeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
+								$TimingPointList['UserInfo'] = array('UserName'=>$UserInfo['Name'],'UserId' => $UserInfo['UserId'],'TeamId'=> $ApplyInfo['TeamId'],'TeamName'=>$TeamInfo['TeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
 								//数据解包
 								$ApplyInfo['comment'] = json_decode($ApplyInfo['comment'],true);
 								//如果有关联的订单数据

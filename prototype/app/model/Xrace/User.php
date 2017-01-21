@@ -610,7 +610,7 @@ class Xrace_User extends Base_Widget
 		$whereCondition = array($whereCatalog,$whereUser,$whereGroup,$whereRace,$whereStage);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
-		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by BIB,RaceTeamId,ApplyId desc";
+		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by BIB,TeamId,ApplyId desc";
         $return = $this->db->getAll($sql);
 		return $return;
 	}
@@ -647,7 +647,7 @@ class Xrace_User extends Base_Widget
 		$whereCondition = array($whereCatalog,$whereUser,$whereGroup);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
-		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by RaceTeamId,RaceCatalogId,RaceGroupId desc";
+		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by TeamId,RaceCatalogId,RaceGroupId desc";
 		$return = $this->db->getAll($sql);
 		return $return;
 	}
@@ -765,7 +765,7 @@ class Xrace_User extends Base_Widget
     {
         $TeamId = intval($TeamId);
         $table_to_process = Base_Widget::getDbTable($this->table_team);
-        return $this->db->selectRow($table_to_process, $fields, '`team_id` = ?', $TeamId);
+        return $this->db->selectRow($table_to_process, $fields, '`TeamId` = ?', $TeamId);
     }
     //ALTER TABLE `user_race` ADD `ApplySource` TINYINT(3) UNSIGNED NOT NULL COMMENT '报名数据来源：1|线上|2线下|待扩充' AFTER `ApplyId`;
 }

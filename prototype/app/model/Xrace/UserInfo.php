@@ -714,7 +714,7 @@ class Xrace_UserInfo extends Base_Widget
         $whereCondition = array($whereCatalog,$whereUser,$whereGroup,$whereRace,$whereStage);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
-        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by BIB,RaceTeamId,ApplyId desc";
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by BIB,TeamId,ApplyId desc";
         $return = $this->db->getAll($sql);
         return $return;
     }
@@ -752,7 +752,7 @@ class Xrace_UserInfo extends Base_Widget
             //获取选手名单
             $UserList = $this->getRaceUserList($params);
             //初始化空的返回值列表
-            $RaceTeamList = array('RaceUserList'=>array(),'RaceTeamList'=>array());
+            $TeamList = array('RaceUserList'=>array(),'TeamList'=>array());
             //如果获取到选手名单
             if(count($UserList))
             {
@@ -785,19 +785,19 @@ class Xrace_UserInfo extends Base_Widget
                         $RaceUserList['RaceUserList'][$ApplyId]['RaceGroupName'] = $RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupName'];
                         //获取用户名
                         $RaceUserList['RaceUserList'][$ApplyId]['Name'] = $UserInfo['Name'];
-                        if(!isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']]))
+                        if(!isset($RaceUserList['TeamList'][$ApplyInfo['TeamId']]))
                         {
                             //队伍信息
-                            $RaceTeamInfo = $oTeam->getRaceTeamInfo($ApplyInfo['RaceTeamId'],'team_id as RaceTeamId,name as RaceTeamName');
+                            $TeamInfo = $oTeam->getTeamInfo($ApplyInfo['TeamId'],'TeamId as TeamId,name as TeamName');
                             //如果在队伍列表中有获取到队伍信息
-                            if(isset($RaceTeamInfo['RaceTeamId']))
+                            if(isset($TeamInfo['TeamId']))
                             {
-                                $RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']] = $RaceTeamInfo;
+                                $RaceUserList['TeamList'][$ApplyInfo['TeamId']] = $TeamInfo;
                             }
                         }
                         //格式化用户的队伍名称和队伍ID
-                        $RaceUserList['RaceUserList'][$ApplyId]['RaceTeamName'] = isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']])?$RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']]['RaceTeamName']:"个人";
-                        $RaceUserList['RaceUserList'][$ApplyId]['RaceTeamId'] = isset($RaceUserList['RaceTeamList'][$ApplyInfo['RaceTeamId']])?$ApplyInfo['RaceTeamId']:0;
+                        $RaceUserList['RaceUserList'][$ApplyId]['TeamName'] = isset($RaceUserList['TeamList'][$ApplyInfo['TeamId']])?$RaceUserList['TeamList'][$ApplyInfo['TeamId']]['TeamName']:"个人";
+                        $RaceUserList['RaceUserList'][$ApplyId]['TeamId'] = isset($RaceUserList['TeamList'][$ApplyInfo['TeamId']])?$ApplyInfo['TeamId']:0;
                         $RaceUserList['RaceUserList'][$ApplyId]['comment'] = json_decode($ApplyInfo['comment'],true);
                         $RaceUserList['RaceUserList'][$ApplyId]['ApplySourceName'] = $RaceApplySourceList[$ApplyInfo['ApplySource']];
                     }
@@ -811,14 +811,14 @@ class Xrace_UserInfo extends Base_Widget
             }
         }
         //如果需要筛选的队伍ID在队伍列表中
-        if(isset($RaceUserList['RaceTeamList'][$TeamId]))
+        if(isset($RaceUserList['TeamList'][$TeamId]))
         {
             //循环名单
             foreach($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
             {
 
                 //如果不是想要的队伍
-                if($ApplyInfo['RaceTeamId'] != $TeamId)
+                if($ApplyInfo['TeamId'] != $TeamId)
                 {
                     //删除数据
                     unset($RaceUserList['RaceUserList'][$ApplyId]);
@@ -832,7 +832,7 @@ class Xrace_UserInfo extends Base_Widget
             foreach($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
             {
                 //如果不是想要的队伍
-                if($ApplyInfo['RaceTeamId'] != 0)
+                if($ApplyInfo['TeamId'] != 0)
                 {
                     //删除数据
                     unset($RaceUserList['RaceUserList'][$ApplyId]);

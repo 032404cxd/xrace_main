@@ -16,7 +16,7 @@
         </tr>
         {tpl:loop $UserTeamList $Aid $UserTeamInfo}
         <tr>
-            <th align="center" class="rowtip">{tpl:$UserTeamInfo.RaceTeamName/}</th>
+            <th align="center" class="rowtip">{tpl:$UserTeamInfo.TeamName/}</th>
             <th align="center" class="rowtip">{tpl:$UserTeamInfo.RaceCatalogName/}</th>
             <th align="center" class="rowtip">{tpl:$UserTeamInfo.RaceGroupName/}</th>
             <th align="center" class="rowtip">{tpl:$UserTeamInfo.InTime/}</th>
