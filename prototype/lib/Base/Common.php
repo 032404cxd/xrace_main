@@ -1206,6 +1206,33 @@ EOF;
         {
             return "";
         }
+    }
+    function dayuSMS($params)
+    {
+        var_dump($params);
+        ECHO Base_Common::getSMSCode($params['SMSCode'])."<br>";
+        echo "here";
+        include('Third/dayu/TopSdk.php');
+        $c = new TopClient;
+        $c->appkey = "23327292";//$appkey;
+        $c->secretKey = "b54062e4e60366134595c4c527df308b";//$secret;
+        $req = new AlibabaAliqinFcSmsNumSendRequest;
+        $req->setExtend("123456");
+        $req->setSmsType("normal");
+        $req->setSmsFreeSignName("淘赛体育");
+        $req->setSmsParam(json_encode($params['smsContent']));
+        $req->setRecNum($params['Mobile']);
+        $req->setSmsTemplateCode(Base_Common::getSMSCode($params['SMSCode']));
+        $resp = $c->execute($req);
+        var_dump($resp);
+    }
+    function getSMSCode($CodeName)
+    {
+        $SmsCodeList = array(
+        //发送短信验证码
+             "SMS_Validate_Code"=>"SMS_5910467"
 
+        );
+        return $SmsCodeList[$CodeName];
     }
 }

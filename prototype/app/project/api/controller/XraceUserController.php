@@ -54,21 +54,24 @@ class XraceUserController extends AbstractController
      */
     public function thirdPartyLoginAction()
     {
-        //$Text  = '{"openid":"o8Lb_t6lobJhEDrQcqwnTNRVpM58","nickname":"NICKNAME","sex":1,"province":"PROVINCE","city":"CITY","country":"COUNTRY","headimgurl":"http://wx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfp b6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/0","privilege":["PRIVILEGE1","PRIVILEGE2"],"unionid":"o6_bmasdasdsad6_2sgVt7hMZOPfL"}';
-        $Text  = '{"UID":"o8Lb_t6lobJhEDrQcqwnTNRVpM58","nickname":"NICKNAME","sex":1,"province":"PROVINCE","city":"CITY","country":"COUNTRY","headimgurl":"http://wx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfp b6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/0","privilege":["PRIVILEGE1","PRIVILEGE2"],"unionid":"o6_bmasdasdsad6_2sgVt7hMZOPfL"}';
+        //$LoginData  = '{"openid": "odLjsvnZwRS4lduV6D7DpS5hJoyY","nickname": "GUI Ling","headimgurl": "http://wx.qlogo.cn/mmopen/fl6pKMZtTyXGYHHVno0td0cv2VR9HHUEp2pz6p9qLAfTrOVtP07pgNSytgfKm4uBgGjXic0sGTkZKc7lFvFOKE999tY8jfEfj/0","sex": "2","province": "上海","city": "长宁"}';
+        //$LoginData  = '{"openid": "odLjsvvYfXvkm9Rkrd4HAHXeqvA8","nickname": "JiMMy","headimgurl": "http://wx.qlogo.cn/mmopen/s6icJeKAt9X2zFZiafUjibkZhkibib8ickRZMDeoIwpfAeh04htIbSecdkU5uoW0AdAucU1kM4tEnKuw6uW6zeaWBYwLMYj9evlJvy/0","sex": "0","province": "","city": ""}';
+        //$LoginData  = '{"openid": "odLjsvnl2cUkbbbM8EBvZmJOX7Sw","nickname": "栋辉tim","headimgurl": "http://wx.qlogo.cn/mmopen/fl6pKMZtTyXGYHHVno0td2q2q1K7U1r4Gx1Hib8mL7lVQiaCdux7ZrtAZicmeOu79ZOuhGicDmSUC9LiaqIRwIzQbVIzyvwbXmyn3/0","sex": "1","province": "上海","city": "浦东新区"}';
 
+        $LoginData = isset($this->request->Data) ? trim($this->request->Data) : "";
         $LoginSource = isset($this->request->LoginSource) ? trim($this->request->LoginSource) : "WeChat";
-        $LoginData = json_decode($Text,true);
+        $IP = isset($this->request->IP) ?  trim($this->request->IP):"127.0.0.1";
+        $LoginData = json_decode($LoginData,true);
         $Login = $this->oUser->ThirdPartyLogin($LoginData,$LoginSource);
         if(isset($Login['UserId']))
         {
             //结果数组 返回用户信息
-            $result = array("return" => 1, "UserInfo" => $Login,"comment" => "登录成功");
+            $result = array("return" => 1, "UserInfo" => $Login,"Token"=>$this->oUser->makeToken($Login['UserId'],$IP),"comment" => "登录成功");
         }
         elseif(isset($Login['RegId']))
         {
             //结果数组 返回注册信息，引导绑定手机
-            $result = array("return" => 1, "RegInfo" => $Login,"comment" => "请绑定手机");
+            $result = array("return" => 1, "RegInfo" => $Login,"comment" => $Login['NeedMobile']?"请绑定手机":"请输入已经发往手机的验证码");
         }
         else
         {
@@ -80,32 +83,111 @@ class XraceUserController extends AbstractController
     /**
      *第三方登录时绑定手机
      */
-    public function thirdPartyRegMobileAction()
+    public function thirdPartyRegByMobileAction()
     {
         $Mobile = isset($this->request->Mobile) ? trim($this->request->Mobile) : "";
-        $RegId = isset($this->request->RegId) ? abs(intval($this->request->RegId)) : 0;
-        //$Mobile = "186217582371";
-        //$ValidateCode = "825988";
-        //获取注册记录
-        $RegInfo = $this->getRegInfo($RegId);
-        //如果获取到注册记录
-        if(isset($RegInfo['RegId']))
+        $RegId = isset($this->request->RegId) ? abs(intval($this->request->RegId)) :0;
+        //根据手机号码获取用户信息
+        $UserInfo = $this->oUser->getUserByColumn("Mobile",$Mobile);
+        if(isset($UserInfo['UserId']))
         {
-            //尚未绑定手机
-            if($RegInfo['Mobile']=="")
+            //返回错误
+            $result = array("return" => 0,"comment" => "用户已存在，请输入其他的手机号码");
+        }
+        else
+        {
+            //获取正在用此手机号注册的用户
+            $RegInfoList = $this->oUser->getUserRegByColumn("Mobile",$Mobile);
+            //循环注册记录
+            foreach($RegInfoList as $key => $value)
             {
-                //更新记录
-                $RegInfoUpdate = array('Mobile'=>$Mobile,'ExceedTime'=>date("Y-m-d H:i:s",time()+3600),'ValidateCode' => sprintf("%06d",rand(1,999999)));
-                $this->oUser->updateRegInfo($RegInfo['RegId'],$RegInfoUpdate);
+                //如果发现尚未失效
+                if(strtotime($value['ExceedTime'])>=time() && $value['RegId']!=$RegId)
+                {
+                    //返回错误
+                    $result = array("return" => 0,"comment" => "此手机其他用户正在验证中");
+                    echo json_encode($result);
+                    return;
+                }
+            }
+            //获取注册记录
+            $RegInfo = $this->oUser->getRegInfo($RegId);
+            //如果获取到注册记录
+            if(isset($RegInfo['RegId']))
+            {
+                //尚未绑定手机
+                if($RegInfo['Mobile']=="")
+                {
+                    //更新记录
+                    $RegInfoUpdate = array('Mobile'=>$Mobile,'ExceedTime'=>date("Y-m-d H:i:s",time()+3600),'ValidateCode' => sprintf("%06d",rand(1,999999)));
+                    $update = $this->oUser->updateRegInfo($RegInfo['RegId'],$RegInfoUpdate);
+                    //如果更新成功
+                    if($update)
+                    {
+                        $result = array("return" => 1,"comment" => "验证码已发送");
+                    }
+                    else
+                    {
+                        //返回错误
+                        $result = array("return" => 0,"comment" => "更新失败，请重试");
+                    }
+                }
+                else
+                {
+                    //如果已经发送该手机
+                    if($RegInfo['Mobile']==$Mobile)
+                    {
+                        //如果已过有效期
+                        if(strtotime($RegInfo['ExceedTime'])<=time())
+                        {
+                            //更新记录
+                            $update = $this->oUser->thirdPartyRegMobile($RegId,$Mobile);
+                            //如果更新成功
+                            if($update)
+                            {
+                                $result = array("return" => 1,"comment" => "验证码已发送");
+                            }
+                            else
+                            {
+                                //返回错误
+                                $result = array("return" => 0,"comment" => "更新失败，请重试");
+                            }
+                        }
+                        else
+                        {
+                            $result = array("return" => 1,"comment" => "验证码之前已发送");
+                        }
+                    }
+                    else
+                    {
+                        //如果已过有效期
+                        if(strtotime($RegInfo['ExceedTime'])<=time())
+                        {
+                            //更新记录
+                            $update = $this->oUser->thirdPartyRegMobile($RegId,$Mobile);
+                            //如果更新成功
+                            if($update)
+                            {
+                                $result = array("return" => 1,"comment" => "验证码已发送");
+                            }
+                            else
+                            {
+                                //返回错误
+                                $result = array("return" => 0,"comment" => "更新失败，请重试");
+                            }
+                        }
+                        else
+                        {
+                            $result = array("return" => 1,"comment" => "验证码之前已发送到尾号为".substr($RegInfo['Mobile'],-4)."的其他手机");
+                        }
+                    }
+                }
             }
             else
             {
                 //返回错误
+                $result = array("return" => 0,"comment" => "无此记录，请重试");
             }
-        }
-        else
-        {
-            //返回错误
         }
         echo json_encode($result);
     }
@@ -116,13 +198,12 @@ class XraceUserController extends AbstractController
     {
         $Mobile = isset($this->request->Mobile) ? trim($this->request->Mobile) : "";
         $ValidateCode = isset($this->request->ValidateCode) ? trim($this->request->ValidateCode) : "";
-        $Mobile = "186217582371";
-        $ValidateCode = "825988";
+        $IP = isset($this->request->IP) ?  trim($this->request->IP):"127.0.0.1";
         $Auth = $this->oUser->regMobileAuth($Mobile,$ValidateCode);
         if($Auth > 0)
         {
             //结果数组 返回用户信息
-            $result = array("return" => 1, "UserInfo" => $this->oUser->getUserInfo($Auth),"comment" => "注册成功");
+            $result = array("return" => 1, "UserInfo" => $this->oUser->getUserInfo($Auth),"Token"=>$this->oUser->makeToken($Auth,$IP),"comment" => "注册成功");
         }
         elseif($Auth = -1)
         {
@@ -136,7 +217,10 @@ class XraceUserController extends AbstractController
         }
         echo json_encode($result);
     }
-
-
-    //{"openid":"OPENID",  "nickname":"NICKNAME",  "sex":1,  "province":"PROVINCE",  "city":"CITY",  "country":"COUNTRY",  "headimgurl": "http://wx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfp b6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/0",  "privilege":["PRIVILEGE1",   "PRIVILEGE2"  ],  "unionid": " o6_bmasdasdsad6_2sgVt7hMZOPfL"}
+    public function tokenAction()
+    {
+        $UserId = isset($this->request->UserId) ? abs(intval($this->request->UserId)) : 0;
+        $IP = isset($this->request->IP) ?  trim($this->request->IP):"127.0.0.1";
+        $token = $this->oUser->makeToken($UserId,$IP);
+    }
 }

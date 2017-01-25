@@ -146,4 +146,8 @@ $table['times']['num'] = 1;
 $table['user_stage_checkin']['db'] = 'xrace';
 $table['user_stage_checkin']['num'] = 1;
 
+//登录Token表
+$table['UserLogin']['db'] = 'xrace_user';
+$table['UserLogin']['num'] = 1;
+
 return $table;

@@ -11,6 +11,8 @@ class Xrace_UserInfo extends Base_Widget
     protected $table = 'UserInfo';
     protected $table_reg_info = 'UserReg';
     protected $table_race = 'user_race';
+    protected $table_login = 'UserLogin';
+
 
     //性别列表
 	protected $sex = array('0'=>"保密",'1'=>"男",'2'=>"女");
@@ -111,12 +113,25 @@ class Xrace_UserInfo extends Base_Widget
         return $this->db->selectRow($table_to_process, "*", '`RegId` = ?', $RegId);
     }
     /**
+     * 根据第三方身份数据获取单个用户注册中间记录
+     * @param string $RegPlatform 第三方平台
+     * @param string $RegPlatform 第三方平台
+     * @return array
+     */
+    public function getRegInfoByThirdParty($RegPlatform,$RegKey)
+    {
+        $RegPlatform = trim($RegPlatform);
+        $RegKey = trim($RegKey);
+        $table_to_process = Base_Widget::getDbTable($this->table_reg_info);
+        return $this->db->selectRow($table_to_process, "*", '`RegPlatform` = ? and `RegKey` = ?', array($RegPlatform,$RegKey));
+    }
+    /**
      * 通过手机和短信验证码获取单个用户注册中间记录
      * @param string $Mobile 用户手机号码
      * @param string $Code 短信验证码
      * @return array
      */
-    public function getRegInfoByBobile($Mobile,$ValidateCode)
+    public function getRegInfoByMobile($Mobile,$ValidateCode)
     {
         $Mobile = trim($Mobile);
         $ValidateCode = trim($ValidateCode);
@@ -225,6 +240,17 @@ class Xrace_UserInfo extends Base_Widget
     {
         $table_to_process = Base_Widget::getDbTable($this->table);
         return $this->db->selectRow($table_to_process, $fields, '`'.$Column.'` = ?', $Value);
+    }
+    /**
+     * 根据指定字段获取单个用户注册记录
+     * @param char $UserId 用户ID
+     * @param string $fields 所要获取的数据列
+     * @return array
+     */
+    public function getUserRegByColumn($Column,$Value, $fields = '*')
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_reg_info);
+        return $this->db->select($table_to_process, $fields, '`'.$Column.'` = ?', $Value);
     }
     /**
      * 获取用户列表
@@ -341,7 +367,7 @@ class Xrace_UserInfo extends Base_Widget
         }
         else
         {
-            echo "cached";
+            //echo "cached";
             //根据手机号码查询用户
             $UserInfo = $this->getUserByColumn("Mobile",$Mobile);
             //如果查询到
@@ -385,42 +411,67 @@ class Xrace_UserInfo extends Base_Widget
                             //微信数据解包
                             $UserInfo['WeChatInfo'] = json_decode($UserInfo['WeChatInfo'],true);
                             //用户数据比对
-                            if(($UserInfo['WeChatInfo']['UserImg'] = $LoginData['headimgurl']) && ($UserInfo['WeChatInfo']['NickName'] = $LoginData['nickname']))
+                            if(array_diff($UserInfo['WeChatInfo'],$LoginData))
                             {
-                                echo "UserInfo Cached";
+                                //echo "UserInfo Cached";
                             }
                             else
                             {
                                 //更新用户数据
-                                $WeChatInfo = array('NickName' => $LoginData['nickname'],'UserImg' => $LoginData['headimgurl']);
+                                $WeChatInfo = array('NickName' => $LoginData);
                                 $UserInfoUpdate = array('WeChatInfo' => json_encode($WeChatInfo));
                                 $this->updateUser($UserInfo['UserId'], $UserInfoUpdate);
                             }
                             //写缓存
-                            $UserInfoCache = array("UserId"=>$UserInfo['UserId'],'NickName'=>$LoginData['nickname'],'UserImg'=>$LoginData['headimgurl']);
+                            $UserInfoCache = array_merge($LoginData,array("UserId"=>$UserInfo['UserId']));
                             $oMemCache->set("ThirdParty_".$LoginSource."_".$LoginData['openid'],json_encode($UserInfoCache),86400);
                             return $UserInfoCache;
                         }
                         else
                         {
-                            //获取当前时间
-                            $Time = time();
-                            //创建用户注册记录
-                            $UserRegInfo = array("RegPlatform"=>"WeChat","RegKey"=>$LoginData['openid'],"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>"");
-                            $RegId = $this->insertRegInfo($UserRegInfo);
-                            //如果写入成功
-                            if($RegId)
+                            //根据第三方平台数据获取注册中间记录
+                            $RegInfo = $this->getRegInfoByThirdParty("WeChat",$LoginData['openid']);
+                            //如果找到
+                            if($RegInfo['RegId'])
                             {
-                                //通知前端需要进一步获取手机
-                                return array('RegId'=>$RegId,'NeedMobile'=>1);
+                                //如果当前手机号码在验证有效期内
+                                if(strtotime($RegInfo['ExceedTime'])>=time())
+                                {
+                                    $params = array(
+                                        "smsContent" => array("code"=>$RegInfo['ValidateCode'],"product"=>"淘赛体育",),
+                                        "Mobile"=> $RegInfo['Mobile'],
+                                        "SMSCode"=>"SMS_Validate_Code"
+                                    );
+                                    Base_common::dayuSMS($params);
+                                    return array('RegId'=>$RegInfo['RegId'],'NeedMobile'=>0);
+                                }
+                                else
+                                {
+                                    //通知前端需要进一步获取手机
+                                    return array('RegId'=>$RegInfo['RegId'],'NeedMobile'=>1);
+                                }
                             }
                             else
                             {
-                                return false;
+                                //获取当前时间
+                                $Time = time();
+                                //创建用户注册记录
+                                $UserRegInfo = array("RegPlatform"=>"WeChat","RegKey"=>$LoginData['openid'],"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>"","ThirdPartyInfo"=>json_encode($LoginData));
+                                $RegId = $this->insertRegInfo($UserRegInfo);
+                                //如果写入成功
+                                if($RegId)
+                                {
+                                    //通知前端需要进一步获取手机
+                                    return array('RegId'=>$RegId,'NeedMobile'=>1);
+                                }
+                                else
+                                {
+                                    return false;
+                                }
                             }
                         }
                     }
-                    else//没拿到缓存
+                    else//拿到缓存
                     {
                         //获取用户信息
                         $UserInfo = $this->getUserInfo($m['UserId']);
@@ -429,19 +480,23 @@ class Xrace_UserInfo extends Base_Widget
                             //微信数据解包
                             $UserInfo['WeChatInfo'] = json_decode($UserInfo['WeChatInfo'],true);
                             //用户数据比对
-                            if(($UserInfo['WeChatInfo']['UserImg'] = $LoginData['headimgurl']) && ($UserInfo['WeChatInfo']['NickName'] = $LoginData['nickname']))
+                            if(!array_diff($UserInfo['WeChatInfo'],$LoginData))
                             {
                                 //echo "UserInfo Cached";
                             }
                             else
                             {
                                 //更新用户数据
-                                $WeChatInfo = array('NickName' => $LoginData['nickname'],'UserImg' => $LoginData['headimgurl']);
+                                $WeChatInfo = $LoginData;
+                                //待更新微信的数据
                                 $UserInfoUpdate = array('WeChatInfo' => json_encode($WeChatInfo));
+                                //更新微信数据
                                 $this->updateUser($UserInfo['UserId'], $UserInfoUpdate);
+                                //重新获取用户数据
+                                $UserInfo = $this->getUserInfo($UserInfo['UserId'],"*",0);
                             }
                             //写缓存
-                            $UserInfoCache = array("UserId"=>$UserInfo['UserId'],'NickName'=>$LoginData['nickname'],'UserImg'=>$LoginData['headimgurl']);
+                            $UserInfoCache = array_merge($LoginData,array("UserId"=>$UserInfo['UserId']));
                             $oMemCache->set("ThirdParty_".$LoginSource."_".$LoginData['openid'],json_encode($UserInfoCache),86400);
                             return $UserInfoCache;
                         }
@@ -450,109 +505,7 @@ class Xrace_UserInfo extends Base_Widget
                             //获取当前时间
                             $Time = time();
                             //创建用户注册记录
-                            $UserRegInfo = array("RegPlatform"=>"WeChat","RegKey"=>$LoginData['openid'],"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>"");
-                            $RegId = $this->insertRegInfo($UserRegInfo);
-                            //如果写入成功
-                            if($RegId)
-                            {
-                                //通知前端需要进一步获取手机
-                                return array('RegId'=>$RegId,'NeedMobile'=>1);
-                            }
-                            else
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            case "Weibo":
-                if(isset($LoginData['openid']))
-                {
-                    //获取缓存
-                    $m = $oMemCache->get("ThirdParty_".$LoginSource."_".$LoginData['UID']);
-                    //缓存数据解包
-                    $m = json_decode($m,true);
-                    //如果获取到的数据为0
-                    if(intval($m['UserId'])==0)
-                    {
-                        //根据第三方平台ID查询用户
-                        $UserInfo = $this->getUserByColumn("WeiboId",$LoginData['openid'],"UserId,WeiboInfo");
-                        //如果查询到
-                        if(isset($UserInfo['UserId']))
-                        {
-                            //微信数据解包
-                            $UserInfo['WeiboInfo'] = json_decode($UserInfo['WeiboInfo'],true);
-                            //用户数据比对
-                            if(($UserInfo['WeiboInfo']['UserImg'] = $LoginData['headimgurl']) && ($UserInfo['WeiboInfo']['NickName'] = $LoginData['nickname']))
-                            {
-                                echo "UserInfo Cached";
-                            }
-                            else
-                            {
-                                //更新用户数据
-                                $WeChatInfo = array('NickName' => $LoginData['nickname'],'UserImg' => $LoginData['headimgurl']);
-                                $UserInfoUpdate = array('WeiboInfo' => json_encode($WeChatInfo));
-                                $this->updateUser($UserInfo['UserId'], $UserInfoUpdate);
-                            }
-                            //写缓存
-                            $UserInfoCache = array("UserId"=>$UserInfo['UserId'],'NickName'=>$LoginData['nickname'],'UserImg'=>$LoginData['headimgurl']);
-                            $oMemCache->set("ThirdParty_".$LoginSource."_".$LoginData['UID'],json_encode($UserInfoCache),86400);
-                            return $UserInfoCache;
-                        }
-                        else
-                        {
-                            //获取当前时间
-                            $Time = time();
-                            //创建用户注册记录
-                            $UserRegInfo = array("RegPlatform"=>"Weibo","RegKey"=>$LoginData['UID'],"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>"");
-                            $RegId = $this->insertRegInfo($UserRegInfo);
-                            //如果写入成功
-                            if($RegId)
-                            {
-                                //通知前端需要进一步获取手机
-                                return array('RegId'=>$RegId,'NeedMobile'=>1);
-                            }
-                            else
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                    else//没拿到缓存
-                    {
-                        //获取用户信息
-                        $UserInfo = $this->getUserInfo($m['UserId']);
-                        if(isset($UserInfo['UserId']))
-                        {
-                            //微信数据解包
-                            $UserInfo['WeiboInfo'] = json_decode($UserInfo['WeChatInfo'],true);
-                            //用户数据比对
-                            if(($UserInfo['WeiboInfo']['UserImg'] = $LoginData['headimgurl']) && ($UserInfo['WeiboInfo']['NickName'] = $LoginData['nickname']))
-                            {
-                                //echo "UserInfo Cached";
-                            }
-                            else
-                            {
-                                //更新用户数据
-                                $WeChatInfo = array('NickName' => $LoginData['nickname'],'UserImg' => $LoginData['headimgurl']);
-                                $UserInfoUpdate = array('WeiboInfo' => json_encode($WeChatInfo));
-                                $this->updateUser($UserInfo['UserId'], $UserInfoUpdate);
-                            }
-                            //写缓存
-                            $UserInfoCache = array("UserId"=>$UserInfo['UserId'],'NickName'=>$LoginData['nickname'],'UserImg'=>$LoginData['headimgurl']);
-                            $oMemCache->set("ThirdParty_".$LoginSource."_".$LoginData['UID'],json_encode($UserInfoCache),86400);
-                            return $UserInfoCache;
-                        }
-                        else
-                        {
-                            //获取当前时间
-                            $Time = time();
-                            //创建用户注册记录
-                            $UserRegInfo = array("RegPlatform"=>"Weibo","RegKey"=>$LoginData['UID'],"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>"");
+                            $UserRegInfo = array("RegPlatform"=>"WeChat","RegKey"=>$LoginData['openid'],"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>"","ThirdPartyInfo"=>json_encode($LoginData));
                             $RegId = $this->insertRegInfo($UserRegInfo);
                             //如果写入成功
                             if($RegId)
@@ -589,38 +542,25 @@ class Xrace_UserInfo extends Base_Widget
             //如果在有效期内
             if(strtotime($RegInfo['ExceedTime'])>=time())
             {
-                //验证通过，注册
-                $UserInfo = array('Mobile'=>$Mobile,'RegTime'=>$RegInfo['RegTime'],'LastLoginTime'=>date("Y-m-d H:i:s"));
-                if($RegInfo['RegPlatform'] == "WeChat")
-                {
-                    $UserInfo['WeChatId'] = $RegInfo['RegPlatform'];
-                }
-                elseif($RegInfo['RegPlatform'] == "Weibo")
-                {
-                    $UserInfo['WeiboId'] = $RegInfo['RegPlatform'];
-                }
-                elseif($RegInfo['RegPlatform'] == "QQ")
-                {
-                    $UserInfo['QQ'] = $RegInfo['RegPlatform'];
-                }
-                elseif($RegInfo['RegPlatform'] == "Mobile")
-                {
-                    //手机注册只保留密码
-                    $UserInfo['Password'] = md5($RegInfo['Password']);
-                }
-                //创建用户
-                $UserId = $this->insertUser($UserInfo);
-                return $UserId;
+                return 1;
             }
             else
             {
+                $ValidateCode = sprintf("%06d",rand(1,999999));
                 //更新注册记录，生成新的验证码和过期时间
-                $bind = array('ExceedTime'=>date("Y-m-d H:i:s",time()+3600),'ValidateCode' => sprintf("%06d",rand(1,999999)));
+                $bind = array('ExceedTime'=>date("Y-m-d H:i:s",time()+3600),'ValidateCode' => $ValidateCode);
                 $Update = $this->updateRegInfo($RegInfo['RegId'],$bind);
                 //更新成功
                 if($Update)
                 {
-                    return -1;
+                    $params = array(
+                        "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育",),
+                        "Mobile"=> $RegInfo['Mobile'],
+                        "SMSCode"=>"SMS_Validate_Code"
+
+                    );
+                    Base_common::dayuSMS($params);
+                    return 1;
                 }
                 else
                 {
@@ -642,7 +582,7 @@ class Xrace_UserInfo extends Base_Widget
     public function regMobileAuth($Mobile,$ValidateCode)
     {
         //获取注册记录
-        $RegInfo = $this->getRegInfoByBobile($Mobile,$ValidateCode);
+        $RegInfo = $this->getRegInfoByMobile($Mobile,$ValidateCode);
         //如果找到记录
         if(isset($RegInfo['RegId']))
         {
@@ -653,7 +593,8 @@ class Xrace_UserInfo extends Base_Widget
                 $UserInfo = array('Mobile'=>$Mobile,'RegTime'=>$RegInfo['RegTime'],'LastLoginTime'=>date("Y-m-d H:i:s"));
                 if($RegInfo['RegPlatform'] == "WeChat")
                 {
-                    $UserInfo['WeChatId'] = $RegInfo['RegPlatform'];
+                    $UserInfo['WeChatId'] = $RegInfo['RegKey'];
+                    $UserInfo['WeChatInfo'] = $RegInfo['ThirdPartyInfo'];
                 }
                 elseif($RegInfo['RegPlatform'] == "Weibo")
                 {
@@ -674,12 +615,19 @@ class Xrace_UserInfo extends Base_Widget
             }
             else
             {
+                $ValidateCode = sprintf("%06d",rand(1,999999));
                 //更新注册记录，生成新的验证码和过期时间
-                $bind = array('ExceedTime'=>date("Y-m-d H:i:s",time()+3600),'ValidateCode' => sprintf("%06d",rand(1,999999)));
+                $bind = array('ExceedTime'=>date("Y-m-d H:i:s",time()+3600),'ValidateCode' => $ValidateCode);
                 $Update = $this->updateRegInfo($RegInfo['RegId'],$bind);
                 //更新成功
                 if($Update)
                 {
+                    $params = array(
+                        "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育",),
+                        "Mobile"=> $RegInfo['Mobile'],
+                        "SMSCode"=>"SMS_Validate_Code"
+                    );
+                    Base_common::dayuSMS($params);
                     return -1;
                 }
                 else
@@ -841,4 +789,99 @@ class Xrace_UserInfo extends Base_Widget
         }
         return $RaceUserList;
     }
+    public function makeToken($UserId,$IP)
+    {
+        //获取用户信息
+        $UserInfo = $this->getUserInfo($UserId,"UserId,UserName");
+        //如果获取到
+        if(isset($UserInfo['UserId']))
+        {
+            //根据用户获取Token
+            $TokenInfo = $this->geTokenByUser($UserId);
+            //如果获取到 且 未超时
+            if(isset($TokenInfo['Token']) && ((strtotime($TokenInfo['Time'])+300)>=time()))
+            {
+                return $TokenInfo['Token'];
+            }
+            else
+            {
+                $Token = $UserInfo['UserId']."|".$IP;
+                //初始成功状态为否
+                $Success = "";
+                //初始计数0
+                $i=0;
+                do
+                {
+                    $Token = md5($Token."|".rand(1,999));
+                    $bind = array("UserId"=>$UserId,"IP"=>Base_Common::ip2long($IP),"Token"=>$Token);
+                    //写入记录
+                    $Success = $this->insertToken($bind,1);
+                    //累加计数器
+                    $i++;
+                }
+                //当不成功且重试次数小于等于3的时候
+                while(strlen($Success)!=32 && $i<3);
+                if(strlen($Success)==32)
+                {
+                    return $Success;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    /**
+     * 获取单个Token记录
+     * @param char $Token 登录Token
+     * @param string $fields 所要获取的数据列
+     * @return array
+     */
+    public function geToken($Token, $fields = '*')
+    {
+        $Token = trim($Token);
+        $table_to_process = Base_Widget::getDbTable($this->table_login);
+        return $this->db->selectRow($table_to_process, $fields, '`Token` = ?', $Token);
+    }
+    /**
+     * 根据用户获取单个Token记录
+     * @param char $UserId 用户
+     * @param string $fields 所要获取的数据列
+     * @return array
+     */
+    public function geTokenByUser($UserId, $fields = '*')
+    {
+        $UserId = intval($UserId);
+        $table_to_process = Base_Widget::getDbTable($this->table_login);
+        return $this->db->selectRow($table_to_process, $fields, '`UserId` = ?', $UserId);
+    }
+    /**
+     * 新增单个Token记录
+     * @param array $bind 所要添加的数据列
+     * @param boolean $false 是否强制更新
+     * @return boolean
+     */
+    public function insertToken($bind,$false=0)
+    {
+        $Time = time();
+        //继续拼接Token
+        $bind['Token'] = md5($bind['Token']."|".$Time."|".rand(1,999));
+        //拼接时间
+        $bind['Time'] = date("Y-m-d H:i:s",$Time);
+        $table_to_process = Base_Widget::getDbTable($this->table_login);
+        if($false==0)
+        {
+             return ($this->db->insert($table_to_process, $bind))?$bind['Token']:false;
+        }
+        else//强制更新
+        {
+            return ($this->db->replace($table_to_process, $bind))?$bind['Token']:false;
+        }
+    }
+
 }

@@ -117,7 +117,6 @@ class XraceTeamController extends AbstractController
                             $result = array("return" => 2, "comment" => "创建失败");
                         }
                     }
-
                 }
                 else
                 {
@@ -130,8 +129,6 @@ class XraceTeamController extends AbstractController
                 $result = array("return" => 0, "comment" => "创建者非法");
             }
         }
-        print_R($result);
-
         echo json_encode($result);
     }
     /**
@@ -327,6 +324,7 @@ class XraceTeamController extends AbstractController
         {
             $result = array("return" => 0, "comment" => "无此用户");
         }
+        print_R($result);
         echo json_encode($result);
     }
     /**
