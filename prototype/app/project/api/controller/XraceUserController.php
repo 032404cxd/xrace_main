@@ -37,6 +37,31 @@ class XraceUserController extends AbstractController
         $result = array("return" => isset($UserInfo['UserId']) ? 1 : 0, "UserInfo" => $UserInfo);
         echo json_encode($result);
     }
+    /**
+     *通过Token获取所用户信息(缓存)
+     */
+    public function getUserInfoByTokenAction()
+    {
+        //是否调用缓存
+        $Cache = isset($this->request->Cache) ? abs(intval($this->request->Cache)) : 1;
+        //是否显示说明注释 默认为1
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->geToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            //获得用户信息
+            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"*",$Cache);
+            //结果数组 如果列表中有数据则返回成功，否则返回失败
+            $result = array("return" => isset($UserInfo['UserId']) ? 1 : 0, "UserInfo" => $UserInfo);
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
 
     /**
      *登录
@@ -58,7 +83,8 @@ class XraceUserController extends AbstractController
         //$LoginData  = '{"openid": "odLjsvvYfXvkm9Rkrd4HAHXeqvA8","nickname": "JiMMy","headimgurl": "http://wx.qlogo.cn/mmopen/s6icJeKAt9X2zFZiafUjibkZhkibib8ickRZMDeoIwpfAeh04htIbSecdkU5uoW0AdAucU1kM4tEnKuw6uW6zeaWBYwLMYj9evlJvy/0","sex": "0","province": "","city": ""}';
         //$LoginData  = '{"openid": "odLjsvnl2cUkbbbM8EBvZmJOX7Sw","nickname": "栋辉tim","headimgurl": "http://wx.qlogo.cn/mmopen/fl6pKMZtTyXGYHHVno0td2q2q1K7U1r4Gx1Hib8mL7lVQiaCdux7ZrtAZicmeOu79ZOuhGicDmSUC9LiaqIRwIzQbVIzyvwbXmyn3/0","sex": "1","province": "上海","city": "浦东新区"}';
 
-        $LoginData = isset($this->request->Data) ? trim($this->request->Data) : "";
+        $LoginData = isset($this->request->LoginData) ? trim($this->request->LoginData) : "";
+
         $LoginSource = isset($this->request->LoginSource) ? trim($this->request->LoginSource) : "WeChat";
         $IP = isset($this->request->IP) ?  trim($this->request->IP):"127.0.0.1";
         $LoginData = json_decode($LoginData,true);

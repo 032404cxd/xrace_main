@@ -16,7 +16,7 @@ class Xrace_Mylaps extends Base_Widget
 	 * @param string $fields
 	 * @return array
 	 */
-	public function getTimingData($params,$fields=array("*"))
+	public function getTimingDataBak($params,$fields=array("*"))
 	{
 		//生成查询列
 		$fields = Base_common::getSqlFields($fields);
@@ -35,12 +35,31 @@ class Xrace_Mylaps extends Base_Widget
 		$return = $this->db->getAll($sql);
 		return $return;
 	}
+    public function getTimingData($params,$fields=array("*"))
+    {
+        //生成查询列
+        $fields = Base_common::getSqlFields($fields);
+        //获取需要用到的表名
+        $table_to_process = Base_Widget::getDbTable($this->table);
+        $table_to_process = str_replace($this->table,$params['prefix'].$this->table,$table_to_process);
+        //获得芯片ID
+        $whereChip = isset($params['Chip'])?" Chip = '".$params['Chip']."' ":"";
+        $whereChipList = isset($params['ChipList'])?" Chip in (".$params['ChipList'].") ":"";
+        $whereStart = isset($params['LastId'])?" Id >".$params['LastId']." ":"";
+        $Limit = " limit 0,".$params['pageSize'];
+        //所有查询条件置入数组
+        $whereCondition = array($whereChip,$whereChipList,$whereStart);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by Id asc".$Limit;
+        $return = $this->db->getAll($sql);
+        return $return;
+    }
 	//根据比赛ID生成该场比赛的MYLAPS计时数据
-	public function genMylapsTimingInfo($RaceId)
+	public function genMylapsTimingInfo($RaceId,$Force = 0)
 	{
-        $oUser = new Xrace_User();
+        $oUser = new Xrace_UserInfo();
         $oRace = new Xrace_Race();
-        //array_merge_recursive
 	    //总记录数量
         $TotalCount = 0;
 		//程序执行开始时间
@@ -61,10 +80,9 @@ class Xrace_Mylaps extends Base_Widget
 		//初始化计时成绩计算的方式（发枪时刻/第一次经过起始点）
 		$ResultType = ((isset($RaceInfo['RouteInfo']['RaceTimingResultType']) && ($RaceInfo['RouteInfo']['RaceTimingResultType']=="gunshot"))||!isset($RaceInfo['RouteInfo']['RaceTimingResultType']))?"gunshot":"net";
 		echo "result:".$oRace->getRaceTimingResultType($ResultType)."\n";
-		echo "ToloranceTime:".$RaceInfo['RouteInfo']['MylapsTolaranceTime']."\n";
 		//获取选手和车队名单
 		$RaceUserList = $oUser->getRaceUserListByRace($RaceId,0,0,0);
-		//初始化空的芯片列表
+        //初始化空的芯片列表
 		$ChipList = array();
 		//初始化空的用户列表
 		$UserList = array();
@@ -80,28 +98,35 @@ class Xrace_Mylaps extends Base_Widget
 				$UserList[$ApplyInfo['ChipId']] = $ApplyInfo;
 			}
 		}
-		echo "比赛时间：".$RaceInfo['StartTime'].".".sprintf("%03d",isset($RaceInfo['comment']['RaceStartMicro'])?$RaceInfo['comment']['RaceStartMicro']:0)."~".$RaceInfo['EndTime']."\n";
+		echo "比赛时间：".$RaceInfo['StartTime'].".".sprintf("%03d",isset($RaceInfo['comment']['RaceStartMicro'])?$RaceInfo['comment']['RaceStartMicro']:0)."~".$RaceInfo['EndTime']."\n<br>";
 		echo "芯片列表：".implode(",",$ChipList)."\n";
-		//重新生成选手的mylaps排名数据
-		$oRace->genRaceLogToText($RaceId);
-		//初始化页码
-		$i = 1;
-		//单页记录数量
-		$pageSize = 1000;
+		//如果强制重新更新计时数
+        if($Force==1)
+        {
+            //重新生成选手的mylaps排名数据
+            $oRace->genRaceLogToText($RaceId);
+        }
+        //从文件载入计时信息
+        $UserRaceTimingInfo = $oRace->GetUserRaceTimingInfo($RaceId);
+        //获取文件最后的
+        $LastId = $UserRaceTimingInfo['LastId'];
+        //单页记录数量
+		$pageSize = 100;
 		//默认第一次有获取到
 		$Count = $pageSize;
 		//初始化当前芯片（选手）
 		$currentChip = "";
 		while ($Count == $pageSize)
 		{
-			//拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
-			$params = array('prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'],'page'=>$i, 'pageSize'=>$pageSize, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"0");
+		    //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
+			$params = array('prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"0");
 			//获取计时数据
 			$TimingList = $this->getTimingData($params);
 			//依次循环计时数据
 			foreach ($TimingList as $Key => $TimingInfo)
 			{
-				//如果当前芯片 和 循环到的计时数据不同 （说明已经结束了上一个选手的循环）
+                $LastId = $TimingInfo['Id'];
+                //如果当前芯片 和 循环到的计时数据不同 （说明已经结束了上一个选手的循环）
 				if ($currentChip != $TimingInfo['Chip'])
 				{
 					$num=1;
@@ -151,8 +176,8 @@ class Xrace_Mylaps extends Base_Widget
 							$UserRaceInfo['Point'][$i]['inTime'] = $inTime;
 							//如果前一点的距离为非负数，则取当前时间和前一点差值作为经过时间，否则不计时
                             $UserRaceInfo['Point'][$i]['PointTime'] = isset($UserRaceInfo['Point'][$i-1]['ToNext'])&&intval($UserRaceInfo['Point'][$i-1]['ToNext'])>=0?(isset($UserRaceInfo['Point'][$i-1]['inTime'])?sprintf("%0.3f",($UserRaceInfo['Point'][$i]['inTime']-$UserRaceInfo['Point'][$i-1]['inTime'])):0):0;
-                            $UserRaceInfo['Point'][$i]['PointSpeed'] = Base_Common::speedDisplayParth($UserRaceInfo['Point'][$i-1]['SpeedDisplayType'],$UserRaceInfo['Point'][$i]['PointTime'],($UserRaceInfo['Point'][$i-1]['ToNext'])>=0?$UserRaceInfo['Point'][$i-1]['ToNext']:0)  ;//($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['ToNext'])>=0?(sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime'])?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['inTime']-$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime']:0)):0;
-
+                            //$UserRaceInfo['Point'][$i]['PointSpeed'] = 0;
+                            $UserRaceInfo['Point'][$i]['PointSpeed'] = isset($UserRaceInfo['Point'][$i-1])?(Base_Common::speedDisplayParth($UserRaceInfo['Point'][$i-1]['SpeedDisplayType'],$UserRaceInfo['Point'][$i]['PointTime'],($UserRaceInfo['Point'][$i-1]['ToNext'])>=0?$UserRaceInfo['Point'][$i-1]['ToNext']:0)):"";
                             $TotalNetTime = isset($UserRaceInfo['Point'][$i-1]['TotalNetTime'])?sprintf("%0.3f",($UserRaceInfo['Point'][$i-1]['TotalNetTime']+$UserRaceInfo['Point'][$i]['PointTime'])):sprintf("%0.3f",$UserRaceInfo['Point'][$i]['PointTime']);
 							if($i==1)
 							{
@@ -254,6 +279,7 @@ class Xrace_Mylaps extends Base_Widget
                                 $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
                                 $UserRaceInfoList['Total'][$key]['GroupRank'] = count($DivisionList[$UserInfo['RaceGroupId']]);
                             }
+                            $UserRaceInfoList['LastId'] = $TimingInfo['Id'];
                             //生成配置文件
 							Base_Common::rebuildConfig($filePath, $fileName, $UserRaceInfoList, "Timing");
 							$num++;
@@ -373,7 +399,8 @@ class Xrace_Mylaps extends Base_Widget
 								//保存数据
 								$filePath = __APP_ROOT_DIR__ . "Timing" . "/" . $RaceInfo['RaceId'] . "/";
 								$fileName = "Total" . ".php";
-								//生成配置文件
+                                $UserRaceInfoList['LastId'] = $TimingInfo['Id'];
+                                //生成配置文件
 								Base_Common::rebuildConfig($filePath, $fileName, $UserRaceInfoList, "Timing");
 								$num++;
 							}
@@ -409,7 +436,7 @@ class Xrace_Mylaps extends Base_Widget
 							}
 							else
 							{
-								echo "Reach The Buttom<br>";
+								//echo "Reach The Buttom<br>";
 								//循环结束
 								break;
 							}
@@ -429,7 +456,7 @@ class Xrace_Mylaps extends Base_Widget
 
                             $TotalTime = sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['TotalTime'])?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['TotalTime']+$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime']:$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime']);
                             $TotalNetTime = isset($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['TotalNetTime'])?sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['TotalNetTime']+$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime'])):sprintf("%0.3f",$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime']);
-                            echo "Pos:".$UserRaceInfo['CurrentPoint']."-".$TotalNetTime."<br>";
+                            //echo "Pos:".$UserRaceInfo['CurrentPoint']."-".$TotalNetTime."<br>";
                             $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['TotalTime'] = $TotalTime;
                             $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['TotalNetTime'] = $TotalNetTime;
 
@@ -544,6 +571,7 @@ class Xrace_Mylaps extends Base_Widget
                                 $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
                                 $UserRaceInfoList['Total'][$key]['GroupRank'] = count($DivisionList[$UserInfo['RaceGroupId']]);
                             }
+                            $UserRaceInfoList['LastId'] = $TimingInfo['Id'];
                             //生成配置文件
 							Base_Common::rebuildConfig($filePath, $fileName, $UserRaceInfoList, "Timing");
 							$UserRaceInfo['NextPoint'] = $UserRaceInfo['CurrentPoint'];
@@ -558,7 +586,6 @@ class Xrace_Mylaps extends Base_Widget
 			$Count = count($TimingList);
 			echo "get Count:",$Count."\n";
 			$TotalCount+=$Count;
-			$i++;
 		}
 		//重新获取比赛详情
 		$TeamRankList = array();
@@ -631,7 +658,8 @@ class Xrace_Mylaps extends Base_Widget
 		$UserRaceTimingInfo['Team'] = $TeamRank;
 		$filePath = __APP_ROOT_DIR__ . "Timing" . "/" . $RaceInfo['RaceId'] . "/";
 		$fileName = "Total" . ".php";
-		$num++;
+        //$UserRaceInfoList['LastId'] = $TimingInfo['Id'];
+        $num++;
 		//生成配置文件
 		Base_Common::rebuildConfig($filePath, $fileName, $UserRaceTimingInfo, "Timing");
 

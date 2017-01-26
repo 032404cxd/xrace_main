@@ -2185,7 +2185,7 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
-			$oUser = new Xrace_User();
+			$oUser = new Xrace_UserInfo();
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
             //比赛ID
@@ -2193,7 +2193,7 @@ class Xrace_RaceStageController extends AbstractController
             //用户ID
 			$UserId = intval($this->request->UserId);
 			//获取用户信息
-			$UserInfo = $oUser->getUserInfo($UserId,'UserId,name');
+			$UserInfo = $oUser->getUserInfo($UserId,'UserId,Name');
 			//获取比赛信息
 			$RaceInfo = $this->oRace->getRace($RaceId);
 			//数据解包

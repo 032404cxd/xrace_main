@@ -24,7 +24,7 @@ class XraceConfigController extends AbstractController
         $this->oRace = new Xrace_Race();
         $this->oSports = new Xrace_Sports();
         $this->oProduct = new Xrace_Product();
-        $this->oUser = new Xrace_User();
+        $this->oUser = new Xrace_UserInfo();
     }
 
     /**
@@ -1231,10 +1231,11 @@ class XraceConfigController extends AbstractController
         $oMylaps = new Xrace_Mylaps();
         //格式化比赛ID
         $RaceId = abs(intval($this->request->RaceId));
+        $Force = abs(intval($this->request->Force));
         $Type = trim($this->request->type);
         //if($Type=="new")
         //{
-            $oMylaps->genMylapsTimingInfo($RaceId);
+            $oMylaps->genMylapsTimingInfo($RaceId,$Force);
             die();
         //}
         $RaceInfo = $this->oRace->getRace($RaceId);

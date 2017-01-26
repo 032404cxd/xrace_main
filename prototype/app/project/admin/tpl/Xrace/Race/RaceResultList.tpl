@@ -19,7 +19,7 @@
 <form action="{tpl:$this.sign/}&ac=race.update" name="form" id="form" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
   <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupId/}" />
-  <fieldset><legend>{tpl:$RaceInfo.RaceName/} 成绩单{tpl:if(isset($UserInfo.user_id))} - {tpl:$UserInfo.name/}{/tpl:if}</legend>
+  <fieldset><legend>{tpl:$RaceInfo.RaceName/} 成绩单{tpl:if(isset($UserInfo.UserId))} - {tpl:$UserInfo.Name/}{/tpl:if}</legend>
    {tpl:if(count($RaceGroupList))}
     <fieldset><legend>
         {tpl:loop $RaceGroupList $GInfo}
@@ -45,7 +45,7 @@
     <th align="center" class="rowtip">{tpl:$PointInfo.TName/}<p>{tpl:$PointInfo.CurrentDistense/}米<p>{tpl:$PointInfo.UserList func="count(@@)"/}人通过</th>
     {tpl:if(count($PointInfo.UserList)>=1)}
     {tpl:loop $PointInfo.UserList $id $RaceUserInfo}
-    {tpl:if((isset($UserInfo.user_id) && ($RaceUserInfo.UserId==$UserInfo.user_id)) || !isset($UserInfo.user_id))}
+    {tpl:if((isset($UserInfo.UserId) && ($RaceUserInfo.UserId==$UserInfo.UserId)) || !isset($UserInfo.UserId))}
     <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceUserInfo.UserId/}','{tpl:$RaceInfo.RaceName/}')">{tpl:$RaceUserInfo.Name/}</a><p>{tpl:$RaceUserInfo.TeamName/}<p>{tpl:$RaceUserInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.Rank/}{tpl:if($RaceUserInfo.TimeLag>0)}/+{tpl:$RaceUserInfo.TimeLag func="Base_Common::parthTimeLag(@@)"/}{/tpl:if}{tpl:if($RaceUserInfo.NetTimeLag>0)}/+{tpl:$RaceUserInfo.NetTimeLag func="Base_Common::parthTimeLag(@@)"/}{/tpl:if}</th>
   {/tpl:if}
   {/tpl:loop}

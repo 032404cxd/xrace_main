@@ -1132,7 +1132,8 @@ class Xrace_Race extends Base_Widget
 			$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
 			//地图相关数据解包
 			$RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
-			//如果有配置赛段信息
+            $TimingPointList = array('Sports'=>array(),'Point'=>array());
+            //如果有配置赛段信息
 			if(isset($RaceInfo['comment']['DetailList']) && count($RaceInfo['comment']['DetailList']))
 			{
 				//循环赛段信息
@@ -1183,7 +1184,7 @@ class Xrace_Race extends Base_Widget
 												$t['inTime'] = 0;
 												//每个分段内距离相互累加 如果距离为正数
                                                 $t['ToNext'] = intval($t['ToNext']);
-                                                $SectionDistence += ($TimingPointList['Point'][$i]['ToNext']>0)?$TimingPointList['Point'][$i]['ToNext']:0;
+                                                $SectionDistence += ($i==0)?0:(($TimingPointList['Point'][$i]['ToNext']>0)?$TimingPointList['Point'][$i]['ToNext']:0);
 												$t['CurrentDistense'] = $SectionDistence;
 												$t['SportsTypeName'] = $SportsTypeInfo['SportsTypeName'];
                                                 $t['SpeedDisplayType'] = $SportsTypeInfo['SpeedDisplayType'];
@@ -1206,7 +1207,8 @@ class Xrace_Race extends Base_Widget
 				}
 				else
 				{
-					//生成查询条件
+				    $TimingPointList['LastId'] = 0;
+				    //生成查询条件
 					$params = array('RaceId'=>$RaceInfo['RaceId'],'UserId'=>$UserId);
 					if($UserId==0)
 					{
@@ -1215,11 +1217,12 @@ class Xrace_Race extends Base_Widget
 						//生成配置文件
 						Base_Common::rebuildConfig($filePath,$fileName,$TimingPointList,"Timing");
 					}
+					unset($TimingPointList['RaceInfo']);
 					$oUser = new Xrace_UserInfo();
 					$oTeam = new Xrace_Team();
 					//获取选手名单
 					$RaceUserList = $oUser->getRaceUserList($params);
-					//如果获取到选手名单
+                    //如果获取到选手名单
 					if(count($RaceUserList))
 					{
 						//循环选手列表
@@ -1231,7 +1234,7 @@ class Xrace_Race extends Base_Widget
 							if($UserInfo['UserId'])
 							{
 								$TeamInfo = $oTeam->getTeamInfo($ApplyInfo['TeamId']);
-								if(!isset($TeamInfo['TeamId']))
+                                if(!isset($TeamInfo['TeamId']))
 								{
 									$TeamInfo = array('TeamName'=>"个人");
 								}
