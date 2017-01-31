@@ -44,7 +44,7 @@ class XraceUserController extends AbstractController
     {
         //是否调用缓存
         $Cache = isset($this->request->Cache) ? abs(intval($this->request->Cache)) : 1;
-        //是否显示说明注释 默认为1
+        //Token
         $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
         //获取Tokenx信息
         $TokenInfo = $this->oUser->geToken($Token);
