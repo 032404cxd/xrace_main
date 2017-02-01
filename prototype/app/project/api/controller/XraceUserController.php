@@ -47,7 +47,7 @@ class XraceUserController extends AbstractController
         //Token
         $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
         //获取Tokenx信息
-        $TokenInfo = $this->oUser->geToken($Token);
+        $TokenInfo = $this->oUser->getToken($Token);
         //如果获取到
         if($TokenInfo['UserId'])
         {
@@ -92,7 +92,7 @@ class XraceUserController extends AbstractController
         if(isset($Login['UserId']))
         {
             //结果数组 返回用户信息
-            $result = array("return" => 1, "UserInfo" => $Login,"Token"=>$this->oUser->makeToken($Login['UserId'],$IP),"comment" => "登录成功");
+            $result = array("return" => 1, "UserInfo" => $Login,"Token"=>$this->oUser->makeToken($Login['UserId'],$IP,$LoginSource),"comment" => "登录成功");
         }
         elseif(isset($Login['RegId']))
         {

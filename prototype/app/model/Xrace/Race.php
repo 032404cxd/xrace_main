@@ -1161,7 +1161,7 @@ class Xrace_Race extends Base_Widget
 								//循环计时点数据
 								foreach($TimingInfo['comment'] as $TimingPoint)
 								{
-									//如果有计时点
+								    //如果有计时点
 									if(count($TimingPoint))
 									{
 										//依次累加

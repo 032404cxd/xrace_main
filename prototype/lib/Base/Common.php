@@ -1235,4 +1235,39 @@ EOF;
         );
         return $SmsCodeList[$CodeName];
     }
+    function ParthSequence($text)
+    {
+        //第一层解包
+        $t1 = explode("|",$text);
+        //循环第一层数据
+        foreach($t1 as $k1 => $v1)
+        {
+            //第二层解包
+            $t2[$k1] = explode(":",$v1);
+            //如果包含_
+            if(is_numeric(stripos($t2[$k1][0],'_')))
+            {
+                //获取键值的起始范围
+                $key = explode("_",$t2[$k1][0]);
+                //获取数值的起始范围
+                $value = explode("_",$t2[$k1][1]);
+                //键值差
+                $key_diff = $key[1]-$key[0];
+                //数值差
+                $value_diff = $value[0]-$value[1];
+                //步进
+                $step = ($value_diff)/$key_diff;
+                //循环累加
+                for($i=$key[0];$i<=$key[1];$i++)
+                {
+                    $t3[$i] =  intval($value[0]-$step*($i-2));
+                }
+            }
+            else
+            {
+                $t3[$t2[$k1][0]] = $t2[$k1][1];
+            }
+        }
+        return $t3;
+    }
 }

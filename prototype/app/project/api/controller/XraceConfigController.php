@@ -1247,6 +1247,7 @@ class XraceConfigController extends AbstractController
         $ResultType = ((isset($RaceInfo['RouteInfo']['RaceTimingResultType']) && ($RaceInfo['RouteInfo']['RaceTimingResultType']=="gunshot"))||!isset($RaceInfo['RouteInfo']['RaceTimingResultType']))?"gunshot":"net";
         echo "result:".$ResultType;
         $this->oRace->genRaceLogToText($RaceId);
+        die();
         //获取选手和车队名单
         $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,0, 0);
         $ChipList = array();

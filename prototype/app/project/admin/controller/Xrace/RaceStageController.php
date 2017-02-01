@@ -2868,6 +2868,10 @@ class Xrace_RaceStageController extends AbstractController
             include $this->tpl('403');
         }
     }
+    function testAction()
+    {
+        Base_Common::ParthSequence("1:100|2_10:10_90");
+    }
 
 
 }

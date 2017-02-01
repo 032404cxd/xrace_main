@@ -49,7 +49,7 @@ class XraceTeamController extends AbstractController
         //Token
         $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
         //获取Tokenx信息
-        $TokenInfo = $this->oUser->geToken($Token);
+        $TokenInfo = $this->oUser->getToken($Token);
         //如果获取到
         if($TokenInfo['UserId'])
         {
@@ -154,7 +154,7 @@ class XraceTeamController extends AbstractController
         //Token
         $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
         //获取Tokenx信息
-        $TokenInfo = $this->oUser->geToken($Token);
+        $TokenInfo = $this->oUser->getToken($Token);
         //如果获取到
         if($TokenInfo['UserId'])
         {
@@ -234,7 +234,7 @@ class XraceTeamController extends AbstractController
         //Token
         $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
         //获取Tokenx信息
-        $TokenInfo = $this->oUser->geToken($Token);
+        $TokenInfo = $this->oUser->getToken($Token);
         //如果获取到
         if($TokenInfo['UserId'])
         {
@@ -362,7 +362,7 @@ class XraceTeamController extends AbstractController
         //Token
         $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
         //获取Tokenx信息
-        $TokenInfo = $this->oUser->geToken($Token);
+        $TokenInfo = $this->oUser->getToken($Token);
         //如果获取到
         if($TokenInfo['UserId'])
         {
@@ -433,7 +433,7 @@ class XraceTeamController extends AbstractController
         //Token
         $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
         //获取Tokenx信息
-        $TokenInfo = $this->oUser->geToken($Token);
+        $TokenInfo = $this->oUser->getToken($Token);
         //如果获取到
         if($TokenInfo['UserId'])
         {

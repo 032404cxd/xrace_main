@@ -13,7 +13,8 @@ class Xrace_UserInfo extends Base_Widget
     protected $table_race = 'user_race';
     protected $table_login = 'UserLogin';
 
-
+    //登录方式列表
+    protected $loginSource = array('WeChat'=>"微信",'Weibo'=>"微博",'Mobile'=>"手机");
     //性别列表
 	protected $sex = array('0'=>"保密",'1'=>"男",'2'=>"女");
     //性别列表
@@ -79,6 +80,12 @@ class Xrace_UserInfo extends Base_Widget
     {
         return $this->raceApplySourceList;
     }
+    //获得用户登录方式列表
+    public function getLoginSourceList()
+    {
+        return $this->loginSource;
+    }
+
     /**
      * 新增单个用户注册中间记录
      * @param array $bind 所要添加的数据列
@@ -404,7 +411,7 @@ class Xrace_UserInfo extends Base_Widget
                     if(intval($m['UserId'])==0)
                     {
                         //根据第三方平台ID查询用户
-                        $UserInfo = $this->getUserByColumn("WeChatId",$LoginData['openid'],"UserId,WeChatInfo");
+                        $UserInfo = $this->getUserByColumn("WeChatId",$LoginData['openid'],"UserId,WeChatInfo,LastLoginTime,LastLoginSource");
                         //如果查询到
                         if(isset($UserInfo['UserId']))
                         {
@@ -438,7 +445,7 @@ class Xrace_UserInfo extends Base_Widget
                                 if(strtotime($RegInfo['ExceedTime'])>=time())
                                 {
                                     $params = array(
-                                        "smsContent" => array("code"=>$RegInfo['ValidateCode'],"product"=>"淘赛体育",),
+                                        "smsContent" => array("code"=>$RegInfo['ValidateCode'],"product"=>"淘赛体育"),
                                         "Mobile"=> $RegInfo['Mobile'],
                                         "SMSCode"=>"SMS_Validate_Code"
                                     );
@@ -540,7 +547,8 @@ class Xrace_UserInfo extends Base_Widget
         if(isset($RegInfo['RegId']))
         {
             //如果在有效期内
-            if(strtotime($RegInfo['ExceedTime'])>=time())
+            //if(strtotime($RegInfo['ExceedTime'])>=time())
+            if(0)
             {
                 return 1;
             }
@@ -789,7 +797,7 @@ class Xrace_UserInfo extends Base_Widget
         }
         return $RaceUserList;
     }
-    public function makeToken($UserId,$IP)
+    public function makeToken($UserId,$IP,$LoginSource)
     {
         //获取用户信息
         $UserInfo = $this->getUserInfo($UserId,"UserId,UserName");
@@ -797,9 +805,9 @@ class Xrace_UserInfo extends Base_Widget
         if(isset($UserInfo['UserId']))
         {
             //根据用户获取Token
-            $TokenInfo = $this->geTokenByUser($UserId);
-            //如果获取到 且 未超时
-            if(isset($TokenInfo['Token']) && ((strtotime($TokenInfo['Time'])+300)>=time()))
+            $TokenInfo = $this->getTokenByUser($UserId);
+            //如果获取到 且 未超时 且 登录方式相同
+            if(isset($TokenInfo['Token']) && ((strtotime($TokenInfo['Time'])+300)>=time()) && ($TokenInfo['LoginSource']==$LoginSource))
             {
                 return $TokenInfo['Token'];
             }
@@ -807,23 +815,37 @@ class Xrace_UserInfo extends Base_Widget
             {
                 $Token = $UserInfo['UserId']."|".$IP;
                 //初始成功状态为否
-                $Success = "";
+                $Success = 0;
                 //初始计数0
                 $i=0;
                 do
                 {
+                    $Time = date("Y-m-d H:i:s",time());
                     $Token = md5($Token."|".rand(1,999));
-                    $bind = array("UserId"=>$UserId,"IP"=>Base_Common::ip2long($IP),"Token"=>$Token);
+                    $bind = array("UserId"=>$UserId,"IP"=>Base_Common::ip2long($IP),"Token"=>$Token,"Time"=>$Time,"LoginSource"=>$LoginSource);
                     //写入记录
-                    $Success = $this->insertToken($bind,1);
+                    $insertToken = $this->insertToken($bind,1);
+                    //更新用户最后登录时间
+                    $bind = array("LastLoginTime"=>$Time,"LastLoginSource"=>$LoginSource);
+                    $updateUser = $this->updateUser($UserId,$bind);
+                    //同时更新成功
+                    if($insertToken && $updateUser)
+                    {
+                        $this->db->commit();
+                        $Success = 1;
+                    }
+                    else
+                    {
+                        $this->db->rollck();
+                    }
                     //累加计数器
                     $i++;
                 }
                 //当不成功且重试次数小于等于3的时候
-                while(strlen($Success)!=32 && $i<3);
-                if(strlen($Success)==32)
+                while($Success==1 && $i<3);
+                if(strlen($Token)==32)
                 {
-                    return $Success;
+                    return $Token;
                 }
                 else
                 {
@@ -842,7 +864,7 @@ class Xrace_UserInfo extends Base_Widget
      * @param string $fields 所要获取的数据列
      * @return array
      */
-    public function geToken($Token, $fields = '*')
+    public function getToken($Token, $fields = '*')
     {
         $Token = trim($Token);
         $table_to_process = Base_Widget::getDbTable($this->table_login);
@@ -854,7 +876,7 @@ class Xrace_UserInfo extends Base_Widget
      * @param string $fields 所要获取的数据列
      * @return array
      */
-    public function geTokenByUser($UserId, $fields = '*')
+    public function getTokenByUser($UserId, $fields = '*')
     {
         $UserId = intval($UserId);
         $table_to_process = Base_Widget::getDbTable($this->table_login);

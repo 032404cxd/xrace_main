@@ -36,6 +36,8 @@ class Xrace_UserController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
+            //获取登录方式列表
+		    $LoginSourceList = $this->oUserInfo->getLoginSourceList();
 			//获取性别列表
 			$SexList = $this->oUserInfo->getSexList();
             //获取实名认证状态列表
@@ -63,6 +65,7 @@ class Xrace_UserController extends AbstractController
 			{
 			    //用户性别
 				$UserList['UserList'][$UserId]['Sex'] = isset($SexList[$UserInfo['Sex']])?$SexList[$UserInfo['Sex']]:"保密";
+                /*
                 //实名认证状态
                 if(isset($AuthStatusList[$UserInfo['AuthStatus']]))
                 {
@@ -76,11 +79,13 @@ class Xrace_UserController extends AbstractController
                         $UserList['UserList'][$UserId]['AuthStatus'] = $AuthStatusList[$UserInfo['AuthStatus']];
                     }
                 }
+                */
                 //实名认证状态
 				//$UserList['UserList'][$UserId]['AuthStatus'] = isset($AuthStatusList[$UserInfo['AuthStatus']])?$AuthStatusList[$UserInfo['AuthStatus']]:"未知";
 				//$UserList['UserList'][$UserId]['AuthStatus'] = ($UserInfo['auth_state'] == 2 && isset($AuthIdTypesList[intval($UserInfo['id_type'])]))?$UserList['UserList'][$UserId]['AuthStatus']."/".$AuthIdTypesList[intval($UserInfo['id_type'])]:$UserList['UserList'][$UserId]['AuthStatus'];
 				//用户生日
 				$UserList['UserList'][$UserId]['Birthday'] = is_null($UserInfo['Birthday'])?"未知":$UserInfo['Birthday'];
+                $UserList['UserList'][$UserId]['LoginSourceName'] = isset($LoginSourceList[$UserInfo['LastLoginSource']])?$LoginSourceList[$UserInfo['LastLoginSource']]:"未知";
 				//用户执照
 				$UserList['UserList'][$UserId]['License'] = "<a href='".Base_Common::getUrl('','xrace/user','license.list',array('UserId'=>$UserId)) ."'>执照</a>";
 				//用户执照
@@ -102,6 +107,8 @@ class Xrace_UserController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("UserListDownload");
 		if($PermissionCheck['return'])
 		{
+            //获取登录方式列表
+            $LoginSourceList = $this->oUserInfo->getLoginSourceList();
 			//获取性别列表
 			$SexList = $this->oUser->getSexList();
             //获取实名认证状态列表
@@ -122,7 +129,7 @@ class Xrace_UserController extends AbstractController
 			$FileName= ($this->manager->name().'用户列表');
 			$oExcel->download($FileName)->addSheet('用户');
 			//标题栏
-			$title = array("用户ID","姓名","昵称","性别","出生年月","实名认证状态");
+			$title = array("用户ID","姓名","昵称","性别","出生年月",/*"实名认证状态",*/"注册时间","最后登录时间","最后登录方式");
 			$oExcel->addRows(array($title));
 			$Count = 1;$params['Page'] =1;
 			do
@@ -138,7 +145,9 @@ class Xrace_UserController extends AbstractController
 					$t['NickName'] = $UserInfo['NickName'];
 					$t['Sex'] = isset($SexList[$UserInfo['Sex']])?$SexList[$UserInfo['Sex']]:"保密";
                     $t['Birthday'] = $UserInfo['Birthday'];
+
                     //实名认证状态
+                    /*
                     if(isset($AuthStatusList[$UserInfo['AuthStatus']]))
                     {
                         if($UserInfo['AuthStatus'] == 2 && isset($AuthIdTypesList[intval($UserInfo['IdType'])]))
@@ -151,6 +160,10 @@ class Xrace_UserController extends AbstractController
                             $t['AuthStatus'] = $AuthStatusList[$UserInfo['AuthStatus']];
                         }
                     }
+                    */
+                    $t['RegTime'] = $UserInfo['RegTime'];
+                    $t['LastLoginTime'] = $UserInfo['LastLoginTime'];
+                    $t['LoginSourceName'] = isset($LoginSourceList[$UserInfo['LastLoginSource']])?$LoginSourceList[$UserInfo['LastLoginSource']]:"未知";
 
 					$oExcel->addRows(array($t));
 					unset($t);
