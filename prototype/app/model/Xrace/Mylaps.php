@@ -68,18 +68,41 @@ class Xrace_Mylaps extends Base_Widget
 		$RaceInfo = $oRace->getRace($RaceId);
 		//解包压缩的数据
 		$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+        //初始化比赛时间列表
+        $TimeList = array();
+        //如果有配置各个分组的比赛时间
+        if(isset($RaceInfo['comment']['SelectedRaceGroup']))
+        {
+            //循环分组列表
+            foreach($RaceInfo['comment']['SelectedRaceGroup'] as $RaceGroupId => $RaceGroupInfo)
+            {
+                //保存比赛时间
+                $TimeList[$RaceGroupId]['RaceStartTime'] = strtotime($RaceGroupInfo['StartTime']) + $RaceGroupInfo['RaceStartMicro']/1000;
+                $TimeList[$RaceGroupId]['RaceEndTime'] = strtotime($RaceGroupInfo['EndTime']);
+            }
+        }
+        else
+        {
+            //预存比赛的开始和结束时间
+            $TimeList[$RaceInfo['RaceGroupId']]['RaceStartTime'] = strtotime($RaceInfo['StartTime']) + $RaceInfo['comment']['RaceStartMicro']/1000;
+            $TimeList[$RaceInfo['RaceGroupId']]['RaceEndTime'] = strtotime($RaceInfo['EndTime']);
+        }
         //车队排名的名次数据
         $RaceInfo['comment']['TeamResultRank'] = isset($RaceInfo['comment']['TeamResultRank'])?$RaceInfo['comment']['TeamResultRank']:3;
 		//预存比赛的开始和结束时间
 		$RaceStartTime = strtotime($RaceInfo['StartTime']) + $RaceInfo['comment']['RaceStartMicro']/1000;
 		$RaceEndTime = strtotime($RaceInfo['EndTime']);
-		//解包路径相关的信息
+        //解包路径相关的信息
 		$RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
 		//初始化单个计时点的最大等待时间（超过这个时间才认为是新的一次进入）
 		$RaceInfo['RouteInfo']['MylapsTolaranceTime'] = isset($RaceInfo['RouteInfo']['MylapsTolaranceTime'])?$RaceInfo['RouteInfo']['MylapsTolaranceTime']:30;
-		//初始化计时成绩计算的方式（发枪时刻/第一次经过起始点）
+		//初始化计时点成绩计算的方式（发枪时刻/第一次经过起始点）
 		$ResultType = ((isset($RaceInfo['RouteInfo']['RaceTimingResultType']) && ($RaceInfo['RouteInfo']['RaceTimingResultType']=="gunshot"))||!isset($RaceInfo['RouteInfo']['RaceTimingResultType']))?"gunshot":"net";
-		echo "result:".$oRace->getRaceTimingResultType($ResultType)."\n";
+        //初始化计时点成绩计算的方式（发枪时刻/第一次经过起始点/积分）
+        $FinalResultType = isset($RaceInfo['RouteInfo']['FinalResultType'])?$RaceInfo['RouteInfo']['FinalResultType']:"gunshot";
+
+		echo "计时点计算:".$oRace->getRaceTimingResultType($ResultType)."\n<br>";
+        echo "总成绩计算:".$oRace->getFinalResultType($FinalResultType)."\n<br>";
 		//获取选手和车队名单
 		$RaceUserList = $oUser->getRaceUserListByRace($RaceId,0,0,0);
         //初始化空的芯片列表
@@ -135,7 +158,7 @@ class Xrace_Mylaps extends Base_Widget
 					//调试信息
 					if(isset($UserList[$TimingInfo['Chip']]))
 					{
-						echo "芯片:".$currentChip . ",用户ID:".$UserList[$TimingInfo['Chip']]['UserId'].",姓名:".$UserList[$TimingInfo['Chip']]['Name'] .",队伍:" . $UserList[$TimingInfo['Chip']]['TeamName'] ."-号码:" . $UserList[$TimingInfo['Chip']]['BIB'].  "\n";
+						echo "芯片:".$currentChip . ",用户ID:".$UserList[$TimingInfo['Chip']]['UserId'].",姓名:".$UserList[$TimingInfo['Chip']]['Name'] .",队伍:" . $UserList[$TimingInfo['Chip']]['TeamName'] ."-号码:" . $UserList[$TimingInfo['Chip']]['BIB']."用户分组:".$UserList[$TimingInfo['Chip']]['RaceGroupId']."\n<br>";
 					}
 					else
 					{
@@ -155,6 +178,8 @@ class Xrace_Mylaps extends Base_Widget
 				//格式化成过线时间
                 $inTime = sprintf("%0.3f", $ChipTime);
                 //如果时间在比赛的开始时间和结束时间之内
+                $RaceStartTime = $TimeList[$UserList[$TimingInfo['Chip']]['RaceGroupId']]['StartTime'];
+                $RaceEndTime = $TimeList[$UserList[$TimingInfo['Chip']]['RaceGroupId']]['EndTime'];
 				if ($ChipTime >= $RaceStartTime && $ChipTime <= $RaceEndTime)
 				{
 					echo $num."-".$TimingInfo['Location']."-".($ChipTime)."-".date("Y-m-d H:i:s", $TimingInfo['ChipTime']).".".(substr($miliSec,2))."\n";

@@ -675,6 +675,8 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceTimingTypeList = $this->oRace->getTimingType();
 			//获取计时成绩计算方式
 			$RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType();
+            //获取终点成绩计算方式
+            $FinalResultTypeList = $this->oRace->getFinalResultType();
 			//报名时间调用分站的报名时间
 			$ApplyStartTime = $RaceStageInfo['ApplyStartTime'];
 			$ApplyEndTime = $RaceStageInfo['ApplyEndTime'];
@@ -735,6 +737,8 @@ class Xrace_RaceStageController extends AbstractController
 				$RaceTimingTypeList = $this->oRace->getTimingType();
 				//获取计时成绩计算方式
 				$RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType();
+                //获取终点成绩计算方式
+                $FinalResultTypeList = $this->oRace->getFinalResultType();
 				//数据解包
 				$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
                 //解包数组
@@ -913,7 +917,7 @@ class Xrace_RaceStageController extends AbstractController
                     else
                     {
                         //获取最早的开始时间作为比赛开始时间
-                        $bind['StartTime'] = date("Y-m-d H:i:s",(strtotime($bind['StartTime'])>0?max(strtotime($bind['StartTime']),strtotime($GroupInfo['StartTime'])):strtotime($GroupInfo['StartTime'])));
+                        $bind['StartTime'] = date("Y-m-d H:i:s",(strtotime($bind['StartTime'])>0?min(strtotime($bind['StartTime']),strtotime($GroupInfo['StartTime'])):strtotime($GroupInfo['StartTime'])));
                         //获取最晚的结束时间作为比赛结束时间
                         $bind['EndTime'] = date("Y-m-d H:i:s",(strtotime($bind['EndTime'])>0?max(strtotime($bind['EndTime']),strtotime($GroupInfo['EndTime'])):strtotime($GroupInfo['EndTime'])));
                         //获取毫秒时间
@@ -952,7 +956,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','RaceTimingType','RaceTimingResultType','FinalResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank');
         //转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -1073,6 +1077,9 @@ class Xrace_RaceStageController extends AbstractController
 				//成绩计算方式
 				$bind['RouteInfo']['RaceTimingResultType'] = trim($bind['RaceTimingResultType']);
 				unset($bind['RaceTimingResultType']);
+                //成绩计算方式
+                $bind['RouteInfo']['FinalResultType'] = trim($bind['FinalResultType']);
+                unset($bind['FinalResultType']);
                 //循环选定的分组
                 foreach($bind['SelectedRaceGroup'] as $Group => $GroupInfo)
                 {
@@ -1084,7 +1091,7 @@ class Xrace_RaceStageController extends AbstractController
                     else
                     {
                         //获取最早的开始时间作为比赛开始时间
-                        $bind['StartTime'] = date("Y-m-d H:i:s",(strtotime($bind['StartTime'])>0?max(strtotime($bind['StartTime']),strtotime($GroupInfo['StartTime'])):strtotime($GroupInfo['StartTime'])));
+                        $bind['StartTime'] = date("Y-m-d H:i:s",(strtotime($bind['StartTime'])>0?min(strtotime($bind['StartTime']),strtotime($GroupInfo['StartTime'])):strtotime($GroupInfo['StartTime'])));
                         //获取最晚的结束时间作为比赛结束时间
                         $bind['EndTime'] = date("Y-m-d H:i:s",(strtotime($bind['EndTime'])>0?max(strtotime($bind['EndTime']),strtotime($GroupInfo['EndTime'])):strtotime($GroupInfo['EndTime'])));
                         //获取毫秒时间

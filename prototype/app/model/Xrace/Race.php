@@ -20,6 +20,7 @@ class Xrace_Race extends Base_Widget
 	protected $raceStructure = array('race'=>'比赛-分组','group'=>'分组-比赛');
 	protected $raceTimingType = array('mylaps'=>'myLaps芯片计时');
 	protected $raceTimingResultType = array('gunshot'=>'发枪时间','net'=>'净时间');
+    protected $finalResultType = array('gunshot'=>'发枪时间','net'=>'净时间','credit'=>'积分');
 	protected $raceLicenseType = array('manager'=>'管理员审核','birthday'=>'生日','sex'=>'性别','age'=>"年龄");
     protected $applySourceList = array(1=>"线上",2=>"线下");
 	public function getRaceStructure()
@@ -53,6 +54,21 @@ class Xrace_Race extends Base_Widget
 			return $raceTimingResultTypeList;
 		}
 	}
+    public function getFinalResultType($FinalResultType)
+    {
+        //获取预定义数组
+        $finalResultTypeList = $this->finalResultType;
+        //如果有指定分类
+        if(isset($finalResultTypeList[$FinalResultType]))
+        {
+            return $finalResultTypeList[$FinalResultType];
+        }
+        else
+        {
+            //否则返回整个列表
+            return $finalResultTypeList;
+        }
+    }
     public function getAppSourceList()
     {
         return $this->raceLicenseType;

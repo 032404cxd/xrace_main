@@ -46,10 +46,17 @@
 				{/tpl:loop}
 			</select>
 		</th></tr>
-	<tr class="hover"><th align="center" class="rowtip">成绩计算方式</th><th align="center" class="rowtip">
+	<tr class="hover"><th align="center" class="rowtip">计时点成绩计算方式</th><th align="center" class="rowtip">
 			<select name="RaceTimingResultType" size="1" class="span2">
 				{tpl:loop $RaceTimingResultTypeList $RaceTimingResultType $RaceTimingResultTypeName}
 				<option value="{tpl:$RaceTimingResultType/}" {tpl:if($RaceTimingResultType==$RaceInfo.RouteInfo.RaceTimingResultType)}selected="selected"{/tpl:if}>{tpl:$RaceTimingResultTypeName/}</option>
+				{/tpl:loop}
+			</select>
+		</th></tr>
+	<tr class="hover"><th align="center" class="rowtip">最终成绩计算方式</th><th align="center" class="rowtip">
+			<select name="FinalResultType" size="1" class="span2">
+				{tpl:loop $FinalResultTypeList $FinalResultType $FinalResultTypeName}
+				<option value="{tpl:$FinalResultType/}" {tpl:if($FinalResultType==$RaceInfo.RouteInfo.FinalResultType)}selected="selected"{/tpl:if}>{tpl:$FinalResultTypeName/}</option>
 				{/tpl:loop}
 			</select>
 		</th></tr>
