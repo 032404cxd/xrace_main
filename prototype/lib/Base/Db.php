@@ -204,7 +204,7 @@ class Base_Db
             $this->errno = $sth->errorCode();
             $this->error = implode(',', $sth->errorInfo());
             $this->error .= "\n\n" . $this->getLogSql($sql, $params);
-            print_R($this->error);
+            //print_R($this->error);
             }
 		$this->log($sql, $params, microtime(true) - $start_time);
 

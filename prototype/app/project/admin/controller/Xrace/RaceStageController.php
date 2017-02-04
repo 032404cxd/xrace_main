@@ -2195,8 +2195,6 @@ class Xrace_RaceStageController extends AbstractController
 			$oUser = new Xrace_UserInfo();
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
-            //比赛ID
-            $RaceGroupId = intval($this->request->RaceGroupId);
             //用户ID
 			$UserId = intval($this->request->UserId);
 			//获取用户信息
@@ -2206,17 +2204,39 @@ class Xrace_RaceStageController extends AbstractController
 			//数据解包
 			$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
 			//获取成绩列表
-			$RaceResultList = $this->oRace->getRaceResult($RaceId,$RaceGroupId);
-            if(count($RaceResultList['UserRaceTimingInfo']['RaceInfo']['comment']['SelectedRaceGroup']))
+            if(count($RaceInfo['comment']['SelectedRaceGroup']))
             {
-                foreach($RaceResultList['UserRaceTimingInfo']['RaceInfo']['comment']['SelectedRaceGroup'] as $RaceGroupId)
+                //分组ID
+                $RaceGroupId = intval($this->request->RaceGroupId)?intval($this->request->RaceGroupId):key($RaceInfo['comment']['SelectedRaceGroup']);
+                //获取成绩列表
+                $RaceResultList = $this->oRace->getRaceResult($RaceId,$RaceGroupId);
+                //指定了用户就不需要分组列表选择
+                if(!$UserInfo['UserId'])
                 {
-                    $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName");
-                    if($RaceGroupInfo['RaceGroupId'])
+                    //循环比赛已经开设的分组列表
+                    foreach($RaceInfo['comment']['SelectedRaceGroup'] as $GroupId => $GroupInfo)
                     {
-                        $RaceGroupList[$RaceGroupId] = 	"<a href='".Base_Common::getUrl('','xrace/race.stage','race.result.list',array('RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId)) ."'>".$RaceGroupInfo['RaceGroupName']."</a>";
+                        $RaceGroupInfo = $this->oRace->getRaceGroup($GroupId,"RaceGroupId,RaceGroupName");
+                        if($RaceGroupInfo['RaceGroupId'])
+                        {
+                            if($RaceGroupId == $RaceGroupInfo['RaceGroupId'])
+                            {
+                                $RaceGroupList[$GroupId] = $RaceGroupInfo['RaceGroupName'];
+                            }
+                            else
+                            {
+                                $RaceGroupList[$GroupId] = "<a href='" . Base_Common::getUrl('', 'xrace/race.stage', 'race.result.list', array('RaceId' => $RaceId, 'RaceGroupId' => $GroupId)) . "'>" . $RaceGroupInfo['RaceGroupName'] . "</a>";
+                            }
+                        }
                     }
                 }
+            }
+            else
+            {
+                //分组ID
+                $RaceGroupId = intval($this->request->RaceGroupId);
+                //获取成绩列表
+                $RaceResultList = $this->oRace->getRaceResult($RaceId,$RaceGroupId);
             }
             //渲染模板
 			include $this->tpl('Xrace_Race_RaceResultList');
@@ -2875,10 +2895,207 @@ class Xrace_RaceStageController extends AbstractController
             include $this->tpl('403');
         }
     }
-    function testAction()
+    //单场比赛的成绩单
+    public function updateCreditByRaceResultAction()
     {
-        Base_Common::ParthSequence("1:100|2_10:10_90");
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission(0);
+        if($PermissionCheck['return'])
+        {
+            $oCredit = new Xrace_Credit();
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //获取比赛信息
+            $RaceInfo = $this->oRace->getRace($RaceId);
+            //数据解包
+            $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+            //获取成绩列表
+            $RaceResultList = $this->oRace->getRaceResult($RaceId);
+            if(count($RaceResultList['UserRaceTimingInfo']['Total']))
+            {
+                //循环所有用户
+                foreach($RaceResultList['UserRaceTimingInfo']['Total'] as $UserInfo)
+                {
+                    //如果用户可以获得积分
+                    if(isset($UserInfo['Credit']))
+                   {
+                       //循环各个累加的积分
+                       foreach($UserInfo['Credit'] as $CreditId => $Credit)
+                       {
+                           //根据比赛和分组的记录，获取积分更新记录
+                           //$CreditLog = $oCredit->getCreditLog(array("RaceId"=>$RaceId),$fields = array("*"))
+                           //积分更新
+                           //$updateCredit = $oCredit->Credit(array("CreditId"=>$CreditId,"Credit"=>$Credit),array("RaceId"=>$RaceId, "RaceGroupId"=>$UserInfo["RaceGroupId"]),$UserInfo['UserId']);
+                           //echo "updateCredit:".$updateCredit."<br>";
+                       }
+                   }
+                }
+            }
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
     }
+    //获取赛事获取分站列表
+    public function getStageByCatalogAction()
+    {
+        //赛事ID
+        $RaceCatalogId = intval($this->request->RaceCatalogId);
+        //分组ID
+        $RaceGroupId = intval($this->request->RaceGroupId);
+        //所有赛事分站列表
+        $RaceStageArr = $this->oRace->getRaceStageList($RaceCatalogId,'RaceStageId,RaceStageName');
+        $text = '';
+        //循环赛事分站列表
+        foreach($RaceStageArr as $StageId => $RaceStageInfo)
+        {
+            //初始化选中状态
+            $selected = "";
+            //如果分站ID与传入的分站ID相符
+            if($RaceStageInfo['RaceStageId'] == $StageId)
+            {
+                //选中拼接
+                $selected = 'selected="selected"';
+            }
+            //字符串拼接
+            $text .= '<option value="'.$RaceStageInfo['RaceStageId'].'">'.$RaceStageInfo['RaceStageName'].'</option>';
+        }
+        echo $text;
+        die();
+    }
+    //根据赛事分站获取下一级列表
+    public function getSecondLevelByStageAction()
+    {
+        //赛事分站ID
+        $RaceStageId = intval($this->request->RaceStageId);
+        //分站数据
+        $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'RaceStageId,comment');
+        //数据解包
+        $RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
+        //如果赛事结构为分组-比赛模式
+        if($RaceStageInfo['comment']['RaceStructure'] == "group")
+        {
+            //比赛ID
+            $RaceGroupId = intval($this->request->RaceGroupId);
+            $text = '<option value= -1>全部</option>';;
+            //循环已经选中的分组列表
+            foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $GroupId)
+            {
+                //依次获取分组信息
+                $RaceGroupInfo = $this->oRace->getRaceGroup($GroupId,"RaceGroupId,RaceGroupName");
+                //初始化选中状态
+                $selected = "";
+                //如果比赛ID与传入的比赛ID相符
+                if($RaceGroupInfo['RaceGroupId'] == $RaceGroupId)
+                {
+                    //选中拼接
+                    $selected = 'selected="selected"';
+                }
+                //字符串拼接
+                $text .= '<option value="'.$RaceGroupInfo['RaceGroupId'].'">'.$RaceGroupInfo['RaceGroupName'].'</option>';
+            }
+            echo json_encode(array("text"=>$text,"S"=>"group"));
+        }
+        elseif($RaceStageInfo['comment']['RaceStructure'] == "race")
+        {
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //所有比赛列表
+            $RaceArr = $this->oRace->getRaceList(array('RaceStageId'=>$RaceStageId),'RaceId,RaceName');
+            $text = '<option value= -1>全部</option>';;
+            //循环比赛列表
+            foreach($RaceArr as $RId => $RaceInfo)
+            {
+                //初始化选中状态
+                $selected = "";
+                //如果比赛ID与传入的比赛ID相符
+                if($RaceInfo['RaceId'] == $RaceId)
+                {
+                    //选中拼接
+                    $selected = 'selected="selected"';
+                }
+                //字符串拼接
+                $text .= '<option value="'.$RaceInfo['RaceId'].'">'.$RaceInfo['RaceName'].'</option>';
+            }
+            echo json_encode(array("text"=>$text,"S"=>"race"));
+        }
+        die();
+    }
+    //根据情况获取分站第三级列表
+    public function getThirdLevelByStageAction()
+    {
+        //赛事分站ID
+        $RaceStageId = intval($this->request->RaceStageId);
+        //分站数据
+        $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'RaceStageId,comment');
+        //数据解包
+        $RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
+        //如果赛事结构为分组-比赛模式
+        if($RaceStageInfo['comment']['RaceStructure'] == "race")
+        {
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //获取比赛信息
+            $RaceInfo = $this->oRace->getRace($RaceId,"RaceId,comment");
+            //数据解包
+            $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+            //比赛分组ID
+            $RaceGroupId = intval($this->request->RaceGroupId);
+            $text = '<option value= -1>全部</option>';
+            //循环已经选中的分组列表
+            foreach($RaceInfo['comment']['SelectedRaceGroup'] as $GroupId => $GroupInfo)
+            {
+                //依次获取分组信息
+                $RaceGroupInfo = $this->oRace->getRaceGroup($GroupId,"RaceGroupId,RaceGroupName");
+                //初始化选中状态
+                $selected = "";
+                //如果比赛ID与传入的比赛ID相符
+                if($RaceGroupInfo['RaceGroupId'] == $RaceGroupId)
+                {
+                    //选中拼接
+                    $selected = 'selected="selected"';
+                }
+                //字符串拼接
+                $text .= '<option value="'.$RaceGroupInfo['RaceGroupId'].'">'.$RaceGroupInfo['RaceGroupName'].'</option>';
+            }
+            echo json_encode(array("text"=>$text,"S"=>"race"));
+        }
+        elseif($RaceStageInfo['comment']['RaceStructure'] == "group")
+        {
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //比赛ID
+            $RaceGroupId = intval($this->request->RaceGroupId);
+            if($RaceGroupId>0)
+            {
+                //所有比赛列表
+                $RaceArr = $this->oRace->getRaceList(array('RaceGroupId'=>$RaceGroupId),'RaceId,RaceName');
+            }
+            else
+            {
+                //所有比赛列表
+                $RaceArr = array();
+            }
 
-
+            $text = '<option value= -1>全部</option>';
+            //循环比赛列表
+            foreach($RaceArr as $RId => $RaceInfo)
+            {
+                //初始化选中状态
+                $selected = "";
+                //如果比赛ID与传入的比赛ID相符
+                if($RaceInfo['RaceId'] == $RaceId)
+                {
+                    //选中拼接
+                    $selected = 'selected="selected"';
+                }
+                //字符串拼接
+                $text .= '<option value="'.$RaceInfo['RaceId'].'">'.$RaceInfo['RaceName'].'</option>';
+            }
+            echo json_encode(array("text"=>$text,"S"=>"group"));
+        }
+        die();
+    }
 }

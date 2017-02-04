@@ -60,7 +60,9 @@ class Xrace_Mylaps extends Base_Widget
 	{
         $oUser = new Xrace_UserInfo();
         $oRace = new Xrace_Race();
-	    //总记录数量
+        $oCredit = new Xrace_Credit();
+        $CreditList = $oCredit->getCreditList(0,"CreditId,CreditName");
+	     //总记录数量
         $TotalCount = 0;
 		//程序执行开始时间
         $GenStart = microtime(true);
@@ -148,7 +150,8 @@ class Xrace_Mylaps extends Base_Widget
 			//依次循环计时数据
 			foreach ($TimingList as $Key => $TimingInfo)
 			{
-                $LastId = $TimingInfo['Id'];
+                //最后获取到的记录ID
+			    $LastId = $TimingInfo['Id'];
                 //如果当前芯片 和 循环到的计时数据不同 （说明已经结束了上一个选手的循环）
 				if ($currentChip != $TimingInfo['Chip'])
 				{
@@ -178,9 +181,12 @@ class Xrace_Mylaps extends Base_Widget
 				//格式化成过线时间
                 $inTime = sprintf("%0.3f", $ChipTime);
                 //如果时间在比赛的开始时间和结束时间之内
-                $RaceStartTime = $TimeList[$UserList[$TimingInfo['Chip']]['RaceGroupId']]['StartTime'];
-                $RaceEndTime = $TimeList[$UserList[$TimingInfo['Chip']]['RaceGroupId']]['EndTime'];
-				if ($ChipTime >= $RaceStartTime && $ChipTime <= $RaceEndTime)
+                $RaceStartTime = $TimeList[$UserList[$TimingInfo['Chip']]['RaceGroupId']]['RaceStartTime'];
+                $RaceEndTime = $TimeList[$UserList[$TimingInfo['Chip']]['RaceGroupId']]['RaceEndTime'];
+
+                echo "Group:".$UserList[$TimingInfo['Chip']]['RaceGroupId']."<br>";
+                echo "Start:".$RaceStartTime."<br>"."End:".$RaceEndTime."<br>";
+                if ($ChipTime >= $RaceStartTime && $ChipTime <= $RaceEndTime)
 				{
 					echo $num."-".$TimingInfo['Location']."-".($ChipTime)."-".date("Y-m-d H:i:s", $TimingInfo['ChipTime']).".".(substr($miliSec,2))."\n";
 					//获取选手的比赛信息（计时）
@@ -233,20 +239,6 @@ class Xrace_Mylaps extends Base_Widget
 							//循环每个人的过线记录
 							foreach ($UserRaceInfoList['Point'][$i]['UserList'] as $k => $v)
 							{
-								//清除原来的积分
-							    unset($UserRaceInfoList['Point'][$i]['UserList'][$k]['Credit']);
-							    //循环积分列表
-                                foreach($UserRaceInfoList['Point'][$i]['CreditList'] as $CreditId => $CreditInfo)
-                                {
-                                    //生成积分序列
-                                    $CreditSequence = Base_Common::ParthSequence($CreditInfo['CreditRule']);
-                                    //如果名次匹配
-                                    if(isset($CreditSequence[$k+1]))
-                                    {
-                                        //积分相应累加
-                                        $UserRaceInfoList['Point'][$i]['UserList'][$k]['Credit'][$CreditId] = $CreditSequence[$k+1];
-                                    }
-                                }
 							    //计算每个人的过线记录和当前点最早记录的时间差
 								$UserRaceInfoList['Point'][$i]['UserList'][$k]['TimeLag'] = sprintf("%0.3f",abs(sprintf("%0.3f", $UserRaceInfoList['Point'][$i]['inTime']) - sprintf("%0.3f", $v['inTime'])));
 								//生成排序数组
@@ -263,6 +255,20 @@ class Xrace_Mylaps extends Base_Widget
                                 $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
                                 //排名保存
                                 $UserRaceInfoList['Point'][$i]['UserList'][$key]['GroupRank'] = count($DivisionList[$UserInfo['RaceGroupId']]);
+                                //清除原来的积分
+                                unset($UserRaceInfoList['Point'][$i]['UserList'][$key]['Credit']);
+                                //循环积分列表
+                                foreach($UserRaceInfoList['Point'][$i]['CreditList'] as $CreditId => $CreditInfo)
+                                {
+                                    //生成积分序列
+                                    $CreditSequence = Base_Common::ParthSequence($CreditInfo['CreditRule']);
+                                    //如果名次匹配
+                                    if(isset($CreditSequence[$key+1]))
+                                    {
+                                        //积分相应累加
+                                        $UserRaceInfoList['Point'][$i]['UserList'][$key]['Credit'][$CreditId] = array("Credit"=>$CreditSequence[$UserRaceInfoList['Point'][$i]['UserList'][$key]['GroupRank']],"CreditName"=>$CreditList[$CreditId]['CreditName']);
+                                    }
+                                }
                             }
 							//如果现在已有总排名数组
 							if (isset($UserRaceInfoList['Total']) && count($UserRaceInfoList['Total']))
@@ -367,20 +373,6 @@ class Xrace_Mylaps extends Base_Widget
 								//循环每个人的过线记录
 								foreach ($UserRaceInfoList['Point'][$i]['UserList'] as $k => $v)
 								{
-                                    //清除原来的积分
-                                    unset($UserRaceInfoList['Point'][$i]['UserList'][$k]['Credit']);
-                                    //循环积分列表
-                                    foreach($UserRaceInfoList['Point'][$i]['CreditList'] as $CreditId => $CreditInfo)
-                                    {
-                                        //生成积分序列
-                                        $CreditSequence = Base_Common::ParthSequence($CreditInfo['CreditRule']);
-                                        //如果名次匹配
-                                        if(isset($CreditSequence[$k+1]))
-                                        {
-                                            //积分相应累加
-                                            $UserRaceInfoList['Point'][$i]['UserList'][$k]['Credit'][$CreditId] = $CreditSequence[$k+1];
-                                        }
-                                    }
 									//计算每个人的过线记录和当前点最早记录的时间差
 									$UserRaceInfoList['Point'][$i]['UserList'][$k]['TimeLag'] = sprintf("%0.3f",abs(sprintf("%0.3f", $UserRaceInfoList['Point'][$i]['inTime']) - sprintf("%0.3f", $v['inTime'])));
 									//生成排序数组
@@ -397,6 +389,20 @@ class Xrace_Mylaps extends Base_Widget
                                     $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
                                     //排名保存
                                     $UserRaceInfoList['Point'][$i]['UserList'][$key]['GroupRank'] = count($DivisionList[$UserInfo['RaceGroupId']]);
+                                    //清除原来的积分
+                                    unset($UserRaceInfoList['Point'][$i]['UserList'][$key]['Credit']);
+                                    //循环积分列表
+                                    foreach($UserRaceInfoList['Point'][$i]['CreditList'] as $CreditId => $CreditInfo)
+                                    {
+                                        //生成积分序列
+                                        $CreditSequence = Base_Common::ParthSequence($CreditInfo['CreditRule']);
+                                        //如果名次匹配
+                                        if(isset($CreditSequence[$key+1]))
+                                        {
+                                            //积分相应累加
+                                            $UserRaceInfoList['Point'][$i]['UserList'][$key]['Credit'][$CreditId] = array("Credit"=>$CreditSequence[$UserRaceInfoList['Point'][$i]['UserList'][$key]['GroupRank']],"CreditName"=>$CreditList[$CreditId]['CreditName']);;
+                                        }
+                                    }
                                 }
 								//如果现在已有总排名数组
 								if (isset($UserRaceInfoList['Total']) && count($UserRaceInfoList['Total']))
@@ -534,21 +540,6 @@ class Xrace_Mylaps extends Base_Widget
 							//循环当前计时点的过线数据
 							foreach ($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'] as $k => $v)
 							{
-                                //清除原来的积分
-                                unset($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][$k]['Credit']);
-                                //循环积分列表
-                                foreach($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['CreditList'] as $CreditId => $CreditInfo)
-                                {
-                                    //生成积分序列
-                                    $CreditSequence = Base_Common::ParthSequence($CreditInfo['CreditRule']);
-                                    //如果名次匹配
-                                    if(isset($CreditSequence[$k+1]))
-                                    {
-                                        //积分相应累加
-                                        $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][$k]['Credit'][$CreditId] = $CreditSequence[$k+1];
-                                    }
-                                }
-
 								//计算与本计时点第一位的时间差
 								$UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][$k]['TimeLag'] = sprintf("%0.3f",abs($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['inTime'] - $v['inTime']));
 								//将时间差放入排序用的数组
@@ -572,6 +563,20 @@ class Xrace_Mylaps extends Base_Widget
                                 $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
                                 //排名保存
                                 $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][$key]['GroupRank'] = count($DivisionList[$UserInfo['RaceGroupId']]);
+                                //清除原来的积分
+                                unset($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][$key]['Credit']);
+                                //循环积分列表
+                                foreach($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['CreditList'] as $CreditId => $CreditInfo)
+                                {
+                                    //生成积分序列
+                                    $CreditSequence = Base_Common::ParthSequence($CreditInfo['CreditRule']);
+                                    //如果名次匹配
+                                    if(isset($CreditSequence[$key+1]))
+                                    {
+                                        //积分相应累加
+                                        $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][$key]['Credit'][$CreditId] = array("Credit"=>$CreditSequence[$UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][$key]['GroupRank']],"CreditName"=>$CreditList[$CreditId]['CreditName']);;
+                                    }
+                                }
                             }
 							//循环总成绩数组
 							if (isset($UserRaceInfoList['Total']) && count($UserRaceInfoList['Total']))
@@ -666,7 +671,16 @@ class Xrace_Mylaps extends Base_Widget
                     if(($RInfo['UserId']==$v['UserId']) && isset($RInfo['Credit']))
                     {
                         foreach($RInfo['Credit'] as $P => $PInfo)
-                        $UserRaceTimingInfo['Total'][$k]['Credit'][$P] += $PInfo;
+                        {
+                            if(isset($UserRaceTimingInfo['Total'][$k]['Credit'][$P]))
+                            {
+                                $UserRaceTimingInfo['Total'][$k]['Credit'][$P]['Credit'] += $PInfo['Credit'];
+                            }
+                            else
+                            {
+                                $UserRaceTimingInfo['Total'][$k]['Credit'][$P] = array("Credit"=>$PInfo['Credit'],"CreditName"=>$PInfo['CreditName']);
+                            }
+                        }
                     }
                 }
 

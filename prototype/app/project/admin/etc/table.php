@@ -5,6 +5,21 @@
  */
 
 $table = array();
+#用户积分汇总表
+$table['user_credit_sum']['db'] = 'xrace_user';
+$table['user_credit_sum']['num'] = 1;
+
+#用户积分变更记录
+$table['user_credit_log_total']['db'] = 'xrace_user';
+$table['user_credit_log_total']['num'] = 1;
+
+#用户积分变更记录
+$table['user_credit_log']['db'] = 'xrace_user';
+$table['user_credit_log']['num'] = 1;
+
+#积分类目
+$table['config_credit']['db'] = 'xrace_config';
+$table['config_credit']['num'] = 1;
 
 #系统更新记录
 $table['UpdateLog']['db'] = 'xrace_config';

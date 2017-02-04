@@ -424,7 +424,7 @@ class Xrace_RaceGroupController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//获取赛事分站已经选择的分组列表
+	//获取赛事获取已经选择的分组列表
 	public function getGroupByCatalogAction()
 	{
 		//赛事ID

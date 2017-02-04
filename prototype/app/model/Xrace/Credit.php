@@ -10,6 +10,7 @@ class Xrace_Credit extends Base_Widget
 	//声明所用到的表
 	protected $table = 'config_credit';
     protected $table_credit_update_log = 'user_credit_log';
+    protected $table_credit_update_log_total = 'user_credit_log_total';
     protected $table_credit_user = 'user_credit_sum';
 
     protected $creditFrequenceList = array("day"=>array("Name"=>"每日","ParamList"=>array()),
@@ -144,8 +145,11 @@ class Xrace_Credit extends Base_Widget
         }
         return implode(" ",$t);
     }
-    public function Credit($CreditInfo,$ActionId,$UserId)
+    public function Credit($CreditInfo,$params,$UserId)
     {
+        //获取当前时间
+        $Time = date("Y-m-d H:i:s",time());
+        //事务开始
         $this->db->begin();
         //计算所在用户分表的后缀
         $suffix = substr(md5($UserId),0,1);
@@ -153,18 +157,31 @@ class Xrace_Credit extends Base_Widget
         $table_user_log = $this->db->createTable($this->table_credit_update_log,$suffix);
         //检测用户积分汇总表是否存在
         $table_user = $this->db->createTable($this->table_credit_user,$suffix);
+        //检测总表
+        $table_total = Base_Widget::getDbTable($this->table_credit_update_log_total);
         //积分变更表的数据
-        $bindLog = array("ActionId"=>$ActionId,"UserId"=>$UserId,"CreditId"=>$CreditInfo['CreditId'],"Time"=>date("Y-m-d H:i:s",time()),"Credit"=>$CreditInfo['Credit']);
+        $bindLog = array("UserId"=>$UserId,"CreditId"=>$CreditInfo['CreditId'],"Time"=>$Time,"Credit"=>$CreditInfo['Credit']);
+        //循环传入的参数列表
+        foreach($params as $key => $value)
+        {
+            //依次赋值
+            $bindLog[$key] = $value;
+        }
         //积分表的变更数据
-        $bindUpdate = array("Credit"=>"_Credit+(".$CreditInfo['Credit'].")");
+        $bindUpdate = array("LastUpdateTime"=>$Time,"Credit"=>"_Credit".($CreditInfo['Credit']>0?("+".$CreditInfo['Credit']):$CreditInfo['Credit']));
         //积分表的新增数据
-        $bind = array("UserId"=>$UserId,"CreditId"=>$CreditInfo['CreditId'],"Credit"=>$CreditInfo['Credit']);
+        $bind = array("LastUpdateTime"=>$Time,"UserId"=>$UserId,"CreditId"=>$CreditInfo['CreditId'],"Credit"=>$CreditInfo['Credit']);
         //更新汇总表
         $CreditSum = $this->db->insert_update($table_user,$bind,$bindUpdate);
         //新增记录表
         $CreditLog = $this->db->insert($table_user_log, $bindLog);
+        //组合新的ID
+        $bindLog['Id'] = $suffix."_".$CreditLog;
+        echo $bindLog['Id'] ."<br>";
+        //新增记录表
+        $CreditLogTotal = $this->db->insert($table_total, $bindLog);
         //如果同时成功
-        if($CreditSum && $CreditLog)
+        if($CreditSum && $CreditLog && $CreditLogTotal)
         {
             //提交
             $this->db->commit();
@@ -176,5 +193,80 @@ class Xrace_Credit extends Base_Widget
             $this->db->rollBack();
             return false;
         }
+    }
+    /**
+     * 获取用户列表
+     * @param $fields  所要获取的数据列
+     * @param $params 传入的条件列表
+     * @return array
+     */
+    public function getCreditLog($params,$fields = array("*"))
+    {
+        //生成查询列
+        $fields = Base_common::getSqlFields($fields);
+        //获取需要用到的表名
+        $table_to_process = Base_Widget::getDbTable($this->table_credit_update_log_total);
+        //动作判断
+        $whereAction = (isset($params['ActionId']) && $params['ActionId']>0)?" ActionId = '".$params['ActionId']."' ":"";
+        //实名认证判断
+        $whereCredit = (isset($params['CreditId']) && $params['CreditId']>0)?" CreditId = '".$params['CreditId']."' ":"";
+        //姓名
+        $whereName = (isset($params['Name']) && trim($params['Name']))?" name like '%".$params['Name']."%' ":"";
+        //昵称
+        $whereNickName = (isset($params['NickName']) && trim($params['NickName']))?" NickName like '%".$params['NickName']."%' ":"";
+        //所有查询条件置入数组
+        $whereCondition = array($whereAction,$whereCredit);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        //获取用户数量
+        if(isset($params['getCount'])&&$params['getCount']==1)
+        {
+            $CreditLogCount = $this->getCreditLogCount($params);
+        }
+        else
+        {
+            $CreditLogCount = 0;
+        }
+        $limit  = isset($params['Page'])&&$params['Page']?" limit ".($params['Page']-1)*$params['PageSize'].",".$params['PageSize']." ":"";
+        $order = " ORDER BY Time desc";
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." ".$order." ".$limit;
+        $return = $this->db->getAll($sql);
+        $CreditLog = array('CreditLog'=>array(),'CreditLogCount'=>$CreditLogCount);
+        if(count($return))
+        {
+            foreach($return as $key => $value)
+            {
+                $CreditLog['CreditLog'][$value['Id']] = $value;
+            }
+        }
+        else
+        {
+            return $CreditLog;
+        }
+        return $CreditLog;
+    }
+    /**
+     * 获取用户数量
+     * @param $fields  所要获取的数据列
+     * @param $params 传入的条件列表
+     * @return integer
+     */
+    public function getCreditLogCount($params)
+    {
+        //生成查询列
+        $fields = Base_common::getSqlFields(array("CreditLogCount"=>"count(Id)"));
+
+        //获取需要用到的表名
+        $table_to_process = Base_Widget::getDbTable($this->table_credit_update_log_total);
+        //动作判断
+        $whereAction = (isset($params['ActionId']) && $params['ActionId']>0)?" ActionId = '".$params['ActionId']."' ":"";
+        //实名认证判断
+        $whereCredit = (isset($params['CreditId']) && $params['CreditId']>0)?" CreditId = '".$params['CreditId']."' ":"";
+        //所有查询条件置入数组
+        $whereCondition = array($whereAction,$whereCredit);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
+        return $this->db->getOne($sql);
     }
 }

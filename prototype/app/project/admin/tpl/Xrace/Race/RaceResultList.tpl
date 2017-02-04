@@ -46,7 +46,13 @@
     {tpl:if(count($PointInfo.UserList)>=1)}
     {tpl:loop $PointInfo.UserList $id $RaceUserInfo}
     {tpl:if((isset($UserInfo.UserId) && ($RaceUserInfo.UserId==$UserInfo.UserId)) || !isset($UserInfo.UserId))}
-    <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceUserInfo.UserId/}','{tpl:$RaceInfo.RaceName/}')">{tpl:$RaceUserInfo.Name/}</a><p>{tpl:$RaceUserInfo.TeamName/}<p>{tpl:$RaceUserInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.Rank/}{tpl:if($RaceUserInfo.TimeLag>0)}/+{tpl:$RaceUserInfo.TimeLag func="Base_Common::parthTimeLag(@@)"/}{/tpl:if}{tpl:if($RaceUserInfo.NetTimeLag>0)}/+{tpl:$RaceUserInfo.NetTimeLag func="Base_Common::parthTimeLag(@@)"/}{/tpl:if}</th>
+    <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceUserInfo.UserId/}','{tpl:$RaceInfo.RaceName/}')">{tpl:$RaceUserInfo.Name/}</a><p>{tpl:$RaceUserInfo.TeamName/}<p>{tpl:$RaceUserInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}<p>{tpl:$RaceUserInfo.Rank/}{tpl:if($RaceUserInfo.TimeLag>0)}/+{tpl:$RaceUserInfo.TimeLag func="Base_Common::parthTimeLag(@@)"/}{/tpl:if}{tpl:if($RaceUserInfo.NetTimeLag>0)}/+{tpl:$RaceUserInfo.NetTimeLag func="Base_Common::parthTimeLag(@@)"/}{/tpl:if}
+        {tpl:if(isset($RaceUserInfo))}
+        {tpl:loop $RaceUserInfo.Credit  $CreditInfo}
+        <p>{tpl:$CreditInfo.CreditName/} : {tpl:$CreditInfo.Credit/}
+        {/tpl:loop}
+        {/tpl:if}
+    </th>
   {/tpl:if}
   {/tpl:loop}
     {tpl:else}
@@ -65,6 +71,7 @@
     <th  align="center" class="rowtip" colspan="2">总净时间</th>
     <th  align="center" class="rowtip" colspan="2">BIB</th>
     <th  align="center" class="rowtip" colspan="2">当前位置</th>
+    <th  align="center" class="rowtip" colspan="2">积分获取</th>
   </tr>
   {tpl:loop $RaceResultList.UserRaceTimingInfo.Total $Tid $TInfo}
   <tr>
@@ -73,7 +80,15 @@
     <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.BIB/}</th>
-    <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.CurrentPositionName/}</th></tr>
+    <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.CurrentPositionName/}</th>
+    <th  align="center" class="rowtip" colspan="2">
+      {tpl:if(isset($TInfo.Credit))}
+      {tpl:loop $TInfo.Credit  $CreditInfo}
+      <p>{tpl:$CreditInfo.CreditName/} : {tpl:$CreditInfo.Credit/}
+        {/tpl:loop}
+        {/tpl:if}
+    </th>
+  </tr>
   {/tpl:loop}
   <tr><th  align="center" class="rowtip" colspan="6">团队排名（每队第 {tpl:$RaceInfo.comment.TeamResultRank/} 人）</th></tr>
   <tr><th  align="center" class="rowtip">名次</th>

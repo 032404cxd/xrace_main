@@ -1223,4 +1223,77 @@ class Xrace_UserController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+    //用户列表
+    public function userCreditLogAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission(0);
+        if($PermissionCheck['return'])
+        {
+            $oAction = new Xrace_Action();
+            $oCredit = new Xrace_Credit();
+            //赛事ID
+            $RaceCatalogId = intval($this->request->RaceCatalogId);
+            //赛事ID
+            $RaceCatalogId2 = intval($this->request->RaceCatalogId2);
+            //赛事分站ID
+            $RaceStageId = intval($this->request->RaceStageId);
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //比赛分组
+            $RaceGroupId = intval($this->request->RaceGroupId);
+            //积分ID
+            $CreditId = intval($this->request->CreditId);
+            //动作ID
+            $ActionId = intval($this->request->ActionId);
+            $params = array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"CreditId"=>$CreditId,"ActionId"=>$ActionId);
+            //获取赛事列表
+            $RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"RaceCatalogId,RaceCatalogName",0);
+            //获取积分列表
+            $CreditArr = $RaceCatalogId>0?$oCredit->getCreditList($RaceCatalogId):array();
+            //赛事分站列表
+            $RaceStageArr = $this->oRace->getRaceStageList($RaceCatalogId2,"RaceStageId,RaceStageName");
+            //动作列表
+            $ActionList = $oAction->getActionList(0,"ActionId,ActionName");
+            //分页参数
+            $params['Page'] = abs(intval($this->request->Page))?abs(intval($this->request->Page)):1;
+            $params['PageSize'] = 20;
+            //获取用户列表时需要获得记录总数
+            $params['getCount'] = 1;
+            //获取积分类目列表
+            //获取用户列表
+            $CreditLog = $oCredit->getCreditLog($params);
+            $page_url = Base_Common::getUrl('','xrace/user','user.credit.log',$params)."&Page=~page~";
+            $page_content =  base_common::multi($CreditLog['CreditLogCount'], $page_url, $params['Page'], $params['PageSize'], 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');
+            //初始化空的积分列表
+            $CreditList = array();
+            //循环积分变更记录
+            foreach($CreditLog['CreditLog'] as $Id => $LogInfo)
+            {
+                //如果在积分列表里面没有该记录
+                if(!isset($CreditList[$LogInfo['CreditId']]))
+                {
+                    //重新获取积分信息
+                    $CreditInfo = $oCredit->getCredit($LogInfo['CreditId'],"CreditId,CreditName");
+                    //如果获取到
+                    if(isset($CreditInfo['CreditId']))
+                    {
+                        //保存到积分列表中
+                        $CreditList[$LogInfo['CreditId']] = $CreditInfo;
+                    }
+                }
+                //保存积分名称
+                $CreditLog['CreditLog'][$Id]['CreditName'] = isset($CreditList[$LogInfo['CreditId']])?$CreditList[$LogInfo['CreditId']]['CreditName']:"未知积分";
+                //保存积分名称
+                $CreditLog['CreditLog'][$Id]['ActionName'] = isset($ActionList[$LogInfo['ActionId']])?$ActionList[$LogInfo['ActionId']]['ActionName']:"未知动作";
+            }
+            //模板渲染
+            include $this->tpl('Xrace_User_UserCreditLog');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
 }

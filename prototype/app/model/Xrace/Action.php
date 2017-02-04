@@ -115,7 +115,7 @@ class Xrace_Action extends Base_Widget
             foreach($ActionInfo['CreditList'] as $key => $CreditInfo)
             {
                 //积分变更操作
-                $Credit = $oCredit->Credit($CreditInfo,$ActionInfo['ActionId'],$UserId);
+                $Credit = $oCredit->Credit($CreditInfo,array("ActionId"=>$ActionInfo['ActionId']),$UserId);
                 //如果成功
                 if($Credit)
                 {

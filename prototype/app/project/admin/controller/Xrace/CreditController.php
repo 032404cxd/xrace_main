@@ -203,7 +203,7 @@ class Xrace_CreditController extends AbstractController
             //赛事ID
             $RaceCatalogId = intval($this->request->RaceCatalogId);
             //获取积分列表
-            $CreditList = $this->oCredit->getCreditList($RaceCatalogId,"CreditId,CreditName");
+            $CreditList = $RaceCatalogId>0?$this->oCredit->getCreditList($RaceCatalogId,"CreditId,CreditName"):array();
             //循环积分列表
             foreach($CreditList as $CreditId => $CreditInfo)
             {
