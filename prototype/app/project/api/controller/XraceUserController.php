@@ -249,4 +249,60 @@ class XraceUserController extends AbstractController
         $IP = isset($this->request->IP) ?  trim($this->request->IP):"127.0.0.1";
         $token = $this->oUser->makeToken($UserId,$IP);
     }
+    public function getUserByOtherAction()
+    {
+        //用户名
+        $UserName = trim($this->request->UserName);
+        //用户名
+        $Mobile = trim($this->request->Mobile);
+        //证件号码
+        $IdNo = trim($this->request->IdNo);
+        //如果证件号码长度不足
+        if(strlen($IdNo) <=6)
+        {
+            //返回错误
+            $result = array("return" => 0,"comment"=>"请输入合法的证件号");
+        }
+        else
+        {
+            //根据证件号码获取用户信息
+            $UserInfo = $this->oUser->getUserByColumn("IdNo",$IdNo);
+            //如果已经被占用
+            if(isset($UserInfo['UserId']))
+            {
+                //返回用户信息
+                $result = array("return" => 1,"UserInfo"=>$UserInfo);
+            }
+            else
+            {
+                //如果姓名长度不足
+                if(strlen($UserName) <=2)
+                {
+                    //返回错误
+                    $result = array("return" => 0,"comment"=>"请输入合法的姓名");
+                }
+                else
+                {
+                    //生成用户信息
+                    $UserInfo = array('UserName'=>$UserName,'ContactMobile'=>$Mobile,'IdNo'=>$IdNo,'RegTime'=>date("Y-m-d H:i:s",time()));
+                    //创建用户
+                    $CreateUser = $this->oUser->insertUser($UserInfo);
+                    //如果创建成功
+                    if($CreateUser)
+                    {
+                        //强制获取用户信息
+                        $UserInfo = $this->oUser->getUserInfo($CreateUser,"*",0);
+                        //返回用户信息
+                        $result = array("return" => 1,"UserInfo"=>$UserInfo);
+                    }
+                    else
+                    {
+                        //返回错误
+                        $result = array("return" => 1,"comment"=>"创建失败");
+                    }
+                }
+            }
+        }
+        echo json_encode($result);
+    }
 }

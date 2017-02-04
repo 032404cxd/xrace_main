@@ -1246,6 +1246,7 @@ class Xrace_UserController extends AbstractController
             $CreditId = intval($this->request->CreditId);
             //动作ID
             $ActionId = intval($this->request->ActionId);
+            //传入的参数列表
             $params = array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"CreditId"=>$CreditId,"ActionId"=>$ActionId);
             //获取赛事列表
             $RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"RaceCatalogId,RaceCatalogName",0);
@@ -1267,6 +1268,10 @@ class Xrace_UserController extends AbstractController
             $page_content =  base_common::multi($CreditLog['CreditLogCount'], $page_url, $params['Page'], $params['PageSize'], 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');
             //初始化空的积分列表
             $CreditList = array();
+            //初始化空的比赛列表
+            $RaceList = array();
+            //初始化空的分组列表
+            $RaceGroupList = array();
             //循环积分变更记录
             foreach($CreditLog['CreditLog'] as $Id => $LogInfo)
             {
@@ -1282,10 +1287,38 @@ class Xrace_UserController extends AbstractController
                         $CreditList[$LogInfo['CreditId']] = $CreditInfo;
                     }
                 }
+                //如果在积分列表里面没有该记录
+                if(!isset($RaceList[$LogInfo['RaceId']]))
+                {
+                    //重新获取积分信息
+                    $RaceInfo = $this->oRace->getRace($LogInfo['RaceId'],"RaceId,RaceName");
+                    //如果获取到
+                    if(isset($RaceInfo['RaceId']))
+                    {
+                        //保存到积分列表中
+                        $RaceList[$LogInfo['RaceId']] = $RaceInfo;
+                    }
+                }
+                //如果在积分列表里面没有该记录
+                if(!isset($RaceGroupList[$LogInfo['RaceGroupId']]))
+                {
+                    //重新获取积分信息
+                    $RaceGroupInfo = $this->oRace->getRaceGroup($LogInfo['RaceGroupId'],"RaceGroupId,RaceGroupName");
+                    //如果获取到
+                    if(isset($RaceGroupInfo['RaceGroupId']))
+                    {
+                        //保存到积分列表中
+                        $RaceGroupList[$LogInfo['RaceGroupId']] = $RaceGroupInfo;
+                    }
+                }
                 //保存积分名称
-                $CreditLog['CreditLog'][$Id]['CreditName'] = isset($CreditList[$LogInfo['CreditId']])?$CreditList[$LogInfo['CreditId']]['CreditName']:"未知积分";
-                //保存积分名称
-                $CreditLog['CreditLog'][$Id]['ActionName'] = isset($ActionList[$LogInfo['ActionId']])?$ActionList[$LogInfo['ActionId']]['ActionName']:"未知动作";
+                $CreditLog['CreditLog'][$Id]['CreditName'] = isset($CreditList[$LogInfo['CreditId']])?$CreditList[$LogInfo['CreditId']]['CreditName']:"未知";
+                //保存动作名称
+                $CreditLog['CreditLog'][$Id]['ActionName'] = isset($ActionList[$LogInfo['ActionId']])?$ActionList[$LogInfo['ActionId']]['ActionName']:"未知";
+                //保存比赛名称
+                $CreditLog['CreditLog'][$Id]['RaceName'] = isset($RaceList[$LogInfo['RaceId']])?$RaceList[$LogInfo['RaceId']]['RaceName']:"未知";
+                //保存分组名称
+                $CreditLog['CreditLog'][$Id]['RaceGroupName'] = isset($RaceGroupList[$LogInfo['RaceGroupId']])?$RaceGroupList[$LogInfo['RaceGroupId']]['RaceGroupName']:"未知";
             }
             //模板渲染
             include $this->tpl('Xrace_User_UserCreditLog');

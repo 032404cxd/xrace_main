@@ -206,16 +206,16 @@ class Xrace_Credit extends Base_Widget
         $fields = Base_common::getSqlFields($fields);
         //获取需要用到的表名
         $table_to_process = Base_Widget::getDbTable($this->table_credit_update_log_total);
-        //动作判断
+        //动作
         $whereAction = (isset($params['ActionId']) && $params['ActionId']>0)?" ActionId = '".$params['ActionId']."' ":"";
-        //实名认证判断
+        //积分
         $whereCredit = (isset($params['CreditId']) && $params['CreditId']>0)?" CreditId = '".$params['CreditId']."' ":"";
-        //姓名
-        $whereName = (isset($params['Name']) && trim($params['Name']))?" name like '%".$params['Name']."%' ":"";
+        //比赛
+        $whereRace = (isset($params['RaceId']) && $params['RaceId']>0)?" RaceId = '".$params['RaceId']."' ":"";
         //昵称
-        $whereNickName = (isset($params['NickName']) && trim($params['NickName']))?" NickName like '%".$params['NickName']."%' ":"";
+        //$whereNickName = (isset($params['NickName']) && trim($params['NickName']))?" NickName like '%".$params['NickName']."%' ":"";
         //所有查询条件置入数组
-        $whereCondition = array($whereAction,$whereCredit);
+        $whereCondition = array($whereAction,$whereCredit,$whereRace);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
         //获取用户数量
@@ -258,15 +258,18 @@ class Xrace_Credit extends Base_Widget
 
         //获取需要用到的表名
         $table_to_process = Base_Widget::getDbTable($this->table_credit_update_log_total);
-        //动作判断
+        //动作
         $whereAction = (isset($params['ActionId']) && $params['ActionId']>0)?" ActionId = '".$params['ActionId']."' ":"";
-        //实名认证判断
+        //积分
         $whereCredit = (isset($params['CreditId']) && $params['CreditId']>0)?" CreditId = '".$params['CreditId']."' ":"";
+        //比赛
+        $whereRace = (isset($params['RaceId']) && $params['RaceId']>0)?" RaceId = '".$params['RaceId']."' ":"";
         //所有查询条件置入数组
-        $whereCondition = array($whereAction,$whereCredit);
+        $whereCondition = array($whereAction,$whereCredit,$whereRace);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
         $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
+        echo $sql."<br>";
         return $this->db->getOne($sql);
     }
 }

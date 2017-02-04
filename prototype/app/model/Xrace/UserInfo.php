@@ -565,7 +565,6 @@ class Xrace_UserInfo extends Base_Widget
                         "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育",),
                         "Mobile"=> $RegInfo['Mobile'],
                         "SMSCode"=>"SMS_Validate_Code"
-
                     );
                     Base_common::dayuSMS($params);
                     return 1;
@@ -598,7 +597,7 @@ class Xrace_UserInfo extends Base_Widget
             if(strtotime($RegInfo['ExceedTime'])>=time())
             {
                 //验证通过，注册
-                $UserInfo = array('Mobile'=>$Mobile,'RegTime'=>$RegInfo['RegTime'],'LastLoginTime'=>date("Y-m-d H:i:s"));
+                $UserInfo = array('ContactMobile'=>$Mobile,'Mobile'=>$Mobile,'RegTime'=>$RegInfo['RegTime'],'LastLoginTime'=>$RegInfo['RegTime']);
                 if($RegInfo['RegPlatform'] == "WeChat")
                 {
                     $UserInfo['WeChatId'] = $RegInfo['RegKey'];
