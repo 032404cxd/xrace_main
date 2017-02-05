@@ -227,12 +227,16 @@ class XraceTeamController extends AbstractController
         echo json_encode($result);
     }
     /**
-     *获取登录用户参与的队伍列表
+     *获取登录用户创建的队伍列表
      */
-    public function getTeamListByTokenction()
+    public function getCreatedTeamListByTokenAction()
     {
         //Token
         $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //分站ID
+        $RaceStageId = abs(intval($this->request->RaceStageId));
+        //是否临时
+        $IsTemp = isset($this->request->IsTemp)?intval($this->request->IsTemp):-1;
         //获取Tokenx信息
         $TokenInfo = $this->oUser->getToken($Token);
         //如果获取到
@@ -244,7 +248,7 @@ class XraceTeamController extends AbstractController
             if(isset($UserInfo['UserId']))
             {
                 //获取队伍列表
-                $TeamList = $this->oTeam->getTeamUserList(array("UserId"=>$TokenInfo['UserId']));
+                $TeamList = $this->oTeam->getUserCreatedTeamList(array("UserId"=>$TokenInfo['UserId'],"RaceStageId"=>$RaceStageId,"IsTemp"=>$IsTemp));
                 //循环队伍列表
                 foreach($TeamList as $key => $UserTeamInfo)
                 {
@@ -273,7 +277,55 @@ class XraceTeamController extends AbstractController
         {
             $result = array("return" => 0,"NeedLogin"=>1);
         }
-
+        echo json_encode($result);
+    }
+    /**
+     *获取登录用户参加的队伍列表
+     */
+    public function getTeamListByTokenAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            //获得用户信息
+            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"UserId,UserName",0);
+            //如果获取到用户
+            if(isset($UserInfo['UserId']))
+            {
+                //获取队伍列表
+                $TeamList = $this->oTeam->getUserTeamList(array("UserId"=>$TokenInfo['UserId'],"RaceStageId"=>$RaceStageId,"IsTemp"=>$IsTemp));
+                //循环队伍列表
+                foreach($TeamList as $key => $UserTeamInfo)
+                {
+                    //获取队伍信息
+                    $TeamInfo = $this->oTeam->getTeamInfo($UserTeamInfo['TeamId'],"TeamId,IsTemp,TeamName");
+                    //如果获取到
+                    if(isset($TeamInfo['TeamId']))
+                    {
+                        //保存队伍信息
+                        $TeamList[$key]['TeamInfo'] = $TeamInfo;
+                    }
+                    else
+                    {
+                        //删除队伍信息
+                        unset($TeamList[$key]);
+                    }
+                }
+                $result = array("return" => 1, "TeamList" => $TeamList);
+            }
+            else
+            {
+                $result = array("return" => 0, "comment" => "无此用户");
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
         echo json_encode($result);
     }
     /**
@@ -328,7 +380,7 @@ class XraceTeamController extends AbstractController
         if(isset($TeamInfo['TeamId']))
         {
             //获取用户列表
-            $UserList = $this->oTeam->getTeamUserList(array("TeamId"=>$TeamId));
+            $UserList = $this->oTeam->getUserTeamList(array("TeamId"=>$TeamId));
             //循环用户列表
             foreach($UserList as $key => $TeamUserInfo)
             {

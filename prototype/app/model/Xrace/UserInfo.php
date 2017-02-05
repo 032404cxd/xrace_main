@@ -177,6 +177,17 @@ class Xrace_UserInfo extends Base_Widget
         {
             //从数据库中获取
             $UserInfo = $this->getUser($UserId, "*");
+            //如果用户信息中包含不少于六位的证件号码 和 不少于两位的姓名
+            if(strlen(trim($UserInfo['IdNo']))>=6 && strlen(trim($UserInfo['UserName']))>=2)
+            {
+                //可以报名
+                $UserInfo['ReadyToRace'] =1;
+            }
+            else
+            {
+                //不可以报名
+                $UserInfo['ReadyToRace'] =0;
+            }
             //如果结果集有效
             if(isset($UserInfo['UserId']))
             {
@@ -192,8 +203,8 @@ class Xrace_UserInfo extends Base_Widget
             //循环结果集
             foreach($UserInfo as $key => $value)
             {
-                //如果不在字段列表中且不是主键
-                if(!in_array($key,$fieldsList) && $key != "UserId")
+                //如果不在字段列表中且不是主键+身份证+姓名
+                if(!in_array($key,$fieldsList) && !in_array($key, array("UserId","IdNo","UserName","ReadyToRace")))
                 {
                     //删除
                     unset($UserInfo[$key]);
@@ -904,5 +915,4 @@ class Xrace_UserInfo extends Base_Widget
             return ($this->db->replace($table_to_process, $bind))?$bind['Token']:false;
         }
     }
-
 }

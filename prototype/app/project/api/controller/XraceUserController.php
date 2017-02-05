@@ -243,17 +243,12 @@ class XraceUserController extends AbstractController
         }
         echo json_encode($result);
     }
-    public function tokenAction()
-    {
-        $UserId = isset($this->request->UserId) ? abs(intval($this->request->UserId)) : 0;
-        $IP = isset($this->request->IP) ?  trim($this->request->IP):"127.0.0.1";
-        $token = $this->oUser->makeToken($UserId,$IP);
-    }
+    //根据他人填写的信息选择用户
     public function getUserByOtherAction()
     {
-        //用户名
+        //用户姓名
         $UserName = trim($this->request->UserName);
-        //用户名
+        //手机号码
         $Mobile = trim($this->request->Mobile);
         //证件号码
         $IdNo = trim($this->request->IdNo);
@@ -298,10 +293,77 @@ class XraceUserController extends AbstractController
                     else
                     {
                         //返回错误
-                        $result = array("return" => 1,"comment"=>"创建失败");
+                        $result = array("return" => 0,"comment"=>"创建失败");
                     }
                 }
             }
+        }
+        echo json_encode($result);
+    }
+    //更新用户的身份信息（身份证，姓名）
+    public function updateUserIdentityAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            //用户姓名
+            $UserName = trim($this->request->UserName);
+            //证件号码
+            $IdNo = trim($this->request->IdNo);
+            //如果证件号码长度不足
+            if(strlen($IdNo) <=6)
+            {
+                //返回错误
+                $result = array("return" => 0,"comment"=>"请输入合法的证件号");
+            }
+            else
+            {
+                //根据证件号码获取用户信息
+                $IdUserInfo = $this->oUser->getUserByColumn("IdNo",$IdNo);
+                //如果已经被占用 且不是该用户本人
+                if(isset($IdUserInfo['UserId']) && ($IdUserInfo['UserId']!=$TokenInfo['UserId']))
+                {
+                    //返回错误
+                    $result = array("return" => 0,"commento"=>"证件号码已经被其他用户使用");
+                }
+                else
+                {
+                    //如果姓名长度不足
+                    if(strlen($UserName) <=2)
+                    {
+                        //返回错误
+                        $result = array("return" => 0,"comment"=>"请输入合法的姓名");
+                    }
+                    else
+                    {
+                        //生成用户信息
+                        $UserInfo = array('UserName'=>$UserName,'IdNo'=>$IdNo);
+                        //更新用户
+                        $UpdateUser = $this->oUser->updateUser($TokenInfo['UserId'],$UserInfo);
+                        //如果创建成功
+                        if($UpdateUser)
+                        {
+                            //强制获取用户信息
+                            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"*",0);
+                            //返回用户信息
+                            $result = array("return" => 1,"UserInfo"=>$UserInfo);
+                        }
+                        else
+                        {
+                            //返回错误
+                            $result = array("return" => 0,"comment"=>"更新失败");
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
         }
         echo json_encode($result);
     }
