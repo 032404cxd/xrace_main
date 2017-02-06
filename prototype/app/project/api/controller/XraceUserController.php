@@ -246,58 +246,94 @@ class XraceUserController extends AbstractController
     //根据他人填写的信息选择用户
     public function getUserByOtherAction()
     {
-        //用户姓名
-        $UserName = trim($this->request->UserName);
-        //手机号码
-        $Mobile = trim($this->request->Mobile);
-        //证件号码
-        $IdNo = trim($this->request->IdNo);
-        //如果证件号码长度不足
-        if(strlen($IdNo) <=6)
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
         {
-            //返回错误
-            $result = array("return" => 0,"comment"=>"请输入合法的证件号");
-        }
-        else
-        {
-            //根据证件号码获取用户信息
-            $UserInfo = $this->oUser->getUserByColumn("IdNo",$IdNo);
-            //如果已经被占用
-            if(isset($UserInfo['UserId']))
+            //获取证件类型列表
+            $IdTypeList = $this->oUser->getAuthIdType();
+            //获取证件类型列表
+            $SexList = $this->oUser->getSexList();
+            //用户姓名
+            $Name = trim($this->request->Name);
+            //证件号码
+            $IdNo = trim($this->request->IdNo);
+            //证件类型
+            $IdType = abs(intval($this->request->IdType));
+            //如果不在证件类型范围内，默认为身份证
+            $IdType = isset($IdTypeList[$IdType])?$IdType:1;
+            //证件类型
+            $Sex = abs(intval($this->request->Sex));
+            //如果不在证件类型范围内，默认为身份证
+            $Sex = isset($SexList[$Sex])?$Sex:0;
+            //联系电话号码
+            $ContactMobile = trim($this->request->ContactMobile);
+            //如果证件号码长度不足
+            if(strlen($IdNo) <=6)
             {
-                //返回用户信息
-                $result = array("return" => 1,"UserInfo"=>$UserInfo);
+                //返回错误
+                $result = array("return" => 0,"comment"=>"请输入合法的证件号");
             }
             else
             {
-                //如果姓名长度不足
-                if(strlen($UserName) <=2)
+                //根据证件号码获取用户信息
+                $UserInfo = $this->oUser->getUserByColumn("IdNo",$IdNo);
+                //如果已经被占用
+                if(isset($UserInfo['UserId']))
                 {
-                    //返回错误
-                    $result = array("return" => 0,"comment"=>"请输入合法的姓名");
+                    //返回用户信息
+                    $result = array("return" => 1,"UserInfo"=>$UserInfo);
                 }
                 else
                 {
-                    //生成用户信息
-                    $UserInfo = array('UserName'=>$UserName,'ContactMobile'=>$Mobile,'IdNo'=>$IdNo,'RegTime'=>date("Y-m-d H:i:s",time()));
-                    //创建用户
-                    $CreateUser = $this->oUser->insertUser($UserInfo);
-                    //如果创建成功
-                    if($CreateUser)
+                    //根据证件号码获取比赛用户信息
+                    $UserInfo = $this->oUser->getRaceUserByColumn("IdNo",$IdNo);
+                    //如果已经被占用
+                    if(isset($UserInfo['RaceUserId']))
                     {
-                        //强制获取用户信息
-                        $UserInfo = $this->oUser->getUserInfo($CreateUser,"*",0);
                         //返回用户信息
                         $result = array("return" => 1,"UserInfo"=>$UserInfo);
                     }
                     else
                     {
-                        //返回错误
-                        $result = array("return" => 0,"comment"=>"创建失败");
+                        //如果姓名长度不足
+                        if(strlen($Name) <=2)
+                        {
+                            //返回错误
+                            $result = array("return" => 0,"comment"=>"请输入合法的姓名");
+                        }
+                        else
+                        {
+                            //生成用户信息
+                            $UserInfo = array('CreateUserId'=>$TokenInfo['UserId'],'Name'=>$Name,'Sex'=>$Sex,'ContactMobile'=>$ContactMobile,'IdNo'=>$IdNo,'IdType'=>$IdType,'Available'=>0,'RegTime'=>date("Y-m-d H:i:s",time()));
+                            //创建用户
+                            $CreateUser = $this->oUser->insertRaceUser($UserInfo);
+                            //如果创建成功
+                            if($CreateUser)
+                            {
+                                //强制获取用户信息
+                                $UserInfo = $this->oUser->getRaceUser($CreateUser,"*");
+                                //返回用户信息
+                                $result = array("return" => 1,"UserInfo"=>$UserInfo);
+                            }
+                            else
+                            {
+                                //返回错误
+                                $result = array("return" => 0,"comment"=>"创建失败");
+                            }
+                        }
                     }
                 }
             }
         }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+
         echo json_encode($result);
     }
     //更新用户的身份信息（身份证，姓名）
@@ -310,10 +346,22 @@ class XraceUserController extends AbstractController
         //如果获取到
         if($TokenInfo['UserId'])
         {
+            //获取证件类型列表
+            $IdTypeList = $this->oUser->getAuthIdType();
+            //获取证件类型列表
+            $SexList = $this->oUser->getSexList();
             //用户姓名
-            $UserName = trim($this->request->UserName);
+            $Name = trim($this->request->Name);
             //证件号码
             $IdNo = trim($this->request->IdNo);
+            //证件类型
+            $IdType = abs(intval($this->request->IdType));
+            //如果不在证件类型范围内，默认为身份证
+            $IdType = isset($IdTypeList[$IdType])?$IdType:1;
+            //证件类型
+            $Sex = abs(intval($this->request->Sex));
+            //如果不在证件类型范围内，默认为身份证
+            $Sex = isset($SexList[$Sex])?$Sex:0;
             //如果证件号码长度不足
             if(strlen($IdNo) <=6)
             {
@@ -333,7 +381,7 @@ class XraceUserController extends AbstractController
                 else
                 {
                     //如果姓名长度不足
-                    if(strlen($UserName) <=2)
+                    if(strlen($Name) <=2)
                     {
                         //返回错误
                         $result = array("return" => 0,"comment"=>"请输入合法的姓名");
@@ -341,7 +389,12 @@ class XraceUserController extends AbstractController
                     else
                     {
                         //生成用户信息
-                        $UserInfo = array('UserName'=>$UserName,'IdNo'=>$IdNo);
+                        $UserInfo = array('Name'=>$Name,'Sex'=>$Sex,'IdNo'=>$IdNo,'IdType'=>$IdType);
+                        if($IdType==1)
+                        {
+                            $UserInfo['Birthday'] = substr($IdNo,6,4)."-".substr($IdNo,10,2)."-".substr($IdNo,12,2);
+                            $UserInfo['Sex'] = $Sex==0?$Sex:(intval(substr($IdNo,16,1))%2==0?2:1);
+                        }
                         //更新用户
                         $UpdateUser = $this->oUser->updateUser($TokenInfo['UserId'],$UserInfo);
                         //如果创建成功
@@ -358,6 +411,53 @@ class XraceUserController extends AbstractController
                             $result = array("return" => 0,"comment"=>"更新失败");
                         }
                     }
+                }
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    //更新用户的身份信息（身份证，姓名）
+    public function updateUserIceAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            //紧急联系人姓名
+            $Name = trim($this->request->Name);
+            //证件号码
+            $ContactMobile = trim($this->request->ContactMobile);
+            //如果紧急联系人姓名和手机长度不足
+            if((strlen($Name) <=2) || (strlen($ContactMobile) <=8))
+            {
+                //返回错误
+                $result = array("return" => 0,"comment"=>"请输入合法紧急联系人姓名和联系方式");
+            }
+            else
+            {
+                //生成用户信息
+                $UserInfo = array("ICE"=>json_encode(array("1"=>array('Name'=>$Name,'ContactMobile'=>$ContactMobile))));
+                //更新用户
+                $UpdateUser = $this->oUser->updateUser($TokenInfo['UserId'],$UserInfo);
+                //如果创建成功
+                if($UpdateUser)
+                {
+                    //强制获取用户信息
+                    $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"*",0);
+                    //返回用户信息
+                    $result = array("return" => 1,"UserInfo"=>$UserInfo);
+                }
+                else
+                {
+                    //返回错误
+                    $result = array("return" => 0,"comment"=>"更新失败");
                 }
             }
         }

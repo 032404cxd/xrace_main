@@ -9,6 +9,7 @@ class Xrace_UserInfo extends Base_Widget
 {
 	//声明所用到的表
     protected $table = 'UserInfo';
+    protected $table_race_user = 'RaceUserInfo';
     protected $table_reg_info = 'UserReg';
     protected $table_race = 'user_race';
     protected $table_login = 'UserLogin';
@@ -26,7 +27,7 @@ class Xrace_UserInfo extends Base_Widget
     //认证记录中对应的实名认证状态名
     protected $authStatus_log = array('0'=>"拒绝","2"=>"通过");
     //实名认证用到的证件类型列表
-    protected $authIdType = array('1'=>"身份证","2"=>"护照");
+    protected $authIdType = array('1'=>"身份证","2"=>"护照","3"=>"港澳台通行证");
     //用户执照状态
     protected $user_license_status = array('1'=>"生效中",'2'=>"已过期",'3'=>"即将生效",'4'=>"已删除");
     //用户签到状态
@@ -227,6 +228,18 @@ class Xrace_UserInfo extends Base_Widget
 		return $this->db->selectRow($table_to_process, $fields, '`UserId` = ?', $UserId);
 	}
     /**
+     * 获取单个比赛用户记录
+     * @param char $UserId 用户ID
+     * @param string $fields 所要获取的数据列
+     * @return array
+     */
+    public function getRaceUser($UserId, $fields = '*')
+    {
+        $UserId = intval($UserId);
+        $table_to_process = Base_Widget::getDbTable($this->table_race_user);
+        return $this->db->selectRow($table_to_process, $fields, '`RaceUserId` = ?', $UserId);
+    }
+    /**
      * 新增单个用户记录
      * @param array $bind 所要添加的数据列
      * @return boolean
@@ -234,6 +247,16 @@ class Xrace_UserInfo extends Base_Widget
     public function insertUser($bind)
     {
         $table_to_process = Base_Widget::getDbTable($this->table);
+        return $this->db->insert($table_to_process, $bind);
+    }
+    /**
+     * 新增单个用户记录
+     * @param array $bind 所要添加的数据列
+     * @return boolean
+     */
+    public function insertRaceUser($bind)
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_race_user);
         return $this->db->insert($table_to_process, $bind);
     }
     /**
@@ -250,13 +273,26 @@ class Xrace_UserInfo extends Base_Widget
     }
     /**
      * 根据指定字段获取单个用户记录
-     * @param char $UserId 用户ID
+     * @param char $Column 字段列名
+     * @param char $Column 字段值
      * @param string $fields 所要获取的数据列
      * @return array
      */
     public function getUserByColumn($Column,$Value, $fields = '*')
     {
         $table_to_process = Base_Widget::getDbTable($this->table);
+        return $this->db->selectRow($table_to_process, $fields, '`'.$Column.'` = ?', $Value);
+    }
+    /**
+     * 根据指定字段获取单个比赛用户记录
+     * @param char $Column 字段列名
+     * @param char $Column 字段值
+     * @param string $fields 所要获取的数据列
+     * @return array
+     */
+    public function getRaceUserByColumn($Column,$Value, $fields = '*')
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_race_user);
         return $this->db->selectRow($table_to_process, $fields, '`'.$Column.'` = ?', $Value);
     }
     /**
@@ -608,7 +644,7 @@ class Xrace_UserInfo extends Base_Widget
             if(strtotime($RegInfo['ExceedTime'])>=time())
             {
                 //验证通过，注册
-                $UserInfo = array('ContactMobile'=>$Mobile,'Mobile'=>$Mobile,'RegTime'=>$RegInfo['RegTime'],'LastLoginTime'=>$RegInfo['RegTime']);
+                $UserInfo = array('ContactMobile'=>$Mobile,'Mobile'=>$Mobile,'ContactMobile'=>$Mobile,'RegTime'=>$RegInfo['RegTime'],'LastLoginTime'=>$RegInfo['RegTime']);
                 if($RegInfo['RegPlatform'] == "WeChat")
                 {
                     $UserInfo['WeChatId'] = $RegInfo['RegKey'];
@@ -640,11 +676,13 @@ class Xrace_UserInfo extends Base_Widget
                 //更新成功
                 if($Update)
                 {
+                    //短信内容数组
                     $params = array(
                         "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育",),
                         "Mobile"=> $RegInfo['Mobile'],
                         "SMSCode"=>"SMS_Validate_Code"
                     );
+                    //短信发送
                     Base_common::dayuSMS($params);
                     return -1;
                 }
@@ -913,6 +951,50 @@ class Xrace_UserInfo extends Base_Widget
         else//强制更新
         {
             return ($this->db->replace($table_to_process, $bind))?$bind['Token']:false;
+        }
+    }
+    /**
+     * 根据已有记录创建比赛用户记录
+     * @param intval $UserId 用户
+     * @return boolean
+     */
+    public function createRaceUserByUserInfo($UserId)
+    {
+        echo "UserId:".$UserId."<br>";
+        $UserId = abs(intval($UserId));
+        //获取用户原始数据
+        $UserInfo = $this->getUser($UserId);
+        //如果获取到
+        if(isset($UserInfo['UserId']))
+        {
+            //事务开始
+            $this->db->begin();
+            //生成用户信息
+            $RaceUserInfo = array('CreateUserId'=>$UserInfo['UserId'],'Name'=>$UserInfo['Name'],'Sex'=>$UserInfo['Sex'],'ContactMobile'=>$UserInfo['ContactMobile'],'IdNo'=>$UserInfo['IdNo'],'IdType'=>$UserInfo['IdType'],'Available'=>1,'RegTime'=>date("Y-m-d H:i:s",time()));
+            //创建用户
+            $CreateRaceUser = $this->insertRaceUser($RaceUserInfo);
+            //将比赛用户ID更新回用户
+            $UpdateUser = $this->updateUser($UserInfo['UserId'],array("RaceUserId"=>$CreateRaceUser));
+            //如果创建比赛用户成功 且 更新用户成功
+            if($CreateRaceUser && $UpdateUser)
+            {
+                //提交
+                $this->db->commit();
+                //更新缓存
+                $this->getUserInfo($UserId,"*",0);
+                //返回创建的用户ID
+                return $CreateRaceUser;
+            }
+            else
+            {
+                //回滚
+                $this->db->rollBack();
+                return false;
+            }
+        }
+        else
+        {
+            return false;
         }
     }
 }

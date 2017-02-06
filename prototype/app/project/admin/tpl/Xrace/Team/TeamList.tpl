@@ -1,9 +1,14 @@
 {tpl:tpl contentHeader/}
 <script type="text/javascript">
-
+    $(document).ready(function(){
+        $('#add_team').click(function(){
+            addTeamBox= divBox.showBox('{tpl:$this.sign/}&ac=team.add', {title:'添加队伍',width:600,height:400});
+        });
+    });
 </script>
 
 <fieldset><legend>操作</legend>
+    [ <a href="javascript:;" id="add_team">添加队伍</a> ]
 </fieldset>
 <form action="{tpl:$this.sign/}" name="form" id="form" method="post">
     队伍名称:<input type="text" class="span2" name="TeamName" value="{tpl:$params.TeamName/}" />

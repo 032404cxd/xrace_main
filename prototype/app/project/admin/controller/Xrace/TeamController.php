@@ -186,4 +186,207 @@ class Xrace_TeamController extends AbstractController
 		echo $text;
 		die();
 	}
+    //添加队伍填写配置页面
+    public function teamAddAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceTeamInsert");
+        if($PermissionCheck['return'])
+        {
+            //渲染模板
+            include $this->tpl('Xrace_Team_TeamAdd');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //添加队伍
+    public function teamInsertAction()
+    {
+        //获取 页面参数
+        $bind=$this->request->from('TeamName');
+        //队伍名称不能为空
+        if(trim($bind['TeamName'])=="")
+        {
+            $response = array('errno' => 1);
+        }
+        else
+        {
+            //根据队伍名称获取队伍
+            $TeamInfo = $this->oTeam->getTeamInfoByName($bind['TeamName']);
+            //如果获取到
+            if (isset($TeamInfo['TeamId']))
+            {
+                $response = array('errno' => 2);
+            }
+            else
+            {
+                //获取证件类型列表
+                $IdTypeList = $this->oUser->getAuthIdType();
+                //获取证件类型列表
+                $SexList = $this->oUser->getSexList();
+                $i = 0;
+                //文件上传
+                $oUpload = new Base_Upload('UserList');
+                $upload = $oUpload->upload('UserList');
+                $res = $upload->resultArr;
+                //打开文件
+                $handle = fopen($res['1']['path'], 'r');
+                //循环到文件结束
+                while (!feof($handle))
+                {
+                    //获取每行信息
+                    $content = fgets($handle, 8080);
+                    //以,为分隔符解开
+                    $t = explode(",", $content);
+                    if (count($t) >= 1)
+                    {
+                        $i++;
+                        $IdNo = trim($t['1']);
+                        //如果身份证号码最少为6位
+                        if(strlen($IdNo)>=6)
+                        {
+                            //根据证件号码获取用户信息
+                            $IdUserInfo = $this->oUser->getUserByColumn("IdNo", $IdNo);
+                            //如果是第一个用户
+                            if ($i == 1)
+                            {
+                                //如果找到用户
+                                if (isset($IdUserInfo['UserId']))
+                                {
+                                    //创建的用户
+                                    $CreateUserId = $IdUserInfo['UserId'];
+                                    //获取当前时间
+                                    $Time = date("Y-m-d H:i:s", time());
+                                    //生成队伍的数组
+                                    $bind['TeamComment'] = $bind['TeamName'];
+                                    $bind['CreateUserId'] = $CreateUserId;
+                                    $bind['CreateTime'] = $Time;
+                                    $bind['LastUpdateTime'] = $Time;
+                                    //创建队伍信息
+                                    $InsertTeam = $this->oTeam->insertTeam($bind);
+                                    //创建成功
+                                    if ($InsertTeam)
+                                    {
+                                        //初始化本次加入的队员数量
+                                        $response = array("errno" => 0,"Joined" => 0);
+                                        //如果关联比赛用户
+                                        if($IdUserInfo['RaceUserId']>0)
+                                        {
+                                            //加入队伍
+                                            $Join = $this->oTeam->insertTeamUser(array("RaceUserId"=>$IdUserInfo['RaceUserId'],"TeamId"=>$InsertTeam));
+                                            //如果加入成功
+                                            if($Join)
+                                            {
+                                                //成功数量累加
+                                                $response['Joined']++;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            //根据用户信息复制比赛用户信息
+                                            $RaceUserId = $this->oUser->createRaceUserByUserInfo($IdUserInfo['UserId']);
+                                            //如果复制成功
+                                            if($RaceUserId)
+                                            {
+                                                //加入队伍
+                                                $Join = $this->oTeam->insertTeamUser(array("RaceUserId"=>$RaceUserId,"TeamId"=>$InsertTeam));
+                                                //如果加入成功
+                                                if($Join)
+                                                {
+                                                    //成功数量累加
+                                                    $response['Joined']++;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        $response = array("errno" => 9);
+                                        break;
+                                    }
+                                }
+                                else//没找到用户
+                                {
+                                    $response = array("errno" => 3);
+                                    break;
+                                }
+                            }
+                            else//从第二个开始
+                            {
+                                //如果队伍创建成功
+                                if($InsertTeam)
+                                {
+                                    //如果找到用户
+                                    if (isset($IdUserInfo['UserId']))
+                                    {
+                                        //如果有关联比赛用户
+                                        if(isset($IdUserInfo['RaceUserId']))
+                                        {
+                                            //加入队伍
+                                            $Join = $this->oTeam->insertTeamUser(array("RaceUserId"=>$IdUserInfo['RaceUserId'],"TeamId"=>$InsertTeam));
+                                            //如果加入成功
+                                            if($Join)
+                                            {
+                                                //成功数量累加
+                                                $response['Joined']++;
+                                            }
+                                        }
+                                        //根据用户信息复制比赛用户信息
+                                        $RaceUserId = $this->oUser->createRaceUserByUserInfo($IdUserInfo['UserId']);
+                                        //如果复制成功
+                                        if($RaceUserId)
+                                        {
+                                            //加入队伍
+                                            $Join = $this->oTeam->insertTeamUser(array("RaceUserId"=>$RaceUserId,"TeamId"=>$InsertTeam));
+                                            //如果加入成功
+                                            if($Join)
+                                            {
+                                                //成功数量累加
+                                                $response['Joined']++;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //根据证件号码获取比赛用户信息
+                                        $RaceUserInfo = $this->oUser->getRaceUserByColumn("IdNo",$IdNo);
+                                        //如果找到
+                                        if(isset($RaceUserInfo['RaceUserId']))
+                                        {
+                                            //加入队伍
+                                            $Join = $this->oTeam->insertTeamUser(array("RaceUserId"=>$RaceUserInfo['RaceUserId'],"TeamId"=>$InsertTeam));
+                                        }
+                                        else
+                                        {
+                                            //生成用户信息
+                                            $UserInfo = array('CreateUserId'=>$CreateUserId ,'Name'=>$t['0'],'Sex'=>isset($SexList[trim($t['3'])])?trim($t['3']):0,'ContactMobile'=>trim($t['4']),'IdNo'=>trim($t['1']),'IdType'=>isset($IdTypeList[trim($t['2'])])?trim($t['2']):1,'Available'=>0,'RegTime'=>$Time);
+                                            //创建用户
+                                            $CreateRaceUser = $this->oUser->insertRaceUser($UserInfo);
+                                            //加入队伍
+                                            $Join = $this->oTeam->insertTeamUser(array("RaceUserId"=>$CreateRaceUser,"TeamId"=>$InsertTeam));
+                                        }
+                                        //加入成功
+                                        if($Join)
+                                        {
+                                            $response['Joined']++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+                if($response['errno'] != 0)
+                {
+                    $response = array('errno' => 9);
+                }
+            }
+        }
+        echo json_encode($response);
+        return true;
+    }
 }

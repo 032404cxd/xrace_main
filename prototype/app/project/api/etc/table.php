@@ -30,9 +30,13 @@ $table['config_action']['num'] = 1;
 $table['UploadLog']['db'] = 'xrace_config';
 $table['UploadLog']['num'] = 1;
 
-#用户信息状态
+#用户信息
 $table['UserInfo']['db'] = 'xrace_user';
 $table['UserInfo']['num'] = 1;
+
+#比赛用户信息
+$table['RaceUserInfo']['db'] = 'xrace_user';
+$table['RaceUserInfo']['num'] = 1;
 
 #用户审核状态
 $table['UserReg']['db'] = 'xrace_user';
