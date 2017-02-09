@@ -68,11 +68,32 @@ class XraceUserController extends AbstractController
      */
     public function loginAction()
     {
+        //手机号码
         $Mobile = isset($this->request->Mobile) ? trim($this->request->Mobile) : "";
+        //密码
         $Password = isset($this->request->Password) ? trim($this->request->Password) : "";
-        $Mobile = "186217582371";
-        $Password = md5("123");
+        //客户端
+        $IP = isset($this->request->IP) ?  trim($this->request->IP):"127.0.0.1";
+        //尝试账号登录
         $Login = $this->oUser->Login($Mobile,$Password);
+        //登录成功
+        if(isset($Login['UserId']))
+        {
+            //结果数组 返回用户信息
+            $result = array("return" => 1, "UserInfo" => $Login,"Token"=>$this->oUser->makeToken($Login['UserId'],$IP,"Mobile"),"comment" => "登录成功");
+        }
+        //无用户，创建
+        elseif(isset($Login['RegId']))
+        {
+            //结果数组 返回注册信息，引导绑定手机
+            $result = array("return" => 1, "RegInfo" => $Login,"comment" => $Login['NeedMobile']?"请绑定手机":"请输入已经发往手机的验证码");
+        }
+        else
+        {
+            //结果数组 返回失败
+            $result = array("return" => 0,"comment" => "登录失败，请重试");
+        }
+        echo json_encode($result);
     }
     /**
      *第三方登录
@@ -83,17 +104,23 @@ class XraceUserController extends AbstractController
         //$LoginData  = '{"openid": "odLjsvvYfXvkm9Rkrd4HAHXeqvA8","nickname": "JiMMy","headimgurl": "http://wx.qlogo.cn/mmopen/s6icJeKAt9X2zFZiafUjibkZhkibib8ickRZMDeoIwpfAeh04htIbSecdkU5uoW0AdAucU1kM4tEnKuw6uW6zeaWBYwLMYj9evlJvy/0","sex": "0","province": "","city": ""}';
         //$LoginData  = '{"openid": "odLjsvnl2cUkbbbM8EBvZmJOX7Sw","nickname": "栋辉tim","headimgurl": "http://wx.qlogo.cn/mmopen/fl6pKMZtTyXGYHHVno0td2q2q1K7U1r4Gx1Hib8mL7lVQiaCdux7ZrtAZicmeOu79ZOuhGicDmSUC9LiaqIRwIzQbVIzyvwbXmyn3/0","sex": "1","province": "上海","city": "浦东新区"}';
 
+        //身份数据
         $LoginData = isset($this->request->LoginData) ? trim($this->request->LoginData) : "";
-
+        //第三方来源
         $LoginSource = isset($this->request->LoginSource) ? trim($this->request->LoginSource) : "WeChat";
+        //客户端
         $IP = isset($this->request->IP) ?  trim($this->request->IP):"127.0.0.1";
+        //身份数据解包
         $LoginData = json_decode($LoginData,true);
+        //尝试第三方登录
         $Login = $this->oUser->ThirdPartyLogin($LoginData,$LoginSource);
+        //登录成功
         if(isset($Login['UserId']))
         {
             //结果数组 返回用户信息
             $result = array("return" => 1, "UserInfo" => $Login,"Token"=>$this->oUser->makeToken($Login['UserId'],$IP,$LoginSource),"comment" => "登录成功");
         }
+        //无用户，创建
         elseif(isset($Login['RegId']))
         {
             //结果数组 返回注册信息，引导绑定手机
@@ -222,14 +249,19 @@ class XraceUserController extends AbstractController
      */
     public function regMobileAuthAction()
     {
+        //手机号码
         $Mobile = isset($this->request->Mobile) ? trim($this->request->Mobile) : "";
+        //验证码
         $ValidateCode = isset($this->request->ValidateCode) ? trim($this->request->ValidateCode) : "";
+        //客户端
         $IP = isset($this->request->IP) ?  trim($this->request->IP):"127.0.0.1";
+        //短信验证
         $Auth = $this->oUser->regMobileAuth($Mobile,$ValidateCode);
-        if($Auth > 0)
+        //如果验证成功
+        if($Auth['UserId'] > 0)
         {
             //结果数组 返回用户信息
-            $result = array("return" => 1, "UserInfo" => $this->oUser->getUserInfo($Auth),"Token"=>$this->oUser->makeToken($Auth,$IP),"comment" => "注册成功");
+            $result = array("return" => 1, "UserInfo" => $this->oUser->getUserInfo($Auth['UserId'],"*",0),"Token"=>$this->oUser->makeToken($Auth['UserId'],$IP,$Auth['LoginSource']),"comment" => "注册成功");
         }
         elseif($Auth = -1)
         {
