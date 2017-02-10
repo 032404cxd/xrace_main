@@ -548,4 +548,178 @@ class XraceTeamController extends AbstractController
         }
         echo json_encode($result);
     }
+    /**
+     *将用户加入成员列表
+     */
+    public function joinMemberAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            //获取用户信息
+            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId']);
+            //尚未创建比赛用户
+            if($UserInfo['RaceUserId']==0)
+            {
+                //创建关联的比赛用户
+                $UserInfo['RaceUserId'] = $this->oUser->CreateRaceUserByUserInfo($UserInfo['UserId']);
+            }
+            //用户ID  如果未指定则用Token对应的用户
+            $RaceUserId = abs(intval($this->request->RaceUserId))>0 ? abs(intval($this->request->RaceUserId)) : 0;
+            //获得用户信息
+            $RaceUserInfo = $this->oUser->getRaceUser($RaceUserId);
+            //如果获取到用户
+            if(isset($RaceUserInfo['RaceUserId']))
+            {
+                //获取用户的队员列表
+                $UserMemberList = $this->oTeam->getUserMemberList($UserInfo['RaceUserId']);
+                //如果列表为空
+                if(Count($UserMemberList)==0)
+                {
+                    //将自己加入成员列表
+                    $Join = $this->oTeam->insertUserMember(array("OwnerRaceUserId"=>$UserInfo['RaceUserId'],"RaceUserId"=>$UserInfo['RaceUserId'],"LastUpdateTime"=>date("Y-m-d H:i:s",time())));
+                    //重新获取用户的队员列表
+                    $UserMemberList = $this->oTeam->getUserMemberList($TokenInfo['RaceUserId']);
+                }
+                //如果选手不在列表内
+                if(!isset($UserMemberList[$RaceUserInfo['RaceUserId']]))
+                {
+                    //加入成员列表
+                    $Join = $this->oTeam->insertUserMember(array("OwnerRaceUserId"=>$UserInfo['RaceUserId'],"RaceUserId"=>$RaceUserId,"LastUpdateTime"=>date("Y-m-d H:i:s",time())));
+                    //加入成功
+                    if($Join)
+                    {
+                        $result = array("return" => 1, "comment" => "加入队伍成功");
+                    }
+                    else
+                    {
+                        $result = array("return" => 0, "comment" => "加入队伍失败");
+                    }
+                }
+                else
+                {
+                    $result = array("return" => 1, "comment" => "加入队伍成功");
+                }
+            }
+            else
+            {
+                $result = array("return" => 0, "comment" => "无此用户");
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    /**
+     *将用户移除成员列表
+     */
+    public function removeMemberAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            //获取用户信息
+            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId']);
+            //尚未创建比赛用户
+            if($UserInfo['RaceUserId']==0)
+            {
+                //创建关联的比赛用户
+                $UserInfo['RaceUserId'] = $this->oUser->CreateRaceUserByUserInfo($UserInfo['UserId']);
+            }
+            //用户ID  如果未指定则用Token对应的用户
+            $RaceUserId = abs(intval($this->request->RaceUserId))>0 ? abs(intval($this->request->RaceUserId)) : 0;
+            //获得用户信息
+            $RaceUserInfo = $this->oUser->getRaceUser($RaceUserId);
+            //如果获取到用户
+            if(isset($RaceUserInfo['RaceUserId']))
+            {
+                //获取用户的队员列表
+                $UserMemberList = $this->oTeam->getUserMemberList($UserInfo['RaceUserId']);
+                //如果列表为空
+                if(Count($UserMemberList)==0)
+                {
+                    //将自己加入成员列表
+                    $Join = $this->oTeam->insertUserMember(array("OwnerRaceUserId"=>$UserInfo['RaceUserId'],"RaceUserId"=>$UserInfo['RaceUserId'],"LastUpdateTime"=>date("Y-m-d H:i:s",time())));
+                    //重新获取用户的队员列表
+                    $UserMemberList = $this->oTeam->getUserMemberList($TokenInfo['RaceUserId']);
+                }
+                //如果选手不在列表内
+                if(isset($UserMemberList[$RaceUserInfo['RaceUserId']]))
+                {
+                    //从成员列表移除
+                    $Remove = $this->oTeam->deleteUserMember($UserInfo['RaceUserId'],$RaceUserId);
+                    //移除成功
+                    if($Remove)
+                    {
+                        $result = array("return" => 1, "comment" => "离开队伍成功");
+                    }
+                    else
+                    {
+                        $result = array("return" => 0, "comment" => "离开队伍失败");
+                    }
+                }
+                else
+                {
+                    $result = array("return" => 1, "comment" => "离开队伍成功");
+                }
+            }
+            else
+            {
+                $result = array("return" => 0, "comment" => "无此用户");
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    /**
+     *获取用户成员列表
+     */
+    public function getUserMemberListAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            //获取用户信息
+            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId']);
+            //尚未创建比赛用户
+            if($UserInfo['RaceUserId']==0)
+            {
+                //创建关联的比赛用户
+                $UserInfo['RaceUserId'] = $this->oUser->CreateRaceUserByUserInfo($UserInfo['UserId']);
+            }
+            //获取用户的队员列表
+            $UserMemberList = $this->oTeam->getUserMemberList($UserInfo['RaceUserId']);
+            //如果列表为空
+            if(Count($UserMemberList)==0)
+            {
+                //将自己加入成员列表
+                $Join = $this->oTeam->insertUserMember(array("OwnerRaceUserId"=>$UserInfo['RaceUserId'],"RaceUserId"=>$UserInfo['RaceUserId'],"LastUpdateTime"=>date("Y-m-d H:i:s",time())));
+                //重新获取用户的队员列表
+                $UserMemberList = $this->oTeam->getUserMemberList($TokenInfo['RaceUserId']);
+            }
+            $result = array("return" => 1, "MemberList" => $UserMemberList);
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
 }

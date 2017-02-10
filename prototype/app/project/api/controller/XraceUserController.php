@@ -86,7 +86,7 @@ class XraceUserController extends AbstractController
         elseif(isset($Login['RegId']))
         {
             //结果数组 返回注册信息，引导绑定手机
-            $result = array("return" => 1, "RegInfo" => $Login,"comment" => $Login['NeedMobile']?"请绑定手机":"请输入已经发往手机的验证码");
+            $result = array("return" => 1, "RegInfo" => $Login,"comment" => "请输入已经发往手机的验证码");
         }
         else
         {
@@ -316,18 +316,42 @@ class XraceUserController extends AbstractController
                 //如果已经被占用
                 if(isset($UserInfo['UserId']))
                 {
-                    //返回用户信息
-                    $result = array("return" => 1,"UserInfo"=>$UserInfo);
+                    //如果关联比赛用户
+                    if($UserInfo['RaceUserId']>0)
+                    {
+                        //根据证件号码获取比赛用户信息
+                        $RaceUserInfo = $this->oUser->getRaceUser($UserInfo['RaceUserId']);
+                        //返回用户信息
+                        $result = array("return" => 1,"RaceUserInfo"=>$RaceUserInfo);
+                    }
+                    else
+                    {
+                        //根据用户创建比赛用户
+                        $RaceUserId = $this->oUser->createRaceUserByUserInfo($UserInfo['UserId']);
+                        //如果创建成功
+                        if($RaceUserId)
+                        {
+                            //根据证件号码获取比赛用户信息
+                            $RaceUserInfo = $this->oUser->getRaceUser($RaceUserId);
+                            //返回用户信息
+                            $result = array("return" => 1,"UserInfo"=>$UserInfo);
+                        }
+                        else
+                        {
+                            $result = array("return" => 0,"comment"=>"用户数据错误");
+                        }
+                    }
+
                 }
                 else
                 {
                     //根据证件号码获取比赛用户信息
-                    $UserInfo = $this->oUser->getRaceUserByColumn("IdNo",$IdNo);
+                    $RaceUserInfo = $this->oUser->getRaceUserByColumn("IdNo",$IdNo);
                     //如果已经被占用
-                    if(isset($UserInfo['RaceUserId']))
+                    if(isset($RaceUserInfo['RaceUserId']))
                     {
                         //返回用户信息
-                        $result = array("return" => 1,"UserInfo"=>$UserInfo);
+                        $result = array("return" => 1,"RaceUserInfo"=>$RaceUserInfo);
                     }
                     else
                     {

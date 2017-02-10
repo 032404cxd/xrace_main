@@ -10,6 +10,7 @@ class Xrace_Team extends Base_Widget
 	//声明所用到的表
 	protected $table = 'race_team';
     protected $table_user = 'user_team';
+    protected $table_member= 'UserMemberList';
 	/**
 	 * 获取单个队伍记录
 	 * @param char $TeamId 队伍ID
@@ -328,5 +329,37 @@ class Xrace_Team extends Base_Widget
         //生成条件列
         $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
         return $this->db->getAll($sql);
+    }
+    //获取用户参与的队伍列表
+    public function getUserMemberList($OwnerRaceUserId)
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_member);
+        $return = $this->db->select($table_to_process, "*", '`OwnerRaceUserId` = ?', array($OwnerRaceUserId));
+        $UserMemberList = array();
+        foreach($return as $key => $value)
+        {
+            $UserMemberList[$value['RaceUserId']] = $value;
+        }
+        return $UserMemberList;
+    }
+    /**
+     * 新增单个用户用成员记录
+     * @param array $bind 所要添加的数据列
+     * @return boolean
+     */
+    public function insertUserMember($bind)
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_member);
+        return $this->db->insert($table_to_process, $bind);
+    }
+    /**
+     * 删除单个用户用成员记录
+     * @param array $bind 所要添加的数据列
+     * @return boolean
+     */
+    public function deleteUserMember($OwnerRaceUserId,$RaceUserId)
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_member);
+        return $this->db->delete($table_to_process, '`OwnerRaceUserId` = ? and `RaceUserId` = ?', array($OwnerRaceUserId,$RaceUserId));
     }
 }

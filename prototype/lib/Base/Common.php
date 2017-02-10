@@ -1209,7 +1209,6 @@ EOF;
     }
     function dayuSMS($params)
     {
-        var_dump($params);
         include('Third/dayu/TopSdk.php');
         $c = new TopClient;
         $c->appkey = "23327292";//$appkey;
@@ -1222,7 +1221,6 @@ EOF;
         $req->setRecNum($params['Mobile']);
         $req->setSmsTemplateCode(Base_Common::getSMSCode($params['SMSCode']));
         $resp = $c->execute($req);
-        //var_dump($resp);
     }
     function getSMSCode($CodeName)
     {

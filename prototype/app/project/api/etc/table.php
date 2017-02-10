@@ -42,6 +42,10 @@ $table['RaceUserInfo']['num'] = 1;
 $table['UserReg']['db'] = 'xrace_user';
 $table['UserReg']['num'] = 1;
 
+#用户的成员列表
+$table['UserMemberList']['db'] = 'xrace_user';
+$table['UserMemberList']['num'] = 1;
+
 #用户审核状态
 $table['user_auth']['db'] = 'xrace';
 $table['user_auth']['num'] = 1;

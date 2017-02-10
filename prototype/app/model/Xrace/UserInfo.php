@@ -419,7 +419,7 @@ class Xrace_UserInfo extends Base_Widget
                     if($RegId)
                     {
                         //通知前端需要进一步获取手机
-                        return array('RegId'=>$RegId,'NeedMobile'=>1);
+                        return array('RegId'=>$RegId);
                     }
                     else
                     {
@@ -463,7 +463,7 @@ class Xrace_UserInfo extends Base_Widget
                     );
                     Base_common::dayuSMS($params);
                     //通知前端需要进一步获取手机
-                    return array('RegId'=>$RegId,'NeedMobile'=>1);
+                    return array('RegId'=>$RegId);
                 }
                 else
                 {
@@ -500,7 +500,7 @@ class Xrace_UserInfo extends Base_Widget
                     );
                     Base_common::dayuSMS($params);
                     //通知前端需要进一步获取手机
-                    return array('RegId'=>$RegId,'NeedMobile'=>1);
+                    return array('RegId'=>$RegId);
                 }
                 else
                 {
