@@ -48,8 +48,6 @@ class XraceUserController extends AbstractController
         $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
         //获取Tokenx信息
         $TokenInfo = $this->oUser->getToken($Token);
-        "Token:"."<br>";;
-        print_R($TokenInfo);
         //如果获取到
         if($TokenInfo['UserId'])
         {
@@ -108,7 +106,7 @@ class XraceUserController extends AbstractController
         //客户端
         $IP = isset($this->request->IP) ?  trim($this->request->IP):"127.0.0.1";
         //尝试账号登录
-        $Login = $this->oUser->Login($Mobile,$Password);
+        $Login = $this->oUser->MobileLogin($Mobile,$Password);
         //登录成功
         if(isset($Login['UserId']))
         {
@@ -179,9 +177,13 @@ class XraceUserController extends AbstractController
     {
         $Mobile = isset($this->request->Mobile) ? trim($this->request->Mobile) : "";
         $RegId = isset($this->request->RegId) ? abs(intval($this->request->RegId)) :0;
+        //获取注册记录
+        $RegInfo = $this->oUser->getRegInfo($RegId);
+
         //根据手机号码获取用户信息
         $UserInfo = $this->oUser->getUserByColumn("Mobile",$Mobile);
-        if(isset($UserInfo['UserId']))
+        //如果用户找到 且 当前登录方式的信息为不空（表示用户用同样的方式注册过且绑定同样的手机）
+        if(isset($UserInfo['UserId']) && ($UserInfo[$RegInfo['RegPlatform']."Info"]!=""))
         {
             //返回错误
             $result = array("return" => 0,"comment" => "用户已存在，请输入其他的手机号码");
@@ -202,8 +204,6 @@ class XraceUserController extends AbstractController
                     return;
                 }
             }
-            //获取注册记录
-            $RegInfo = $this->oUser->getRegInfo($RegId);
             //如果获取到注册记录
             if(isset($RegInfo['RegId']))
             {
@@ -229,26 +229,18 @@ class XraceUserController extends AbstractController
                     //如果已经发送该手机
                     if($RegInfo['Mobile']==$Mobile)
                     {
-                        //如果已过有效期
-                        //if(strtotime($RegInfo['ExceedTime'])<=time())
-                        //{
-                            //更新记录
-                            $update = $this->oUser->thirdPartyRegMobile($RegId,$Mobile);
-                            //如果更新成功
-                            if($update)
-                            {
-                                $result = array("return" => 1,"comment" => "验证码已发送");
-                            }
-                            else
-                            {
-                                //返回错误
-                                $result = array("return" => 0,"comment" => "更新失败，请重试");
-                            }
-                       //}
-                        //else
-                        //{
-                            //$result = array("return" => 1,"comment" => "验证码之前已发送");
-                        //}
+                        //更新记录
+                        $update = $this->oUser->thirdPartyRegMobile($RegId,$Mobile);
+                        //如果更新成功
+                        if($update)
+                        {
+                            $result = array("return" => 1,"comment" => "验证码已发送");
+                        }
+                        else
+                        {
+                            //返回错误
+                            $result = array("return" => 0,"comment" => "更新失败，请重试");
+                        }
                     }
                     else
                     {

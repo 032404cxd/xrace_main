@@ -824,7 +824,6 @@ class Xrace_UserInfo extends Base_Widget
     {
         //获取注册记录
         $RegInfo = $this->getRegInfoByMobile($Mobile);
-        //$RegInfo = $this->getRegInfoByMobile($Mobile,$ValidateCode);
 
         //如果找到记录
         if(isset($RegInfo['RegId']))
@@ -869,7 +868,7 @@ class Xrace_UserInfo extends Base_Widget
                         $UserInfo['LastLoginTime'] = date("Y-m-d H:i:s",$Time);
                         $this->db->begin();
                         //更新为同一人
-                        $updateUser = $this->updateUser($UserInfo['UserId'],$UserInfo);
+                        $updateUser = $this->updateUser($MobileUserInfo['UserId'],$UserInfo);
                         //删除注册记录
                         $deleteRegInfo = $this->deleteRegInfo($RegInfo['RegId']);
                         //如果同时成功
@@ -898,14 +897,13 @@ class Xrace_UserInfo extends Base_Widget
                         if($UserId && $deleteRegInfo)
                         {
                             $this->db->commit();
-                            return $UserId;
+                            return array("UserId"=>$UserId,"LoginSource"=>$RegInfo['RegPlatform']);
                         }
                         else
                         {
                             $this->db->rollBack();
                             return false;
                         }
-
                     }
                 }
                 else
