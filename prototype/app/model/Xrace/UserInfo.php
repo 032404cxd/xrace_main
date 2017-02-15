@@ -121,6 +121,17 @@ class Xrace_UserInfo extends Base_Widget
         return $this->db->selectRow($table_to_process, "*", '`RegId` = ?', $RegId);
     }
     /**
+     * 新增单个用户注册中间记录
+     * @param array $bind 所要添加的数据列
+     * @return boolean
+     */
+    public function deleteRegInfo($RegId)
+    {
+        $RegId = intval($RegId);
+        $table_to_process = Base_Widget::getDbTable($this->table_reg_info);
+        return $this->db->delete($table_to_process, '`RegId` = ?', $RegId);
+    }
+    /**
      * 根据第三方身份数据获取单个用户注册中间记录
      * @param string $RegPlatform 第三方平台
      * @param string $RegPlatform 第三方平台
@@ -138,13 +149,21 @@ class Xrace_UserInfo extends Base_Widget
      * @param string $Mobile 用户手机号码
      * @param string $Code 短信验证码
      * @return array
-     */
+
     public function getRegInfoByMobile($Mobile,$ValidateCode)
     {
         $Mobile = trim($Mobile);
         $ValidateCode = trim($ValidateCode);
         $table_to_process = Base_Widget::getDbTable($this->table_reg_info);
         return $this->db->selectRow($table_to_process, '*', '`Mobile` = ? and `ValidateCode` = ?', array($Mobile,$ValidateCode));
+    }
+     *  */
+    public function getRegInfoByMobile($Mobile)
+    {
+        $Mobile = trim($Mobile);
+        //$ValidateCode = trim($ValidateCode);
+        $table_to_process = Base_Widget::getDbTable($this->table_reg_info);
+        return $this->db->selectRow($table_to_process, '*', '`Mobile` = ?', array($Mobile));
     }
     /**
     /**
@@ -216,17 +235,28 @@ class Xrace_UserInfo extends Base_Widget
         return $UserInfo;
     }
 	/**
-	 * 获取单个用户记录
-	 * @param char $UserId 用户ID
-	 * @param string $fields 所要获取的数据列
-	 * @return array
-	 */
-	public function getUser($UserId, $fields = '*')
-	{
-		$UserId = intval($UserId);
-		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->selectRow($table_to_process, $fields, '`UserId` = ?', $UserId);
-	}
+ * 获取单个用户记录
+ * @param char $UserId 用户ID
+ * @param string $fields 所要获取的数据列
+ * @return array
+ */
+    public function getUser($UserId, $fields = '*')
+    {
+        $UserId = intval($UserId);
+        $table_to_process = Base_Widget::getDbTable($this->table);
+        return $this->db->selectRow($table_to_process, $fields, '`UserId` = ?', $UserId);
+    }
+    /**
+     * 获取单个用户记录
+     * @param char $UserId 用户ID
+     * @param string $fields 所要获取的数据列
+     * @return array
+     */
+    public function deleteUserByMobile($Mobile)
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table);
+        return $this->db->delete($table_to_process, '`Mobile` = ?', $Mobile);
+    }
     /**
      * 获取单个比赛用户记录
      * @param char $UserId 用户ID
@@ -387,12 +417,155 @@ class Xrace_UserInfo extends Base_Widget
         return $this->db->getOne($sql);
     }
     /**
-     * 登录
+     * 手机注册
      * @param string $Mobile 用户手机号码
      * @param string $Password 已经经过一次MD5的用户密码
      * @return array
      */
-    public function Login($Mobile,$Password)
+    public function MobileReg($Mobile,$Password)
+    {
+        $oMemCache = new Base_Cache_Memcache("xrace");
+        //获取缓存
+        $m = $oMemCache->get("Mobile_".$Mobile);
+        //如果获取到的数据为0
+        if(intval($m)==0)
+        {
+            //根据手机号码查询用户
+            $UserInfo = $this->getUserByColumn("Mobile",$Mobile);
+            //如果查询到
+            if(isset($UserInfo['UserId']))
+            {
+                //用户已经存在
+                return -1;
+            }
+            else
+            {
+                //根据手机号码获取注册记录
+                $RegInfo = $this->getRegInfoByMobile($Mobile);
+                //如果找到记录
+                if(isset($RegInfo['RegId']))
+                {
+                    $ValidateCode = sprintf("%06d",rand(1,999999));
+                    //更新注册记录，生成新的验证码和过期时间
+                    $bind = array('ExceedTime'=>date("Y-m-d H:i:s",time()+3600),'ValidateCode' => $ValidateCode);
+                    $Update = $this->updateRegInfo($RegInfo['RegId'],$bind);
+                    //更新成功
+                    if($Update)
+                    {
+                        $params = array(
+                            "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
+                            "Mobile"=> $RegInfo['Mobile'],
+                            "SMSCode"=>"SMS_Validate_Code"
+                        );
+                        Base_common::dayuSMS($params);
+                        return array("RegId"=>$RegInfo['RegId']);
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    //生成随机验证码
+                    $ValidateCode = sprintf("%06d",rand(1,999999));
+                    //获取当前时间
+                    $Time = time();
+                    //用户注册记录
+                    $UserRegInfo = array("Password"=>($Password=="")?"":md5($Password),"RegPlatform"=>"Mobile","Mobile"=>$Mobile,"RegKey"=>$Mobile,"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>$ValidateCode,'ExceedTime'=>date("Y-m-d H:i:s",$Time+3600));
+                    $RegId = $this->insertRegInfo($UserRegInfo);
+                    //如果写入成功
+                    if($RegId)
+                    {
+                        $params = array(
+                            "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
+                            "Mobile"=> $Mobile,
+                            "SMSCode"=>"SMS_Validate_Code"
+                        );
+                        Base_common::dayuSMS($params);
+                        //通知前端需要进一步获取手机
+                        return array('RegId'=>$RegId);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        else
+        {
+            //根据手机号码查询用户
+            $UserInfo = $this->getUserByColumn("Mobile",$Mobile);
+            //如果查询到
+            if(isset($UserInfo['UserId']))
+            {
+                //用户已经存在
+                return -1;
+            }
+            else
+            {
+                //根据手机号码获取注册记录
+                $RegInfo = $this->getRegInfoByMobile($Mobile);
+                //如果找到记录
+                if(isset($RegInfo['RegId']))
+                {
+                    $ValidateCode = sprintf("%06d",rand(1,999999));
+                    //更新注册记录，生成新的验证码和过期时间
+                    $bind = array('ExceedTime'=>date("Y-m-d H:i:s",time()+3600),'ValidateCode' => $ValidateCode);
+                    $Update = $this->updateRegInfo($RegInfo['RegId'],$bind);
+                    //更新成功
+                    if($Update)
+                    {
+                        $params = array(
+                            "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
+                            "Mobile"=> $RegInfo['Mobile'],
+                            "SMSCode"=>"SMS_Validate_Code"
+                        );
+                        Base_common::dayuSMS($params);
+                        return array("RegId"=>$RegInfo['RegId']);
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    //生成随机验证码
+                    $ValidateCode = sprintf("%06d",rand(1,999999));
+                    //获取当前时间
+                    $Time = time();
+                    //用户注册记录
+                    $UserRegInfo = array("RegPlatform"=>"Mobile","Mobile"=>$Mobile,"RegKey"=>$Mobile,"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>$ValidateCode,'ExceedTime'=>date("Y-m-d H:i:s",$Time+3600));
+                    $RegId = $this->insertRegInfo($UserRegInfo);
+                    //如果写入成功
+                    if($RegId)
+                    {
+                        $params = array(
+                            "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
+                            "Mobile"=> $Mobile,
+                            "SMSCode"=>"SMS_Validate_Code"
+                        );
+                        Base_common::dayuSMS($params);
+                        //通知前端需要进一步获取手机
+                        return array('RegId'=>$RegId);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * 手机登录
+     * @param string $Mobile 用户手机号码
+     * @param string $Password 已经经过一次MD5的用户密码
+     * @return array
+     */
+    public function MobileLogin($Mobile,$Password)
     {
         $oMemCache = new Base_Cache_Memcache("xrace");
         //获取缓存
@@ -408,23 +581,8 @@ class Xrace_UserInfo extends Base_Widget
                 //如果密码为空 表示通过其他方式登陆过
                 if($UserInfo['Password']=="")
                 {
-                    //生成随机验证码
-                    $ValidateCode = sprintf("%06d",rand(1,999999));
-                    //获取当前时间
-                    $Time = time();
-                    //新建用户注册记录
-                    $UserRegInfo = array("Password"=>md5($Password),"RegPlatform"=>"Mobile","Mobile"=>$Mobile,"RegKey"=>$Mobile,"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>$ValidateCode,'ExceedTime'=>date("Y-m-d H:i:s",$Time+3600));
-                    $RegId = $this->insertRegInfo($UserRegInfo);
-                    //如果写入成功
-                    if($RegId)
-                    {
-                        //通知前端需要进一步获取手机
-                        return array('RegId'=>$RegId);
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    //引导用户通过其他方式登录
+                    return -1;
                 }
                 else
                 {
@@ -446,29 +604,7 @@ class Xrace_UserInfo extends Base_Widget
             }
             else
             {
-                //生成随机验证码
-                $ValidateCode = sprintf("%06d",rand(1,999999));
-                //获取当前时间
-                $Time = time();
-                //用户注册记录
-                $UserRegInfo = array("Password"=>md5($Password),"RegPlatform"=>"Mobile","Mobile"=>$Mobile,"RegKey"=>$Mobile,"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>$ValidateCode,'ExceedTime'=>date("Y-m-d H:i:s",$Time+3600));
-                $RegId = $this->insertRegInfo($UserRegInfo);
-                //如果写入成功
-                if($RegId)
-                {
-                    $params = array(
-                        "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育",),
-                        "Mobile"=> $Mobile,
-                        "SMSCode"=>"SMS_Validate_Code"
-                    );
-                    Base_common::dayuSMS($params);
-                    //通知前端需要进一步获取手机
-                    return array('RegId'=>$RegId);
-                }
-                else
-                {
-                    return false;
-                }
+                return -2;
             }
         }
         else
@@ -483,29 +619,7 @@ class Xrace_UserInfo extends Base_Widget
             }
             else
             {
-                //生成随机验证码
-                $ValidateCode = sprintf("%06d",rand(1,999999));
-                //获取当前时间
-                $Time = time();
-                //用户注册记录
-                $UserRegInfo = array("RegPlatform"=>"Mobile","Mobile"=>$Mobile,"RegKey"=>$Mobile,"RegTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>$ValidateCode,'ExceedTime'=>date("Y-m-d H:i:s",$Time+3600));
-                $RegId = $this->insertRegInfo($UserRegInfo);
-                //如果写入成功
-                if($RegId)
-                {
-                    $params = array(
-                        "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育",),
-                        "Mobile"=> $Mobile,
-                        "SMSCode"=>"SMS_Validate_Code"
-                    );
-                    Base_common::dayuSMS($params);
-                    //通知前端需要进一步获取手机
-                    return array('RegId'=>$RegId);
-                }
-                else
-                {
-                    return false;
-                }
+                return -2;
             }
         }
     }
@@ -545,7 +659,7 @@ class Xrace_UserInfo extends Base_Widget
                             else
                             {
                                 //更新用户数据
-                                $WeChatInfo = array('NickName' => $LoginData);
+                                $WeChatInfo = $LoginData;
                                 $UserInfoUpdate = array('WeChatInfo' => json_encode($WeChatInfo));
                                 $this->updateUser($UserInfo['UserId'], $UserInfoUpdate);
                             }
@@ -682,7 +796,7 @@ class Xrace_UserInfo extends Base_Widget
                 if($Update)
                 {
                     $params = array(
-                        "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育",),
+                        "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
                         "Mobile"=> $RegInfo['Mobile'],
                         "SMSCode"=>"SMS_Validate_Code"
                     );
@@ -709,61 +823,115 @@ class Xrace_UserInfo extends Base_Widget
     public function regMobileAuth($Mobile,$ValidateCode)
     {
         //获取注册记录
-        $RegInfo = $this->getRegInfoByMobile($Mobile,$ValidateCode);
+        $RegInfo = $this->getRegInfoByMobile($Mobile);
+        //$RegInfo = $this->getRegInfoByMobile($Mobile,$ValidateCode);
+
         //如果找到记录
         if(isset($RegInfo['RegId']))
         {
             //如果在有效期内
             if(strtotime($RegInfo['ExceedTime'])>=time())
             {
-                if($RegInfo['RegPlatform'] == "WeChat")
+                if($RegInfo['ValidateCode']==$ValidateCode)
                 {
-                    $UserInfo['WeChatId'] = $RegInfo['RegKey'];
-                    $UserInfo['WeChatInfo'] = $RegInfo['ThirdPartyInfo'];
-                }
-                elseif($RegInfo['RegPlatform'] == "Weibo")
-                {
-                    $UserInfo['WeiboId'] = $RegInfo['RegPlatform'];
-                }
-                elseif($RegInfo['RegPlatform'] == "QQ")
-                {
-                    $UserInfo['QQ'] = $RegInfo['RegPlatform'];
-                }
-                elseif($RegInfo['RegPlatform'] == "Mobile")
-                {
-                    //手机注册只保留密码
-                    $UserInfo['Password'] = $RegInfo['Password'];
-                }
-                //最后登录方式
-                $UserInfo['LastLoginSource'] = $RegInfo['RegPlatform'];
-                //根据手机号码查询用户
-                $MobileUserInfo = $this->getUserByColumn("Mobile",$Mobile);
-                //如果有用户已经在使用
-                if(isset($MobileUserInfo['UserId']))
-                {
-                    //获取当前时间
-                    $Time = time();
-                    //最后登录时间
-                    $UserInfo['LastLoginTime'] = date("Y-m-d H:i:s",$Time);
-                    //更新为同一人
-                    $updateUser = $this->updateUser($UserInfo['UserId'],$UserInfo);
-                    //如果更新成功
-                    if($updateUser)
+                    if($RegInfo['RegPlatform'] == "WeChat")
                     {
-                        return array("UserId"=>$MobileUserInfo['UserId'],"LoginSource"=>$RegInfo['RegPlatform']);
+                        $UserInfo['WeChatId'] = $RegInfo['RegKey'];
+                        $UserInfo['WeChatInfo'] = $RegInfo['ThirdPartyInfo'];
+                    }
+                    elseif($RegInfo['RegPlatform'] == "Weibo")
+                    {
+                        $UserInfo['WeiboId'] = $RegInfo['RegPlatform'];
+                    }
+                    elseif($RegInfo['RegPlatform'] == "QQ")
+                    {
+                        $UserInfo['QQ'] = $RegInfo['RegPlatform'];
+                    }
+                    elseif($RegInfo['RegPlatform'] == "Mobile")
+                    {
+                        if($RegInfo['Password']=="")
+                        {
+                            return array("RegId"=>$RegInfo['RegId'],"NeedPassword"=>1);
+                        }
+                        //手机注册只保留密码
+                        $UserInfo['Password'] = $RegInfo['Password'];
+                    }
+                    //最后登录方式
+                    $UserInfo['LastLoginSource'] = $RegInfo['RegPlatform'];
+                    //根据手机号码查询用户
+                    $MobileUserInfo = $this->getUserByColumn("Mobile",$Mobile);
+                    //如果有用户已经在使用
+                    if(isset($MobileUserInfo['UserId']))
+                    {
+                        //获取当前时间
+                        $Time = time();
+                        //最后登录时间
+                        $UserInfo['LastLoginTime'] = date("Y-m-d H:i:s",$Time);
+                        $this->db->begin();
+                        //更新为同一人
+                        $updateUser = $this->updateUser($UserInfo['UserId'],$UserInfo);
+                        //删除注册记录
+                        $deleteRegInfo = $this->deleteRegInfo($RegInfo['RegId']);
+                        //如果同时成功
+                        if($updateUser && $deleteRegInfo)
+                        {
+                            $this->db->commit();
+                            return array("UserId"=>$MobileUserInfo['UserId'],"LoginSource"=>$RegInfo['RegPlatform']);
+                        }
+                        else
+                        {
+                            $this->db->rollBack();
+                            return false;
+                        }
                     }
                     else
                     {
-                        return false;
+                        //验证通过，注册
+                        $NewUserInfo = array('ContactMobile'=>$Mobile,'Mobile'=>$Mobile,'ContactMobile'=>$Mobile,'RegTime'=>$RegInfo['RegTime'],'LastLoginTime'=>$RegInfo['RegTime']);
+
+                        $this->db->begin();
+                        //创建用户
+                        $UserId = $this->insertUser(array_merge($UserInfo,$NewUserInfo));
+                        //删除注册记录
+                        $deleteRegInfo = $this->deleteRegInfo($RegInfo['RegId']);
+                        //如果同时成功
+                        if($UserId && $deleteRegInfo)
+                        {
+                            $this->db->commit();
+                            return $UserId;
+                        }
+                        else
+                        {
+                            $this->db->rollBack();
+                            return false;
+                        }
+
                     }
                 }
                 else
                 {
-                    //验证通过，注册
-                    $NewUserInfo = array('ContactMobile'=>$Mobile,'Mobile'=>$Mobile,'ContactMobile'=>$Mobile,'RegTime'=>$RegInfo['RegTime'],'LastLoginTime'=>$RegInfo['RegTime']);
-                    //创建用户
-                    $UserId = $this->insertUser(array_merge($UserInfo,$NewUserInfo));
-                    return $UserId;
+                    //随机验证码
+                    $ValidateCode = sprintf("%06d",rand(1,999999));
+                    //更新注册记录，生成新的验证码和过期时间
+                    $bind = array('ExceedTime'=>date("Y-m-d H:i:s",time()+3600),'ValidateCode' => $ValidateCode);
+                    $Update = $this->updateRegInfo($RegInfo['RegId'],$bind);
+                    //更新成功
+                    if($Update)
+                    {
+                        //短信内容数组
+                        $params = array(
+                            "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
+                            "Mobile"=> $RegInfo['Mobile'],
+                            "SMSCode"=>"SMS_Validate_Code"
+                        );
+                        //短信发送
+                        Base_common::dayuSMS($params);
+                        return -1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
                 }
             }
             else
@@ -778,7 +946,7 @@ class Xrace_UserInfo extends Base_Widget
                 {
                     //短信内容数组
                     $params = array(
-                        "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育",),
+                        "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
                         "Mobile"=> $RegInfo['Mobile'],
                         "SMSCode"=>"SMS_Validate_Code"
                     );
@@ -971,6 +1139,7 @@ class Xrace_UserInfo extends Base_Widget
                     $Time = date("Y-m-d H:i:s",time());
                     $Token = md5($Token."|".rand(1,999));
                     $bind = array("UserId"=>$UserId,"IP"=>Base_Common::ip2long($IP),"Token"=>$Token,"Time"=>$Time,"LoginSource"=>$LoginSource);
+                    $this->db->begin();
                     //写入记录
                     $insertToken = $this->insertToken($bind,1);
                     //更新用户最后登录时间
@@ -990,7 +1159,7 @@ class Xrace_UserInfo extends Base_Widget
                     $i++;
                 }
                 //当不成功且重试次数小于等于3的时候
-                while($Success==1 && $i<3);
+                while(($Success==0) && ($i<3));
                 if(strlen($Token)==32)
                 {
                     return $Token;
@@ -1040,7 +1209,7 @@ class Xrace_UserInfo extends Base_Widget
     {
         $Time = time();
         //继续拼接Token
-        $bind['Token'] = md5($bind['Token']."|".$Time."|".rand(1,999));
+        //$bind['Token'] = md5($bind['Token']."|".$Time."|".rand(1,999));
         //拼接时间
         $bind['Time'] = date("Y-m-d H:i:s",$Time);
         $table_to_process = Base_Widget::getDbTable($this->table_login);
@@ -1096,4 +1265,88 @@ class Xrace_UserInfo extends Base_Widget
             return false;
         }
     }
+    public function resetRegSmsByMobile($Mobile)
+    {
+        //根据手机号码获取注册记录
+        $RegInfo = $this->getRegInfoByMobile($Mobile);
+        //如果找到记录
+        if(isset($RegInfo['RegId']))
+        {
+            $ValidateCode = sprintf("%06d",rand(1,999999));
+            //更新注册记录，生成新的验证码和过期时间
+            $bind = array('ExceedTime'=>date("Y-m-d H:i:s",time()+3600),'ValidateCode' => $ValidateCode);
+            $Update = $this->updateRegInfo($RegInfo['RegId'],$bind);
+            //更新成功
+            if($Update)
+            {
+                $params = array(
+                    "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
+                    "Mobile"=> $RegInfo['Mobile'],
+                    "SMSCode"=>"SMS_Validate_Code"
+                );
+                Base_common::dayuSMS($params);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public function resetRegSmsByReg($RegId)
+    {
+        //根据RegId获取注册记录
+        $RegInfo = $this->getRegInfo($RegId);
+        //如果找到记录
+        if(isset($RegInfo['RegId']))
+        {
+            $ValidateCode = sprintf("%06d",rand(1,999999));
+            //更新注册记录，生成新的验证码和过期时间
+            $bind = array('ExceedTime'=>date("Y-m-d H:i:s",time()+3600),'ValidateCode' => $ValidateCode);
+            $Update = $this->updateRegInfo($RegInfo['RegId'],$bind);
+            //更新成功
+            if($Update)
+            {
+                $params = array(
+                    "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
+                    "Mobile"=> $RegInfo['Mobile'],
+                    "SMSCode"=>"SMS_Validate_Code"
+                );
+                Base_common::dayuSMS($params);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public function checkMobileExist($Mobile)
+    {
+        $UserInfo = $this->getUserByColumn("Mobile",$Mobile);
+        if(isset($UserInfo['UserId']))
+        {
+            if($UserInfo['Password'] == "")
+            {
+                return array("UserInfo"=>$UserInfo,"Available"=>1);
+            }
+            else
+            {
+                return array("Available"=>0);
+            }
+        }
+        else
+        {
+            return array("Available"=>1);
+        }
+    }
+
 }
