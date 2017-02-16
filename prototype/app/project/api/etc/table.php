@@ -38,9 +38,17 @@ $table['UserInfo']['num'] = 1;
 $table['RaceUserInfo']['db'] = 'xrace_user';
 $table['RaceUserInfo']['num'] = 1;
 
-#用户审核状态
+#用户注册
 $table['UserReg']['db'] = 'xrace_user';
 $table['UserReg']['num'] = 1;
+
+#用户注册
+$table['UserRegLog']['db'] = 'xrace_user';
+$table['UserRegLog']['num'] = 1;
+
+#用户重置密码
+$table['UserResetPassword']['db'] = 'xrace_user';
+$table['UserResetPassword']['num'] = 1;
 
 #用户的成员列表
 $table['UserMemberList']['db'] = 'xrace_user';

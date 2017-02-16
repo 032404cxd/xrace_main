@@ -64,7 +64,7 @@ class XraceUserController extends AbstractController
     }
 
     /**
-     *手机登录
+     *手机注册
      */
     public function mobileRegAction()
     {
@@ -137,9 +137,9 @@ class XraceUserController extends AbstractController
      */
     public function thirdPartyLoginAction()
     {
-        //$text  = '{"openid": "odLjsvnZwRS4lduV6D7DpS5hJoyY","nickname": "GUI Ling","headimgurl": "http://wx.qlogo.cn/mmopen/fl6pKMZtTyXGYHHVno0td0cv2VR9HHUEp2pz6p9qLAfTrOVtP07pgNSytgfKm4uBgGjXic0sGTkZKc7lFvFOKE999tY8jfEfj/0","sex": "2","province": "上海","city": "长宁"}';
-        $text  = '{"openid": "odLjsvvYfXvkm9Rkrd4HAHXeqvA8","nickname": "JiMMy","headimgurl": "http://wx.qlogo.cn/mmopen/s6icJeKAt9X2zFZiafUjibkZhkibib8ickRZMDeoIwpfAeh04htIbSecdkU5uoW0AdAucU1kM4tEnKuw6uW6zeaWBYwLMYj9evlJvy/0","sex": "0","province": "","city": ""}';
-        //$LoginData  = '{"openid": "odLjsvnl2cUkbbbM8EBvZmJOX7Sw","nickname": "栋辉tim","headimgurl": "http://wx.qlogo.cn/mmopen/fl6pKMZtTyXGYHHVno0td2q2q1K7U1r4Gx1Hib8mL7lVQiaCdux7ZrtAZicmeOu79ZOuhGicDmSUC9LiaqIRwIzQbVIzyvwbXmyn3/0","sex": "1","province": "上海","city": "浦东新区"}';
+        $text  = '{"openid": "odLjsvnZwRS4lduV6D7DpS5hJoyY","nickname": "GUI Ling","headimgurl": "http://wx.qlogo.cn/mmopen/fl6pKMZtTyXGYHHVno0td0cv2VR9HHUEp2pz6p9qLAfTrOVtP07pgNSytgfKm4uBgGjXic0sGTkZKc7lFvFOKE999tY8jfEfj/0","sex": "2","province": "上海","city": "长宁"}';
+        //$text  = '{"openid": "odLjsvvYfXvkm9Rkrd4HAHXeqvA8","nickname": "JiMMy","headimgurl": "http://wx.qlogo.cn/mmopen/s6icJeKAt9X2zFZiafUjibkZhkibib8ickRZMDeoIwpfAeh04htIbSecdkU5uoW0AdAucU1kM4tEnKuw6uW6zeaWBYwLMYj9evlJvy/0","sex": "0","province": "","city": ""}';
+        //$text  = '{"openid": "odLjsvnl2cUkbbbM8EBvZmJOX7Sw","nickname": "栋辉tim","headimgurl": "http://wx.qlogo.cn/mmopen/fl6pKMZtTyXGYHHVno0td2q2q1K7U1r4Gx1Hib8mL7lVQiaCdux7ZrtAZicmeOu79ZOuhGicDmSUC9LiaqIRwIzQbVIzyvwbXmyn3/0","sex": "1","province": "上海","city": "浦东新区"}';
 
         //身份数据
         $LoginData = isset($this->request->LoginData) ? trim($this->request->LoginData) : $text;
@@ -179,7 +179,6 @@ class XraceUserController extends AbstractController
         $RegId = isset($this->request->RegId) ? abs(intval($this->request->RegId)) :0;
         //获取注册记录
         $RegInfo = $this->oUser->getRegInfo($RegId);
-
         //根据手机号码获取用户信息
         $UserInfo = $this->oUser->getUserByColumn("Mobile",$Mobile);
         //如果用户找到 且 当前登录方式的信息为不空（表示用户用同样的方式注册过且绑定同样的手机）
@@ -616,7 +615,6 @@ class XraceUserController extends AbstractController
     {
         $Mobile = isset($this->request->Mobile) ? trim($this->request->Mobile) :"";
         $Check = $this->oUser->checkMobileExist($Mobile);
-        print_R($Check);
         if($Check['Available']==1)
         {
             if(isset($Check['UserInfo']['UserId']))
@@ -667,6 +665,33 @@ class XraceUserController extends AbstractController
             $result = array("return" => 0,"comment"=>"无此记录");
         }
 
+        echo json_encode($result);
+    }
+    /**
+     *手机注册
+     */
+    public function mobileResetPasswordAction()
+    {
+        //手机号码
+        $Mobile = isset($this->request->Mobile) ? trim($this->request->Mobile) : "";
+        //尝试重置密码
+        $Reset = $this->oUser->MobileResetPassword($Mobile);
+        //重置成功
+        if($Reset)
+        {
+            //结果数组 返回注册信息，引导绑定手机
+            $result = array("return" => 1, "comment" => "请输入已经发往手机的验证码");
+        }
+        elseif($Reset == -1)
+        {
+            //结果数组 返回失败
+            $result = array("return" => 0,"comment" => "无此用户");
+        }
+        elseif($Reset == -2)
+        {
+            //结果数组 返回失败
+            $result = array("return" => 0,"comment" => "此用户未设置密码");
+        }
         echo json_encode($result);
     }
 }

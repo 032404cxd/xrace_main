@@ -56,7 +56,7 @@ class Xrace_TeamController extends AbstractController
                 if(!isset($UserList[$TeamInfo['CreateUserId']]))
                 {
                     //获取用户数据
-                    $UserInfo = $this->oUser->getUserInfo($TeamInfo['CreateUserId'],"UserId,UserName",1);
+                    $UserInfo = $this->oUser->getUserInfo($TeamInfo['CreateUserId'],"UserId,Name",1);
                     //如果获取到
                     if(isset($UserInfo['UserId']))
                     {
@@ -103,8 +103,7 @@ class Xrace_TeamController extends AbstractController
                 //保存分站名称
                 $TeamList['TeamList'][$TeamId]['RaceStageName'] =  isset($RaceStageInfo['RaceStageName'])?$RaceStageInfo['RaceStageName']:"未知分站";
                 //保存创建者姓名
-                $TeamList['TeamList'][$TeamId]['CreateUserName'] =  isset($CreateUserInfo['UserName'])?$CreateUserInfo['UserName']:"未知用户";
-
+                $TeamList['TeamList'][$TeamId]['CreateUserName'] =  isset($CreateUserInfo['Name'])?$CreateUserInfo['Name']:"未知用户";
             }
             //导出EXCEL链接
 			$export_var = "<a href =".(Base_Common::getUrl('','xrace/team','team.list.download',$params))."><导出表格></a>";
@@ -205,6 +204,7 @@ class Xrace_TeamController extends AbstractController
     //添加队伍
     public function teamInsertAction()
     {
+
         //获取 页面参数
         $bind=$this->request->from('TeamName');
         //队伍名称不能为空

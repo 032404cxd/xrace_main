@@ -1209,6 +1209,7 @@ EOF;
     }
     function dayuSMS($params)
     {
+        return true;
         include('Third/dayu/TopSdk.php');
         $c = new TopClient;
         $c->appkey = "23327292";//$appkey;
@@ -1221,12 +1222,14 @@ EOF;
         $req->setRecNum($params['Mobile']);
         $req->setSmsTemplateCode(Base_Common::getSMSCode($params['SMSCode']));
         $resp = $c->execute($req);
+        //var_dump($resp);
     }
     function getSMSCode($CodeName)
     {
         $SmsCodeList = array(
         //发送短信验证码
-             "SMS_Validate_Code"=>"SMS_5910467"
+             "SMS_Validate_Code"=>"SMS_5910467",
+            "SMS_Reset_Password"=>"SMS_10385744"
 
         );
         return $SmsCodeList[$CodeName];

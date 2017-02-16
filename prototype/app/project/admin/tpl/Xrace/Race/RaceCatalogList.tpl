@@ -1,13 +1,13 @@
 {tpl:tpl contentHeader/}
 <script type="text/javascript">
 $(document).ready(function(){
-	$('#add_app').click(function(){
-		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=race.catalog.add', {title:'添加赛事',width:700,height:600});
+	$('#add_catalog').click(function(){
+		addCatalogBox = divBox.showBox('{tpl:$this.sign/}&ac=race.catalog.add', {title:'添加赛事',width:700,height:600});
 	});
 });
 
 function RaceCatalogDelete(p_id, p_name){
-	deleteAppBox = divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.catalog.delete&RaceCatalogId=' + p_id;}});
+	deleteCatalogBox = divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.catalog.delete&RaceCatalogId=' + p_id;}});
 }
 
 function RaceCatalogModify(mid){
@@ -20,7 +20,7 @@ function RaceCatalogDisclaimerModify(mid){
 </script>
 
 <fieldset><legend>操作</legend>
-[ <a href="javascript:;" id="add_app">添加赛事</a> ]
+[ <a href="javascript:;" id="add_catalog">添加赛事</a> ]
 </fieldset>
 
 <fieldset><legend>赛事列表 </legend>

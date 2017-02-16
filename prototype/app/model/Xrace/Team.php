@@ -298,7 +298,7 @@ class Xrace_Team extends Base_Widget
         //获取需要用到的表名
         $table_to_process = Base_Widget::getDbTable($this->table_user);
         //用户
-        $whereUser = (isset($params['UserId']) && intval($params['UserId']))?" UserId = ".$params['UserId']." ":"";
+        $whereUser = (isset($params['RaceUserId']) && intval($params['RaceUserId']))?" RaceUserId = ".$params['RaceUserId']." ":"";
         //队伍
         $whereTeam = (isset($params['TeamId']) && intval($params['TeamId']))?" TeamId = ".$params['TeamId']." ":"";
         //所有查询条件置入数组
@@ -316,21 +316,17 @@ class Xrace_Team extends Base_Widget
         $fields = Base_common::getSqlFields(array("*"));
         //获取需要用到的表名
         $table_to_process = Base_Widget::getDbTable($this->table);
-        //是否临时
-        $whereTemp = (isset($params['IsTemp']) && intval($params['IsTemp'])>-1)?" IsTemp = ".$params['IsTemp']." ":"";
         //用户
         $whereUser = (isset($params['UserId']) && intval($params['UserId']))?" CreateUserId = ".$params['UserId']." ":"";
-        //分站
-        $whereStage = (isset($params['RaceStageId']) && intval($params['RaceStageId']))?" RaceStageId = ".$params['RaceStageId']." ":"";
         //所有查询条件置入数组
-        $whereCondition = array($whereTemp,$whereUser,$whereStage);
+        $whereCondition = array($whereUser);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
         //生成条件列
         $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
         return $this->db->getAll($sql);
     }
-    //获取用户参与的队伍列表
+    //获取用户的队员列表
     public function getUserMemberList($OwnerRaceUserId)
     {
         $table_to_process = Base_Widget::getDbTable($this->table_member);

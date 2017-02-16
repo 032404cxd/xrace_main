@@ -19,7 +19,6 @@
       <tr>
         <th align="center" class="rowtip">队伍ID</th>
         <th align="center" class="rowtip">队伍名称</th>
-        <th align="center" class="rowtip">临时</th>
           <th align="center" class="rowtip">创建用户</th>
           <th align="center" class="rowtip">创建时间</th>
       </tr>
@@ -27,7 +26,6 @@
     <tr class="hover">
         <td align="center">{tpl:$TeamInfo.TeamId/}</td>
         <td align="center">{tpl:$TeamInfo.TeamName/}</td>
-        <td align="center">{tpl:if($TeamInfo.IsTemp==1)}{tpl:$TeamInfo.RaceCatalogName/}/{tpl:$TeamInfo.RaceStageName/}{tpl:else}否{/tpl:if}</td>
         <td align="center">{tpl:$TeamInfo.CreateUserName/}</td>
         <td align="center">{tpl:$TeamInfo.CreateTime/}</td>
     </tr>
