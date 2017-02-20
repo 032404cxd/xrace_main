@@ -243,7 +243,7 @@ class XraceTeamController extends AbstractController
         if($TokenInfo['UserId'])
         {
             //获得用户信息
-            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"UserId,UserName",0);
+            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"UserId,Name,RaceUserId",0);
             //如果获取到用户
             if(isset($UserInfo['UserId']))
             {
@@ -253,7 +253,7 @@ class XraceTeamController extends AbstractController
                 foreach($TeamList as $key => $UserTeamInfo)
                 {
                     //获取队伍信息
-                    $TeamInfo = $this->oTeam->getTeamInfo($UserTeamInfo['TeamId'],"TeamId,IsTemp,TeamName");
+                    $TeamInfo = $this->oTeam->getTeamInfo($UserTeamInfo['TeamId'],"TeamId,TeamName");
                     //如果获取到
                     if(isset($TeamInfo['TeamId']))
                     {
@@ -266,7 +266,15 @@ class XraceTeamController extends AbstractController
                         unset($TeamList[$key]);
                     }
                 }
-                $result = array("return" => 1, "TeamList" => $TeamList);
+                if($UserInfo['RaceUserId']==0)
+                {
+                    //创建关联的比赛用户
+                    $UserInfo['RaceUserId'] = $this->oUser->CreateRaceUserByUserInfo($UserInfo['UserId']);
+                }
+                //重新获取用户的队员列表
+                $UserMemberList = $this->oTeam->getUserMemberList($UserInfo['RaceUserId']);
+
+                $result = array("return" => 1, "TeamList" => $TeamList,"MemberList"=>count($UserMemberList)>0?1:0);
             }
             else
             {
@@ -387,25 +395,25 @@ class XraceTeamController extends AbstractController
         if(isset($TeamInfo['TeamId']))
         {
             //获取用户列表
-            $UserList = $this->oTeam->getUserTeamList(array("TeamId"=>$TeamId));
+            $RaceUserList = $this->oTeam->getUserTeamList(array("TeamId"=>$TeamId));
             //循环用户列表
-            foreach($UserList as $key => $TeamUserInfo)
+            foreach($RaceUserList as $key => $TeamUserInfo)
             {
                 //获得用户信息
-                $UserInfo = $this->oUser->getUserInfo($TeamUserInfo['UserId'],"UserId,UserName");
+                $RaceUserInfo = $this->oUser->getRaceUser($TeamUserInfo['RaceUserId']);
                 //如果获取到
-                if(isset($UserInfo['UserId']))
+                if(isset($RaceUserInfo['RaceUserId']))
                 {
                     //保存用户信息
-                    $UserList[$key]['UserInfo'] = $UserInfo;
+                    $RaceUserList[$key]['RaceUserInfo'] = $RaceUserInfo;
                 }
                 else
                 {
                     //删除队伍信息
-                    unset($UserList[$key]);
+                    unset($RaceUserList[$key]);
                 }
             }
-            $result = array("return" => 1, "UserList" => $UserList);
+            $result = array("return" => 1, "RaceUserList" => $RaceUserList);
         }
         else
         {
@@ -713,6 +721,11 @@ class XraceTeamController extends AbstractController
             }
             //获取用户的队员列表
             $UserMemberList = $this->oTeam->getUserMemberList($UserInfo['RaceUserId']);
+            foreach($UserMemberList as $RaceUserId => $MemberInfo)
+            {
+                $UserMemberList[$RaceUserId]['MemberInfo'] = $this->oUser->getRaceUser($RaceUserId);
+            }
+            /*
             //如果本人不在列表中
             if(!isset($UserMemberList[$UserInfo['RaceUserId']]))
             {
@@ -721,6 +734,7 @@ class XraceTeamController extends AbstractController
                 //重新获取用户的队员列表
                 $UserMemberList = $this->oTeam->getUserMemberList($UserInfo['RaceUserId']);
             }
+            */
             $result = array("return" => 1, "MemberList" => $UserMemberList);
         }
         else

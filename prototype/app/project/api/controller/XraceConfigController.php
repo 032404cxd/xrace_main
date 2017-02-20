@@ -935,33 +935,28 @@ class XraceConfigController extends AbstractController
         //格式化赛事ID
         $RaceGroupId = abs(intval($this->request->RaceGroupId));
         //赛事ID必须大于0
-        if ($RaceCatalogId) {
+        if ($RaceCatalogId)
+        {
             //获取赛事信息
-            $RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId,"*",1);
+           // $RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId,"RaceCatalogId,RaceCatalgName",1);
+           // print_R($RaceCatalogInfo);
             //检测主键存在,否则值为空
-            if (isset($RaceCatalogInfo['RaceCatalogId'])) {
-                //获取赛事组别信息
-                $RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId);
-                //检测主键存在,否则值为空
-                if (isset($RaceGroupInfo['RaceGroupId']) && ($RaceGroupInfo['RaceCatalogId'] == $RaceCatalogInfo['RaceCatalogId'])) {
-                    $oTeam = new Xrace_Team();
-                    //获取分组相关的队伍列表
-                    $TeamList = $oTeam->getTeamListByGroup($RaceGroupInfo, 1);
+           // if (isset($RaceCatalogInfo['RaceCatalogId']))
+            {
+                $oTeam = new Xrace_Team();
+                $TeamList = $oTeam->getTeamList(array("RaceCatalogId"=>$RaceCatalogId), 1);
                     //结果数组
                     if (count($TeamList['TeamList'])) {
                         $result = array("return" => 1, "TeamList" => $TeamList['TeamList']);
                     } else {
                         $result = array("return" => 0, "TeamList" => array(), "comment" => "组别下并未有队伍");
                     }
-                } else {
-                    //全部置为空
-                    $result = array("return" => 0, "TeamList" => array(), "comment" => "请指定一个有效的分组ID");
                 }
 
-            } else {
-                //全部置为空
-                $result = array("return" => 0, "TeamList" => array(), "comment" => "请指定一个有效的赛事ID");
-            }
+            // else {
+            //    //全部置为空
+            //    $result = array("return" => 0, "TeamList" => array(), "comment" => "请指定一个有效的赛事ID");
+           // }
         } else {
             //全部置为空
             $result = array("return" => 0, "RaceCatalog" => array(), 'RaceGroupList' => array(), 'RaceStageList' => array(), "comment" => "请指定一个有效的赛事ID");

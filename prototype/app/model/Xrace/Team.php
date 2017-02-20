@@ -93,16 +93,17 @@ class Xrace_Team extends Base_Widget
 	 * @param $params 传入的条件列表
 	 * @return array
 	 */
-	public function getTeamList($params,$fields = array("*"))
+	public function getTeamList($params,$fields = "*")
 	{
 	    //生成查询列
 		$fields = Base_common::getSqlFields($fields);
-		//获取需要用到的表名
+        //获取需要用到的表名
 		$table_to_process = Base_Widget::getDbTable($this->table);
+        $whereCatalog = (isset($params['RaceCatalogId']) && trim($params['RaceCatalogId']))?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
 		//队伍名称
 		$whereTeamName = (isset($params['TeamName']) && trim($params['TeamName']))?" TeamName like '%".$params['TeamName']."%' ":"";
 		//所有查询条件置入数组
-		$whereCondition = array($whereTeamName);
+		$whereCondition = array($whereTeamName,$whereCatalog);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		//获取用户数量
@@ -116,8 +117,8 @@ class Xrace_Team extends Base_Widget
 		}
 		$limit  = isset($params['Page'])&&$params['Page']?" limit ".($params['Page']-1)*$params['PageSize'].",".$params['PageSize']." ":"";
 		$order = " ORDER BY LastUpdateTime desc";
-		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." ".$order." ".$limit;
-		$return = $this->db->getAll($sql);
+		$sql = "SELECT * FROM $table_to_process where 1 ".$where." ".$order." ".$limit;
+        $return = $this->db->getAll($sql);
 		$TeamList = array('TeamList'=>array(),'TeamCount'=>$TeamCount);
 		if(count($return))
 		{
@@ -146,9 +147,12 @@ class Xrace_Team extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		//队伍名称
 		$whereTeamName = (isset($params['TeamName']) && trim($params['TeamName']))?" TeamName like '%".$params['TeamName']."%' ":"";
+        $whereCatalog = (isset($params['RaceCatalogId']) && trim($params['RaceCatalogId']))?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
+
 		//所有查询条件置入数组
-		$whereCondition = array($whereTeamName);
-		//生成条件列
+		$whereCondition = array($whereTeamName,$whereCatalog);
+		print_R($whereCondition);
+        //生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		//生成条件列
 		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where;

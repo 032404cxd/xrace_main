@@ -50,6 +50,10 @@ $table['UserRegLog']['num'] = 1;
 $table['UserResetPassword']['db'] = 'xrace_user';
 $table['UserResetPassword']['num'] = 1;
 
+#用户重置密码日志
+$table['UserResetPasswordLog']['db'] = 'xrace_user';
+$table['UserResetPasswordLog']['num'] = 1;
+
 #用户的成员列表
 $table['UserMemberList']['db'] = 'xrace_user';
 $table['UserMemberList']['num'] = 1;

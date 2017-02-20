@@ -15,6 +15,7 @@ class Xrace_UserInfo extends Base_Widget
     protected $table_race = 'user_race';
     protected $table_login = 'UserLogin';
     protected $table_reset = 'UserResetPassword';
+    protected $table_reset_log = 'UserResetPasswordLog';
 
     //登录方式列表
     protected $loginSource = array('WeChat'=>"微信",'Weibo'=>"微博",'Mobile'=>"手机");
@@ -133,14 +134,25 @@ class Xrace_UserInfo extends Base_Widget
         return $this->db->selectRow($table_to_process, "*", '`RegId` = ?', $RegId);
     }
     /**
-     * 新增单个用户注册中间记录
-     * @param array $bind 所要添加的数据列
-     * @return boolean
-     */
+ * 新增单个用户注册中间记录
+ * @param array $bind 所要添加的数据列
+ * @return boolean
+ */
     public function deleteRegInfo($RegId)
     {
         $RegId = intval($RegId);
         $table_to_process = Base_Widget::getDbTable($this->table_reg_info);
+        return $this->db->delete($table_to_process, '`RegId` = ?', $RegId);
+    }
+    /**
+     * 删除单个用户注册日志记录
+     * @param array $bind 所要添加的数据列
+     * @return boolean
+     */
+    public function deleteRegLog($RegId)
+    {
+        $RegId = intval($RegId);
+        $table_to_process = Base_Widget::getDbTable($this->table_reg_log);
         return $this->db->delete($table_to_process, '`RegId` = ?', $RegId);
     }
 
@@ -153,7 +165,16 @@ class Xrace_UserInfo extends Base_Widget
     public function insertResetInfo($bind)
     {
         $table_to_process = Base_Widget::getDbTable($this->table_reset);
-        echo $table_to_process;
+        return $this->db->insert($table_to_process, $bind);
+    }
+    /**
+     * 新增单个用户重置密码日志
+     * @param array $bind 所要添加的数据列
+     * @return boolean
+     */
+    public function insertResetLog($bind)
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_reset_log);
         return $this->db->insert($table_to_process, $bind);
     }
     /**
@@ -228,6 +249,12 @@ class Xrace_UserInfo extends Base_Widget
         $table_to_process = Base_Widget::getDbTable($this->table_reg_info);
         return $this->db->selectRow($table_to_process, '*', '`Mobile` = ?', array($Mobile));
     }
+    public function getRegLogByMobile($Mobile)
+    {
+        $Mobile = trim($Mobile);
+        $table_to_process = Base_Widget::getDbTable($this->table_reg_log);
+        return $this->db->selectRow($table_to_process, '*', '`Mobile` = ?', array($Mobile));
+    }
     /**
     /**
      * 获取单个用户记录
@@ -261,7 +288,7 @@ class Xrace_UserInfo extends Base_Widget
             //从数据库中获取
             $UserInfo = $this->getUser($UserId, "*");
             //如果用户信息中包含不少于六位的证件号码 和 不少于两位的姓名
-            if(strlen(trim($UserInfo['IdNo']))>=6 && strlen(trim($UserInfo['UserName']))>=2)
+            if(strlen(trim($UserInfo['IdNo']))>=6 && strlen(trim($UserInfo['Name']))>=2)
             {
                 //可以报名
                 $UserInfo['ReadyToRace'] =1;
@@ -360,9 +387,15 @@ class Xrace_UserInfo extends Base_Widget
      */
     public function updateUser($UserId, array $bind)
     {
-        $UserId = trim($UserId);
+        $UserId = intval($UserId);
         $table_to_process = Base_Widget::getDbTable($this->table);
         return $this->db->update($table_to_process, $bind, '`UserId` = ?', $UserId);
+    }
+    public function updateRaceUser($RaceUserId, array $bind)
+    {
+        $RaceUserId = intval($RaceUserId);
+        $table_to_process = Base_Widget::getDbTable($this->table_race_user);
+        return $this->db->update($table_to_process, $bind, '`RaceUserId` = ?', $RaceUserId);
     }
     /**
      * 根据指定字段获取单个用户记录
@@ -1191,7 +1224,7 @@ class Xrace_UserInfo extends Base_Widget
             //根据用户获取Token
             $TokenInfo = $this->getTokenByUser($UserId);
             //如果获取到 且 未超时 且 登录方式相同
-            if(isset($TokenInfo['Token']) && ((strtotime($TokenInfo['Time'])+300)>=time()) && ($TokenInfo['LoginSource']==$LoginSource))
+            if(isset($TokenInfo['Token']) && ((strtotime($TokenInfo['Time'])+3000)>=time()) && ($TokenInfo['LoginSource']==$LoginSource))
             {
                 return $TokenInfo['Token'];
             }
@@ -1256,6 +1289,18 @@ class Xrace_UserInfo extends Base_Widget
         return $this->db->selectRow($table_to_process, $fields, '`Token` = ?', $Token);
     }
     /**
+     * 更新单个用户记录
+     * @param char $UserId 用户ID
+     * @param array $bind 更新的数据列表
+     * @return boolean
+     */
+    public function updateToken($Token, array $bind)
+    {
+        $Token = trim($Token);
+        $table_to_process = Base_Widget::getDbTable($this->table_login);
+        return $this->db->update($table_to_process, $bind, '`Token` = ?', $Token);
+    }
+    /**
      * 根据用户获取单个Token记录
      * @param char $UserId 用户
      * @param string $fields 所要获取的数据列
@@ -1306,7 +1351,7 @@ class Xrace_UserInfo extends Base_Widget
             //事务开始
             $this->db->begin();
             //生成用户信息
-            $RaceUserInfo = array('CreateUserId'=>$UserInfo['UserId'],'Name'=>$UserInfo['Name'],'Sex'=>$UserInfo['Sex'],'ContactMobile'=>$UserInfo['ContactMobile'],'IdNo'=>$UserInfo['IdNo'],'IdType'=>$UserInfo['IdType'],'Available'=>1,'RegTime'=>date("Y-m-d H:i:s",time()));
+            $RaceUserInfo = array('Birthday'=>$UserInfo['Birthday'],'CreateUserId'=>$UserInfo['UserId'],'Name'=>$UserInfo['Name'],'Sex'=>$UserInfo['Sex'],'ContactMobile'=>$UserInfo['ContactMobile'],'IdNo'=>$UserInfo['IdNo'],'IdType'=>$UserInfo['IdType'],'Available'=>1,'RegTime'=>date("Y-m-d H:i:s",time()));
             //创建用户
             $CreateRaceUser = $this->insertRaceUser($RaceUserInfo);
             //将比赛用户ID更新回用户
@@ -1429,10 +1474,8 @@ class Xrace_UserInfo extends Base_Widget
         //如果获取到的数据为0
         if(intval($m)==0)
         {
-           echo "Mobile:".$Mobile."<br>";
             //根据手机号码查询用户
             $UserInfo = $this->getUserByColumn("Mobile",$Mobile);
-            print_R($UserInfo);
             //如果查询到
             if(!isset($UserInfo['UserId']))
             {
@@ -1452,7 +1495,6 @@ class Xrace_UserInfo extends Base_Widget
                         //如果找到
                         if(isset($ResetInfo['ResetId']))
                         {
-                            echo "001";
                             //生成验证码
                             $ValidateCode = sprintf("%06d",rand(1,999999));
                             //更新重置记录
@@ -1467,7 +1509,7 @@ class Xrace_UserInfo extends Base_Widget
                                     "SMSCode"=>"SMS_Reset_Password"
                                 );
                                 Base_common::dayuSMS($params);
-                                return true;
+                                return $ResetInfo['ResetId'];
                             }
                             else
                             {
@@ -1477,12 +1519,10 @@ class Xrace_UserInfo extends Base_Widget
                         }
                         else
                         {
-                            echo "002";
                             //生成验证码
                             $ValidateCode = sprintf("%06d",rand(1,999999));
                             //创建重置记录
-                            $UserResetInfo = array("ResetSource"=>"Mobile","Mobile"=>$Mobile,"UserId"=>$UserInfo['UserId'],"ResetTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>$ValidateCode,'ExceedTime'=>date("Y-m-d H:i:s",$Time+3600));
-                            print_R($UserResetInfo);
+                            $UserResetInfo = array("ResetSource"=>"Mobile","Mobile"=>$Mobile,"ResetTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>$ValidateCode,'ExceedTime'=>date("Y-m-d H:i:s",$Time+3600));
                             $ResetId = $this->insertResetInfo($UserResetInfo);
                             //更新成功
                             if($ResetId)
@@ -1493,7 +1533,7 @@ class Xrace_UserInfo extends Base_Widget
                                     "SMSCode"=>"SMS_Reset_Password"
                                 );
                                 Base_common::dayuSMS($params);
-                                return true;
+                                return $ResetId;
                             }
                             else
                             {
@@ -1551,7 +1591,6 @@ class Xrace_UserInfo extends Base_Widget
                         {
                             return 0;
                         }
-
                     }
                     else
                     {
@@ -1583,6 +1622,210 @@ class Xrace_UserInfo extends Base_Widget
                     //空密码不修改
                     return -2;
                 }
+            }
+        }
+    }
+    /**
+     * 重置密码时的短信验证码校验
+     * @param string $Mobile 用户手机号码
+     * @param string $ValidateCode 短信验证码
+     * @return array
+     */
+    public function resetPasswordMobileAuth($Mobile,$ValidateCode)
+    {
+        //获取重置密码记录
+        $ResetInfo = $this->getResetInfoByMobile($Mobile);
+        //如果找到记录
+        if(isset($ResetInfo['ResetId']))
+        {
+            //获取当前时间
+            $Time = time();
+            //如果在有效期内
+            if(strtotime($ResetInfo['ExceedTime'])>=time())
+            {
+                if($ResetInfo['ValidateCode']==$ValidateCode)
+                {
+
+                    //更新记录，写入更新的过期时间
+                    $NewResetInfo['UpdateExceedTime'] = date("Y-m-d H:i:s",$Time+1800);
+                    $update = $this->updateResetInfo($ResetInfo['ResetId'],$NewResetInfo);
+                    //如果更新成功
+                    if($update)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+
+                }
+                else
+                {
+                    //生成验证码
+                    $ValidateCode = sprintf("%06d",rand(1,999999));
+                    //更新重置记录
+                    $UserResetInfo = array("ResetTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>$ValidateCode,'ExceedTime'=>date("Y-m-d H:i:s",$Time+3600),'UpdateExceedTime'=>date("Y-m-d H:i:s",0));
+                    $Reset = $this->updateResetInfo($ResetInfo['ResetId'],$UserResetInfo);
+                    //更新成功
+                    if($Reset)
+                    {
+                        $params = array(
+                            "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
+                            "Mobile"=> $ResetInfo['Mobile'],
+                            "SMSCode"=>"SMS_Reset_Password"
+                        );
+                        Base_common::dayuSMS($params);
+                        return -1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+            else
+            {
+                //生成验证码
+                $ValidateCode = sprintf("%06d",rand(1,999999));
+                //更新重置记录
+                $UserResetInfo = array("ResetTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>$ValidateCode,'ExceedTime'=>date("Y-m-d H:i:s",$Time+3600));
+                $Reset = $this->updateResetInfo($ResetInfo['ResetId'],$UserResetInfo);
+                //更新成功
+                if($Reset)
+                {
+                    $params = array(
+                        "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
+                        "Mobile"=> $ResetInfo['Mobile'],
+                        "SMSCode"=>"SMS_Reset_Password"
+                    );
+                    Base_common::dayuSMS($params);
+                    return -2;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    /**
+     * 重置密码
+     * @param string $ResetId 重置密码记录Id
+     * @param string $Password 密码
+     * @return array
+     */
+    public function resetPassword($ResetId,$Password,$IP)
+    {
+        //获取重置密码记录
+        $ResetInfo = $this->getResetInfo($ResetId);
+        //如果找到记录
+        if(isset($ResetInfo['ResetId']))
+        {
+            //获取当前时间
+            $Time = time();
+            //如果在有效期内
+            if(strtotime($ResetInfo['UpdateExceedTime'])>=time())
+            {
+
+                //根据手机号码查询用户
+                $MobileUserInfo = $this->getUserByColumn("Mobile",$ResetInfo['Mobile']);
+                //如果有用户已经在使用 并且 有密码
+                if(isset($MobileUserInfo['UserId']) && strlen($MobileUserInfo['Password'])==32)
+                {
+                    $this->db->begin();
+                    //创建更新日志，写入更新时间，IP，密码
+                    unset($ResetInfo['ValidateCode'],$ResetInfo['ExceedTime'],$ResetInfo['UpdateExceedTime']);
+                    $ResetLog = array_merge($ResetInfo,array("UpdateTime"=>date("Y-m-d H:i:s",$Time),"IP"=>Base_Common::ip2long($IP),"Password"=>md5($Password)));
+                    $insertResetLog = $this->insertResetLog($ResetLog);
+                    //更新用户密码
+                    $UserInfo = array("Password"=>md5($Password));
+                    $updateUser = $this->updateUser($MobileUserInfo['UserId'],$UserInfo);
+                    //删除更新记录
+                    $deleteResetInfo = $this->deleteResetInfo($ResetInfo['ResetId']);
+                    //如果同时成功
+                    if($insertResetLog && $updateUser && $deleteResetInfo)
+                    {
+                        $this->db->commit();
+                        //重建缓存
+                        $this->getUserInfo($MobileUserInfo['UserId'],"*",0);
+                        return 1;
+                    }
+                    else
+                    {
+                        $this->db->rollback;
+                        return 0;
+                    }
+                }
+            }
+            else
+            {
+                //生成验证码
+                $ValidateCode = sprintf("%06d",rand(1,999999));
+                //更新重置记录
+                $UserResetInfo = array("ResetTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>$ValidateCode,'ExceedTime'=>date("Y-m-d H:i:s",$Time+1800),'UpdateExceedTime'=>date("Y-m-d H:i:s",0));
+                $Reset = $this->updateResetInfo($ResetInfo['ResetId'],$UserResetInfo);
+                //更新成功
+                if($Reset)
+                {
+                    $params = array(
+                        "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
+                        "Mobile"=> $ResetInfo['Mobile'],
+                        "SMSCode"=>"SMS_Reset_Password"
+                    );
+                    Base_common::dayuSMS($params);
+                    return -1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    /**
+     * 更新密码
+     * @param string $UserId 用户ID
+     * @param string $Password 密码
+     * @return array
+     */
+    public function userResetPassword($UserId,$OldPassword,$Password,$IP)
+    {
+        //获取当前时间
+        $Time = time();
+        //根据手机号码查询用户
+        $UserInfo = $this->getUser($UserId,"UserId,Password,Mobile");
+        //如果有用户已经在使用 并且 有密码
+        if(isset($UserInfo['UserId']) && ($UserInfo['Password']) == md5($OldPassword))
+        {
+            $this->db->begin();
+            //创建更新日志
+            $ResetLog = array("ResetSource"=>"User","Mobile"=>$UserInfo['Mobile'],"ResetTime"=>date("Y-m-d H:i:s",$Time),"UpdateTime"=>date("Y-m-d H:i:s",$Time),"IP"=>Base_Common::ip2long($IP),"Password"=>md5($Password));
+            //写入更新日志
+            $insertResetLog = $this->insertResetLog($ResetLog);
+            //更新用户密码
+            $NewUserInfo = array("Password"=>md5($Password));
+            $updateUser = $this->updateUser($UserInfo['UserId'],$NewUserInfo);
+            //如果同时成功
+            if($insertResetLog && $updateUser)
+            {
+                $this->db->commit();
+                //重建缓存
+                $this->getUserInfo($UserInfo['UserId'],"*",0);
+                return 1;
+            }
+            else
+            {
+                $this->db->rollback;
+                return 0;
             }
         }
     }
