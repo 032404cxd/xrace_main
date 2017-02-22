@@ -181,7 +181,7 @@ class Xrace_RaceStageController extends AbstractController
                                     {
                                         $Stock += $v['Stock'];
                                     }
-                                    if($Stock)
+                                    if($Stock>=0)
                                     {
                                         //数量累加
                                         $t[$ProductInfo['ProductTypeId']]['ProductCount']++;
@@ -796,6 +796,7 @@ class Xrace_RaceStageController extends AbstractController
 	{
 		//获取 页面参数
 		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank');
+        $test = intval($this->request->test);
         //转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -910,7 +911,7 @@ class Xrace_RaceStageController extends AbstractController
                 foreach($bind['SelectedRaceGroup'] as $Group => $GroupInfo)
                 {
                     //删除未选定的元素
-                    if($GroupInfo['Selected']!=1)
+                    if(!isset($GroupInfo['Selected']))
                     {
                         unset($bind['SelectedRaceGroup'][$Group]);
                     }
@@ -1084,7 +1085,7 @@ class Xrace_RaceStageController extends AbstractController
                 foreach($bind['SelectedRaceGroup'] as $Group => $GroupInfo)
                 {
                     //删除未选定的元素
-                    if($GroupInfo['Selected']==0)
+                    if(!isset($GroupInfo['Selected']))
                     {
                         unset($bind['SelectedRaceGroup'][$Group]);
                     }
@@ -1861,7 +1862,7 @@ class Xrace_RaceStageController extends AbstractController
 
 					foreach($ProductSkuList as $ProductSkuId => $ProductSkuInfo)
 					{
-						if(intval($ProductSkuInfo['Stock'])<=0)
+						if(intval($ProductSkuInfo['Stock'])<=0 && ($ProductSkuInfo['ProductPrice']<=0))
 						{
 							unset($ProductPrice['ProductPrice'][$ProductId][$ProductSkuId]);
 						}

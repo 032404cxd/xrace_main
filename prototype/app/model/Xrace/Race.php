@@ -359,7 +359,6 @@ class Xrace_Race extends Base_Widget
 		//初始化查询条件
 		$whereGroup = (isset($params['RaceGroupId']) && ($params['RaceGroupId'] >0))?(" RaceGroupId = ".$params['RaceGroupId']):"";
 		$whereStage = (isset($params['RaceStageId']) && ($params['RaceStageId'] >0))?(" RaceStageId = ".$params['RaceStageId']):"";
-		//$whereStartTime = (isset($params['RaceStartTime']) && ($params['RaceStartTime'] >0))?(" unix_timestamp(StartTime) >= ".$params['RaceStartTime']):"";
 		//$whereEndTime = (isset($params['RaceEndTime']) && ($params['RaceEndTime'] >0))?(" unix_timestamp(EndTime) <= ".$params['RaceEndTime']):"";
 		$whereIn = (isset($params['inRun']) && ($params['inRun']==1))?("((EndTime >= '".date("Y-m-d H:i:s",time()-1800)."') and (StartTime <= '".date("Y-m-d H:i:s",time()+1800). "'))"):"";
 		$whereCondition = array($whereGroup,$whereStage,$whereIn);

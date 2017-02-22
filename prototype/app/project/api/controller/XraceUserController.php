@@ -162,12 +162,14 @@ class XraceUserController extends AbstractController
      */
     public function thirdPartyLoginAction()
     {
-        $text  = '{"openid": "odLjsvnZwRS4lduV6D7DpS5hJoyY","nickname": "GUI Ling","headimgurl": "http://wx.qlogo.cn/mmopen/fl6pKMZtTyXGYHHVno0td0cv2VR9HHUEp2pz6p9qLAfTrOVtP07pgNSytgfKm4uBgGjXic0sGTkZKc7lFvFOKE999tY8jfEfj/0","sex": "2","province": "上海","city": "长宁"}';
+        //$text  = '{"openid": "odLjsvnZwRS4lduV6D7DpS5hJoyY","nickname": "GUI Ling","headimgurl": "http://wx.qlogo.cn/mmopen/fl6pKMZtTyXGYHHVno0td0cv2VR9HHUEp2pz6p9qLAfTrOVtP07pgNSytgfKm4uBgGjXic0sGTkZKc7lFvFOKE999tY8jfEfj/0","sex": "2","province": "上海","city": "长宁"}';
         //$text  = '{"openid": "odLjsvvYfXvkm9Rkrd4HAHXeqvA8","nickname": "JiMMy","headimgurl": "http://wx.qlogo.cn/mmopen/s6icJeKAt9X2zFZiafUjibkZhkibib8ickRZMDeoIwpfAeh04htIbSecdkU5uoW0AdAucU1kM4tEnKuw6uW6zeaWBYwLMYj9evlJvy/0","sex": "0","province": "","city": ""}';
         //$text  = '{"openid": "odLjsvnl2cUkbbbM8EBvZmJOX7Sw","nickname": "栋辉tim","headimgurl": "http://wx.qlogo.cn/mmopen/fl6pKMZtTyXGYHHVno0td2q2q1K7U1r4Gx1Hib8mL7lVQiaCdux7ZrtAZicmeOu79ZOuhGicDmSUC9LiaqIRwIzQbVIzyvwbXmyn3/0","sex": "1","province": "上海","city": "浦东新区"}';
-        //    $text="";
+            $text="";
         //身份数据
         $LoginData = isset($this->request->LoginData) ? trim($this->request->LoginData) : $text;
+
+
         //第三方来源
         $LoginSource = isset($this->request->LoginSource) ? trim($this->request->LoginSource) : "WeChat";
         //客户端
@@ -193,6 +195,9 @@ class XraceUserController extends AbstractController
             //结果数组 返回失败
             $result = array("return" => 0,"comment" => "登录失败，请重试");
         }
+        //$filePath = __APP_ROOT_DIR__ . "Login" . "/" . "ThirdParty" . "/".date("Ymd",time())."/";
+        //$fileName = "Return" . ".php";
+        //Base_Common::rebuildConfig($filePath, $fileName, $result, "ReturnData");
         echo json_encode($result);
     }
     /**
@@ -234,12 +239,19 @@ class XraceUserController extends AbstractController
                 //尚未绑定手机
                 if($RegInfo['Mobile']=="")
                 {
+                    $ValidateCode = sprintf("%06d",rand(1,999999));
                     //更新记录
-                    $RegInfoUpdate = array('Mobile'=>$Mobile,'ExceedTime'=>date("Y-m-d H:i:s",time()+3600),'ValidateCode' => sprintf("%06d",rand(1,999999)));
+                    $RegInfoUpdate = array('Mobile'=>$Mobile,'ExceedTime'=>date("Y-m-d H:i:s",time()+3600),'ValidateCode' => $ValidateCode);
                     $update = $this->oUser->updateRegInfo($RegInfo['RegId'],$RegInfoUpdate);
                     //如果更新成功
                     if($update)
                     {
+                        $params = array(
+                            "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
+                            "Mobile"=> $RegInfoUpdate['Mobile'],
+                            "SMSCode"=>"SMS_Validate_Code"
+                        );
+                        Base_common::dayuSMS($params);
                         $result = array("return" => 1,"comment" => "验证码已发送");
                     }
                     else
@@ -378,8 +390,8 @@ class XraceUserController extends AbstractController
                     $RaceUserInfo = $this->oUser->getRaceUser($UserInfo['RaceUserId']);
                     if(($RaceUserInfo['ContactMobile'] != $ContactMobile ) || ($RaceUserInfo['Name'] != $Name) || (($IdType !=1) && ($RaceUserInfo['Birthday']!=$Birthday)))
                     {
-                        $UserInfo = array('Name'=>$Name,'ContactMobile'=>$ContactMobile,'Birthday'=>$Birthday);
-                        $update = $this->oUser->updateRaceUser($UserInfo['RaceUserId'],$UserInfo);
+                        $NewUserInfo = array('Name'=>$Name,'ContactMobile'=>$ContactMobile,'Birthday'=>$Birthday);
+                        $update = $this->oUser->updateRaceUser($UserInfo['RaceUserId'],$NewUserInfo);
                         if($update)
                         {
                             $RaceUserInfo = $this->oUser->getRaceUser($UserInfo['RaceUserId']);
@@ -390,20 +402,38 @@ class XraceUserController extends AbstractController
                 }
                 else
                 {
-                    //根据用户创建比赛用户
-                    $RaceUserId = $this->oUser->createRaceUserByUserInfo($UserInfo['UserId']);
-                    //如果创建成功
-                    if($RaceUserId)
+                    //根据证件号码获取比赛用户信息
+                    $RaceUserInfo = $this->oUser->getRaceUserByColumn("IdNo",$IdNo);
+                    //如果已经被占用
+                    if(isset($RaceUserInfo['RaceUserId']))
                     {
-                        //根据证件号码获取比赛用户信息
-                        $RaceUserInfo = $this->oUser->getRaceUser($RaceUserId);
-                        //返回用户信息
-                        $result = array("return" => 1,"UserInfo"=>$UserInfo);
+                        $NewUserInfo = array("RaceUserId"=>$RaceUserInfo['RaceUserId']);
+                        $update = $this->oUser->updateUser($UserInfo['UserId'],$NewUserInfo);
+                        if($update)
+                        {
+                            //返回用户信息
+                            $result = array("return" => 1,"RaceUserInfo"=>$RaceUserInfo);
+                        }
+
                     }
                     else
                     {
-                        $result = array("return" => 0,"comment"=>"用户数据错误");
+                        //根据用户创建比赛用户
+                        $RaceUserId = $this->oUser->createRaceUserByUserInfo($UserInfo['UserId']);
+                        //如果创建成功
+                        if($RaceUserId)
+                        {
+                            //根据证件号码获取比赛用户信息
+                            $RaceUserInfo = $this->oUser->getRaceUser($RaceUserId);
+                            //返回用户信息
+                            $result = array("return" => 1,"RaceUserInfo"=>$RaceUserInfo);
+                        }
+                        else
+                        {
+                            $result = array("return" => 0,"comment"=>"用户数据错误");
+                        }
                     }
+
                 }
             }
             else
@@ -448,9 +478,9 @@ class XraceUserController extends AbstractController
                         if($CreateUser)
                         {
                             //强制获取用户信息
-                            $UserInfo = $this->oUser->getRaceUser($CreateUser,"*");
+                            $RaceUserInfo = $this->oUser->getRaceUser($CreateUser,"*");
                             //返回用户信息
-                            $result = array("return" => 1,"UserInfo"=>$UserInfo);
+                            $result = array("return" => 1,"RaceUserInfo"=>$RaceUserInfo);
                         }
                         else
                         {
@@ -491,6 +521,10 @@ class XraceUserController extends AbstractController
             $Sex = abs(intval($this->request->Sex));
             //如果不在证件类型范围内，默认为身份证
             $Sex = isset($SexList[$Sex])?$Sex:0;
+            //紧急联系人姓名
+            $ContactName = trim($this->request->ContactName);
+            //证件号码
+            $ContactMobile = trim($this->request->ContactMobile);
             //如果证件号码长度不足
             if(strlen($IdNo) <=6)
             {
@@ -517,33 +551,43 @@ class XraceUserController extends AbstractController
                     }
                     else
                     {
-                        //生成用户信息
-                        $UserInfo = array('Name'=>$Name,'Sex'=>$Sex,'IdNo'=>$IdNo,'IdType'=>$IdType,'Birthday'=>$Birthday);
-                        if($IdType==1)
-                        {
-                            $UserInfo['Birthday'] = substr($IdNo,6,4)."-".substr($IdNo,10,2)."-".substr($IdNo,12,2);
-                            $UserInfo['Sex'] = $Sex==0?$Sex:(intval(substr($IdNo,16,1))%2==0?2:1);
-                        }
-                        //更新用户
-                        $UpdateUser = $this->oUser->updateUser($TokenInfo['UserId'],$UserInfo);
-                        //如果创建成功
-                        if($UpdateUser)
-                        {
-                            if($IdUserInfo['RaceUserId']==0)
+                        //如果紧急联系人姓名和手机长度不足
+                       // if((strlen($ContactName) <2) || (strlen($ContactMobile) <=8))
+                        //{
+                       //     //返回错误
+                       //     $result = array("return" => 0,"comment"=>"请输入合法紧急联系人姓名和联系方式");
+                       // }
+                        //else
+                       // {
+                            //生成用户信息
+                            $UserInfo = array('Name'=>$Name,'Sex'=>$Sex,'IdNo'=>$IdNo,'IdType'=>$IdType,'Birthday'=>$Birthday,"ICE"=>json_encode(array("1"=>array('Name'=>$ContactName,'ContactMobile'=>$ContactMobile))));
+                            if($IdType==1)
                             {
-                                //根据用户创建比赛用户
-                                $RaceUserId = $this->oUser->createRaceUserByUserInfo($TokenInfo['UserId']);
+                                $UserInfo['Birthday'] = substr($IdNo,6,4)."-".substr($IdNo,10,2)."-".substr($IdNo,12,2);
+                                $UserInfo['Sex'] = $Sex==0?$Sex:(intval(substr($IdNo,16,1))%2==0?2:1);
                             }
-                            //强制获取用户信息
-                            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"*",0);
-                            //返回用户信息
-                            $result = array("return" => 1,"UserInfo"=>$UserInfo);
-                        }
-                        else
-                        {
-                            //返回错误
-                            $result = array("return" => 0,"comment"=>"更新失败");
-                        }
+                            //更新用户
+                            $UpdateUser = $this->oUser->updateUser($TokenInfo['UserId'],$UserInfo);
+                            //如果创建成功
+                            if($UpdateUser)
+                            {
+                                if($IdUserInfo['RaceUserId']==0)
+                                {
+                                    //根据用户创建比赛用户
+                                    $RaceUserId = $this->oUser->createRaceUserByUserInfo($TokenInfo['UserId']);
+                                }
+                                //强制获取用户信息
+                                $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"*",0);
+                                //返回用户信息
+                                $result = array("return" => 1,"UserInfo"=>$UserInfo);
+                            }
+                            else
+                            {
+                                //返回错误
+                                $result = array("return" => 0,"comment"=>"更新失败");
+                            }
+                       // }
+
                     }
                 }
             }
@@ -587,6 +631,7 @@ class XraceUserController extends AbstractController
                 //返回错误
                 $result = array("return" => 0,"comment"=>"更新失败");
             }
+
         }
         else
         {
@@ -667,17 +712,8 @@ class XraceUserController extends AbstractController
     public function testDeleteAction()
     {
         $Mobile = isset($this->request->Mobile) ? trim($this->request->Mobile) :"";
-        $RegInfo = $this->oUser->getRegInfoByMobile($Mobile);
-        if($RegInfo['RegId'])
-        {
-            $deleteRegInfo = $this->oUser->deleteRegInfo($RegInfo['RegId']);
-        }
-        $RegLog = $this->oUser->getRegLogByMobile($Mobile);
-        if($RegLog['RegId'])
-        {
-            $deleteRegLog = $this->oUser->deleteRegLog($RegLog['RegId']);
-        }
-
+        $deleteRegInfo = $this->oUser->deleteRegInfoByMobile($Mobile);
+        $deleteRegLog = $this->oUser->deleteRegLogByMobile($Mobile);
         $delete = $this->oUser->deleteUserByMobile($Mobile);
         echo "deleteReg:".$deleteRegInfo."<br>";
         echo "deleteUser:".$delete."<br>";
@@ -778,7 +814,7 @@ class XraceUserController extends AbstractController
         //尝试重置密码
         $Reset = $this->oUser->MobileResetPassword($Mobile);
         //重置成功
-        if($Reset)
+        if($Reset>0)
         {
             //结果数组 返回注册信息，引导绑定手机
             $result = array("return" => 1,"ResetId"=>$Reset, "comment" => "请输入已经发往手机的验证码");
@@ -893,6 +929,57 @@ class XraceUserController extends AbstractController
                 //结果数组 返回用户信息
                 $result = array("return" => 0, "comment" => "更新密码失败");
             }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    /**
+     *获取用户报名记录
+     */
+    public function getUserRaceLogAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            //获取用户信息
+            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"UserId,RaceUserId",0);
+            if($UserInfo['RaceUserId'])
+            {
+                $UserRaceList = $this->oUser->getRaceUserList(array("RaceUserId"=>$UserInfo['RaceUserId']));
+                if(count($UserRaceList))
+                {
+                    $oRace = new Xrace_Race();
+                    $RaceCatalogList = array();
+                    $RaceGroupList = array();
+                    $RaceList = array();
+                    foreach($UserRaceList as $key => $RaceInfo)
+                    {
+                        if(!isset($RaceCatalogList[$RaceInfo['RaceCatalogId']]))
+                        {
+                            $RaceCatalogList[$RaceInfo['RaceCatalogId']] = $oRace->getRaceCatalog($RaceInfo['RaceCatalogId'],"RaceCatalogId,RaceCatalogName");
+                        }
+                        if(!isset($RaceGroupList[$RaceInfo['RaceGroupId']]))
+                        {
+                            $RaceGroupList[$RaceInfo['RaceGroupId']] = $oRace->getRaceGroup($RaceInfo['RaceGroupId'],"RaceGroupId,RaceGroupName");
+                        }
+                        if(!isset($RaceCatalogList[$RaceInfo['RaceId']]))
+                        {
+                            $RaceList[$RaceInfo['RaceId']] = $oRace->getRace($RaceInfo['RaceId'],"RaceId,RaceName");
+                        }
+                        $UserRaceList[$key]['RaceCatalogName'] = $RaceCatalogList[$RaceInfo['RaceCatalogId']]['RaceCatalogName'];
+                        $UserRaceList[$key]['RaceGroupName'] = $RaceGroupList[$RaceInfo['RaceGroupId']]['RaceGroupName'];
+                        $UserRaceList[$key]['RaceName'] = $RaceList[$RaceInfo['RaceId']]['RaceName'];
+                    }
+                }
+            }
+            $result = array("return" => 1,"UserRaceList"=>$UserRaceList);
         }
         else
         {

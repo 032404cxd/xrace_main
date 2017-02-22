@@ -1210,6 +1210,7 @@ EOF;
     function dayuSMS($params)
     {
         include('Third/dayu/TopSdk.php');
+        $t1 = microtime(true);
         $c = new TopClient;
         $c->appkey = "23327292";//$appkey;
         $c->secretKey = "b54062e4e60366134595c4c527df308b";//$secret;
@@ -1222,7 +1223,9 @@ EOF;
         $req->setSmsTemplateCode(Base_Common::getSMSCode($params['SMSCode']));
 
         $resp = $c->execute($req);
-        //var_dump($resp);
+        $Log = json_encode(array("return"=>$resp,"TimeLag" =>microtime(true)-$t1 ));
+
+        return $Log;
     }
     function getSMSCode($CodeName)
     {

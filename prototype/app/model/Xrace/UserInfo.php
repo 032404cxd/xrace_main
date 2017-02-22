@@ -149,11 +149,33 @@ class Xrace_UserInfo extends Base_Widget
      * @param array $bind 所要添加的数据列
      * @return boolean
      */
+    public function deleteRegInfoByMobile($Mobile)
+    {
+        $Mobile = trim($Mobile);
+        $table_to_process = Base_Widget::getDbTable($this->table_reg_info);
+        return $this->db->delete($table_to_process, '`Mobile` = ?', $Mobile);
+    }
+    /**
+     * 删除单个用户注册日志记录
+     * @param array $bind 所要添加的数据列
+     * @return boolean
+     */
     public function deleteRegLog($RegId)
     {
         $RegId = intval($RegId);
         $table_to_process = Base_Widget::getDbTable($this->table_reg_log);
         return $this->db->delete($table_to_process, '`RegId` = ?', $RegId);
+    }
+    /**
+     * 删除单个用户注册日志记录
+     * @param array $bind 所要添加的数据列
+     * @return boolean
+     */
+    public function deleteRegLogByMobile($Mobile)
+    {
+        $Mobile = trim($Mobile);
+        $table_to_process = Base_Widget::getDbTable($this->table_reg_log);
+        return $this->db->delete($table_to_process, '`Mobile` = ?', $Mobile);
     }
 
 
@@ -771,6 +793,7 @@ class Xrace_UserInfo extends Base_Widget
                             //如果找到
                             if($RegInfo['RegId'])
                             {
+                                /*
                                 //如果当前手机号码在验证有效期内
                                 if(strtotime($RegInfo['ExceedTime'])>=time())
                                 {
@@ -787,6 +810,9 @@ class Xrace_UserInfo extends Base_Widget
                                     //通知前端需要进一步获取手机
                                     return array('RegId'=>$RegInfo['RegId'],'NeedMobile'=>1);
                                 }
+                                */
+                                //通知前端需要进一步获取手机
+                                return array('RegId'=>$RegInfo['RegId'],'NeedMobile'=>1);
                             }
                             else
                             {
@@ -896,7 +922,11 @@ class Xrace_UserInfo extends Base_Widget
                         "Mobile"=> $RegInfo['Mobile'],
                         "SMSCode"=>"SMS_Validate_Code"
                     );
-                    Base_common::dayuSMS($params);
+                    $Log = Base_common::dayuSMS($params);
+
+                    $filePath = __APP_ROOT_DIR__ . "Log" . "/" . "SMS" . "/";
+                    $fileName = date("Ymd",time()) . ".php";
+                    Base_Common::appendLog($filePath, $fileName, $Log.'/r/n', "SMSLog");
                     return 1;
                 }
                 else
@@ -1078,13 +1108,13 @@ class Xrace_UserInfo extends Base_Widget
         //获得比赛ID
         $whereRace = isset($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
         //获得用户ID
-        $whereUser = (isset($params['UserId']) && $params['UserId']!="0")?" UserId = '".$params['UserId']."' ":"";
+        $whereRaceUser = (isset($params['RaceUserId']) && $params['RaceUserId']!="0")?" RaceUserId = '".$params['RaceUserId']."' ":"";
         //获得组别ID
         $whereGroup = (isset($params['RaceGroupId'])  && $params['RaceGroupId']!=0)?" RaceGroupId = '".$params['RaceGroupId']."' ":"";
         //获得赛事ID
         $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
         //所有查询条件置入数组
-        $whereCondition = array($whereCatalog,$whereUser,$whereGroup,$whereRace,$whereStage);
+        $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
         $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by BIB,TeamId,ApplyId desc";
@@ -1137,9 +1167,9 @@ class Xrace_UserInfo extends Base_Widget
                 foreach($UserList as $ApplyId => $ApplyInfo)
                 {
                     //获取用户信息
-                    $UserInfo = $this->getUser( $ApplyInfo["UserId"],'UserId,Name');
+                    $RaceUserInfo = $this->getRaceUser( $ApplyInfo["RaceUserId"],'RaceUserId,Name');
                     //如果获取到用户
-                    if($UserInfo['UserId'])
+                    if($RaceUserInfo['RaceUserId'])
                     {
                         //存储报名数据
                         $RaceUserList['RaceUserList'][$ApplyId] = $ApplyInfo;
@@ -1157,7 +1187,7 @@ class Xrace_UserInfo extends Base_Widget
                         //保存分组信息
                         $RaceUserList['RaceUserList'][$ApplyId]['RaceGroupName'] = $RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupName'];
                         //获取用户名
-                        $RaceUserList['RaceUserList'][$ApplyId]['Name'] = $UserInfo['Name'];
+                        $RaceUserList['RaceUserList'][$ApplyId]['Name'] = $RaceUserInfo['Name'];
                         if(!isset($RaceUserList['TeamList'][$ApplyInfo['TeamId']]))
                         {
                             //队伍信息
@@ -1348,29 +1378,44 @@ class Xrace_UserInfo extends Base_Widget
         //如果获取到
         if(isset($UserInfo['UserId']))
         {
-            //事务开始
-            $this->db->begin();
-            //生成用户信息
-            $RaceUserInfo = array('Birthday'=>$UserInfo['Birthday'],'CreateUserId'=>$UserInfo['UserId'],'Name'=>$UserInfo['Name'],'Sex'=>$UserInfo['Sex'],'ContactMobile'=>$UserInfo['ContactMobile'],'IdNo'=>$UserInfo['IdNo'],'IdType'=>$UserInfo['IdType'],'Available'=>1,'RegTime'=>date("Y-m-d H:i:s",time()));
-            //创建用户
-            $CreateRaceUser = $this->insertRaceUser($RaceUserInfo);
-            //将比赛用户ID更新回用户
-            $UpdateUser = $this->updateUser($UserInfo['UserId'],array("RaceUserId"=>$CreateRaceUser));
-            //如果创建比赛用户成功 且 更新用户成功
-            if($CreateRaceUser && $UpdateUser)
+            $RaceUserInfo = $this->getRaceUserByColumn("IdNo",$UserInfo['IdNo']);
+            //如果已经被占用
+            if(isset($RaceUserInfo['RaceUserId']))
             {
-                //提交
-                $this->db->commit();
-                //更新缓存
-                $this->getUserInfo($UserId,"*",0);
-                //返回创建的用户ID
-                return $CreateRaceUser;
+                $NewUserInfo = array("RaceUserId"=>$RaceUserInfo['RaceUserId']);
+                $update = $this->updateUser($UserId,$NewUserInfo);
+                if($update)
+                {
+                    //返回用户信息
+                    return $RaceUserInfo['RaceUserId'];
+                }
             }
             else
             {
-                //回滚
-                $this->db->rollBack();
-                return false;
+                //事务开始
+                $this->db->begin();
+                //生成用户信息
+                $RaceUserInfo = array('Birthday'=>$UserInfo['Birthday'],'CreateUserId'=>$UserInfo['UserId'],'Name'=>$UserInfo['Name'],'Sex'=>$UserInfo['Sex'],'ContactMobile'=>$UserInfo['ContactMobile'],'IdNo'=>$UserInfo['IdNo'],'IdType'=>$UserInfo['IdType'],'Available'=>1,'RegTime'=>date("Y-m-d H:i:s",time()));
+                //创建用户
+                $CreateRaceUser = $this->insertRaceUser($RaceUserInfo);
+                //将比赛用户ID更新回用户
+                $UpdateUser = $this->updateUser($UserInfo['UserId'],array("RaceUserId"=>$CreateRaceUser));
+                //如果创建比赛用户成功 且 更新用户成功
+                if($CreateRaceUser && $UpdateUser)
+                {
+                    //提交
+                    $this->db->commit();
+                    //更新缓存
+                    $this->getUserInfo($UserId,"*",0);
+                    //返回创建的用户ID
+                    return $CreateRaceUser;
+                }
+                else
+                {
+                    //回滚
+                    $this->db->rollBack();
+                    return false;
+                }
             }
         }
         else
@@ -1529,7 +1574,7 @@ class Xrace_UserInfo extends Base_Widget
                             {
                                 $params = array(
                                     "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
-                                    "Mobile"=> $ResetInfo['Mobile'],
+                                    "Mobile"=> $UserResetInfo['Mobile'],
                                     "SMSCode"=>"SMS_Reset_Password"
                                 );
                                 Base_common::dayuSMS($params);
@@ -1552,7 +1597,7 @@ class Xrace_UserInfo extends Base_Widget
         else
         {
             //根据手机号码查询用户
-            $UserInfo = $this->getUser(3);
+            $UserInfo = $this->getUser($Mobile);
             //如果查询到
             if(!isset($UserInfo['UserId']))
             {
@@ -1604,7 +1649,7 @@ class Xrace_UserInfo extends Base_Widget
                         {
                             $params = array(
                                 "smsContent" => array("code"=>$ValidateCode,"product"=>"淘赛体育"),
-                                "Mobile"=> $ResetInfo['Mobile'],
+                                "Mobile"=> $UserResetInfo['Mobile'],
                                 "SMSCode"=>"SMS_Reset_Password"
                             );
                             Base_common::dayuSMS($params);
@@ -1741,6 +1786,7 @@ class Xrace_UserInfo extends Base_Widget
                     //创建更新日志，写入更新时间，IP，密码
                     unset($ResetInfo['ValidateCode'],$ResetInfo['ExceedTime'],$ResetInfo['UpdateExceedTime']);
                     $ResetLog = array_merge($ResetInfo,array("UpdateTime"=>date("Y-m-d H:i:s",$Time),"IP"=>Base_Common::ip2long($IP),"Password"=>md5($Password)));
+                    unset($ResetLog['ResetId']);
                     $insertResetLog = $this->insertResetLog($ResetLog);
                     //更新用户密码
                     $UserInfo = array("Password"=>md5($Password));
@@ -1767,7 +1813,7 @@ class Xrace_UserInfo extends Base_Widget
                 //生成验证码
                 $ValidateCode = sprintf("%06d",rand(1,999999));
                 //更新重置记录
-                $UserResetInfo = array("ResetTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>$ValidateCode,'ExceedTime'=>date("Y-m-d H:i:s",$Time+1800),'UpdateExceedTime'=>date("Y-m-d H:i:s",0));
+                $UserResetInfo = array("ResetTime"=>date("Y-m-d H:i:s",$Time),"ValidateCode"=>$ValidateCode,'ExceedTime'=>date("Y-m-d H:i:s",$Time+1800),'UpdateExceedTime'=>date("Y-m-d H:i:s",$Time+1800));
                 $Reset = $this->updateResetInfo($ResetInfo['ResetId'],$UserResetInfo);
                 //更新成功
                 if($Reset)
