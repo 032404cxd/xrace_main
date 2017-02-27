@@ -1244,9 +1244,9 @@ class Xrace_Race extends Base_Widget
 						foreach($RaceUserList as $ApplyId => $ApplyInfo)
 						{
 							//获取用户信息
-							$UserInfo = $oUser->getUserInfo($ApplyInfo["UserId"],'UserId,Name');
+							$RaceUserInfo = $oUser->getRaceUser($ApplyInfo["RaceUserId"],'RaceUserId,Name');
 							//如果获取到用户
-							if($UserInfo['UserId'])
+							if($RaceUserInfo['RaceUserId'])
 							{
 								$TeamInfo = $oTeam->getTeamInfo($ApplyInfo['TeamId']);
                                 if(!isset($TeamInfo['TeamId']))
@@ -1254,7 +1254,7 @@ class Xrace_Race extends Base_Widget
 									$TeamInfo = array('TeamName'=>"个人");
 								}
 								//存储用户信息
-								$TimingPointList['UserInfo'] = array('UserName'=>$UserInfo['Name'],'UserId' => $UserInfo['UserId'],'TeamId'=> $ApplyInfo['TeamId'],'TeamName'=>$TeamInfo['TeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
+								$TimingPointList['UserInfo'] = array('UserName'=>$RaceUserInfo['Name'],'RaceUserId' => $RaceUserInfo['RaceUserId'],'TeamId'=> $ApplyInfo['TeamId'],'TeamName'=>$TeamInfo['TeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
 								//数据解包
 								$ApplyInfo['comment'] = json_decode($ApplyInfo['comment'],true);
 								//如果有关联的订单数据
@@ -1277,7 +1277,7 @@ class Xrace_Race extends Base_Widget
 								//存储报名信息
 								//$TimingPointList['ApplyInfo'] = $ApplyInfo;
 								$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/"."UserList"."/";
-								$fileName = $UserInfo['UserId'].".php";
+								$fileName = $RaceUserInfo['RaceUserId'].".php";
 								//生成配置文件
 								Base_Common::rebuildConfig($filePath,$fileName,$TimingPointList,"Timing");
 							}

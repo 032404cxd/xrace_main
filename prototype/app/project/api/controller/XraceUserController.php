@@ -73,13 +73,24 @@ class XraceUserController extends AbstractController
         $OpenId = isset($this->request->OpenId) ? trim($this->request->OpenId) : "";
         //根据第三方平台ID查询用户
         $UserInfo = $this->oUser->getUserByColumn("WeChatId",$OpenId,"UserId");
+        //客户端
+        $IP = isset($this->request->IP) ?  trim($this->request->IP):"127.0.0.1";
         //如果查询到
         if(isset($UserInfo['UserId']))
         {
             //获得用户信息
             $UserInfo = $this->oUser->getUserInfo($UserInfo['UserId'],"*",$Cache);
-            //结果数组 如果列表中有数据则返回成功，否则返回失败
-            $result = array("return" => isset($UserInfo['UserId']) ? 1 : 0, "UserInfo" => $UserInfo);
+            //如果获取到
+            if(isset($UserInfo['UserId']))
+            {
+                $result = array("return" => 1, "UserInfo" => $UserInfo,"Token"=>$this->oUser->makeToken($UserInfo['UserId'],$IP,"WeChat"));
+
+            }
+            else
+            {
+                //结果数组 如果列表中有数据则返回成功，否则返回失败
+                $result = array("return" => 0, "NeedReg" => 1);
+            }
         }
         else
         {
@@ -466,7 +477,7 @@ class XraceUserController extends AbstractController
                     else
                     {
                         //生成用户信息
-                        $UserInfo = array('CreateUserId'=>0,'Name'=>$Name,'Sex'=>$Sex,'ContactMobile'=>$ContactMobile,'IdNo'=>$IdNo,'IdType'=>$IdType,'Available'=>0,'RegTime'=>date("Y-m-d H:i:s",time()));
+                        $UserInfo = array('CreateUserId'=>0,'Name'=>$Name,'Sex'=>$Sex,'Birthday'=>$Birthday,'ContactMobile'=>$ContactMobile,'IdNo'=>$IdNo,'IdType'=>$IdType,'Available'=>0,'RegTime'=>date("Y-m-d H:i:s",time()));
                         if($IdType==1)
                         {
                             $UserInfo['Birthday'] = substr($IdNo,6,4)."-".substr($IdNo,10,2)."-".substr($IdNo,12,2);

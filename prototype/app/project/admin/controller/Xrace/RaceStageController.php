@@ -2426,11 +2426,22 @@ class Xrace_RaceStageController extends AbstractController
 						//如果有获取到
 						if(isset($RaceInfo['RaceId']))
 						{
-							$RaceGroupInfo = $this->oRace->getRaceGroup($RaceInfo['RaceGroupId'],"RaceGroupId,RaceGroupName");
-							if(isset($RaceGroupInfo['RaceGroupId']))
-							{
-								$RaceInfo['RaceGroupInfo'] = $RaceGroupInfo;
-							}
+                            //如果是比赛分组模式
+                            if($RaceStageInfo['comment']['RaceStructure']=="race")
+                            {
+                                $RaceInfo['RaceGroupInfo'] = array("RaceGroupName"=>"多个分组");
+                            }
+                            else
+                            {
+                                //获取分组信息
+                                $RaceGroupInfo = $this->oRace->getRaceGroup($RaceInfo['RaceGroupId'],"RaceGroupId,RaceGroupName");
+                                //如果获取到
+                                if(isset($RaceGroupInfo['RaceGroupId']))
+                                {
+                                    $RaceInfo['RaceGroupInfo'] = $RaceGroupInfo;
+                                }
+                            }
+
 							//保存比赛信息
 							$RaceCombinationList[$RaceCombinationId]['RaceList'][$RaceId] = $RaceInfo;
 						}
@@ -2514,27 +2525,46 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceCombinationId = intval($this->request->RaceCombinationId);
 			//获取套餐信息
 			$RaceCombinationInfo = $this->oRace->getRaceCombination($RaceCombinationId);
-			//解包比赛列表
+            //解包比赛列表
 			$RaceCombinationInfo['RaceList'] = json_decode($RaceCombinationInfo['RaceList'],true);
 			//解包产品列表
 			$RaceCombinationInfo['ProductList'] = json_decode($RaceCombinationInfo['ProductList'],true);
 			//获取比赛信息
-			$RaceStageInfo = $this->oRace->getRaceStage($RaceCombinationInfo['RaceStageId']);
-			//获取比赛列表
-			$RaceList = $this->oRace->getRaceList($RaceCombinationInfo['RaceStageId'],0,'RaceId,RaceName,RaceGroupId,RaceTypeId');
-			//获取比赛类型列表
+			$RaceStageInfo = $this->oRace->getRaceStage($RaceCombinationInfo['RaceStageId'],"RaceStageId,RaceStageName,comment");
+            //解包数组
+            $RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
+            //获取比赛列表
+			$RaceList = $this->oRace->getRaceList(array("RaceStageId"=>$RaceCombinationInfo['RaceStageId'],"InRun"=>0),'RaceId,RaceName,RaceGroupId,RaceTypeId,comment');
+            //获取比赛类型列表
 			$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
 			//赛事分组列表
 			$RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
-			//循环比赛列表
-			foreach($RaceList as $RaceId => $RaceInfo)
-			{
-				$RaceList[$RaceId]['selected'] = isset($RaceCombinationInfo['RaceList'][$RaceId])?1:0;
-				//获取比赛类型名称
-				$RaceList[$RaceId]['RaceGroupName'] = isset($RaceGroupList[$RaceInfo['RaceGroupId']]['RaceGroupName'])?$RaceGroupList[$RaceInfo['RaceGroupId']]['RaceGroupName']:"未配置";
-				//获取比赛类型名称
-				$RaceList[$RaceId]['RaceTypeName'] = isset($RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName'])?$RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName']:"未配置";
-			}
+            //如果是比赛分组模式
+            if($RaceStageInfo['comment']['RaceStructure']=="race")
+            {
+                //循环比赛列表
+                foreach($RaceList as $RaceId => $RaceInfo)
+                {
+                    $RaceList[$RaceId]['selected'] = isset($RaceCombinationInfo['RaceList'][$RaceId])?1:0;
+                    //获取比赛分组名称
+                    $RaceList[$RaceId]['RaceGroupName'] = "多个分组";
+                    //获取比赛类型名称
+                    $RaceList[$RaceId]['RaceTypeName'] = isset($RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName'])?$RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName']:"未配置";
+                }
+            }
+            else
+            {
+                //循环比赛列表
+                foreach($RaceList as $RaceId => $RaceInfo)
+                {
+                    $RaceList[$RaceId]['selected'] = isset($RaceCombinationInfo['RaceList'][$RaceId])?1:0;
+                    //获取比赛类型名称
+                    $RaceList[$RaceId]['RaceGroupName'] = isset($RaceGroupList[$RaceInfo['RaceGroupId']]['RaceGroupName'])?$RaceGroupList[$RaceInfo['RaceGroupId']]['RaceGroupName']:"未配置";
+                    //获取比赛类型名称
+                    $RaceList[$RaceId]['RaceTypeName'] = isset($RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName'])?$RaceTypeList[$RaceInfo['RaceTypeId']]['RaceTypeName']:"未配置";
+                }
+            }
+
 			//解包数组
 			$RaceStageInfo['comment'] = isset($RaceStageInfo['comment']) ? json_decode($RaceStageInfo['comment'], true) : array();
 			if (isset($RaceStageInfo['comment']['SelectedProductList']))

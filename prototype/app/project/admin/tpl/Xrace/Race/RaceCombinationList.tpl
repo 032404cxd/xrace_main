@@ -37,7 +37,7 @@
   </tr>
   {tpl:else}
   <tr>
-    <th align="center" class="rowtip">本站尚未配置任何比赛<a href="javascript:;" onclick="RaceAdd('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceGroupInfo.RaceGroupId/}')">点此添加比赛</a>
+    <th align="center" class="rowtip">本站尚未配置套餐<a href="{tpl:$this.sign/}&ac=race.combination.add&RaceStageId={tpl:$RaceStageInfo.RaceStageId/}">点此添加</a>
     </th>
     </th>
   </tr>
