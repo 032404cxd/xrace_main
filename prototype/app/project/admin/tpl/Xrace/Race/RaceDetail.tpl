@@ -77,7 +77,7 @@
         <table width="99%" align="center"  class="table table-bordered table-striped">
         {tpl:loop $TimingInfo.CreditList $CId $CInfo}
         <tr>
-          <td colspan="10">{tpl:$CInfo.CreditName/}/{tpl:$CInfo.CreditRule/}             <a href="javascript:;" onclick="CreditModify('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$CId/}','{tpl:$CInfo.CreditName/}')">修改</a> | <a href="javascript:;" onclick="CreditDelete('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$CId/}','{tpl:$CInfo.CreditName/}')">删除</a>
+          <td colspan="10">{tpl:$CInfo.CreditName/}/{tpl:if($CInfo.CreditRoundList!="0")}第{tpl:$CInfo.CreditRoundList/}圈{tpl:else}所有圈{/tpl:if}/{tpl:$CInfo.CreditRule/}             <a href="javascript:;" onclick="CreditModify('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$CId/}','{tpl:$CInfo.CreditName/}')">修改</a> | <a href="javascript:;" onclick="CreditDelete('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$CId/}','{tpl:$CInfo.CreditName/}')">删除</a>
           </td>
         </tr>
         {/tpl:loop}

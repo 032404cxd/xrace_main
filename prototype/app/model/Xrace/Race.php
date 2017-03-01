@@ -769,6 +769,62 @@ class Xrace_Race extends Base_Widget
         }
     }
     //更新计时点数据
+    public function TimingPointCredit($RaceId,$SportsTypeId,$TimingId,$bind)
+    {
+        //获取比赛信息
+        $RaceInfo = $this->getRace($RaceId);
+        //如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
+        if(isset($RaceInfo['RaceId']))
+        {
+            $RaceInfo['comment'] = isset($RaceInfo['comment']) ? json_decode($RaceInfo['comment'], true) : array();
+            //获取运动分段的数据
+            $SportsTypeInfo = $RaceInfo['comment']['DetailList'][$SportsTypeId];
+            //如果有存储对应计时点信息
+            if(isset($SportsTypeInfo['TimingId']) && ($SportsTypeInfo['TimingId']>0))
+            {
+                //获取计时点数据
+                $SportsTypeInfo['TimingDetailList'] = $this->getTimingDetail($SportsTypeInfo['TimingId']);
+                //如果有获取到计时点数据
+                if(is_array($SportsTypeInfo['TimingDetailList']))
+                {
+                    //解包数据
+                    $SportsTypeInfo['TimingDetailList']['comment'] = json_decode($SportsTypeInfo['TimingDetailList']['comment'],true);
+                    //如果需要被更新的计时点数据存在
+                    if(isset($SportsTypeInfo['TimingDetailList']['comment'][$TimingId]))
+                    {
+                        if(isset($SportsTypeInfo['TimingDetailList']['comment'][$TimingId]))
+                        {
+                            //替换内容
+                            $SportsTypeInfo['TimingDetailList']['comment'][$TimingId]['CreditList'][$bind['CreditId']] = $bind;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                        //重新打包计时点数据
+                        $updateBind = array('comment' => json_encode($SportsTypeInfo['TimingDetailList']['comment']));
+
+                        //更新计时点数据
+                        $TimingDetailUpdate = $this->updateTimingDetail($SportsTypeInfo['TimingId'],$updateBind);
+                        return $TimingDetailUpdate;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+    //更新计时点数据
     public function deleteTimingPointCredit($RaceId,$SportsTypeId,$TimingId,$CreditId)
     {
         //获取比赛信息
@@ -1137,7 +1193,7 @@ class Xrace_Race extends Base_Widget
 		$RaceId = intval($RaceId);
 		//获取比赛信息
 		$RaceInfo = $this->getRace($RaceId,"RaceId,RaceTypeId,StartTime,EndTime,RaceStageId,RaceGroupId,RaceName,comment,RouteInfo");
-		//如果获取到比赛信息
+        //如果获取到比赛信息
 		if(isset($RaceInfo['RaceId']))
 		{
 			//查找到的计时点信息
@@ -1151,10 +1207,10 @@ class Xrace_Race extends Base_Widget
             //如果有配置赛段信息
 			if(isset($RaceInfo['comment']['DetailList']) && count($RaceInfo['comment']['DetailList']))
 			{
-				//循环赛段信息
+                //循环赛段信息
 				foreach($RaceInfo['comment']['DetailList'] as $SportsType => $TimingList)
 				{
-					//每个分段的距离初始化为0
+				    //每个分段的距离初始化为0
 					$SectionDistence = 0;
 					//初始化空数组
 					$TimingPointList['Sports'][$SportsType]['TimingPointList'] = array();
@@ -1163,7 +1219,7 @@ class Xrace_Race extends Base_Widget
 					{
 						//获取计时点详情信息
 						$TimingInfo = $this->getTimingDetail($TimingList['TimingId']);
-						//如果计时点数据获取成功
+                        //如果计时点数据获取成功
 						if(isset($TimingInfo['TimingId']))
 						{
 							unset($RaceInfo['comment']['DetailList']);
@@ -1179,12 +1235,12 @@ class Xrace_Race extends Base_Widget
 								    //如果有计时点
 									if(count($TimingPoint))
 									{
-										//依次累加
+									    //依次累加
 										$TimingCount++;
 										$oSports = new Xrace_Sports();
 										//获取运动信息
-										$SportsTypeInfo = $oSports->getSportsType($TimingList['SportsTypeId'],"SportsTypeId,SportsTypeName,SpeedDisplayType");
-										if(isset($SportsTypeInfo['SportsTypeId']))
+                                        $SportsTypeInfo = $oSports->getSportsType($TimingList['SportsTypeId'],"*");
+                                        if(isset($SportsTypeInfo['SportsTypeId']))
 										{
 											$SportsTypeInfo['TimingId']=$TimingList['TimingId'];
 											//保存运动本身信息
@@ -1192,8 +1248,19 @@ class Xrace_Race extends Base_Widget
 											// 按照计时点通过测次数进行循环
 											for($j = 0;$j<$TimingPoint['Round'];$j++)
 											{
-												$TimingPointList['Sports'][$SportsType]['TimingPointList'][] = $i+1;
+											    $TimingPointList['Sports'][$SportsType]['TimingPointList'][] = $i+1;
 												$t = $TimingPoint;
+                                                if(isset($t['CreditList']))
+                                                {
+                                                    foreach($t['CreditList'] as $CreditId => $CreditConfig)
+                                                    {
+                                                        $RoundList = explode(",",$CreditConfig['CreditRoundList']);
+                                                        if(!in_array($j+1,$RoundList) && $CreditConfig['CreditRoundList'] != "0")
+                                                        {
+                                                            unset($t['CreditList']);
+                                                        }
+                                                    }
+                                                }
 												//第一次通过不需要下标
 												$t['TName'].= ($j==0)?"":"*".($j+1);
 												$t['inTime'] = 0;
@@ -1218,7 +1285,7 @@ class Xrace_Race extends Base_Widget
 				//如果未检测到任何的计时点信息
 				if($TimingCount==0)
 				{
-					return false;
+				    return false;
 				}
 				else
 				{
@@ -1243,7 +1310,7 @@ class Xrace_Race extends Base_Widget
 						//循环选手列表
 						foreach($RaceUserList as $ApplyId => $ApplyInfo)
 						{
-							//获取用户信息
+						    //获取用户信息
 							$RaceUserInfo = $oUser->getRaceUser($ApplyInfo["RaceUserId"],'RaceUserId,Name');
 							//如果获取到用户
 							if($RaceUserInfo['RaceUserId'])

@@ -1875,4 +1875,10 @@ class Xrace_UserInfo extends Base_Widget
             }
         }
     }
+    //创建用户报名信息
+    public function insertRaceApplyUserInfo(array $bind,array $bind_update)
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_race);
+        return $this->db->insert_update($table_to_process, $bind,$bind_update);
+    }
 }

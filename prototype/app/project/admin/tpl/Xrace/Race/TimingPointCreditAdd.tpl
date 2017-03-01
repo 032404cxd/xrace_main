@@ -16,6 +16,10 @@
       </select></th>
   </tr>
   <tr>
+    <th align="center" class="rowtip">圈数列表</th>
+    <th align="center" class="rowtip"><textarea class="span3" name="CreditRoundList"  id="CreditRoundList" cols ="50" rows = "5"/></textarea></th>
+  </tr>
+  <tr>
     <th align="center" class="rowtip">积分规则列表</th>
     <th align="center" class="rowtip"><textarea class="span3" name="CreditRule"  id="CreditRule" cols ="50" rows = "5"/></textarea></th>
   </tr>

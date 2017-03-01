@@ -45,7 +45,7 @@ class Xrace_Sports extends Base_Widget
 	public function getSportsType($SportsTypeId, $fields = '*')
 	{
 		$SportsTypeId = intval($SportsTypeId);
-		$table_to_process = Base_Widget::getDbTable($this->table);
+        $table_to_process = Base_Widget::getDbTable($this->table);
 		return $this->db->selectRow($table_to_process, $fields, '`SportsTypeId` = ?', $SportsTypeId);
 	}
 	/**
