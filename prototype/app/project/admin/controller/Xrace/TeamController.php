@@ -209,9 +209,6 @@ class Xrace_TeamController extends AbstractController
     //添加队伍
     public function teamInsertAction()
     {
-        echo json_encode(array('errno' => 1));
-        return true;
-        die();
         //获取 页面参数
         $bind=$this->request->from('TeamName');
         //队伍名称不能为空

@@ -268,7 +268,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','Display','SpecialDiscount');
+		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','Display','SpecialDiscount','ApplyLimit');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -323,6 +323,10 @@ class Xrace_RaceStageController extends AbstractController
             $bind['comment']['SpecialDiscount'] = trim($bind['SpecialDiscount']);
             //删除原有数据
             unset($bind['SpecialDiscount']);
+            //单次报名人数上限
+            $bind['comment']['ApplyLimit'] = abs(intval($bind['ApplyLimit']));
+            //删除原有数据
+            unset($bind['ApplyLimit']);
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//图片数据压缩
@@ -355,7 +359,7 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
 			//数据解包
 			$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
-			//如果没有配置比赛结构 或者 比赛结构配置不在配置列表中
+            //如果没有配置比赛结构 或者 比赛结构配置不在配置列表中
 			if(!isset($RaceStageInfo['comment']['RaceStructure']) || !isset($RaceStructureList[$RaceStageInfo['comment']['RaceStructure']]))
 			{
 				//默认为分组优先
@@ -401,7 +405,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageUpdateAction()
 	{
 		//获取 页面参数
-		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','SpecialDiscount','Display');
+		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','SpecialDiscount','Display','ApplyLimit');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -464,6 +468,10 @@ class Xrace_RaceStageController extends AbstractController
             $bind['comment']['SpecialDiscount'] = trim($bind['SpecialDiscount']);
             //删除原有数据
             unset($bind['SpecialDiscount']);
+            //单次报名人数上限
+            $bind['comment']['ApplyLimit'] = abs(intval($bind['ApplyLimit']));
+            //删除原有数据
+            unset($bind['ApplyLimit']);
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//图片数据压缩
@@ -2064,8 +2072,47 @@ class Xrace_RaceStageController extends AbstractController
                     {
                         $RaceGroupInfo = array("RaceGroupId"=>$RaceInfo['RaceGroupId']);
                     }
+                    if(trim($t['8'])=="")
+                    {
+                        $TeamId = 0;
+                    }
+                    else
+                    {
+                        if(isset($TeamList[trim($t['8'])]))
+                        {
+                            $TeamId = $TeamList[trim($t['8'])];
+                        }
+                        else
+                        {
+                            $TeamInfo = $oTeam->getTeamInfoByName(trim($t['8']),"TeamId,TeamName");
+                            if(isset($TeamInfo['TeamId']))
+                            {
+                                $TeamList[trim($t['8'])] = $TeamInfo['TeamId'];
+                                $TeamId = $TeamInfo['TeamId'];
+                            }
+                            else
+                            {
+                                //获取当前时间
+                                $Time = date("Y-m-d H:i:s", time());
+                                //生成队伍的数组
+                                $bind['TeamName'] = trim($t['8']);
+                                $bind['TeamComment'] = $bind['TeamName'];
+                                $bind['CreateUserId'] = 0;
+                                $bind['CreateTime'] = $Time;
+                                $bind['LastUpdateTime'] = $Time;
+                                //创建队伍信息
+                                $InsertTeam = $oTeam->insertTeam($bind);
+                                if($InsertTeam)
+                                {
+                                    $TeamId = $InsertTeam;
+                                    $TeamList[trim($t['8'])] = $InsertTeam;
+                                }
+                            }
+                        }
+
+                    }
                     //根据证件号码获取用户信息
-                    $UserInfo = $oUser->getUserByColumn("IdNo",$t['6']);
+                    $UserInfo = $oUser->getUserByColumn("IdNo",trim($t['6']));
                     //如果找到
                     if(isset($UserInfo['UserId']))
                     {
@@ -2073,9 +2120,9 @@ class Xrace_RaceStageController extends AbstractController
                         if($UserInfo['RaceUserId']>0)
                         {
                             //初始化新报名记录的信息
-                            $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$UserInfo['RaceUserId'],"ApplyRaceUserId"=>$UserInfo['RaceUserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>0);
+                            $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$UserInfo['RaceUserId'],"ApplyRaceUserId"=>$UserInfo['RaceUserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
                             //如果存在，则更新部分信息
-                            $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>0);
+                            $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
                             $Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
                             //如果创建成功
                             if($Apply)
@@ -2086,7 +2133,7 @@ class Xrace_RaceStageController extends AbstractController
                         else
                         {
                             //根据证件号码获取比赛用户信息
-                            $RaceUserInfo = $oUser->getRaceUserByColumn("IdNo",$t['6']);
+                            $RaceUserInfo = $oUser->getRaceUserByColumn("IdNo",trim($t['6']));
                             //如果已经被占用
                             if(isset($RaceUserInfo['RaceUserId']))
                             {
@@ -2095,11 +2142,11 @@ class Xrace_RaceStageController extends AbstractController
                                 if($update)
                                 {
                                     //初始化新报名记录的信息
-                                    $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$RaceUserInfo['RaceUserId'],"ApplyRaceUserId"=>$RaceUserInfo['RaceUserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>0);
+                                    $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$RaceUserInfo['RaceUserId'],"ApplyRaceUserId"=>$RaceUserInfo['RaceUserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
                                     //如果存在，则更新部分信息
-                                    $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>0);
+                                    $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
                                     $Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
-                                    echo "apply002:".$Apply."<br>";
+                                    //echo "apply002:".$Apply."<br>";
                                     //如果创建成功
                                     if($Apply)
                                     {
@@ -2118,12 +2165,13 @@ class Xrace_RaceStageController extends AbstractController
                                 //如果创建成功
                                 if($RaceUserId)
                                 {
+
                                     //初始化新报名记录的信息
-                                    $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$RaceUserId,"ApplyRaceUserId"=>$RaceUserId,"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>0);
+                                    $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$RaceUserId,"ApplyRaceUserId"=>$RaceUserId,"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
                                     //如果存在，则更新部分信息
-                                    $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>0);
+                                    $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
                                     $Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
-                                    echo "apply003:".$Apply."<br>";
+                                    //echo "apply003:".$Apply."<br>";
                                     //如果创建成功
                                     if($Apply)
                                     {
@@ -2141,16 +2189,16 @@ class Xrace_RaceStageController extends AbstractController
                     else
                     {
                         //根据证件号码获取比赛用户信息
-                        $RaceUserInfo = $oUser->getRaceUserByColumn("IdNo",$t['6']);
+                        $RaceUserInfo = $oUser->getRaceUserByColumn("IdNo",trim($t['6']));
                         //如果已经被占用
                         if(isset($RaceUserInfo['RaceUserId']))
                         {
                             //初始化新报名记录的信息
-                            $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$RaceUserInfo['RaceUserId'],"ApplyRaceUserId"=>$RaceUserInfo['RaceUserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>0);
+                            $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$RaceUserInfo['RaceUserId'],"ApplyRaceUserId"=>$RaceUserInfo['RaceUserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
                             //如果存在，则更新部分信息
-                            $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>0);
+                            $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
                             $Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
-                            echo "apply004:".$Apply."<br>";
+                            //echo "apply004:".$Apply."<br>";
                             //如果创建成功
                             if($Apply)
                             {
@@ -2160,11 +2208,11 @@ class Xrace_RaceStageController extends AbstractController
                         else
                         {
                             //生成用户信息
-                            $UserInfo = array('CreateUserId'=>0,'Name'=>$t['2'],'Sex'=>$t['3'],'Birthday'=>"",'ContactMobile'=>$t['7'],'IdNo'=>$t['6'],'IdType'=>$t['5'],'Available'=>0,'RegTime'=>date("Y-m-d H:i:s",time()));
+                            $UserInfo = array('CreateUserId'=>0,'Name'=>$t['2'],'Sex'=>$t['3'],'Birthday'=>"",'ContactMobile'=>$t['7'],'IdNo'=>trim($t['6']),'IdType'=>$t['5'],'Available'=>0,'RegTime'=>date("Y-m-d H:i:s",time()));
                             if($t['5']==1)
                             {
-                                $UserInfo['Birthday'] = substr($t['6'],6,4)."-".substr($t['6'],10,2)."-".substr($t['6'],12,2);
-                                $UserInfo['Sex'] = $t['3']==0?$t['3']:(intval(substr($t['6'],16,1))%2==0?2:1);
+                                $UserInfo['Birthday'] = substr(trim($t['6']),6,4)."-".substr(trim($t['6']),10,2)."-".substr(trim($t['6']),12,2);
+                                $UserInfo['Sex'] = $t['3']==0?$t['3']:(intval(substr(trim($t['6']),16,1))%2==0?2:1);
                             }
                             $CreateUser = 1;
                             //创建用户
@@ -2173,11 +2221,11 @@ class Xrace_RaceStageController extends AbstractController
                             if($CreateUser)
                             {
                                 //初始化新报名记录的信息
-                                $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$CreateUser,"ApplyRaceUserId"=>$CreateUser,"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>0);
+                                $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$CreateUser,"ApplyRaceUserId"=>$CreateUser,"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
                                 //如果存在，则更新部分信息
-                                $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>0);
+                                $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
                                 $Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
-                                echo "apply005:".$Apply."<br>";
+                                //echo "apply005:".$Apply."<br>";
                                 //如果创建成功
                                 if($Apply)
                                 {

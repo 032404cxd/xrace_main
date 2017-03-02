@@ -19,6 +19,9 @@
 				{/tpl:loop}
 			</select></td>
 	</tr>
+	<td>单次报名人数上限</td>
+	<td align="left"><input name="ApplyLimit" type="text" class="span3" id="ApplyLimit" /></td>
+	</tr>
 <tr class="hover"><td>所属赛事</td>
 	<td align="left">	<select name="RaceCatalogId" id="RaceCatalogId" size="1" onchange="getGroupList()">
 			{tpl:loop $RaceCatalogList $RaceCatalogInfo}

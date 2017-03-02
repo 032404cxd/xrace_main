@@ -26,6 +26,9 @@ function RaceStageIconDelete(sid,name,logo_id){
             {/tpl:loop}
         </select></td>
 </tr>
+    <td>单次报名人数上限</td>
+    <td align="left"><input name="ApplyLimit" type="text" class="span3" id="ApplyLimit" value="{tpl:$RaceStageInfo.comment.ApplyLimit/}" /></td>
+    </tr>
 <tr class="hover"><td>赛事分站Id</td>
 <td align="left">{tpl:$RaceStageInfo.RaceStageId/}</td>
 </tr>
