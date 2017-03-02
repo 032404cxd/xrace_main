@@ -30,7 +30,7 @@ class Xrace_UserInfo extends Base_Widget
     //认证记录中对应的实名认证状态名
     protected $authStatus_log = array('0'=>"拒绝","2"=>"通过");
     //实名认证用到的证件类型列表
-    protected $authIdType = array('1'=>"身份证","2"=>"护照","3"=>"港澳台通行证");
+    protected $authIdType = array('1'=>"身份证","2"=>"护照","3"=>"港澳通行证","3"=>"台湾通行证");
     //用户执照状态
     protected $user_license_status = array('1'=>"生效中",'2'=>"已过期",'3'=>"即将生效",'4'=>"已删除");
     //用户签到状态

@@ -13,10 +13,11 @@ class Cli_MylapsController extends Base_Controller_Action{
     public function timingAction()
     {
 		$RaceId = $this->request->RaceId;
+        $Force = $this->request->Force;
 		if($RaceId)
 		{
 			echo "RaceId:".$RaceId."\n";
-			$this->oMylaps->genMylapsTimingInfo($RaceId);
+			$this->oMylaps->genMylapsTimingInfo($RaceId,$Force);
 		}
 		else
 		{

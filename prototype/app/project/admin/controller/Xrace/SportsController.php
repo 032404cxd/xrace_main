@@ -114,7 +114,7 @@ class Xrace_SportsController extends AbstractController
 	{
 		//接收页面参数
 		$bind=$this->request->from('SportsTypeId','SportsTypeName','SpeedDisplayType');
-		//运动类型名称不能为空
+        //运动类型名称不能为空
 		if(trim($bind['SportsTypeName'])=="")
 		{
 			$response = array('errno' => 1);

@@ -23,6 +23,7 @@ class Xrace_Race extends Base_Widget
     protected $finalResultType = array('gunshot'=>'发枪时间','net'=>'净时间','credit'=>'积分');
 	protected $raceLicenseType = array('manager'=>'管理员审核','birthday'=>'生日','sex'=>'性别','age'=>"年龄");
     protected $applySourceList = array(1=>"线上",2=>"线下");
+    protected $applySepcialDiscount = array(0=>"无","single_max"=>"单人最高票价");
 	public function getRaceStructure()
 	{
 		return $this->raceStructure;
@@ -39,6 +40,10 @@ class Xrace_Race extends Base_Widget
 	{
 		return $this->raceLicenseType;
 	}
+    public function getApplySepcialDiscount()
+    {
+        return $this->applySepcialDiscount;
+    }
 	public function getRaceTimingResultType($RaceResultType)
 	{
 		//获取预定义数组

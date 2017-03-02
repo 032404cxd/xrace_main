@@ -240,6 +240,8 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageInsert");
 		if($PermissionCheck['return'])
 		{
+            //特殊折扣列表
+            $ApplySepcialDiscount  = $this->oRace->getApplySepcialDiscount();
 			//加载富文本编辑器
 			include('Third/ckeditor/ckeditor.php');
 			$editor =  new CKEditor();
@@ -266,7 +268,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','Display');
+		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','Display','SpecialDiscount');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -313,6 +315,14 @@ class Xrace_RaceStageController extends AbstractController
             $bind['comment']['PriceList'] = $this->oRace->getPriceList(trim($bind['PriceList']),1);
             //删除原有数据
             unset($bind['PriceList']);
+            //折扣对应列表
+            $bind['comment']['PriceDiscount'] = $this->oRace->getPriceList(trim($bind['PriceDiscount']),1);
+            //删除原有数据
+            unset($bind['PriceDiscount']);
+            //特别折扣对应列表
+            $bind['comment']['SpecialDiscount'] = trim($bind['SpecialDiscount']);
+            //删除原有数据
+            unset($bind['SpecialDiscount']);
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//图片数据压缩
@@ -331,6 +341,8 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
 		if($PermissionCheck['return'])
 		{
+            //特殊折扣列表
+		    $ApplySepcialDiscount  = $this->oRace->getApplySepcialDiscount();
 			//比赛-分组的层级规则
 			$RaceStructureList  = $this->oRace->getRaceStructure();
 			//分站ID
@@ -389,7 +401,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageUpdateAction()
 	{
 		//获取 页面参数
-		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','Display');
+		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','SpecialDiscount','Display');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -444,6 +456,14 @@ class Xrace_RaceStageController extends AbstractController
             $bind['comment']['PriceList'] = $this->oRace->getPriceList(trim($bind['PriceList']),1);
             //删除原有数据
             unset($bind['PriceList']);
+            //折扣对应列表
+            $bind['comment']['PriceDiscount'] = $this->oRace->getPriceList(trim($bind['PriceDiscount']),1);
+            //删除原有数据
+            unset($bind['PriceDiscount']);
+            //特别折扣对应列表
+            $bind['comment']['SpecialDiscount'] = trim($bind['SpecialDiscount']);
+            //删除原有数据
+            unset($bind['SpecialDiscount']);
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//图片数据压缩
@@ -2390,10 +2410,10 @@ class Xrace_RaceStageController extends AbstractController
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
             //用户ID
-			$UserId = intval($this->request->UserId);
-			//获取用户信息
-			$UserInfo = $oUser->getUserInfo($UserId,'UserId,Name');
-			//获取比赛信息
+			$RaceUserId = intval($this->request->RaceUserId);
+            //获取用户信息
+			$UserInfo = $oUser->getRaceUser($RaceUserId,'RaceUserId,Name');
+            //获取比赛信息
 			$RaceInfo = $this->oRace->getRace($RaceId);
 			//数据解包
 			$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
@@ -2405,7 +2425,7 @@ class Xrace_RaceStageController extends AbstractController
                 //获取成绩列表
                 $RaceResultList = $this->oRace->getRaceResult($RaceId,$RaceGroupId);
                 //指定了用户就不需要分组列表选择
-                if(!$UserInfo['UserId'])
+                if(!$UserInfo['RaceUserId'])
                 {
                     //循环比赛已经开设的分组列表
                     foreach($RaceInfo['comment']['SelectedRaceGroup'] as $GroupId => $GroupInfo)

@@ -9,6 +9,16 @@
 <td>分站通票价格</td>
 <td align="left"><input name="PriceList" type="text" class="span3" id="PriceList" value="0" /></td>
 </tr>
+<td>分站折扣</td>
+<td align="left"><input name="PriceDiscount" type="text" class="span3" id="PriceDiscount" value="0" /></td>
+</tr>
+	<tr class="hover"><td>其他计价规则</td>
+		<td align="left">	<select name="SpecialDiscount"  id="SpecialDiscount" size="1">
+				{tpl:loop $ApplySepcialDiscount $Discount $SepcialDiscountInfo}
+				<option value="{tpl:$Discount/}" >{tpl:$SepcialDiscountInfo/}</option>
+				{/tpl:loop}
+			</select></td>
+	</tr>
 <tr class="hover"><td>所属赛事</td>
 	<td align="left">	<select name="RaceCatalogId" id="RaceCatalogId" size="1" onchange="getGroupList()">
 			{tpl:loop $RaceCatalogList $RaceCatalogInfo}

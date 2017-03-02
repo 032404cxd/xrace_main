@@ -16,6 +16,16 @@ function RaceStageIconDelete(sid,name,logo_id){
 <td>分站通票价格</td>
 <td align="left"><input name="PriceList" type="text" class="span3" id="PriceList" value="{tpl:$RaceStageInfo.comment.PriceList/}"/></td>
 </tr>
+<td>分站折扣</td>
+<td align="left"><input name="PriceDiscount" type="text" class="span3" id="PriceDiscount" value="{tpl:$RaceStageInfo.comment.PriceDiscount/}" /></td>
+</tr>
+<tr class="hover"><td>其他计价规则</td>
+    <td align="left">	<select name="SpecialDiscount"  id="SpecialDiscount" size="1">
+            {tpl:loop $ApplySepcialDiscount $Discount $SepcialDiscountInfo}
+            <option value="{tpl:$Discount/}" {tpl:if($Discount==$RaceStageInfo.comment.SpecialDiscount)}selected="selected"{/tpl:if}>{tpl:$SepcialDiscountInfo/}</option>
+            {/tpl:loop}
+        </select></td>
+</tr>
 <tr class="hover"><td>赛事分站Id</td>
 <td align="left">{tpl:$RaceStageInfo.RaceStageId/}</td>
 </tr>
