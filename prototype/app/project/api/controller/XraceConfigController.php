@@ -1007,27 +1007,27 @@ class XraceConfigController extends AbstractController
         //比赛ID
         $RaceId = abs(intval($this->request->RaceId));
         //比赛ID
-        $UserId = abs(intval($this->request->UserId));
+        $RaceUserId = abs(intval($this->request->RaceUserId));
         //用户BIB
         $BIB = trim($this->request->BIB);
-        if (!$UserId) {
+        if (!$RaceUserId) {
             //根据用户的BIB获取比赛报名信息
             $UserApplyInfo = $this->oUser->getRaceApplyUserInfoByBIB($RaceId, $BIB);
             //如果查询到报名记录
             if ($UserApplyInfo['ApplyId']) {
                 //保存用户ID
-                $UserId = $UserApplyInfo['UserId'];
+                $UserId = $UserApplyInfo['RaceUserId'];
             }
         }
         //获取用户比赛的详情
-        $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId, $UserId);
+        $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId, $RaceUserId);
         //如果有查出数据
-        if (!isset($UserRaceInfo['UserInfo']))
+        if (!isset($UserRaceInfo['RaceUserInfo']))
         {
             //重新生成该场比赛所有人的配置数据
-            $this->oRace->genRaceLogToText($RaceId, $UserId);
+            $this->oRace->genRaceLogToText($RaceId, $RaceUserId);
             //重新获取比赛详情
-            $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId, $UserId);
+            $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId, $RaceUserId);
         }
         $UserRaceInfo['ApplyInfo']['RaceStatus'] = $this->oRace->getUserRaceStatus($UserRaceInfo);
         $result = array("return" => isset($UserRaceInfo['ApplyInfo']) ? 1 : 0, "UserRaceInfo" => $UserRaceInfo);

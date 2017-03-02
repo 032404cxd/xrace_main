@@ -1326,7 +1326,7 @@ class Xrace_Race extends Base_Widget
 									$TeamInfo = array('TeamName'=>"个人");
 								}
 								//存储用户信息
-								$TimingPointList['UserInfo'] = array('UserName'=>$RaceUserInfo['Name'],'RaceUserId' => $RaceUserInfo['RaceUserId'],'TeamId'=> $ApplyInfo['TeamId'],'TeamName'=>$TeamInfo['TeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
+								$TimingPointList['RaceUserInfo'] = array('Name'=>$RaceUserInfo['Name'],'RaceUserId' => $RaceUserInfo['RaceUserId'],'TeamId'=> $ApplyInfo['TeamId'],'TeamName'=>$TeamInfo['TeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
 								//数据解包
 								$ApplyInfo['comment'] = json_decode($ApplyInfo['comment'],true);
 								//如果有关联的订单数据
@@ -1344,7 +1344,7 @@ class Xrace_Race extends Base_Widget
 								}
 								if(isset($ApplyInfo['comment']['BDDeviceId']) && (strlen($ApplyInfo['comment']['BDDeviceId'])>4))
 								{
-									$TimingPointList['UserInfo']['ApplyComment']['BDLocationUrl'] = "http://182.92.140.26:8000/rest/sdk.location.queryLocation/226/0?deviceId=".$ApplyInfo['comment']['BDDeviceId']."&beginTime=beginTime&endTime=endTime";
+									$TimingPointList['RaceUserInfo']['ApplyComment']['BDLocationUrl'] = "http://182.92.140.26:8000/rest/sdk.location.queryLocation/226/0?deviceId=".$ApplyInfo['comment']['BDDeviceId']."&beginTime=beginTime&endTime=endTime";
 								}
 								//存储报名信息
 								//$TimingPointList['ApplyInfo'] = $ApplyInfo;
