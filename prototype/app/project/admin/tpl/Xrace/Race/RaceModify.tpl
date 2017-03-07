@@ -3,7 +3,7 @@
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceInfo.RaceStageId/}" />
 <input type="hidden" name="RaceId" id="RaceId" value="{tpl:$RaceId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped">
-<tr class="hover"><th align="center" class="rowtip">比赛名称</th><th align="center" class="rowtip"><input name="RaceName" type="text" class="span2" id="RaceName" value = "{tpl:$RaceInfo.RaceName/}" size="50" /></th></tr>
+<tr class="hover"><th align="center" class="rowtip">比赛名称</th><th align="center" class="rowtip"><input name="RaceName" type="text" class="span3" id="RaceName" value = "{tpl:$RaceInfo.RaceName/}" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">报名时间</th><th align="center" class="rowtip"><input type="text" name="ApplyStartTime" value="{tpl:$RaceInfo.ApplyStartTime/}" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >-<input type="text" name="ApplyEndTime" value="{tpl:$RaceInfo.ApplyEndTime/}" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
 			{tpl:if($RaceStageInfo.comment.RaceStructure=="race")}
 			<tr class="hover"><th align="center" class="rowtip">赛事分组</th><th align="center" class="rowtip">
@@ -12,6 +12,7 @@
 				<tr class="hover">
 					<th align="center" class="rowtip"><input type="checkbox"  name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][Selected]"  {tpl:if($RaceGroupInfo.Selected > 0)}checked{/tpl:if} value="{tpl:$RaceGroupInfo.RaceGroupId/}" /> {tpl:$RaceGroupInfo.RaceGroupName/}</th>
 					<th align="center" class="rowtip"><input type="text" name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][StartTime]" value="{tpl:$RaceGroupInfo.StartTime/}"  class="input-medium"  onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >.<input name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][RaceStartMicro]" type="text" class="span1" id="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][RaceStartMicro]" value = "{tpl:$RaceGroupInfo.RaceStartMicro func="sprintf('%03d',@@)"/}" />-<input type="text" name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][EndTime]" value="{tpl:$RaceGroupInfo.EndTime/}" value="" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th>
+					<th align="center" class="rowtip">积分比例：<input type="text" class="span1" name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][CreditRatio]" value="{tpl:$RaceGroupInfo.CreditRatio/}"></th>
 				</tr>
 				{/tpl:loop}
 			</table>

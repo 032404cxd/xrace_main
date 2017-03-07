@@ -633,7 +633,7 @@ class Xrace_RaceStageController extends AbstractController
 					$t = array();
                     foreach($RaceInfo['comment']['SelectedRaceGroup'] as $k => $v)
 					{
-						if(isset($RaceGroupList[$k]))
+						if(isset($RaceGroupList[$k]) && $v['Selected'])
 						{
 							$t[$k] = $RaceGroupList[$k]['RaceGroupName'];
 						}
@@ -779,7 +779,7 @@ class Xrace_RaceStageController extends AbstractController
 					$RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],"RaceGroupName,RaceGroupId");
                     //置为0
 					$RaceGroupId = 0;
-					//循环已经配置的分组
+                    //循环已经配置的分组
 					foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $k => $v)
 					{
 					    //如果查到就保留
@@ -819,6 +819,31 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+    //复制比赛配置填写页面
+    public function raceCopySubmitAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //获取比赛信息
+            $RaceInfo = $this->oRace->getRace($RaceId,"RaceId,RaceName,RaceStageId");
+            //如果有获取到比赛信息
+            if(isset($RaceInfo['RaceId']))
+            {
+                $RaceInfo['RaceName'] = $RaceInfo['RaceName']."_副本";
+                //渲染模板
+                include $this->tpl('Xrace_Race_RaceCopy');
+            }
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+}
 	//添加比赛
 	public function raceInsertAction()
 	{
@@ -945,6 +970,7 @@ class Xrace_RaceStageController extends AbstractController
                     }
                     else
                     {
+                        $bind['SelectedRaceGroup'][$Group]['CreditRatio'] = abs($GroupInfo['CreditRatio']);
                         //获取最早的开始时间作为比赛开始时间
                         $bind['StartTime'] = date("Y-m-d H:i:s",(strtotime($bind['StartTime'])>0?min(strtotime($bind['StartTime']),strtotime($GroupInfo['StartTime'])):strtotime($GroupInfo['StartTime'])));
                         //获取最晚的结束时间作为比赛结束时间
@@ -1119,6 +1145,7 @@ class Xrace_RaceStageController extends AbstractController
                     }
                     else
                     {
+                        $bind['SelectedRaceGroup'][$Group]['CreditRatio'] = abs($GroupInfo['CreditRatio']);
                         //获取最早的开始时间作为比赛开始时间
                         $bind['StartTime'] = date("Y-m-d H:i:s",(strtotime($bind['StartTime'])>0?min(strtotime($bind['StartTime']),strtotime($GroupInfo['StartTime'])):strtotime($GroupInfo['StartTime'])));
                         //获取最晚的结束时间作为比赛结束时间
@@ -1155,6 +1182,41 @@ class Xrace_RaceStageController extends AbstractController
 		echo json_encode($response);
 		return true;
 	}
+    //修改比赛
+    public function raceCopyAction()
+    {
+        //获取 页面参数
+        $bind=$this->request->from('RaceName');
+        //比赛ID
+        $RaceId = intval($this->request->RaceId);
+        //比赛名称不能为空
+        if(trim($bind['RaceName'])=="")
+        {
+            $response = array('errno' => 1);
+        }
+        else
+        {
+            //获取比赛信息
+            $RaceInfo = $this->oRace->getRace($RaceId);
+            $RaceInfo['RaceName'] = $bind['RaceName'];
+            //解包数组
+            $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+            unset($RaceInfo['comment']['DetailList']);
+            //数据打包
+            $RaceInfo['comment'] = json_encode($RaceInfo['comment']);
+            if(!isset($response))
+            {
+                //删除主键
+                unset($RaceInfo['RaceId']);
+                //更新比赛
+                $CopyRace = $this->oRace->insertRace($RaceInfo);
+                $response = $CopyRace ? array('errno' => 0) : array('errno' => 9);
+            }
+
+        }
+        echo json_encode($response);
+        return true;
+    }
     //删除比赛
     public function raceDeleteAction()
     {
@@ -1522,19 +1584,19 @@ class Xrace_RaceStageController extends AbstractController
 		{
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
-			//运动类型ID
+            //运动类型ID
 			$SportsTypeId = intval($this->request->SportsTypeId);
 			//需要添加的运动类型置于哪个位置之后，默认为开头
 			$After = isset($this->request->After)?intval($this->request->After):-1;
 			$this->oSports = new Xrace_Sports();
 			//获取运动类型列表
 			$SportsTypeList = $this->oSports->getAllSportsTypeList('SportsTypeId,SportsTypeName');
-			//获取比赛信息
+            //获取比赛信息
 			$RaceInfo = $this->oRace->getRace($RaceId);
-			//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
+            //如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符
 			if(isset($RaceInfo['RaceId']))
 			{
-				//数据解包
+			    //数据解包
 				$RaceInfo['comment'] = isset($RaceInfo['comment'])?json_decode($RaceInfo['comment'],true):array();
 				//获取运动类型信息
 				$SportsTypeInfo = $RaceInfo['comment']['DetailList'][$SportsTypeId];

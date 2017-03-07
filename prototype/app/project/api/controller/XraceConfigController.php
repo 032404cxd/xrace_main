@@ -721,9 +721,9 @@ class XraceConfigController extends AbstractController
                     foreach($RaceInfo['comment']['SelectedRaceGroup'] as $k => $v)
                     {
                         //如果查到就保留
-                        if(isset($RaceGroupList[$v]))
+                        if(isset($RaceGroupList[$k]))
                         {
-                            $RaceList[$RaceId]['comment']['SelectedRaceGroup'][$k] = $RaceGroupList[$v];
+                            $RaceList[$RaceId]['comment']['SelectedRaceGroup'][$k] = $RaceGroupList[$k];
                         }
                         //否则就删除
                         else
@@ -873,7 +873,7 @@ class XraceConfigController extends AbstractController
                         foreach($RaceInfo['comment']['SelectedRaceGroup'] as $k => $v)
                         {
                             //如果查到就保留
-                            if(isset($RaceGroupList[$k]))
+                            if(isset($RaceGroupList[$k]) && $v['Selected'])
                             {
                                 $RaceGroupInfo = $RaceGroupList[$k];
                                 //默认当前组别可选
