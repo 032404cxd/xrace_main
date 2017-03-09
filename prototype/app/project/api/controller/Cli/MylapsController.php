@@ -16,21 +16,18 @@ class Cli_MylapsController extends Base_Controller_Action{
         $Force = $this->request->Force;
 		if($RaceId)
 		{
-			echo "RaceId:".$RaceId."\n";
 			$this->oMylaps->genMylapsTimingInfo($RaceId,$Force);
 		}
 		else
 		{
-			$RaceList = $this->oRace->getRaceList(array("inRun"=>1),"RaceId");
+			$RaceList = $this->oRace->getRaceList(array("inRun"=>1,"ToProcess"=>1),"RaceId,ToProcess");
 			foreach($RaceList as $RaceId => $RaceInfo)
 			{
-				echo "RaceId:".$RaceId."\n";
-				$this->oMylaps->genMylapsTimingInfo($RaceId,$Force);
+			    $this->oMylaps->genMylapsTimingInfo($RaceId,$RaceInfo['ToProcess']);
+
 			}
 		}
 
-		//print_R($RaceList);
-		//$this->oMylaps->genMylapsTimingInfo($RaceId);
 		//php.exe d:\xamppserver\htdocs\xrace_main\prototype\app\project\api\html\cli.php "ctl=mylaps&ac=timing&RaceId=25"
     }
 }

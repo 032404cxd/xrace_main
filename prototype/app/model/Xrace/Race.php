@@ -365,8 +365,9 @@ class Xrace_Race extends Base_Widget
 		$whereGroup = (isset($params['RaceGroupId']) && ($params['RaceGroupId'] >0))?(" RaceGroupId = ".$params['RaceGroupId']):"";
 		$whereStage = (isset($params['RaceStageId']) && ($params['RaceStageId'] >0))?(" RaceStageId = ".$params['RaceStageId']):"";
 		//$whereEndTime = (isset($params['RaceEndTime']) && ($params['RaceEndTime'] >0))?(" unix_timestamp(EndTime) <= ".$params['RaceEndTime']):"";
-		$whereIn = (isset($params['inRun']) && ($params['inRun']==1))?("((EndTime >= '".date("Y-m-d H:i:s",time()-300)."') and (StartTime <= '".date("Y-m-d H:i:s",time()+300). "'))"):"";
-		$whereCondition = array($whereGroup,$whereStage,$whereIn);
+        $whereIn = (isset($params['inRun']) && ($params['inRun']==1))?("((EndTime >= '".date("Y-m-d H:i:s",time()-300)."') and (StartTime <= '".date("Y-m-d H:i:s",time()+300). "'))"):"";
+        $whereToProcess = (isset($params['ToProcess']) && ($params['ToProcess']==1))?" or (ToProcess = '1')":"";
+        $whereCondition = array($whereGroup,$whereStage,$whereIn,$whereToProcess);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceId asc";

@@ -101,14 +101,18 @@
     <th  align="center" class="rowtip" colspan="2">总时间差</th>
     <th  align="center" class="rowtip" colspan="2">总净时间差</th>
   </tr>
-  {tpl:loop $RaceResultList.UserRaceTimingInfo.Team $Tid $TeamInfo}
-  <tr>
+  {tpl:loop $RaceResultList.UserRaceTimingInfo.Team $Gid $GroupInfo}
+        {tpl:if($RaceGroupId == $Gid)}
+        {tpl:loop $GroupInfo $Tid $TeamInfo}
+        <tr>
     <th  align="center" class="rowtip">{tpl:$Tid func="@@+1"/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TeamName/}({tpl:$TeamInfo.Name/})</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TimeLag func="Base_Common::parthTimeLag(@@)"/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.NetTimeLag func="Base_Common::parthTimeLag(@@)"/}</th>
+      {/tpl:loop}
+          {/tpl:if}
   {/tpl:loop}
 </table>
 </fieldset>

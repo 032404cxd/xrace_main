@@ -1243,6 +1243,32 @@ class Xrace_RaceStageController extends AbstractController
             include $this->tpl('403');
         }
     }
+    //删除比赛
+    public function raceResultUpdateAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //获取比赛信息
+            $RaceInfo = $this->oRace->getRace($RaceId,'RaceId');
+            //如果有获取到比赛信息
+            if(isset($RaceInfo['RaceId']))
+            {
+                $bind = array("ToProcess"=>1);
+                $update = $this->oRace->updateRace($RaceId,$bind);
+            }
+            //返回之前页面
+            $this->response->goBack();
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
 	//比赛详情页面
 	public function raceDetailAction()
 	{

@@ -1197,6 +1197,13 @@ class XraceConfigController extends AbstractController
                         }
                     }
                     $UserRaceTimingInfo['Total'] = array_values($UserRaceTimingInfo['Total']);
+                    foreach($UserRaceTimingInfo['Team'] as $k => $v)
+                    {
+                        if($k != $RaceGroupId)
+                        {
+                            unset($UserRaceTimingInfo['Team'][$k]);
+                        }
+                    }
                     //返回车手名单和车队列表
                     $result = array("return" => 1, "RaceUserList" => count($UserRaceTimingInfo['Total'])==0?$RaceUserList['RaceUserList']:array(), "UserRaceTimingInfo" => $UserRaceTimingInfo);
                 } else {

@@ -447,7 +447,15 @@ EOF;
 			}
 			else
 			{
-				$whereCondition[$key] = ' and '.$value;
+				$t = explode(" ",trim($value));
+                if($t[0] != "or")
+                {
+                    $whereCondition[$key] = 'and '.$value;
+                }
+                else
+                {
+                    $whereCondition[$key] = $value;
+                }
 			}
 		}
 		$where = implode(' ',$whereCondition);

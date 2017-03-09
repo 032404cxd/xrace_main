@@ -21,6 +21,9 @@
   function RaceCopy(rid){
     RaceResultListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.copy.submit&RaceId=' + rid, {title:'复制比赛',width:400,height:200});
   }
+  function RaceResultUpdate(r_id){
+    deleteAppBox = divBox.confirmBox({content:'是否更新比赛记录?<p>将于几分钟内由定时任务更新',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.result.update&RaceId=' + r_id;}});
+  }
 </script>
 <form action="{tpl:$this.sign/}&ac=race.update" name="form" id="form" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
@@ -53,7 +56,7 @@
     <th align="center" class="rowtip" width="18%">{tpl:$RaceInfo.StartTime/}.{tpl:$RaceInfo.comment.RaceStartMicro func="sprintf('%03d',@@)"/}<br>~<br>{tpl:$RaceInfo.EndTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceStatus/}</th>
     <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceModify('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceGroupId/}')">修改</a> | <a href="javascript:;" onclick="RaceUserUpload('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceGroupId/}')">导入报名</a>
-     | <a href="{tpl:$this.sign/}&ac=race.detail&RaceId={tpl:$RaceInfo.RaceId/}&RaceGroupId={tpl:$RaceInfo.RaceGroupId/}">计时点</a> | <a href="javascript:;" onclick="RaceUserList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceInfo.RaceGroupName/}')">选手名单</a> | <a target = "_blank" href="http://api.xrace.cn/?ctl=xrace.config&ac=timing.text&RaceId={tpl:$RaceInfo.RaceId/}">成绩更新</a> | <a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">成绩单</a> | <a  href="javascript:;" onclick="RaceDelete('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">删除</a> | <a  href="javascript:;" onclick="RaceCopy('{tpl:$RaceInfo.RaceId/}')">复制</a></th>
+     | <a href="{tpl:$this.sign/}&ac=race.detail&RaceId={tpl:$RaceInfo.RaceId/}&RaceGroupId={tpl:$RaceInfo.RaceGroupId/}">计时点</a> | <a href="javascript:;" onclick="RaceUserList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceInfo.RaceGroupName/}')">选手名单</a> | <a  href="javascript:;" onclick="RaceResultUpdate('{tpl:$RaceInfo.RaceId/}')">成绩更新</a> | <a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">成绩单</a> | <a  href="javascript:;" onclick="RaceDelete('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">删除</a> | <a  href="javascript:;" onclick="RaceCopy('{tpl:$RaceInfo.RaceId/}')">复制</a></th>
     </th>
   </tr>
   {/tpl:loop}
