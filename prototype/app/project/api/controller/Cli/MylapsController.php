@@ -25,7 +25,7 @@ class Cli_MylapsController extends Base_Controller_Action{
 			foreach($RaceList as $RaceId => $RaceInfo)
 			{
 				echo "RaceId:".$RaceId."\n";
-				$this->oMylaps->genMylapsTimingInfo($RaceId);
+				$this->oMylaps->genMylapsTimingInfo($RaceId,$Force);
 			}
 		}
 

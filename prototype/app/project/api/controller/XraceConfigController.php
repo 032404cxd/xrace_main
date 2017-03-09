@@ -1156,7 +1156,7 @@ class XraceConfigController extends AbstractController
             {
                 $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
                 //获取选手和车队名单
-                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,0, 1);
+                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,0, 0);
                 if (count($RaceUserList['RaceUserList']))
                 {
                     $t = array();

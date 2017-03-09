@@ -365,7 +365,7 @@ class Xrace_Race extends Base_Widget
 		$whereGroup = (isset($params['RaceGroupId']) && ($params['RaceGroupId'] >0))?(" RaceGroupId = ".$params['RaceGroupId']):"";
 		$whereStage = (isset($params['RaceStageId']) && ($params['RaceStageId'] >0))?(" RaceStageId = ".$params['RaceStageId']):"";
 		//$whereEndTime = (isset($params['RaceEndTime']) && ($params['RaceEndTime'] >0))?(" unix_timestamp(EndTime) <= ".$params['RaceEndTime']):"";
-		$whereIn = (isset($params['inRun']) && ($params['inRun']==1))?("((EndTime >= '".date("Y-m-d H:i:s",time()-1800)."') and (StartTime <= '".date("Y-m-d H:i:s",time()+1800). "'))"):"";
+		$whereIn = (isset($params['inRun']) && ($params['inRun']==1))?("((EndTime >= '".date("Y-m-d H:i:s",time()-300)."') and (StartTime <= '".date("Y-m-d H:i:s",time()+300). "'))"):"";
 		$whereCondition = array($whereGroup,$whereStage,$whereIn);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
@@ -1326,7 +1326,7 @@ class Xrace_Race extends Base_Widget
 									$TeamInfo = array('TeamName'=>"个人");
 								}
 								//存储用户信息
-								$TimingPointList['RaceUserInfo'] = array('Name'=>$RaceUserInfo['Name'],'RaceUserId' => $RaceUserInfo['RaceUserId'],'TeamId'=> $ApplyInfo['TeamId'],'TeamName'=>$TeamInfo['TeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
+								$TimingPointList['RaceUserInfo'] = array('Name'=>$RaceUserInfo['Name'],'RaceUserId' => $RaceUserInfo['RaceUserId'],'RaceGroupId'=>$ApplyInfo['RaceGroupId'],'TeamId'=> $ApplyInfo['TeamId'],'TeamName'=>$TeamInfo['TeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
 								//数据解包
 								$ApplyInfo['comment'] = json_decode($ApplyInfo['comment'],true);
 								//如果有关联的订单数据
@@ -1484,27 +1484,43 @@ class Xrace_Race extends Base_Widget
 	//根据用户ID和比赛ID获取用户该场比赛的详情
 	public function getUserRaceInfo($RaceId,$UserId)
 	{
-		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/"."UserList"."/";
+		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."_Data/"."UserList"."/";
 		$fileName = $UserId.".php";
 		//载入预生成的配置文件
 		return Base_Common::loadConfig($filePath,$fileName);
 	}
+    //根据用户ID和比赛ID获取用户该场比赛的详情
+    public function getUserRaceOriginalInfo($RaceId,$UserId)
+    {
+        $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/"."UserList"."/";
+        $fileName = $UserId.".php";
+        //载入预生成的配置文件
+        return Base_Common::loadConfig($filePath,$fileName);
+    }
 	//根据用户ID和比赛ID获取用户该场比赛的详情
 	public function getUserRaceInfoList($RaceId)
 	{
-		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
+		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."_Data/";
 		$fileName = "Total".".php";
 		//载入预生成的配置文件
 		return Base_Common::loadConfig($filePath,$fileName);
 	}
 
+    //根据用户ID和比赛ID获取用户该场比赛的详情
+    public function GetUserRaceTimingOriginalInfo($RaceId)
+    {
+        $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
+        $fileName = "Total.php";
+        //载入预生成的配置文件
+        return Base_Common::loadConfig($filePath,$fileName);
+    }
 	//根据用户ID和比赛ID获取用户该场比赛的详情
 	public function GetUserRaceTimingInfo($RaceId)
 	{
-		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
-		$fileName = "Total.php";
+		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."_Data/";
+        $fileName = "Total.php";
 		//载入预生成的配置文件
-		return Base_Common::loadConfig($filePath,$fileName);
+        return Base_Common::loadConfig($filePath,$fileName);
 	}
 
 	public function getUserRaceStatus($UserRaceInfo)

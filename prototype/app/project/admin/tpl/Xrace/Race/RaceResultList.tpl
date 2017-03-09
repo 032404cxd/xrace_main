@@ -71,6 +71,7 @@
     <th  align="center" class="rowtip" colspan="2">总时间</th>
     <th  align="center" class="rowtip" colspan="2">总净时间</th>
     <th  align="center" class="rowtip" colspan="2">BIB</th>
+    <th  align="center" class="rowtip" colspan="2">队伍</th>
     <th  align="center" class="rowtip" colspan="2">当前位置</th>
     <th  align="center" class="rowtip" colspan="2">积分获取</th>
   </tr>
@@ -81,6 +82,7 @@
     <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.BIB/}</th>
+    <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.TeamName/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.CurrentPositionName/}</th>
     <th  align="center" class="rowtip" colspan="2">
       {tpl:if(isset($TInfo.Credit))}

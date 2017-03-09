@@ -1259,10 +1259,12 @@ EOF;
                 $value_diff = $value[0]-$value[1];
                 //步进
                 $step = ($value_diff)/$key_diff;
+                $j = 1;
                 //循环累加
                 for($i=$key[0];$i<=$key[1];$i++)
                 {
-                    $t3[$i] =  intval($value[0]-$step*($i-2));
+                    $t3[$i] =  round($value[0]-$step*($j-1));
+                    $j++;
                 }
             }
             else
@@ -1271,5 +1273,25 @@ EOF;
             }
         }
         return $t3;
+    }
+    function copy_dir($src,$dst)
+    {
+        $dir = opendir($src);
+        @mkdir($dst);
+        while(false !== ( $file = readdir($dir)) )
+        {
+            if (( $file != '.' ) && ( $file != '..' ))
+            {
+                if ( is_dir($src . '/' . $file) )
+                {
+                    Base_Common::copy_dir($src . '/' . $file,$dst . '/' . $file);
+                    continue;
+                }
+                else {
+                    copy($src . '/' . $file,$dst . '/' . $file);
+                }
+            }
+        }
+        closedir($dir);
     }
 }
