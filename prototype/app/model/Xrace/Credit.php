@@ -177,7 +177,6 @@ class Xrace_Credit extends Base_Widget
         $CreditLog = $this->db->insert($table_user_log, $bindLog);
         //组合新的ID
         $bindLog['Id'] = $suffix."_".$CreditLog;
-        echo $bindLog['Id'] ."<br>";
         //新增记录表
         $CreditLogTotal = $this->db->insert($table_total, $bindLog);
         //如果同时成功
@@ -195,7 +194,7 @@ class Xrace_Credit extends Base_Widget
         }
     }
     /**
-     * 获取用户列表
+     * 获取积分总表的积分详情
      * @param $fields  所要获取的数据列
      * @param $params 传入的条件列表
      * @return array
@@ -204,18 +203,28 @@ class Xrace_Credit extends Base_Widget
     {
         //生成查询列
         $fields = Base_common::getSqlFields($fields);
-        //获取需要用到的表名
-        $table_to_process = Base_Widget::getDbTable($this->table_credit_update_log_total);
+        if(isset($params['UserId'])&&$params['UserId']>0)
+        {
+            //计算所在用户分表的后缀
+            $suffix = substr(md5($params['UserId']),0,1);
+            //检测用户积分变更表是否存在
+            $table_to_process = $this->db->createTable($this->table_credit_update_log,$suffix);
+            //用户
+            $whereUser = " UserId = '".$params['UserId']."' ";
+        }
+        else
+        {
+            //获取需要用到的表名
+            $table_to_process = Base_Widget::getDbTable($this->table_credit_update_log_total);
+        }
         //动作
         $whereAction = (isset($params['ActionId']) && $params['ActionId']>0)?" ActionId = '".$params['ActionId']."' ":"";
         //积分
         $whereCredit = (isset($params['CreditId']) && $params['CreditId']>0)?" CreditId = '".$params['CreditId']."' ":"";
         //比赛
         $whereRace = (isset($params['RaceId']) && $params['RaceId']>0)?" RaceId = '".$params['RaceId']."' ":"";
-        //昵称
-        //$whereNickName = (isset($params['NickName']) && trim($params['NickName']))?" NickName like '%".$params['NickName']."%' ":"";
         //所有查询条件置入数组
-        $whereCondition = array($whereAction,$whereCredit,$whereRace);
+        $whereCondition = array($whereAction,$whereCredit,$whereRace,$whereUser);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
         //获取用户数量
@@ -231,7 +240,7 @@ class Xrace_Credit extends Base_Widget
         $order = " ORDER BY Time desc";
         $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." ".$order." ".$limit;
         $return = $this->db->getAll($sql);
-        $CreditLog = array('CreditLog'=>array(),'CreditLogCount'=>$CreditLogCount);
+        $CreditLog = array('CreditLog'=>array(),'CreditLogCount'=>$CreditLogCount,'TotalPage' => ceil($CreditLogCount/$params['PageSize']));
         if(count($return))
         {
             foreach($return as $key => $value)
@@ -255,9 +264,20 @@ class Xrace_Credit extends Base_Widget
     {
         //生成查询列
         $fields = Base_common::getSqlFields(array("CreditLogCount"=>"count(Id)"));
-
-        //获取需要用到的表名
-        $table_to_process = Base_Widget::getDbTable($this->table_credit_update_log_total);
+        if(isset($params['UserId'])&&$params['UserId']>0)
+        {
+            //计算所在用户分表的后缀
+            $suffix = substr(md5($params['UserId']),0,1);
+            //检测用户积分变更表是否存在
+            $table_to_process = $this->db->createTable($this->table_credit_update_log,$suffix);
+            //用户
+            $whereUser = " UserId = '".$params['UserId']."' ";
+        }
+        else
+        {
+            //获取需要用到的表名
+            $table_to_process = Base_Widget::getDbTable($this->table_credit_update_log_total);
+        }
         //动作
         $whereAction = (isset($params['ActionId']) && $params['ActionId']>0)?" ActionId = '".$params['ActionId']."' ":"";
         //积分
@@ -265,7 +285,7 @@ class Xrace_Credit extends Base_Widget
         //比赛
         $whereRace = (isset($params['RaceId']) && $params['RaceId']>0)?" RaceId = '".$params['RaceId']."' ":"";
         //所有查询条件置入数组
-        $whereCondition = array($whereAction,$whereCredit,$whereRace);
+        $whereCondition = array($whereAction,$whereCredit,$whereRace,$whereUser);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
         $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;

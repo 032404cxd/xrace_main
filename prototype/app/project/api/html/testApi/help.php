@@ -2,51 +2,51 @@
 session_start();
 error_reporting(0);
 /**
- * ¹«¹²º¯ÊýºÍ±äÁ¿
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í±ï¿½ï¿½ï¿½
  *
- * @author     ÕÅæ÷ 344505721@qq.com
+ * @author     ï¿½ï¿½ï¿½ï¿½ 344505721@qq.com
  * @version    1.0, 2012-10-10
  */ 
-define('APPID',100); //APPIDÓÎÏ·ID
-define('PARTNERID',1); //PARTNERID´óÇøID
-define('RETURNTYPE',1); //RETURNTYPE·µ»ØÖµ¸ñÊ½
-define('SERVERID',100001001); //ÓÎÏ··þÎñÆ÷
+define('APPID',100); //APPIDï¿½ï¿½Ï·ID
+define('PARTNERID',1); //PARTNERIDï¿½ï¿½ï¿½ï¿½ID
+define('RETURNTYPE',1); //RETURNTYPEï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Ê½
+define('SERVERID',100001001); //ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-//ÏßÉÏ²âÊÔ»·¾³
+//ï¿½ï¿½ï¿½Ï²ï¿½ï¿½Ô»ï¿½ï¿½ï¿½
 if(strstr($_SERVER['SERVER_NAME'],"test.wjyx.com") || strstr($_SERVER['SERVER_NAME'],"test.limaogame.com")){
-    define('USER_API','http://usercenter.test.limaogame.com/'); //ÓÃ»§½Ó¿ÚÄ¬ÈÏÓòÃû
-    define('LOGIN_API','http://login.test.limaogame.com/'); //µÇÂ¼½Ó¿ÚÄ¬ÈÏÓòÃû
-    define('PAYMENT_API','http://payment.test.limaogame.com/'); //Ö§¸¶½Ó¿ÚÄ¬ÈÏÓòÃû
-    define('CONFIG_API','http://config.test.limaogame.com/'); //½Ó¿ÚÄ¬ÈÏÓòÃû
-    define('COMMON_API','http://common.test.limaogame.com/'); //Í¨ÓÃ½Ó¿ÚÄ¬ÈÏÓòÃû
+    define('USER_API','http://usercenter.test.limaogame.com/'); //ï¿½Ã»ï¿½ï¿½Ó¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    define('LOGIN_API','http://login.test.limaogame.com/'); //ï¿½ï¿½Â¼ï¿½Ó¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    define('PAYMENT_API','http://payment.test.limaogame.com/'); //Ö§ï¿½ï¿½ï¿½Ó¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    define('CONFIG_API','http://config.test.limaogame.com/'); //ï¿½Ó¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    define('COMMON_API','http://common.test.limaogame.com/'); //Í¨ï¿½Ã½Ó¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     
-    define('ACT_API','http://event.test.wjyx.com/'); //»î¶¯½Ó¿ÚÄ¬ÈÏÓòÃû
-    define('PASSPORT_API','http://passport.test.limaogame.com/'); //ÓÃ»§ÖÐÐÄ½Ó¿ÚÄ¬ÈÏÓòÃû    
-    define('LUNTAN_API','http://www.test.wjyx.com/board/'); //ÂÛÌ³µØÖ·
+    define('ACT_API','http://event.test.wjyx.com/'); //ï¿½î¶¯ï¿½Ó¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    define('PASSPORT_API','http://passport.test.limaogame.com/'); //ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ä½Ó¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½    
+    define('LUNTAN_API','http://www.test.wjyx.com/board/'); //ï¿½ï¿½Ì³ï¿½ï¿½Ö·
 }
-//ÏßÉÏÕýÊ½»·¾³
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½
 else if(strstr($_SERVER['SERVER_NAME'],"wjyx.com") || strstr($_SERVER['SERVER_NAME'],"limaogame.com")){
-    define('USER_API','http://usercenter.limaogame.com/'); //ÓÃ»§½Ó¿ÚÄ¬ÈÏÓòÃû
-    define('LOGIN_API','http://login.limaogame.com/'); //µÇÂ¼½Ó¿ÚÄ¬ÈÏÓòÃû
-    define('PAYMENT_API','http://payment.limaogame.com/'); //Ö§¸¶½Ó¿ÚÄ¬ÈÏÓòÃû
-    define('CONFIG_API','http://config.limaogame.com/'); //½Ó¿ÚÄ¬ÈÏÓòÃû
-    define('COMMON_API','http://common.limaogame.com/'); //Í¨ÓÃ½Ó¿ÚÄ¬ÈÏÓòÃû
+    define('USER_API','http://usercenter.limaogame.com/'); //ï¿½Ã»ï¿½ï¿½Ó¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    define('LOGIN_API','http://login.limaogame.com/'); //ï¿½ï¿½Â¼ï¿½Ó¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    define('PAYMENT_API','http://payment.limaogame.com/'); //Ö§ï¿½ï¿½ï¿½Ó¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    define('CONFIG_API','http://config.limaogame.com/'); //ï¿½Ó¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    define('COMMON_API','http://common.limaogame.com/'); //Í¨ï¿½Ã½Ó¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     
-    define('ACT_API','http://event.wjyx.com/'); //»î¶¯½Ó¿ÚÄ¬ÈÏÓòÃû
-    define('PASSPORT_API','http://passport.limaogame.com/'); //ÓÃ»§ÖÐÐÄ½Ó¿ÚÄ¬ÈÏÓòÃû    
-    define('LUNTAN_API','http://www.wjyx.com/board/'); //ÂÛÌ³µØÖ·
+    define('ACT_API','http://event.wjyx.com/'); //ï¿½î¶¯ï¿½Ó¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    define('PASSPORT_API','http://passport.limaogame.com/'); //ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ä½Ó¿ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½    
+    define('LUNTAN_API','http://www.wjyx.com/board/'); //ï¿½ï¿½Ì³ï¿½ï¿½Ö·
 }
 
-define('MAIL_QUEUE','mail_queue'); //ÓÊÏä¶ÓÁÐÊý¾Ý¿â
+define('MAIL_QUEUE','mail_queue'); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½
 
-//²Æ¸¶Í¨KEY
+//ï¿½Æ¸ï¿½Í¨KEY
 define('TENPAY_KEY','028036528b7376b9cefb0470b7bc4e67');
 
-//Ö§¸¶±¦KEY
+//Ö§ï¿½ï¿½ï¿½ï¿½KEY
 define('ALIPAY_KEY','qaqj14j20i31oblu9620q8t42o1gwu9p');
 
 /**
- * »ñÈ¡µÇÂ¼´æ´¢ÐÅÏ¢
+ * ï¿½ï¿½È¡ï¿½ï¿½Â¼ï¿½æ´¢ï¿½ï¿½Ï¢
  *
  * @access	private
  * @param	array
@@ -66,7 +66,7 @@ if ( ! function_exists('get_login_ajax'))
 }
 
 /**
- * »ñÈ¡Êý¾Ý¿âÁ¬½ÓÅäÖÃ
+ * ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  *
  * @access	private
  * @param	array
@@ -76,12 +76,12 @@ if ( ! function_exists('get_login_ajax'))
 if ( ! function_exists('get_db_config'))
 {
     /**
-     * ishot = 0 ÄÚÍø 
-     * ishot = 1 ÄÚÍø
+     * ishot = 0 ï¿½ï¿½ï¿½ï¿½ 
+     * ishot = 1 ï¿½ï¿½ï¿½ï¿½
     */
 	function get_db_config($isHost)
 	{
-        /*ÍâÍøÊý¾Ý¿â*/
+        /*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½*/
         if($isHost == 1){
             return array(
                             array(
@@ -93,7 +93,7 @@ if ( ! function_exists('get_db_config'))
                         );
         }
                     
-        /*ÄÚÍøÊý¾Ý¿â*/
+        /*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½*/
         if($isHost == 0){
             return array(
                     array('host' => '192.168.20.230',
@@ -107,7 +107,7 @@ if ( ! function_exists('get_db_config'))
 }
 
 /**
- * »ñÈ¡Êý¾Ý¿âÁ¬½Ó
+ * ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½ï¿½
  *
  * @access	private
  * @param	array
@@ -117,8 +117,8 @@ if ( ! function_exists('get_db_config'))
 if ( ! function_exists('get_db_link'))
 {
     /**
-     * ishot = 0 ÄÚÍø 
-     * ishot = 1 ÄÚÍø
+     * ishot = 0 ï¿½ï¿½ï¿½ï¿½ 
+     * ishot = 1 ï¿½ï¿½ï¿½ï¿½
     */
 	function get_db_link()
 	{
@@ -157,7 +157,7 @@ if ( ! function_exists('get_db_link'))
 }
 
 /**
- * ÉèÖÃsignÑéÖ¤
+ * ï¿½ï¿½ï¿½ï¿½signï¿½ï¿½Ö¤
  *
  * @access	private
  * @param	array
@@ -183,7 +183,7 @@ if ( ! function_exists('set_sign'))
 }
 
 /**
- * ²âÊÔÓÃsign
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sign
  *
  * @access	private
  * @param	array
@@ -209,7 +209,7 @@ if ( ! function_exists('set_sign'))
 }
 
 /**
- * °ÑÊý×éÆ´½Ó³ÉURL
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ´ï¿½Ó³ï¿½URL
  *
  * @access	private
  * @param	array
@@ -231,7 +231,7 @@ if ( ! function_exists('splice_url'))
 }
 
 /**
- * »ñÈ¡ÓÎÏ·ÁÐ±í
+ * ï¿½ï¿½È¡ï¿½ï¿½Ï·ï¿½Ð±ï¿½
  *
  * @access	private
  * @param	array
@@ -255,7 +255,7 @@ if ( ! function_exists('get_app_list'))
 }
 
 /**
- * »ñÈ¡ÓÎÏ·´óÇøÁÐ±í
+ * ï¿½ï¿½È¡ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½
  *
  * @access	private
  * @param	array
@@ -288,7 +288,7 @@ if ( ! function_exists('get_partner_list'))
 }
 
 /**
- * »ñÈ¡Ö§¸¶·½Ê½
+ * ï¿½ï¿½È¡Ö§ï¿½ï¿½ï¿½ï¿½Ê½
  *
  * @access	private
  * @param	array
@@ -312,7 +312,7 @@ if ( ! function_exists('get_payment'))
 }
 
 /**
- * »ñÈ¡serverid
+ * ï¿½ï¿½È¡serverid
  *
  * @access	private
  * @param	array
@@ -343,7 +343,7 @@ if ( ! function_exists('get_server_id'))
 }
 
 /**
- * µ÷ÓÃ½Ó¿Úº¯Êý
+ * ï¿½ï¿½ï¿½Ã½Ó¿Úºï¿½ï¿½ï¿½
  *
  * @access	private
  * @param	array
@@ -354,14 +354,23 @@ if ( ! function_exists('app_url'))
 {
 	function app_url($url,$ctl,$ac,$res)
 	{
-        $config_api = $url."?ctl=$ctl&ac=$ac&$res";     
-        
+        if(($ctl=="") || ($ac==""))
+        {
+            $config_api = $url."?$res";
+
+        }
+            else
+            {
+                $config_api = $url."?ctl=$ctl&ac=$ac&$res";
+
+            }
+
 	    return $config_api;
 	}
 }
 
 /**
- * »ñÈ¡ÓÃ»§Éí·ÝÐÅÏ¢
+ * ï¿½ï¿½È¡ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
  *
  * @access	private
  * @param	array
@@ -376,7 +385,7 @@ if ( ! function_exists('get_user_communication'))
 	       header("Location:http://my.test.com/?c=login");
            exit;
 	    }
-        //»ñÈ¡ÓÃ»§Éí·ÝÐÅÏ¢       
+        //ï¿½ï¿½È¡ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢       
         $arrayC['UserId'] = $user_info['UserId'];
         $arrayC['Time'] = time();
         $arrayC['PartnerId'] = PARTNERID;
@@ -395,7 +404,7 @@ if ( ! function_exists('get_user_communication'))
 }
 
 /**
- * »ñÈ¡ÓÃ»§»ù±¾ÐÅÏ¢
+ * ï¿½ï¿½È¡ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
  *
  * @access	private
  * @param	array
@@ -410,7 +419,7 @@ if ( ! function_exists('get_user_base'))
 	       header("Location:http://my.test.com/?c=login");
            exit;
 	    }        
-        //»ñÈ¡ÓÃ»§»ù´¡ÐÅÏ¢
+        //ï¿½ï¿½È¡ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
         $array['UserId'] = $user_info['UserId'];
         $array['Time'] = time();
         $array['PartnerId'] = PARTNERID;
@@ -429,7 +438,7 @@ if ( ! function_exists('get_user_base'))
 }
 
 /**
- * »ñÈ¡¿Í»§¶ËÍâÍøIP
+ * ï¿½ï¿½È¡ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½IP
  *
  * @access	private
  * @param	array
@@ -459,7 +468,7 @@ if ( ! function_exists('get_onlineip'))
 }
 
 /**
- * »ñÈ¡ÓÃ»§ÃÜ±£Êý
+ * ï¿½ï¿½È¡ï¿½Ã»ï¿½ï¿½Ü±ï¿½ï¿½ï¿½
  *
  * @access	private
  * @param	array
@@ -469,7 +478,7 @@ if ( ! function_exists('get_onlineip'))
 if ( ! function_exists('get_answer'))
 {
     function get_answer($user_info){
-        //»ñÈ¡ÓÃ»§»ù´¡ÐÅÏ¢
+        //ï¿½ï¿½È¡ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
         $array['UserId'] = $user_info['UserId'];
         $array['Time'] = time();
         $array['PartnerId'] = PARTNERID;
@@ -482,7 +491,7 @@ if ( ! function_exists('get_answer'))
 }
 
 /**
- * »ñÈ¡¶©µ¥ÏêÇé
+ * ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  *
  * @access	private
  * @param	array
@@ -502,7 +511,7 @@ if ( ! function_exists('get_order_info'))
 }
 
 /**
- * »ñÈ¡ÓÃ»§ÓÊÏä
+ * ï¿½ï¿½È¡ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½
  *
  * @access	private
  * @param	array
@@ -526,7 +535,7 @@ if ( ! function_exists('get_user_mail'))
 }
 
 /**
- * ÑéÖ¤ÓÃ»§ÊÇ·ñ´æÔÚ£¬»ñÈ¡ÓÃ»§ID
+ * ï¿½ï¿½Ö¤ï¿½Ã»ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½È¡ï¿½Ã»ï¿½ID
  *
  * @access	private
  * @param	array
@@ -550,7 +559,7 @@ if ( ! function_exists('get_user_id'))
 }
 
 /**
- * ÑéÖ¤ÓÊÏäÊÇ·ñ´æÔÚ£¬»ñÈ¡ÓÃ»§ID
+ * ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½È¡ï¿½Ã»ï¿½ID
  *
  * @access	private
  * @param	array
@@ -573,7 +582,7 @@ if ( ! function_exists('get_uid_femail'))
 }
 
 /**
- * ÓÃ»§³é½±
+ * ï¿½Ã»ï¿½ï¿½é½±
  *
  * @access	private
  * @param	array
@@ -597,7 +606,7 @@ if ( ! function_exists('UseLoto'))
 }
 
 /**
- * ÊÇ·ñ²Î¼Ó¹ý³é½±
+ * ï¿½Ç·ï¿½Î¼Ó¹ï¿½ï¿½é½±
  *
  * @access	private
  * @param	array
@@ -621,7 +630,7 @@ if ( ! function_exists('getLotoLog'))
 }
 
 /**
- * ³é½±ÐÅÏ¢
+ * ï¿½é½±ï¿½ï¿½Ï¢
  *
  * @access	private
  * @param	array
@@ -644,7 +653,7 @@ if ( ! function_exists('GetLotoInfo'))
 }
 
 /**
- * Áì½±
+ * ï¿½ì½±
  *
  * @access	private
  * @param	array
@@ -669,7 +678,7 @@ if ( ! function_exists('GetPrize'))
 }
 
 /**
- * »ñÈ¡µ÷ÑÐÖÐÐÄ
+ * ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  *
  * @access	private
  * @param	array
@@ -692,7 +701,7 @@ if ( ! function_exists('getResearchList'))
 }
 
 /**
- * ÊäÈëµ÷ÑÐ»Ø´ð
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð»Ø´ï¿½
  *
  * @access	private
  * @param	array
@@ -718,7 +727,7 @@ if ( ! function_exists('AnswerResearch'))
 }
 
 /**
- * ×Ô¶¯Æ´½ÓÎÊÌâ´ð°¸Ñ¡Ôñ
+ * ï¿½Ô¶ï¿½Æ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½
  *
  * @access	private
  * @param	array
@@ -736,7 +745,7 @@ if ( ! function_exists('AutoResearchType'))
             $answer = explode("/",$v["Answer"]);
                         
             if($isnum){
-                $html[$i]["title"] = '<li class="two_span"><span class="wj_wt">'.($i+1)."¡¢".$v["QuestionContent"].'</span>';
+                $html[$i]["title"] = '<li class="two_span"><span class="wj_wt">'.($i+1)."ï¿½ï¿½".$v["QuestionContent"].'</span>';
             }else{
                 $html[$i]["title"] = '<li class="two_span"><span class="wj_wt">'.$v["QuestionContent"].'</span>';
             }
@@ -760,7 +769,7 @@ if ( ! function_exists('AutoResearchType'))
                 }
                 
                 if($v1 == "#other#" && $v["AnswerType"] == "checkbox"){
-                    $html[$i]["comment"] .= "<input type='".$v["AnswerType"]."' name='".$v["ResearchId"]."_".$v["QuestionId"]."[]' othername='".$v["ResearchId"]."_".$v["QuestionId"]."' class='other' value='".($i+1)."¡¢".$v["QuestionContent"]."' /><label>ÆäËü</label>
+                    $html[$i]["comment"] .= "<input type='".$v["AnswerType"]."' name='".$v["ResearchId"]."_".$v["QuestionId"]."[]' othername='".$v["ResearchId"]."_".$v["QuestionId"]."' class='other' value='".($i+1)."ï¿½ï¿½".$v["QuestionContent"]."' /><label>ï¿½ï¿½ï¿½ï¿½</label>
                     <input type='text' id='other_".$v["ResearchId"]."_".$v["QuestionId"]."' class=\"qita\" />";
                 }else{
                     if($v["AnswerType"] == "radio" || $v["AnswerType"] == "checkbox"){
@@ -773,15 +782,15 @@ if ( ! function_exists('AutoResearchType'))
             
             $html[$i]["comment"] .= '</span></li>';
             
-            //µÃµ½ÎÊÌâÏÂµÄ´ð°¸¶ÔÏó
+            //ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÂµÄ´ð°¸¶ï¿½ï¿½ï¿½
             $javascript .= "var input_".$v["ResearchId"]."_".$v["QuestionId"]." = $(\"input[name^='".$v["ResearchId"]."_".$v["QuestionId"]."']\");"."\n";
             
-            //ÎÊÌâÏÂÑ¡Ôñ´ð°¸ÎªÑ¡Ôñ´ÎÊý            
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ÎªÑ¡ï¿½ï¿½ï¿½ï¿½ï¿½            
             $javascript .= "var error_".$v["ResearchId"]."_".$v["QuestionId"]." = 0;\n";
             
-            /* ÑéÖ¤ÊÇ·ñÑ¡Ôñ»ò»Ø´ðÎÊÌâµÄJS */
+            /* ï¿½ï¿½Ö¤ï¿½Ç·ï¿½Ñ¡ï¿½ï¿½ï¿½Ø´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½JS */
             
-            //ÅÐ¶ÏÎÊÌâ´ð°¸Ñ¡ÔñÀàÐÍ          
+            //ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½          
             if($v["AnswerType"] == "checkbox" || $v["AnswerType"] == "radio"){
                 $javascript .= "for(var i=0;i<input_".$v["ResearchId"]."_".$v["QuestionId"].".length;i++){"."\n";
                 $javascript .= "\tif(input_".$v["ResearchId"]."_".$v["QuestionId"]."[i].checked != true){"."\n";
@@ -794,25 +803,25 @@ if ( ! function_exists('AutoResearchType'))
                 $javascript .= "\t}"."\n";
             }
             
-            //ÌáÊ¾Î´»Ø´ðºÍÑ¡ÔñÐÅÏ¢
+            //ï¿½ï¿½Ê¾Î´ï¿½Ø´ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Ï¢
             $javascript .= "if(error_".$v["ResearchId"]."_".$v["QuestionId"]." == input_".$v["ResearchId"]."_".$v["QuestionId"].".length){"."\n";
-            $javascript .= "\terror+='".($i+1)."¡¢".$v["QuestionContent"]."'+\"\\n\";"."\n";
+            $javascript .= "\terror+='".($i+1)."ï¿½ï¿½".$v["QuestionContent"]."'+\"\\n\";"."\n";
             $javascript .= "}"."\n";
             $i++;
         }
         
         $javascript .= "if(error != ''){"."\n";
-        $javascript .= "\terror+=\"\\n\"+'ÇëÑ¡ÔñºÍ»Ø´ðÍêÒÔÉÏµÄÎÊÌâ!';"."\n";
+        $javascript .= "\terror+=\"\\n\"+'ï¿½ï¿½Ñ¡ï¿½ï¿½Í»Ø´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½!';"."\n";
         $javascript .= "\talert(error);return false;"."\n";
         $javascript .= "}"."\n";
         
-        //ÅÐ¶ÏÎÊÌâÆäËûÊÇ·ñÑ¡Ôñ»ò»Ø´ð
+        //ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½Ñ¡ï¿½ï¿½ï¿½Ø´ï¿½
         $javascript .= "var error = '';"."\n";
         $javascript .= "var other = $('.other')"."\n";
         $javascript .= "for(var i=0;i<other.length;i++){"."\n";
         $javascript .= "\tvar orhername = 'other_'+other[i].attributes['othername'].nodeValue;";
         $javascript .= "\tif(other[i].checked == true && $('#'+orhername).val() == ''){";
-        $javascript .= "\terror += other[i].value+'£¬Ñ¡ÔñÁËÆäËû£¬µ«ÉÐÎ´»Ø´ð'+\"\\n\";"."\n";
+        $javascript .= "\terror += other[i].value+'ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½Ø´ï¿½'+\"\\n\";"."\n";
         $javascript .= "\t}else{"."\n";
         $javascript .= "\t\tother[i].value = $('#'+orhername).val();"."\n";
         $javascript .= "\t}"."\n";
@@ -901,7 +910,7 @@ if ( ! function_exists('AutoResearchType'))
 }
 
 /**
- * »ñÈ¡Ö§¸¶·½Ê½ÏêÇé
+ * ï¿½ï¿½È¡Ö§ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½
  *
  * @access	private
  * @param	array
@@ -924,7 +933,7 @@ if ( ! function_exists('get_passage_info'))
 }
 
 /**
- * »ñÈ¡ÓÃ»§¶©µ¥ÁÐ±íÏêÇé
+ * ï¿½ï¿½È¡ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½
  *
  * @access	private
  * @param	array
@@ -955,7 +964,7 @@ if ( ! function_exists('get_user_order_list'))
 }
 
 /**
- * »ñÈ¡FAQ·ÖÀàÁÐ±í
+ * ï¿½ï¿½È¡FAQï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½
  *
  * @access	private
  * @param	array
@@ -976,7 +985,7 @@ if ( ! function_exists('get_faq_type_list'))
 }
 
 /**
- * »ñÈ¡FAQÁÐ±í
+ * ï¿½ï¿½È¡FAQï¿½Ð±ï¿½
  *
  * @access	private
  * @param	array
@@ -1002,7 +1011,7 @@ if ( ! function_exists('get_faq_list'))
 }
 
 /**
- * »ñÈ¡Ëæ»úÑéÖ¤Âë
+ * ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ö¤ï¿½ï¿½
  *
  * @access	private
  * @param	array

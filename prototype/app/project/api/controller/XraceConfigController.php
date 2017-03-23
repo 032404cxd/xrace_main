@@ -1234,10 +1234,10 @@ class XraceConfigController extends AbstractController
         //格式化比赛ID
         $RaceId = abs(intval($this->request->RaceId));
         $Force = abs(intval($this->request->Force));
-        $Type = trim($this->request->type);
+        $Cache = trim($this->request->Cache);
         //if($Type=="new")
         //{
-            $oMylaps->genMylapsTimingInfo($RaceId,$Force);
+            $oMylaps->genMylapsTimingInfo($RaceId,$Force,$Cache);
             die();
         //}
     }

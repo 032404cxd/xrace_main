@@ -61,6 +61,13 @@
 				{/tpl:loop}
 			</select>
 		</th></tr>
+	<tr class="hover"><th align="center" class="rowtip">团队排名/个人排名</th><th align="center" class="rowtip">
+			<select name="ResultType" size="1" class="span2">
+				{tpl:loop $RaceResultTypeList $RaceResulutType $RaceResulutName}
+				<option value="{tpl:$RaceResulutType/}" {tpl:if($RaceResulutType==$RaceInfo.comment.ResultType)}selected="selected"{/tpl:if} >{tpl:$RaceResulutName/}</option>
+				{/tpl:loop}
+			</select>
+		</th></tr>
 	<tr class="hover"><th align="center" class="rowtip">Mylaps表前缀</th><th align="center" class="rowtip"><input name="MylapsPrefix" type="text" class="span2" id="MylapsPrefix" value = "{tpl:$RaceInfo.RouteInfo.MylapsPrefix/}" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">人数/价格对应<p>(人数;单价|人数:单价)</th><th align="center" class="rowtip"><input name="PriceList" type="text" class="span2" id="PriceList" value = "{tpl:$RaceInfo.PriceList/}" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">个人报名</th><th align="center" class="rowtip">

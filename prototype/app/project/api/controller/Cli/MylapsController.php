@@ -23,8 +23,7 @@ class Cli_MylapsController extends Base_Controller_Action{
 			$RaceList = $this->oRace->getRaceList(array("inRun"=>1,"ToProcess"=>1),"RaceId,ToProcess");
 			foreach($RaceList as $RaceId => $RaceInfo)
 			{
-			    $this->oMylaps->genMylapsTimingInfo($RaceId,$RaceInfo['ToProcess']);
-
+			    $this->oMylaps->genMylapsTimingInfo($RaceId,$RaceInfo['ToProcess'],0);
 			}
 		}
 

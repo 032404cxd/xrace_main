@@ -7,8 +7,8 @@ foreach($_POST['blname'] as $k=>$v){
     $array[$v] = $_POST['blvalue'][$k];
 }
 
-$array['Time'] = time();
-$array['ReturnType'] = RETURNTYPE;
+//$array['Time'] = time();
+//$array['ReturnType'] = RETURNTYPE;
 $rerutn['testsign'] = test_sign($array,$_REQUEST['ApiKey']);
 $array['sign'] = set_sign($array,$_REQUEST['ApiKey']);
 

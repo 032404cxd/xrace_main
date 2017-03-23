@@ -24,6 +24,7 @@ class Xrace_Race extends Base_Widget
 	protected $raceLicenseType = array('manager'=>'管理员审核','birthday'=>'生日','sex'=>'性别','age'=>"年龄");
     protected $applySourceList = array(1=>"线上",2=>"线下");
     protected $applySepcialDiscount = array(0=>"无","single_max"=>"单人最高票价");
+    protected $resultType = array("Team"=>"团队成绩","Individual"=>"个人成绩");
 	public function getRaceStructure()
 	{
 		return $this->raceStructure;
@@ -77,6 +78,10 @@ class Xrace_Race extends Base_Widget
     public function getAppSourceList()
     {
         return $this->raceLicenseType;
+    }
+    public function getResultTypeList()
+    {
+        return $this->resultType;
     }
 
 	//获取所有赛事的列表(已缓存)
@@ -1300,10 +1305,8 @@ class Xrace_Race extends Base_Widget
 					$params = array('RaceId'=>$RaceInfo['RaceId'],'UserId'=>$UserId);
 					if($UserId==0)
 					{
-						$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/";
-						$fileName = "Total".".php";
-						//生成配置文件
-						Base_Common::rebuildConfig($filePath,$fileName,$TimingPointList,"Timing");
+                        //保存配置文件
+					    $this->TimgingDataSave($RaceInfo['RaceId'],$TimingPointList);
 					}
 					unset($TimingPointList['RaceInfo']);
 					$oUser = new Xrace_UserInfo();
@@ -1349,10 +1352,8 @@ class Xrace_Race extends Base_Widget
 								}
 								//存储报名信息
 								//$TimingPointList['ApplyInfo'] = $ApplyInfo;
-								$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceInfo['RaceId']."/"."UserList"."/";
-								$fileName = $RaceUserInfo['RaceUserId'].".php";
-								//生成配置文件
-								Base_Common::rebuildConfig($filePath,$fileName,$TimingPointList,"Timing");
+                                //保存配置文件
+                                $this->UserTimgingDataSave($RaceInfo['RaceId'],$RaceUserInfo['RaceUserId'],$TimingPointList);
 							}
 						}
 					}
@@ -1482,47 +1483,7 @@ class Xrace_Race extends Base_Widget
 			return true;
 		}
 	}
-	//根据用户ID和比赛ID获取用户该场比赛的详情
-	public function getUserRaceInfo($RaceId,$UserId)
-	{
-		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."_Data/"."UserList"."/";
-		$fileName = $UserId.".php";
-		//载入预生成的配置文件
-		return Base_Common::loadConfig($filePath,$fileName);
-	}
-    //根据用户ID和比赛ID获取用户该场比赛的详情
-    public function getUserRaceOriginalInfo($RaceId,$UserId)
-    {
-        $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/"."UserList"."/";
-        $fileName = $UserId.".php";
-        //载入预生成的配置文件
-        return Base_Common::loadConfig($filePath,$fileName);
-    }
-	//根据用户ID和比赛ID获取用户该场比赛的详情
-	public function getUserRaceInfoList($RaceId)
-	{
-		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."_Data/";
-		$fileName = "Total".".php";
-		//载入预生成的配置文件
-		return Base_Common::loadConfig($filePath,$fileName);
-	}
 
-    //根据用户ID和比赛ID获取用户该场比赛的详情
-    public function GetUserRaceTimingOriginalInfo($RaceId)
-    {
-        $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
-        $fileName = "Total.php";
-        //载入预生成的配置文件
-        return Base_Common::loadConfig($filePath,$fileName);
-    }
-	//根据用户ID和比赛ID获取用户该场比赛的详情
-	public function GetUserRaceTimingInfo($RaceId)
-	{
-		$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."_Data/";
-        $fileName = "Total.php";
-		//载入预生成的配置文件
-        return Base_Common::loadConfig($filePath,$fileName);
-	}
 
 	public function getUserRaceStatus($UserRaceInfo)
 	{
@@ -1663,6 +1624,126 @@ class Xrace_Race extends Base_Widget
         else
         {
             return false;
+        }
+    }
+    //保存比赛的计时信息
+    public function TimgingDataSave($RaceId,$TimingData,$Cache = 0)
+    {
+        $oMemCache = new Base_Cache_Memcache("xrace");
+        //如果需要获取缓存
+        if($Cache == 1)
+        {
+            //写入缓存
+            $oMemCache -> set("TimingData_".$RaceId,json_encode($TimingData),3600);
+        }
+        else
+        {
+            $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
+            $fileName = "Total".".php";
+            //生成配置文件
+            Base_Common::rebuildConfig($filePath,$fileName,$TimingData,"Timing");
+        }
+    }
+    //保存用户的比赛计时信息
+    public function UserTimgingDataSave($RaceId,$RaceUserId,$TimingData,$Cache = 0)
+    {
+        $oMemCache = new Base_Cache_Memcache("xrace");
+        //写入缓存
+        $oMemCache -> set("TimingData_".$RaceId."_".$RaceUserId,json_encode($TimingData),3600);
+        if($Cache == 0)
+        {
+            $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/"."UserList"."/";
+            $fileName = $RaceUserId.".php";
+            //生成配置文件
+            Base_Common::rebuildConfig($filePath,$fileName,$TimingData,"Timing");
+        }
+    }
+    //根据用户ID和比赛ID获取用户该场比赛的详情
+    public function getUserRaceInfo($RaceId,$RaceUserId)
+    {
+        $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."_Data/"."UserList"."/";
+        $fileName = $RaceUserId.".php";
+        //载入预生成的配置文件
+        return Base_Common::loadConfig($filePath,$fileName);
+    }
+    //根据用户ID和比赛ID获取用户该场比赛的详情
+    public function getUserRaceTimingOriginalInfo($RaceId,$RaceUserId,$Cache = 0)
+    {
+        $oMemCache = new Base_Cache_Memcache("xrace");
+        //如果需要获取缓存
+        if($Cache == 1)
+        {
+            //写入缓存
+            $m = $oMemCache -> get("TimingData_".$RaceId."_".$RaceUserId);
+            $m = json_decode($m,true);
+            if(isset($m['RaceUserInfo']))
+            {
+                return $m;
+            }
+            else
+            {
+                $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/"."UserList"."/";
+                $fileName = $RaceUserId.".php";
+                //载入预生成的配置文件
+                $return = Base_Common::loadConfig($filePath,$fileName);
+                //重构缓存
+                $this->UserTimgingDataSave($RaceId,$RaceUserId,$return,1);
+                return $return;
+            }
+        }
+        else
+        {
+            $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/"."UserList"."/";
+            $fileName = $RaceUserId.".php";
+            //载入预生成的配置文件
+            $return = Base_Common::loadConfig($filePath,$fileName);
+            //重构缓存
+            $this->UserTimgingDataSave($RaceId,$RaceUserId,$return,1);
+            return $return;
+        }
+    }
+    //根据用户ID和比赛ID获取用户该场比赛的详情
+    public function GetUserRaceTimingInfo($RaceId)
+    {
+        $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."_Data/";
+        $fileName = "Total.php";
+        //载入预生成的配置文件
+        return Base_Common::loadConfig($filePath,$fileName);
+    }
+    //根据用户ID和比赛ID获取用户该场比赛的详情
+    public function GetRaceTimingOriginalInfo($RaceId,$Cache = 0)
+    {
+        $oMemCache = new Base_Cache_Memcache("xrace");
+        //如果需要获取缓存
+        if($Cache == 1)
+        {
+            //载入缓存
+            $m = $oMemCache -> get("TimingData_".$RaceId);
+            $m = json_decode($m,true);
+            if(isset($m['RaceInfo']))
+            {
+                return $m;
+            }
+            else
+            {
+                $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
+                $fileName = "Total.php";
+                //载入预生成的配置文件
+                $return = Base_Common::loadConfig($filePath,$fileName);
+                //重构缓存
+                $this->TimgingDataSave($RaceId,$return,1);
+                return $return;
+            }
+        }
+        else
+        {
+            $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
+            $fileName = "Total.php";
+            //载入预生成的配置文件
+            $return = Base_Common::loadConfig($filePath,$fileName);
+            //重构缓存
+            $this->TimgingDataSave($RaceId,$return,1);
+            return $return;
         }
     }
 }

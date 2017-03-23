@@ -659,7 +659,9 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
-			//比赛-分组的层级规则
+            //团队排名/个人排名
+		    $RaceResultTypeList  = $this->oRace->getResultTypeList();
+		    //比赛-分组的层级规则
 			$RaceStructureList  = $this->oRace->getRaceStructure();
 			//赛事分站ID
 			$RaceStageId = intval($this->request->RaceStageId);
@@ -736,6 +738,8 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
+            //团队排名/个人排名
+            $RaceResultTypeList  = $this->oRace->getResultTypeList();
 			//比赛-分组的层级规则
 			$RaceStructureList  = $this->oRace->getRaceStructure();
 			//比赛ID
@@ -748,7 +752,7 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceStageInfo = $this->oRace->getRaceStage($RaceInfo['RaceStageId'],"RaceStageId,RaceStageName,RaceCatalogId,comment");
 			//数据解包
 			$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
-			//格式化分组ID
+            //格式化分组ID
 			$RaceGroupId = in_array($RaceGroupId,array(0,$RaceInfo['RaceGroupId']))?$RaceGroupId:0;
 			//如果没有配置比赛结构 或者 比赛结构配置不在配置列表中
 			if(!isset($RaceStageInfo['comment']['RaceStructure']) || !isset($RaceStructureList[$RaceStageInfo['comment']['RaceStructure']]))
@@ -848,7 +852,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType');
         $test = intval($this->request->test);
         //转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
@@ -992,6 +996,9 @@ class Xrace_RaceStageController extends AbstractController
 				//团队成绩计算名次
 				$bind['comment']['TeamResultRank'] = $bind['TeamResultRank'];
 				unset($bind['TeamResultRank']);
+                //团队成绩/个人成绩
+                $bind['comment']['ResultType'] = $bind['ResultType'];
+                unset($bind['ResultType']);
 				//数据打包
 				$bind['comment'] = json_encode($bind['comment']);
 				//地图数据打包
@@ -1011,7 +1018,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','RaceTimingType','RaceTimingResultType','FinalResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','RaceTimingType','RaceTimingResultType','FinalResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType');
         //转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -1167,6 +1174,9 @@ class Xrace_RaceStageController extends AbstractController
 				//团队成绩计算名次
 				$bind['comment']['TeamResultRank'] = $bind['TeamResultRank'];
 				unset($bind['TeamResultRank']);
+                //团队成绩/个人成绩
+                $bind['comment']['ResultType'] = $bind['ResultType'];
+                unset($bind['ResultType']);
 				//数据打包
 				$bind['comment'] = json_encode($bind['comment']);
 				//地图数据打包
