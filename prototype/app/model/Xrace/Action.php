@@ -111,6 +111,7 @@ class Xrace_Action extends Base_Widget
             //初始化积分变更成功数量
             $Succeed = 0;
             $oCredit = new Xrace_Credit();
+            $CreditList = array();
             //循环积分数组
             foreach($ActionInfo['CreditList'] as $key => $CreditInfo)
             {
@@ -121,9 +122,10 @@ class Xrace_Action extends Base_Widget
                 {
                     //累加成功数量
                     $Succeed ++;
+                    $CreditList[$CreditInfo['CreditId']] = array_merge($oCredit->getCredit($CreditInfo['CreditId'],"CreditId,CreditName"),array("Credit"=>$CreditInfo['Credit']));
                 }
             }
-            return $Succeed;
+            return $CreditList;
         }
         else
         {

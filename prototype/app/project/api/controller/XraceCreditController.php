@@ -36,10 +36,10 @@ class XraceCreditController extends AbstractController
         //用户ID
         $UserId = isset($this->request->UserId) ? abs(intval($this->request->UserId)) : 0;
         //结果数组 如果列表中有数据则返回成功，否则返回失败
-        $Credit = $this->oAction->CreditByAction($Action,$UserId);
-        if($Credit>0)
+        $CreditList = $this->oAction->CreditByAction($Action,$UserId);
+        if(count($CreditList)>0)
         {
-            $result = array("return" => 1,"comment" => "成功！");
+            $result = array("return" => 1,"CreditList"=>$CreditList,"comment" => "成功！");
         }
         else
         {
