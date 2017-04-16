@@ -8,7 +8,7 @@
   <form id="check_in_form" name="check_in_form" action="{tpl:$this.sign/}&ac=race.check.in" method="post">
     <input type="hidden" name="RaceId" id="RaceId" value="{tpl:$RaceId/}" />
     <table width="99%" align="center" class="table table-bordered table-striped">
-      {tpl:if($RaceUserCheckInfo.ApplyInfo.CheckInStatus!=1)}
+      {tpl:if($RaceUserCheckInfo.ApplyInfo.CheckInStatus==1)}
       <tr class="hover">
         <th align="center" class="rowtip">操作</th><td align="left"><a  href="javascript:;" onclick="RaceCheckIn('{tpl:$RaceUserCheckInfo.ApplyInfo.ApplyId/}','{tpl:$RaceUserCheckInfo.RaceUserInfo.Name/}');">确认无误，检录</a></td>
       </tr>

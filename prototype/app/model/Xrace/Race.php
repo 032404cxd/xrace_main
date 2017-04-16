@@ -1631,9 +1631,7 @@ class Xrace_Race extends Base_Widget
         //分解签到码
         $t = explode("|",$CheckInCode);
         //用户ID
-        $U = hexdec($t[1]);
-        //分站ID
-        $S = hexdec($t[0]);
+        $U = hexdec($t[0]);
         $oUser = new Xrace_UserInfo();
         //获取检录信息
         $RaceCheckInInfo = $oUser->getRaceUserList(array("RaceId"=>$RaceId,"RaceUserId"=>$U));
@@ -1644,11 +1642,11 @@ class Xrace_Race extends Base_Widget
             //如果找到用户信息
             if(isset($RaceUserInfo['RaceUserId']))
             {
-                return array("return"=>1,"ApplyInfo"=>$RaceCheckInInfo['0'],"RaceUserInfo"=>$RaceUserInfo);
+                return array("return"=>1,"RaceId"=>$RaceCheckInInfo['RaceId'],"ApplyInfo"=>$RaceCheckInInfo['0'],"RaceUserInfo"=>$RaceUserInfo);
             }
             else
             {
-                return array("return"=>0);
+                return array("return"=>0,"RaceId"=>$RaceCheckInInfo['RaceId']);
             }
         }
         else
@@ -1780,7 +1778,7 @@ class Xrace_Race extends Base_Widget
     {
         $oUser = new Xrace_UserInfo();
         //更新
-        return $oUser->updateRaceUserApply($ApplyId,array('CheckinStatus'=>1,'CheckInTime'=>date("Y-m-d H:i:s",time())));
+        return $oUser->updateRaceUserApply($ApplyId,array('CheckinStatus'=>2,'CheckInTime'=>date("Y-m-d H:i:s",time())));
     }
     public function RaceResultConfirm($RaceId,$manager)
     {

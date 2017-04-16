@@ -3629,8 +3629,6 @@ class Xrace_RaceStageController extends AbstractController
                 $TeamInfo = $RaceUserCheckInfo['ApplyInfo']['TeamId']>0?($oTeam->getTeam($RaceUserCheckInfo['ApplyInfo']['TeamId'],"TeamId,TeamName")):array("TeamId"=>0,"TeamName"=>"个人");
                 $RaceUserCheckInfo['ApplyInfo']['TeamName'] = isset($TeamInfo['TeamId'])?$TeamInfo['TeamName']:"个人";
             }
-            //签到状态列表
-            //$CheckInStatusUrl = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.check.in.status',array('RaceId'=>$RaceInfo['RaceId'])) ."'>检录状态</a>";
             //渲染模板
             include $this->tpl('Xrace_Race_RaceCheckInSubmit');
         }
@@ -3651,8 +3649,9 @@ class Xrace_RaceStageController extends AbstractController
             $ApplyId = intval($this->request->ApplyId);
             //执行检录
             $CheckIn = $this->oRace->RaceCheckIn($ApplyId);
+            $CheckInUrl = Base_Common::getUrl('','xrace/race.stage','race.check.in.submit',array('RaceId'=>$CheckIn['RaceId']));
             //返回之前页面
-            $this->response->goBack();
+            $this->response->redirect($CheckInUrl);
         }
         else
         {
