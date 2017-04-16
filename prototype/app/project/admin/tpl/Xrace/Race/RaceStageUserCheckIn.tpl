@@ -24,7 +24,7 @@
           } else {
             var message = '签到成功';
               RaceStageId=$("#RaceStageId");
-              divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=race.user.check.in.BIB&RaceStageId=' + RaceStageId.val() + '&UserId=' + jsonResponse.UserId);}});
+              divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=race.stage.user.check.in.BIB&RaceStageId=' + RaceStageId.val() + '&RaceUserId=' + jsonResponse.RaceUserId);}});
           }
         }
       };

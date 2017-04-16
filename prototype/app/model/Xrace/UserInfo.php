@@ -16,6 +16,7 @@ class Xrace_UserInfo extends Base_Widget
     protected $table_login = 'UserLogin';
     protected $table_reset = 'UserResetPassword';
     protected $table_reset_log = 'UserResetPasswordLog';
+    protected $table_stage_checkin = 'user_stage_checkin';
 
     //登录方式列表
     protected $loginSource = array('WeChat'=>"微信",'Weibo'=>"微博",'Mobile'=>"手机");
@@ -382,11 +383,11 @@ class Xrace_UserInfo extends Base_Widget
      * @param string $fields 所要获取的数据列
      * @return array
      */
-    public function getRaceUser($UserId, $fields = '*')
+    public function getRaceUser($RaceUserId, $fields = '*')
     {
-        $UserId = intval($UserId);
+        $RaceUserId = intval($RaceUserId);
         $table_to_process = Base_Widget::getDbTable($this->table_race_user);
-        return $this->db->selectRow($table_to_process, $fields, '`RaceUserId` = ?', $UserId);
+        return $this->db->selectRow($table_to_process, $fields, '`RaceUserId` = ?', $RaceUserId);
     }
     /**
      * 新增单个用户记录
@@ -1923,8 +1924,36 @@ class Xrace_UserInfo extends Base_Widget
         $whereCondition = array($whereUser,$whereCatalog,$whereRaceStage);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
-        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by CheckInStatus,RaceCatalogId,RaceStageId,UserId desc";
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by CheckInStatus,RaceCatalogId,RaceStageId,RaceUserId desc";
         $return = $this->db->getAll($sql);
         return $return;
+    }
+    /**
+     * 获取单个用户签到记录
+     * @param char $UserId 用户ID
+     * @param char $RaceStageId 分站ID
+     * @param string $fields 所要获取的数据列
+     * @return array
+     */
+    public function getUserCheckInInfo($RaceUserId,$RaceStageId,$fields = '*')
+    {
+        $RaceUserId = intval($RaceUserId);
+        $RaceStageId = intval($RaceStageId);
+        $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
+        return $this->db->selectRow($table_to_process, $fields, '`RaceUserId` = ? and `RaceStageId` = ?', array($RaceUserId,$RaceStageId));
+    }
+    /**
+     * 更新单个用户签到记录
+     * @param char $UserId 用户ID
+     * @param char $RaceStageId 分站ID
+     * @param string $bind 所要更新的数据列
+     * @return array
+     */
+    public function updateUserCheckInInfo($RaceUserId,$RaceStageId,$bind)
+    {
+        $RaceUserId = intval($RaceUserId);
+        $RaceStageId = intval($RaceStageId);
+        $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
+        return $this->db->update($table_to_process, $bind, '`RaceUserId` = ? and `RaceStageId` = ?', array($RaceUserId,$RaceStageId));
     }
 }

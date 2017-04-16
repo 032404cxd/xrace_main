@@ -16,7 +16,7 @@
       RaceUserListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.list&RaceId=' + rid + '&AutoAsign=1', {title:rname+' 自动分配BIB',width:900,height:800});
   }
   function RaceResultList(rid,rname){
-    RaceResultListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.result.list&RaceId=' + rid , {title:rname+'成绩单',width:800,height:750});
+    RaceResultListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.result.list&RaceId=' + rid , {title:rname+'成绩单',width:1000,height:750});
   }
   function RaceDelete(r_id, r_name){
     deleteAppBox = divBox.confirmBox({content:'是否删除 ' + r_name + '?<p>关联的报名记录和计时点配置将同时删除',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.delete&RaceId=' + r_id;}});

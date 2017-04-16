@@ -1588,42 +1588,30 @@ class Xrace_Race extends Base_Widget
 	}
 	public function RaceStageCheckIn($RaceStageId,$CheckInCode)
     {
-        //分解签到码
-        $t = explode("|",$CheckInCode);
         //用户ID
-        $U = hexdec($t[1]);
-        //分站ID
-        $S = hexdec($t[0]);
+        $U = hexdec($CheckInCode);
         $oUser = new Xrace_UserInfo();
         //获取签到信息
-        $UserCheckInInfo = $oUser->getUserCheckInInfo($U,$S);
-        //检查签到码
-        if(trim($CheckInCode) == trim($UserCheckInInfo['CheckinCode']))
+        $UserCheckInInfo = $oUser->getUserCheckInInfo($U,$RaceStageId);
+        //如果已经签到，直接返回成功
+        if($UserCheckInInfo['CheckinStatus'] == 1)
         {
-            //如果已经签到，直接返回成功
+            return $U;
+        }
+        else
+        {
+            //更新
+            $oUser->updateUserCheckInInfo($U,$RaceStageId,array('CheckinStatus'=>1,'CheckInTime'=>date("Y-m-d H:i:s",time())));
+            //复查数据
+            $UserCheckInInfo = $oUser->getUserCheckInInfo($U,$RaceStageId);
             if($UserCheckInInfo['CheckinStatus'] == 1)
             {
                 return $U;
             }
             else
             {
-                //更新
-                $oUser->updateUserCheckInInfo($U,$S,array('CheckinStatus'=>1,'CheckInTime'=>date("Y-m-d H:i:s",time())));
-                //复查数据
-                $UserCheckInInfo = $oUser->getUserCheckInInfo($U,$S);
-                if($UserCheckInInfo['CheckinStatus'] == 1)
-                {
-                    return $U;
-                }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-        }
-        else
-        {
-            return false;
         }
     }
     public function getUserCheckStatus($RaceStageId,$RaceId,$CheckInCode)

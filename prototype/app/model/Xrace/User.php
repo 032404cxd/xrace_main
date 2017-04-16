@@ -694,34 +694,8 @@ class Xrace_User extends Base_Widget
         $return = $this->db->getAll($sql);
         return $return;
     }
-    /**
-     * 获取单个用户签到记录
-     * @param char $UserId 用户ID
-     * @param char $RaceStageId 分站ID
-     * @param string $fields 所要获取的数据列
-     * @return array
-     */
-    public function getUserCheckInInfo($UserId,$RaceStageId,$fields = '*')
-    {
-        $UserId = trim($UserId);
-        $RaceStageId = intval($RaceStageId);
-        $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
-        return $this->db->selectRow($table_to_process, $fields, '`UserId` = ? and `RaceStageId` = ?', array($UserId,$RaceStageId));
-    }
-    /**
-     * 更新单个用户签到记录
-     * @param char $UserId 用户ID
-     * @param char $RaceStageId 分站ID
-     * @param string $bind 所要更新的数据列
-     * @return array
-     */
-    public function updateUserCheckInInfo($UserId,$RaceStageId,$bind)
-    {
-        $UserId = trim($UserId);
-        $RaceStageId = intval($RaceStageId);
-        $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
-        return $this->db->update($table_to_process, $bind, '`UserId` = ? and `RaceStageId` = ?', array($UserId,$RaceStageId));
-    }
+
+
     /**
      * 新增单个用户签到记录
      * @param string $fields 所要添加的数据列

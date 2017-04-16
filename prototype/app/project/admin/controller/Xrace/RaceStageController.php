@@ -3105,7 +3105,7 @@ class Xrace_RaceStageController extends AbstractController
                     $UserCheckInStatusList[$key]['RaceUserInfo'] = $RaceUserInfo;
                 }
                 //签到状态
-                $UserCheckInStatusList[$key]['CheckInStatusName'] = $UserCheckInStatus[$CheckInInfo['CheckInStatus']];
+                $UserCheckInStatusList[$key]['CheckInStatusName'] = $UserCheckInStatus[$CheckInInfo['CheckinStatus']];
                 //签到短信状态
                 $UserCheckInStatusList[$key]['CheckInSmsSentStatusName'] = $UserCheckInSmsSentStatus[$CheckInInfo['SmsSentStatus']];
             }
@@ -3212,7 +3212,7 @@ class Xrace_RaceStageController extends AbstractController
         $CheckIn = $this->oRace->RaceStageCheckIn($bind['RaceStageId'],$bind['CheckInCode']);
         if($CheckIn)
         {
-            $response = array('errno' => 0,'UserId'=>$CheckIn);
+            $response = array('errno' => 0,'RaceUserId'=>$CheckIn);
         }
         else
         {
@@ -3229,17 +3229,17 @@ class Xrace_RaceStageController extends AbstractController
         if($PermissionCheck['return'])
         {
             //用户ID
-            $UserId = intval($this->request->UserId);
+            $RaceUserId = intval($this->request->RaceUserId);
             //比赛分站
             $RaceStageId = intval($this->request->RaceStageId);
             //分站数据
             $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'RaceStageId,RaceStageName,RaceCatalogId,comment');
             //数据解包
             $RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
-            $oUser = new Xrace_User();
+            $oUser = new Xrace_UserInfo();
             //获取用户信息
-            $UserInfo = $oUser->getUserInfo($UserId,'UserId,name');
-            $params = array('RaceStageId'=>$RaceStageId,'UserId'=>$UserId);
+            $RaceUserInfo = $oUser->getRaceUser($RaceUserId,'RaceUserId,Name');
+            $params = array('RaceStageId'=>$RaceStageId,'RaceUserId'=>$RaceUserId);
             //获取选手报名记录
             $UserRaceList = $oUser->getRaceUserList($params);
             //获取报名记录来源列表

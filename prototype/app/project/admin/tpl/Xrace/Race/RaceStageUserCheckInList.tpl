@@ -16,7 +16,7 @@
   </tr>
   {tpl:loop $UserCheckInStatusList $Cid $CheckInInfo}
   <tr>
-    <th align="center" class="rowtip">{tpl:$CheckInInfo.UserInfo.name/}</th>
+    <th align="center" class="rowtip">{tpl:$CheckInInfo.RaceUserInfo.Name/}</th>
     <th align="center" class="rowtip">{tpl:$CheckInInfo.CheckInStatusName/}</th>
     <th align="center" class="rowtip">{tpl:$CheckInInfo.CheckInSmsSentStatusName/}</th>
     <th align="center" class="rowtip">{tpl:$CheckInInfo.Mobile/}</th>
