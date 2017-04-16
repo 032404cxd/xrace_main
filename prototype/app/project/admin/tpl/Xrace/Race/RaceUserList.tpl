@@ -40,7 +40,7 @@
     <th align="center" class="rowtip">{tpl:$UserInfo.RaceGroupName/} {tpl:if($UserInfo.RaceGroupId>0)}<a href="javascript:void(0);" onclick="UserRaceDeleteByGroup('{tpl:$RaceInfo.RaceId/}','{tpl:$UserInfo.RaceGroupId/}','{tpl:$UserInfo.RaceGroupName/}')">退赛</a>{/tpl:if}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.TeamName/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.ApplyTime/}</th>
-    <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$Aid/}][BIB]" id="UserList[{tpl:$UserInfo.UserId/}][BIB]" value="{tpl:$UserInfo.BIB/}" /></th>
+    <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$Aid/}][BIB]" id="UserList[{tpl:$UserInfo.UserId/}][BIB]" value="{tpl:$UserInfo.BIB/}" />{tpl:if($UserInfo.TBD>0)}{tpl:if($UserInfo.TBD==1)}待确认{tpl:else}其他{/tpl:if}{/tpl:if}</th>
     <th align="center" class="rowtip"><input type="text" class="span2" name="UserList[{tpl:$Aid/}][ChipId]" id="UserList[{tpl:$UserInfo.UserId/}][ChipId]" value="{tpl:$UserInfo.ChipId/}" /></th>
   </tr>
   {/tpl:loop}

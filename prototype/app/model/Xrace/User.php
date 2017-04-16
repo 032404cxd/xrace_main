@@ -575,13 +575,6 @@ class Xrace_User extends Base_Widget
             return $this->db->delete($table_to_process, '`RaceId` = ?', $RaceId);
         }
     }
-	//获得用户报名信息
-	public function getRaceApplyUserInfo($ApplyId, $fields = '*')
-	{
-		$ApplyId = intval($ApplyId);
-		$table_to_process = Base_Widget::getDbTable($this->table_race);
-		return $this->db->selectRow($table_to_process, $fields, '`ApplyId` = ?', $ApplyId);
-	}
 	//更新单个用户执照信息
 	public function updateUserLicense($LicenseId,array $bind)
 	{
@@ -613,22 +606,6 @@ class Xrace_User extends Base_Widget
 		$sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by BIB,TeamId,ApplyId desc";
         $return = $this->db->getAll($sql);
 		return $return;
-	}
-
-	//更新用户报名信息
-	public function updateRaceUserApply($ApplyId, array $bind)
-	{
-		$ApplyId = intval($ApplyId);
-		$table_to_process = Base_Widget::getDbTable($this->table_race);
-		return $this->db->update($table_to_process, $bind, '`ApplyId` = ?', $ApplyId);
-	}
-	//根据BIB获得用户报名信息
-	public function getRaceApplyUserInfoByBIB($RaceId,$BIB, $fields = '*')
-	{
-		$RaceId = intval($RaceId);
-		$BIB = trim($BIB);
-		$table_to_process = Base_Widget::getDbTable($this->table_race);
-		return $this->db->selectRow($table_to_process, $fields, '`RaceId` = ? and `BIB` = ?', array($RaceId,$BIB));
 	}
 	//获取报名记录
 	public function getUserTeamList($params,$fields = array('*'))

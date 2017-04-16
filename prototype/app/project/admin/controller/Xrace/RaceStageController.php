@@ -50,7 +50,7 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceStructureList  = $this->oRace->getRaceStructure();
 			//赛事分组列表
 			$RaceGroupList = $this->oRace->getRaceGroupList($RaceCatalogId,'RaceGroupId,RaceGroupName');
-			//产品类型列表
+            //产品类型列表
 			$ProductTypeList = $this->oProduct->getProductTypeList($RaceCatalogId,'ProductTypeId,ProductTypeName');
 			//初始化一个空的赛事分站列表
 			$RaceStageList = array();
@@ -101,7 +101,7 @@ class Xrace_RaceStageController extends AbstractController
 								//如果赛事组别配置有效
 								if(isset($RaceGroupList[$v]))
 								{
-									//生成到比赛详情页面的链接
+								    //生成到比赛详情页面的链接
 									$t[$k] = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.list',array('RaceStageId'=>$RaceStageInfo['RaceStageId'],'RaceGroupId'=>$v)) ."'>".$RaceGroupList[$v]['RaceGroupName'].$Prefix."</a>";
 								}
 							}
@@ -852,7 +852,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm');
         $test = intval($this->request->test);
         //转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
@@ -949,6 +949,8 @@ class Xrace_RaceStageController extends AbstractController
 				$bind['comment']['RaceStartMicro'] = intval(abs($bind['RaceStartMicro']));
 				$bind['comment']['RaceStartMicro'] = min(999,$bind['comment']['RaceStartMicro']);
 				unset($bind['RaceStartMicro']);
+                $bind['comment']['ResultNeedConfirm'] = $bind['ResultNeedConfirm'];
+                unset($bind['ResultNeedConfirm']);
 				//保存mylaps计时数据表的前缀
 				$bind['RouteInfo']['MylapsPrefix'] = $bind['MylapsPrefix'];
 				unset($bind['MylapsPrefix']);
@@ -1018,7 +1020,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','RaceTimingType','RaceTimingResultType','FinalResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsPrefix','RaceTimingType','RaceTimingResultType','FinalResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm');
         //转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -1127,6 +1129,8 @@ class Xrace_RaceStageController extends AbstractController
 				$bind['comment']['RaceStartMicro'] = intval(abs($bind['RaceStartMicro']));
 				$bind['comment']['RaceStartMicro'] = min(999,$bind['comment']['RaceStartMicro']);
 				unset($bind['RaceStartMicro']);
+                $bind['comment']['ResultNeedConfirm'] = $bind['ResultNeedConfirm'];
+                unset($bind['ResultNeedConfirm']);
 				//保存mylaps计时数据表的前缀
 				$bind['RouteInfo']['MylapsPrefix'] = $bind['MylapsPrefix'];
 				unset($bind['MylapsPrefix']);
@@ -1152,6 +1156,19 @@ class Xrace_RaceStageController extends AbstractController
                     }
                     else
                     {
+                        //如果号码段任意一个为0，则全部置为0
+                        if($GroupInfo['BibStart']*$GroupInfo['BibEnd']==0)
+                        {
+                            $GroupInfo['BibStart'] = 0;
+                            $GroupInfo['BibEnd'] = 0;
+                        }
+                        else
+                        {
+                            //取正整数保存
+                            $bind['SelectedRaceGroup'][$Group]['BibStart'] = intval(abs($GroupInfo['BibStart']));
+                            $bind['SelectedRaceGroup'][$Group]['BibEnd'] = intval(abs($GroupInfo['BibEnd']));
+                        }
+                        //积分比例
                         $bind['SelectedRaceGroup'][$Group]['CreditRatio'] = abs($GroupInfo['CreditRatio']);
                         //获取最早的开始时间作为比赛开始时间
                         $bind['StartTime'] = date("Y-m-d H:i:s",(strtotime($bind['StartTime'])>0?min(strtotime($bind['StartTime']),strtotime($GroupInfo['StartTime'])):strtotime($GroupInfo['StartTime'])));
@@ -2021,6 +2038,8 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
+            //比赛ID
+            $AutoAsign = intval($this->request->AutoAsign);
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
 			//比赛分组
@@ -2035,7 +2054,11 @@ class Xrace_RaceStageController extends AbstractController
 			$oUser = new Xrace_UserInfo();
 			//获取选手名单
 			$RaceUserList = $oUser->getRaceUserListByRace($RaceInfo['RaceId'],$RaceGroupId,0,0);
-            //渲染模板
+			if($AutoAsign==1)
+            {
+                $RaceUserList = $this->oRace->autoAsignBIB($RaceId,$RaceUserList);
+            }
+			//渲染模板
 			include $this->tpl('Xrace_Race_RaceUserList');
 		}
 		else
@@ -2055,7 +2078,7 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceId = intval($this->request->RaceId);
 			//获取BIB号码列表
 			$UserList = $this->request->from('UserList');
-			$oUser = new Xrace_User();
+			$oUser = new Xrace_UserInfo();
 			//循环号码牌列表
 			foreach($UserList['UserList'] as $Id => $UserInfo)
 			{
@@ -3041,7 +3064,7 @@ class Xrace_RaceStageController extends AbstractController
 		}
 	}
     //用户签到信息列表
-    public function raceUserCheckInStatusAction()
+    public function raceStageUserCheckInStatusAction()
     {
         //检查权限
         $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
@@ -3051,47 +3074,106 @@ class Xrace_RaceStageController extends AbstractController
             $RaceStageId = intval($this->request->RaceStageId);
             //分站数据
             $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'RaceStageId,RaceStageName');
-            $oUser = new Xrace_User();
+            $oUser = new Xrace_UserInfo();
             $params = array('RaceStageId'=>$RaceStageInfo['RaceStageId']);
             //获取选手签到状态列表
             $UserCheckInStatusList = $oUser->getRaceUserCheckInList($params);
             $CheckInStatus = array();
-            $oUser = new Xrace_User();
             //获取签到状态列表
-            $UserCheckInStatus = $oUser->getUserCheckInStatus();
+            $UserCheckInStatus = $oUser->getStageUserCheckInStatus();
             foreach($UserCheckInStatus as $Status => $StatusName)
             {
                 $CheckInStatus[$Status]['UserCount'] = 0;
                 $CheckInStatus[$Status]['CheckInStatusName'] = $StatusName;
-                $CheckInStatus[$Status]['StatusUrl'] = "<a href='".Base_Common::getUrl('','xrace/race.stage','user.check.in.status',array('RaceStageId'=>$RaceStageInfo['RaceStageId'],'UserCheckInStatus'=>$Status)) ."'>".$StatusName."</a>";
+                $CheckInStatus[$Status]['StatusUrl'] = "<a href='".Base_Common::getUrl('','xrace/race.stage','user.stage.check.in.status',array('RaceStageId'=>$RaceStageInfo['RaceStageId'],'UserCheckInStatus'=>$Status)) ."'>".$StatusName."</a>";
             }
             //获取签到短信发送状态列表
             $UserCheckInSmsSentStatus = $oUser->getUserCheckInSmsSentStatus();
             foreach($UserCheckInStatusList as $key => $CheckInInfo)
             {
                 //获取用户信息
-                $UserInfo = $oUser->getUserInfo($CheckInInfo['UserId'],"UserId,name");
+                $RaceUserInfo = $oUser->getRaceUser($CheckInInfo['RaceUserId'],"RaceUserId,Name");
                 //如果未获取到用户信息
-                if(!isset($UserInfo['UserId']))
+                if(!isset($RaceUserInfo['RaceUserId']))
                 {
                     unset($UserCheckInStatusList[$key]);
                 }
                 else
                 {
-                    $CheckInStatus[$CheckInInfo['CheckinStatus']]['UserCount'] ++;
+                    $CheckInStatus[$CheckInInfo['CheckInStatus']]['UserCount'] ++;
                     $CheckInStatus[0]['UserCount'] ++;
-                    $UserCheckInStatusList[$key]['UserInfo'] = $UserInfo;
+                    $UserCheckInStatusList[$key]['RaceUserInfo'] = $RaceUserInfo;
                 }
                 //签到状态
-                $UserCheckInStatusList[$key]['CheckInStatusName'] = $UserCheckInStatus[$CheckInInfo['CheckinStatus']];
+                $UserCheckInStatusList[$key]['CheckInStatusName'] = $UserCheckInStatus[$CheckInInfo['CheckInStatus']];
                 //签到短信状态
                 $UserCheckInStatusList[$key]['CheckInSmsSentStatusName'] = $UserCheckInSmsSentStatus[$CheckInInfo['SmsSentStatus']];
             }
             foreach($CheckInStatus as $Status => $StatusInfo)
             {
-                $CheckInStatus[$Status]['StatusUrl'] = $StatusInfo['CheckInStatusName'].":"."<a href='".Base_Common::getUrl('','xrace/race.stage','user.check.in.status',array('RaceStageId'=>$RaceStageInfo['RaceStageId'],'UserCheckInStatus'=>$Status)) ."'>".$StatusInfo['UserCount']."人</a>";
+                $CheckInStatus[$Status]['StatusUrl'] = $StatusInfo['CheckInStatusName'].":"."<a href='".Base_Common::getUrl('','xrace/race.stage','rase.stage.user.check.in.status',array('RaceStageId'=>$RaceStageInfo['RaceStageId'],'UserCheckInStatus'=>$Status)) ."'>".$StatusInfo['UserCount']."人</a>";
             }
-            $CheckInUrl = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.user.check.in',array('RaceStageId'=>$RaceStageInfo['RaceStageId'])) ."'>去签到</a>";
+            $CheckInUrl = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.stage.user.check.in',array('RaceStageId'=>$RaceStageInfo['RaceStageId'])) ."'>去签到</a>";
+            //渲染模板
+            include $this->tpl('Xrace_Race_RaceStageUserCheckInList');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //用户签到信息列表
+    public function raceCheckInStatusAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //检录状态
+            $CheckInStatus = intval($this->request->CheckInStatus);
+            //分站数据
+            $RaceInfo = $this->oRace->getRace($RaceId,'RaceId,RaceName');
+            $oUser = new Xrace_UserInfo();
+            $params = array('RaceId'=>$RaceInfo['RaceId'],"CheckInStatus"=>$CheckInStatus);
+            //获取选手签到状态列表
+            $UserCheckInStatusList = $oUser->getRaceUserList($params,array("ApplyId","RaceUserId","RaceId","RaceGroupId","BIB","ChipId","CheckInStatus,CheckInTime"));
+            $CheckInStatus = array();
+            //获取签到状态列表
+            $UserCheckInStatus = $oUser->getRaceUserCheckInStatus();
+            foreach($UserCheckInStatus as $Status => $StatusName)
+            {
+                $CheckInStatus[$Status]['UserCount'] = 0;
+                $CheckInStatus[$Status]['CheckInStatusName'] = $StatusName;
+                $CheckInStatus[$Status]['StatusUrl'] = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.user.check.in.status',array('RaceId'=>$RaceInfo['RaceId'],'UserCheckInStatus'=>$Status)) ."'>".$StatusName."</a>";
+            }
+            //获取签到短信发送状态列表
+            $UserCheckInSmsSentStatus = $oUser->getUserCheckInSmsSentStatus();
+            foreach($UserCheckInStatusList as $key => $CheckInInfo)
+            {
+                //获取用户信息
+                $RaceUserInfo = $oUser->getRaceUser($CheckInInfo['RaceUserId'],"RaceUserId,Name");
+                //如果未获取到用户信息
+                if(!isset($RaceUserInfo['RaceUserId']))
+                {
+                    unset($UserCheckInStatusList[$key]);
+                }
+                else
+                {
+                    $CheckInStatus[$CheckInInfo['CheckInStatus']]['UserCount'] ++;
+                    $CheckInStatus[0]['UserCount'] ++;
+                    $UserCheckInStatusList[$key]['RaceUserInfo'] = $RaceUserInfo;
+                }
+                //签到状态
+                $UserCheckInStatusList[$key]['CheckInStatusName'] = $UserCheckInStatus[$CheckInInfo['CheckInStatus']];
+            }
+            foreach($CheckInStatus as $Status => $StatusInfo)
+            {
+                $CheckInStatus[$Status]['StatusUrl'] = $StatusInfo['CheckInStatusName'].":"."<a href='".Base_Common::getUrl('','xrace/race.stage','race.check.in.status',array('RaceId'=>$RaceInfo['RaceId'],'CheckInStatus'=>$Status)) ."'>".$StatusInfo['UserCount']."人</a>";
+            }
+            $CheckInUrl = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.check.in.submit',array('RaceId'=>$RaceInfo['RaceId'])) ."'>去检录</a>";
             //渲染模板
             include $this->tpl('Xrace_Race_RaceUserCheckInList');
         }
@@ -3101,8 +3183,8 @@ class Xrace_RaceStageController extends AbstractController
             include $this->tpl('403');
         }
     }
-    //用户签到t提交页面
-    public function raceUserCheckInAction()
+    //用户签到提交页面
+    public function raceStageUserCheckInAction()
     {
         //检查权限
         $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
@@ -3113,9 +3195,9 @@ class Xrace_RaceStageController extends AbstractController
             //分站数据
             $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'RaceStageId,RaceStageName');
             //签到状态列表
-            $CheckInStatusUrl = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.user.check.in.status',array('RaceStageId'=>$RaceStageInfo['RaceStageId'])) ."'>返回</a>";
+            $CheckInStatusUrl = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.stage.user.check.in.status',array('RaceStageId'=>$RaceStageInfo['RaceStageId'])) ."'>返回</a>";
             //渲染模板
-            include $this->tpl('Xrace_Race_RaceUserCheckIn');
+            include $this->tpl('Xrace_Race_RaceStageUserCheckIn');
         }
         else
         {
@@ -3127,7 +3209,7 @@ class Xrace_RaceStageController extends AbstractController
     {
         //获取 页面参数
         $bind=$this->request->from('CheckInCode','RaceStageId');
-        $CheckIn = $this->oRace->CheckIn($bind['RaceStageId'],$bind['CheckInCode']);
+        $CheckIn = $this->oRace->RaceStageCheckIn($bind['RaceStageId'],$bind['CheckInCode']);
         if($CheckIn)
         {
             $response = array('errno' => 0,'UserId'=>$CheckIn);
@@ -3140,7 +3222,7 @@ class Xrace_RaceStageController extends AbstractController
         return true;
     }
     //比赛选手列表 批量更新BIB和计时芯片ID
-    public function raceUserCheckInBibAction()
+    public function raceStageUserCheckInBibAction()
     {
         //检查权限
         $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
@@ -3175,7 +3257,7 @@ class Xrace_RaceStageController extends AbstractController
             //签到状态列表
             $CheckInupUrl = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.user.check.in',array('RaceStageId'=>$RaceStageInfo['RaceStageId'])) ."'>返回</a>";
             //渲染模板
-            include $this->tpl('Xrace_Race_RaceUserCheckInBIB');
+            include $this->tpl('Xrace_Race_RaceStageUserCheckInBIB');
         }
         else
         {
@@ -3194,7 +3276,7 @@ class Xrace_RaceStageController extends AbstractController
             $RaceStageId = intval($this->request->RaceStageId);
             //获取BIB号码列表
             $UserRaceList = $this->request->from('UserRaceList');
-            $oUser = new Xrace_User();
+            $oUser = new Xrace_UserInfo();
             //循环号码牌列表
             foreach($UserRaceList['UserRaceList'] as $Id => $UserRaceInfo)
             {
@@ -3487,5 +3569,115 @@ class Xrace_RaceStageController extends AbstractController
             echo json_encode(array("text"=>$text,"S"=>"group"));
         }
         die();
+    }
+    //用户检录提交页面
+    public function raceCheckInSubmitAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //比赛数据
+            $RaceInfo = $this->oRace->getRace($RaceId,'RaceId,RaceName');
+            //签到状态列表
+            $CheckInStatusUrl = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.check.in.status',array('RaceId'=>$RaceInfo['RaceId'])) ."'>检录状态</a>";
+            //渲染模板
+            include $this->tpl('Xrace_Race_RaceCheckIn');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //用户检录提交
+    public function raceCheckInAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //检录代码（芯片）
+            $CheckInCode = trim($this->request->CheckInCode);
+            //比赛数据
+            $RaceInfo = $this->oRace->getRace($RaceId,'RaceStageId,RaceId,RaceName');
+            //用户检录状态
+            $RaceUserCheckInfo = $this->oRace->getUserCheckStatus($RaceInfo['RaceStageId'],$RaceInfo['RaceId'],$CheckInCode);
+            //如果正确找到用户报名记录信息
+            if($RaceUserCheckInfo['return']==1)
+            {
+                $oUser = new Xrace_UserInfo();
+                $oTeam = new Xrace_Team();
+                //获取性别列表
+                $SexList = $oUser->getSexList();
+                //获取实名认证证件类型列表
+                $AuthIdTypesList = $oUser->getAuthIdType();
+                //用户性别
+                $RaceUserCheckInfo['RaceUserInfo']['Sex'] = isset($SexList[$RaceUserCheckInfo['RaceUserInfo']['Sex']])?$SexList[$RaceUserCheckInfo['RaceUserInfo']['Sex']]:"保密";
+                //证件生日
+                $RaceUserCheckInfo['RaceUserInfo']['Birthday'] = !is_null($RaceUserCheckInfo['RaceUserInfo']['Birthday'])?$RaceUserCheckInfo['RaceUserInfo']['Birthday']:"未知";
+                //实名认证证件类型
+                $RaceUserCheckInfo['RaceUserInfo']['AuthIdType'] = isset($AuthIdTypesList[intval($RaceUserCheckInfo['RaceUserInfo']['IdType'])])?$AuthIdTypesList[intval($RaceUserCheckInfo['RaceUserInfo']['IdType'])]:"未知";
+                //分组信息
+                $RaceGroupInfo = $this->oRace->getRaceGroup($RaceUserCheckInfo['ApplyInfo']['RaceGroupId'],"RaceGroupId,RaceGroupName");
+                $RaceUserCheckInfo['ApplyInfo']['RaceGroupName'] = isset($RaceGroupInfo['RaceGroupId'])?$RaceGroupInfo['RaceGroupName']:"未知组别";
+                //队伍信息
+                $TeamInfo = $RaceUserCheckInfo['ApplyInfo']['TeamId']>0?($oTeam->getTeam($RaceUserCheckInfo['ApplyInfo']['TeamId'],"TeamId,TeamName")):array("TeamId"=>0,"TeamName"=>"个人");
+                $RaceUserCheckInfo['ApplyInfo']['TeamName'] = isset($TeamInfo['TeamId'])?$TeamInfo['TeamName']:"个人";
+            }
+            //签到状态列表
+            //$CheckInStatusUrl = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.check.in.status',array('RaceId'=>$RaceInfo['RaceId'])) ."'>检录状态</a>";
+            //渲染模板
+            include $this->tpl('Xrace_Race_RaceCheckInSubmit');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //报名记录检录
+    public function raceUserCheckInAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            //报名记录ID
+            $ApplyId = intval($this->request->ApplyId);
+            //执行检录
+            $CheckIn = $this->oRace->RaceCheckIn($ApplyId);
+            //返回之前页面
+            $this->response->goBack();
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //报名记录检录
+    public function raceResultConfirmAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            //报名记录ID
+            $RaceId = intval($this->request->RaceId);
+            //执行检录
+            $RaceResultConfirm = $this->oRace->RaceResultConfirm($RaceId, $this->manager->id);
+            //返回之前页面
+            $this->response->goBack();
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
     }
 }

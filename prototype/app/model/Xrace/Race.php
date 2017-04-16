@@ -1535,11 +1535,11 @@ class Xrace_Race extends Base_Widget
 	{
 		if($RaceGroupId>0)
         {
-            $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.race.user.list.by.bib',array('RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId));
+            $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.race.user.list.by.bib',array('Force'=>1,'RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId));
         }
         else
         {
-            $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.race.user.list.by.bib',array('RaceId'=>$RaceId));
+            $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.race.user.list.by.bib',array('Force'=>1,'RaceId'=>$RaceId));
         }
         $return = Base_Common::do_post($url);
 		return json_decode($return,true);
@@ -1586,7 +1586,7 @@ class Xrace_Race extends Base_Widget
 		}
 		return $RaceCombinationList;
 	}
-	public function CheckIn($RaceStageId,$CheckInCode)
+	public function RaceStageCheckIn($RaceStageId,$CheckInCode)
     {
         //分解签到码
         $t = explode("|",$CheckInCode);
@@ -1594,7 +1594,7 @@ class Xrace_Race extends Base_Widget
         $U = hexdec($t[1]);
         //分站ID
         $S = hexdec($t[0]);
-        $oUser = new Xrace_User();
+        $oUser = new Xrace_UserInfo();
         //获取签到信息
         $UserCheckInInfo = $oUser->getUserCheckInInfo($U,$S);
         //检查签到码
@@ -1624,6 +1624,36 @@ class Xrace_Race extends Base_Widget
         else
         {
             return false;
+        }
+    }
+    public function getUserCheckStatus($RaceStageId,$RaceId,$CheckInCode)
+    {
+        //分解签到码
+        $t = explode("|",$CheckInCode);
+        //用户ID
+        $U = hexdec($t[1]);
+        //分站ID
+        $S = hexdec($t[0]);
+        $oUser = new Xrace_UserInfo();
+        //获取检录信息
+        $RaceCheckInInfo = $oUser->getRaceUserList(array("RaceId"=>$RaceId,"RaceUserId"=>$U));
+        //如果找到报名记录
+        if(isset($RaceCheckInInfo['0']['ApplyId']))
+        {
+            $RaceUserInfo = $oUser->getRaceUser($U);
+            //如果找到用户信息
+            if(isset($RaceUserInfo['RaceUserId']))
+            {
+                return array("return"=>1,"ApplyInfo"=>$RaceCheckInInfo['0'],"RaceUserInfo"=>$RaceUserInfo);
+            }
+            else
+            {
+                return array("return"=>0);
+            }
+        }
+        else
+        {
+            return array("return"=>0);
         }
     }
     //保存比赛的计时信息
@@ -1745,5 +1775,133 @@ class Xrace_Race extends Base_Widget
             $this->TimgingDataSave($RaceId,$return,1);
             return $return;
         }
+    }
+    public function RaceCheckIn($ApplyId)
+    {
+        $oUser = new Xrace_UserInfo();
+        //更新
+        return $oUser->updateRaceUserApply($ApplyId,array('CheckinStatus'=>1,'CheckInTime'=>date("Y-m-d H:i:s",time())));
+    }
+    public function RaceResultConfirm($RaceId,$manager)
+    {
+        //获取比赛信息
+        $RaceInfo = $this->getRace($RaceId,"RaceId,comment");
+        //如果找到比赛
+        if(isset($RaceInfo['RaceId']))
+        {
+            //数组解包
+            $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+            //如果需要确认成绩
+            if($RaceInfo['comment']['ResultNeedConfirm']==1)
+            {
+                //如果需要确认并且已经确认
+                if(isset($RaceInfo['comment']['RaceResultConfirm']) && $RaceInfo['comment']['RaceResultConfirm']['ConfirmStatus']==1)
+                {
+                    return true;
+                }
+                else
+                {
+                    $RaceInfo['comment']['RaceResultConfirm'] = array("ConfirmStatus"=>1,"ConfirmTime"=>date("Y-m-d H;i:s",time()),"manager_id"=>$manager);
+                    $RaceInfo['comment'] = json_encode($RaceInfo['comment']);
+                    //更新比赛数据
+                    return $this->updateRace($RaceId,$RaceInfo);
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public function autoAsignBIB($RaceId,$RaceUserList)
+    {
+        $oUser = new Xrace_UserInfo();
+        //获取比赛信息
+        $RaceInfo = $this->getRace($RaceId,"RaceId,RaceStageId,RaceGroupId,comment");
+        //压缩数组解包
+        $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+        //获取分站信息
+        $RaceStageInfo = $this->getRaceStage($RaceInfo['RaceStageId'],"RaceStageId,comment");
+        //压缩数组解包
+        $RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
+        //比赛-分组的层级规则
+        $RaceStructureList  = $this->getRaceStructure();
+        //如果没有配置比赛结构 或者 比赛结构配置不在配置列表中
+        if(!isset($RaceStageInfo['comment']['RaceStructure']) || !isset($RaceStructureList[$RaceStageInfo['comment']['RaceStructure']]))
+        {
+            //默认为分组优先
+            $RaceStageInfo['comment']['RaceStructure'] = "group";
+        }
+        //比赛分组模式
+        if($RaceStageInfo['comment']['RaceStructure'] == "race")
+        {
+            //循环选手列表
+            foreach($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
+            {
+                //如果当前组BIB池未计算 且 有指定BIB列表
+                if(!isset($BIBList[$ApplyInfo['RaceGroupId']]) && $RaceInfo['comment']['SelectedRaceGroup'][$ApplyInfo['RaceGroupId']]['BibStart'] > 0)
+                {
+                    //生成BIB池
+                    for ($i = $RaceInfo['comment']['SelectedRaceGroup'][$ApplyInfo['RaceGroupId']]['BibStart']; $i <= $RaceInfo['comment']['SelectedRaceGroup'][$ApplyInfo['RaceGroupId']]['BibEnd']; $i++)
+                    {
+                        $BIBList[$ApplyInfo['RaceGroupId']]['UserList'][$i] = 0;
+                        $BIBList[$ApplyInfo['RaceGroupId']]['Position'] ++;
+                    }
+                }
+                //如果当前选手BIB尚未分配
+                if($ApplyInfo['BIB']=="")
+                {
+                    //获取选手当前分站的其他比赛列表
+                    $UserRaceList = $oUser->getRaceUserList(array('RaceIdIgnore'=>$ApplyInfo['RaceId'],'RaceUserId' => $ApplyInfo['RaceUserId'],'RaceStageId'=>$RaceStageInfo['RaceStageId']),array("ApplyId","BIB"));
+                    //如果找到
+                    if(count($UserRaceList)>0)
+                    {
+                        //循环报名记录
+                        foreach($UserRaceList as $k => $v)
+                        {
+                            //如果当前选手已经在其他比赛被分配BIB
+                            if($v['BIB']!="")
+                            {
+                                //则把这个BIB也分配给他
+                                $RaceUserList['RaceUserList'][$ApplyId]['BIB'] = $v['BIB'];
+                                $RaceUserList['RaceUserList'][$ApplyId]['TBD'] = 2;
+                                if(isset($BIBList[$ApplyInfo['RaceGroupId']]['UserList'][$v['BIB']]))
+                                {
+                                    $BIBList[$ApplyInfo['RaceGroupId']]['Position'] --;
+                                }
+                                $BIBList[$ApplyInfo['RaceGroupId']]['UserList'][$v['BIB']] = $ApplyInfo['RaceUserId'];
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //如果有空间
+                        if($BIBList[$ApplyInfo['RaceGroupId']]['Position']>0)
+                        {
+                            //循环BIB池
+                            foreach($BIBList[$ApplyInfo['RaceGroupId']]['UserList'] as $k => $v)
+                            {
+                                if($v==0)
+                                {
+                                    //将第一个分配给当前选手（加临时标记）
+                                    $RaceUserList['RaceUserList'][$ApplyId]['BIB'] = $k;
+                                    $RaceUserList['RaceUserList'][$ApplyId]['TBD'] = 1;
+                                    //从BIB池中删除
+                                    $BIBList[$ApplyInfo['RaceGroupId']]['UserList'][$k] = $ApplyInfo['RaceUserId'];
+                                    $BIBList[$ApplyInfo['RaceGroupId']]['Position'] --;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $RaceUserList;
     }
 }

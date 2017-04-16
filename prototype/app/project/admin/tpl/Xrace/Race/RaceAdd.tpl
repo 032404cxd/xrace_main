@@ -11,7 +11,9 @@
 			{tpl:loop $RaceStageInfo.comment.SelectedRaceGroup $RaceGroupInfo}
 			<tr class="hover">
 				<th align="center" class="rowtip"><input type="checkbox"  name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][Selected]"  {tpl:if($RaceGroupInfo.Selected > 0)}checked{/tpl:if} value="{tpl:$RaceGroupInfo.RaceGroupId/}" /> {tpl:$RaceGroupInfo.RaceGroupName/}</th>
-				<th align="center" class="rowtip"><input type="text" name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][StartTime]" value="{tpl:$RaceGroupInfo.StartTime/}"  class="input-medium"  onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >.<input name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][RaceStartMicro]" type="text" class="span1" id="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][RaceStartMicro]" value = "{tpl:$RaceGroupInfo.RaceStartMicro func="sprintf('%03d',@@)"/}" />-<input type="text" name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][EndTime]" value="{tpl:$RaceGroupInfo.EndTime/}" value="" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th>
+				<th align="center" class="rowtip"><input type="text" name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][StartTime]" value="{tpl:$RaceGroupInfo.StartTime/}"  class="input-medium"  onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >.<input name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][RaceStartMicro]" type="text" class="span1" id="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][RaceStartMicro]" value = "{tpl:$RaceGroupInfo.RaceStartMicro func="sprintf('%03d',@@)"/}" />-<input type="text" name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][EndTime]" value="{tpl:$RaceGroupInfo.EndTime/}" value="" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >
+					<p>BIB号码段：<input name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][BibStart]" type="text" class="span1" id="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][BibStart]"  size="50" />-<input name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][BibEnd]" type="text" class="span1" id="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][BibEnd]" size="50" /></th>
+				</th>
 				<th align="center" class="rowtip">积分比例：<input type="text" class="span1" name="SelectedRaceGroup[{tpl:$RaceGroupInfo.RaceGroupId/}][CreditRatio]" value="1"></th>
 			</tr>
 			{/tpl:loop}
@@ -34,6 +36,12 @@
 				{tpl:loop $RaceTypeList $RaceTypeInfo}
 				<option value="{tpl:$RaceTypeInfo.RaceTypeId/}" >{tpl:$RaceTypeInfo.RaceTypeName/}</option>
 				{/tpl:loop}
+			</select>
+		</th></tr>
+	<tr class="hover"><th align="center" class="rowtip">需要确认后发布成绩</th><th align="center" class="rowtip">
+			<select name="ResultNeedConfirm" size="1" class="span2">
+				<option value="0" >不需要裁判确认</option>
+				<option value="1" >需要裁判确认</option>
 			</select>
 		</th></tr>
 	<tr class="hover"><th align="center" class="rowtip">是否必选</th><th align="center" class="rowtip">

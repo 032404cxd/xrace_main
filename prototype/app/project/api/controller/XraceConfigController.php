@@ -667,7 +667,8 @@ class XraceConfigController extends AbstractController
                 if (isset($RaceInfo['comment']['DetailList']))
                 {
                     //循环运动分段
-                    foreach ($RaceInfo['comment']['DetailList'] as $detailId => $detailInfo) {
+                    foreach ($RaceInfo['comment']['DetailList'] as $detailId => $detailInfo)
+                    {
                         //如果有配置过该运动分段
                         if (isset($SportsTypeList[$detailInfo['SportsTypeId']])) {
                             //获取运动类型名称
@@ -1010,11 +1011,13 @@ class XraceConfigController extends AbstractController
         $RaceUserId = abs(intval($this->request->RaceUserId));
         //用户BIB
         $BIB = trim($this->request->BIB);
-        if (!$RaceUserId) {
+        if (!$RaceUserId)
+        {
             //根据用户的BIB获取比赛报名信息
             $UserApplyInfo = $this->oUser->getRaceApplyUserInfoByBIB($RaceId, $BIB);
             //如果查询到报名记录
-            if ($UserApplyInfo['ApplyId']) {
+            if ($UserApplyInfo['ApplyId'])
+            {
                 //保存用户ID
                 $UserId = $UserApplyInfo['RaceUserId'];
             }
@@ -1155,6 +1158,18 @@ class XraceConfigController extends AbstractController
             if (isset($RaceInfo['RaceId']))
             {
                 $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+                //是否强行獲取成績
+                $Force = abs(intval($this->request->Force));
+                if($RaceInfo['comment']['ResultNeedConfirm']==1)
+                {
+                    if($Force!=1 && $RaceInfo['comment']['RaceResultConfirm']['ConfirmStatus']!=1)
+                    {
+                        $result = array("return" => 2, "RaceUserList" => array(), "TeamList" => array(), "comment" => "等待裁判确认成绩后方可公布！");
+                        echo json_encode($result);
+                        die();
+                    }
+                }
+
                 //获取选手和车队名单
                 $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,0, 0);
                 if (count($RaceUserList['RaceUserList']))
@@ -1247,11 +1262,11 @@ class XraceConfigController extends AbstractController
     public function getRaceUserCheckInAction()
     {
         //用户ID
-        $UserId = abs(intval($this->request->UserId));
+        $RaceUserId = abs(intval($this->request->RaceUserId));
         //分站ID
         $RaceStageId = abs(intval($this->request->RaceStageId));
         //获取用户签到信息
-        $UserCheckInInfo = $this->oUser->getUserCheckInInfo($UserId,$RaceStageId);
+        $UserCheckInInfo = $this->oUser->getUserCheckInInfo($RaceUserId,$RaceStageId);
         //如果找到记录
         if($UserCheckInInfo['RaceStageId'])
         {
@@ -1270,7 +1285,7 @@ class XraceConfigController extends AbstractController
                 $UserInfo = array();
             }
             //根据用户获取报名记录
-            $UserRaceList = $this->oUser->getRaceUserList(array('UserId' => $UserInfo['UserId'],'RaceStageId'=>$RaceStageInfo['RaceStageId']));
+            $UserRaceList = $this->oUser->getRaceUserList(array('RaceUserId' => $UserInfo['RaceUserId'],'RaceStageId'=>$RaceStageInfo['RaceStageId']));
             //初始化空的比赛列表
             $RaceList = array();
             //初始化空的分组列表

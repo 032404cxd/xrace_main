@@ -34,7 +34,9 @@ class Xrace_UserInfo extends Base_Widget
     //用户执照状态
     protected $user_license_status = array('1'=>"生效中",'2'=>"已过期",'3'=>"即将生效",'4'=>"已删除");
     //用户签到状态
-    protected $user_checkin_status = array('0'=>'全部','2'=>"未签到",'1'=>"已签到");
+    protected $stage_user_checkin_status = array('0'=>'全部','2'=>"未签到",'1'=>"已签到");
+    //用户检录状态
+    protected $race_user_checkin_status = array('0'=>'全部','1'=>"已检录",'2'=>"未检录");
     //用户签到短信发送状态
     protected $user_checkin_sms_sent_status = array('3'=>"不需发送",'1'=>"待发送",'2'=>"已发送");
         //获取性别列表
@@ -70,9 +72,14 @@ class Xrace_UserInfo extends Base_Widget
         return $this->user_license_status;
     }
     //获得用户签到状态列表
-    public function getUserCheckInStatus()
+    public function getStageUserCheckInStatus()
     {
-        return $this->user_checkin_status;
+        return $this->stage_user_checkin_status;
+    }
+    //获得用户检录状态列表
+    public function getRaceUserCheckInStatus()
+    {
+        return $this->race_user_checkin_status;
     }
     //获得用户签到短信发送状态列表
     public function getUserCheckInSmsSentStatus()
@@ -1107,17 +1114,21 @@ class Xrace_UserInfo extends Base_Widget
         $whereStage = isset($params['RaceStageId'])?" RaceStageId = '".$params['RaceStageId']."' ":"";
         //获得比赛ID
         $whereRace = isset($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
+        //排除比赛ID
+        $whereRaceIgnore = isset($params['RaceIdIgnore'])?" RaceId != '".$params['RaceIdIgnore']."' ":"";
         //获得用户ID
         $whereRaceUser = (isset($params['RaceUserId']) && $params['RaceUserId']!="0")?" RaceUserId = '".$params['RaceUserId']."' ":"";
         //获得组别ID
         $whereGroup = (isset($params['RaceGroupId'])  && $params['RaceGroupId']!=0)?" RaceGroupId = '".$params['RaceGroupId']."' ":"";
         //获得赛事ID
         $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
+        //获得赛事ID
+        $whereCheckIn = $params['CheckInStatus']>0 ?" CheckInStatus = '".$params['CheckInStatus']."' ":"";
         //所有查询条件置入数组
-        $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage);
+        $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage,$whereCheckIn,$whereRaceIgnore);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
-        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by BIB,TeamId,ApplyId desc";
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by BIB,RaceGroupId,TeamId,ApplyId desc";
         $return = $this->db->getAll($sql);
         return $return;
     }
@@ -1880,5 +1891,40 @@ class Xrace_UserInfo extends Base_Widget
     {
         $table_to_process = Base_Widget::getDbTable($this->table_race);
         return $this->db->insert_update($table_to_process, $bind,$bind_update);
+    }
+    //获得用户报名信息
+    public function getRaceApplyUserInfo($ApplyId, $fields = '*')
+    {
+        $ApplyId = intval($ApplyId);
+        $table_to_process = Base_Widget::getDbTable($this->table_race);
+        return $this->db->selectRow($table_to_process, $fields, '`ApplyId` = ?', $ApplyId);
+    }
+    //更新用户报名信息
+    public function updateRaceUserApply($ApplyId, array $bind)
+    {
+        $ApplyId = intval($ApplyId);
+        $table_to_process = Base_Widget::getDbTable($this->table_race);
+        return $this->db->update($table_to_process, $bind, '`ApplyId` = ?', $ApplyId);
+    }
+    //获取报名记录
+    public function getRaceUserCheckInList($params,$fields = array('*'))
+    {
+        //生成查询列
+        $fields = Base_common::getSqlFields($fields);
+        //获取需要用到的表名
+        $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
+        //用户
+        $whereUser = isset($params['RaceUserId'])?" RaceUserId = ".$params['RaceUserId']:"";
+        //获得分站
+        $whereRaceStage = isset($params['RaceStageId'])?" RaceStageId = ".$params['RaceStageId']:"";
+        //获得赛事
+        $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = ".$params['RaceCatalogId']:"";
+        //所有查询条件置入数组
+        $whereCondition = array($whereUser,$whereCatalog,$whereRaceStage);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by CheckInStatus,RaceCatalogId,RaceStageId,UserId desc";
+        $return = $this->db->getAll($sql);
+        return $return;
     }
 }
