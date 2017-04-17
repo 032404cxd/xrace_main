@@ -71,6 +71,7 @@ class Xrace_Mylaps extends Base_Widget
             //重新生成选手的mylaps排名数据
             $oRace->genRaceLogToText($RaceId);
         }
+        die();
         $UserRaceTimingInfo = $oRace->GetRaceTimingOriginalInfo($RaceId,0);
         //初始化比赛时间列表
         $TimeList = array();

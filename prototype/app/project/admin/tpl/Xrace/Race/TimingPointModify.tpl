@@ -15,8 +15,8 @@
     <th align="center" class="rowtip"><input type="text" class="span2" name="ChipId" id="ChipId" value="{tpl:$TimingInfo.ChipId/}" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">距下一点<br>(米，负数不计时)</th>
-    <th align="center" class="rowtip"><input type="text" class="span2" name="ToNext" id="ToNext" value="{tpl:$TimingInfo.ToNext/}" /></th>
+    <th align="center" class="rowtip">距上一点<br>(米，负数不计时)</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="ToPrevious" id="ToPrevious" value="{tpl:$TimingInfo.ToPrevious/}" /></th>
   </tr>
   <tr>
     <th align="center" class="rowtip">圈数(次)</th>

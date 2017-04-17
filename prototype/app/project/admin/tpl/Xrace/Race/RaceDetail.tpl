@@ -65,7 +65,7 @@
       <table width="99%" align="center"  class="table table-bordered table-striped">
         {tpl:loop $SportsTypeInfo.TimingDetailList.comment $Tid $TimingInfo}
         <tr>
-          <td>┠&nbsp;&nbsp;{tpl:$TimingInfo.TName/}</td><td>计时点序列号：{tpl:$TimingInfo.ChipId/}</td>{tpl:if($TimingInfo.ToNext>=0)}<td>距离下一点：{tpl:$TimingInfo.ToNext/}米</td>{tpl:else}<td>不计时</td>{/tpl:if}<td>圈数: {tpl:$TimingInfo.Round/} 次</td><td>海拔上升:{tpl:$TimingInfo.AltAsc/}米</td><td>海拔下降:{tpl:$TimingInfo.AltDec/}米</td><td>等待时间:{tpl:$TimingInfo.TolaranceTime/}秒</td>
+          <td>┠&nbsp;&nbsp;{tpl:$TimingInfo.TName/}</td><td>计时点序列号：{tpl:$TimingInfo.ChipId/}</td>{tpl:if($TimingInfo.ToPrevious>=0)}<td>距离上一点：{tpl:$TimingInfo.ToPrevious/}米</td>{tpl:else}<td>不计时</td>{/tpl:if}<td>圈数: {tpl:$TimingInfo.Round/} 次</td><td>海拔上升:{tpl:$TimingInfo.AltAsc/}米</td><td>海拔下降:{tpl:$TimingInfo.AltDec/}米</td><td>等待时间:{tpl:$TimingInfo.TolaranceTime/}秒</td>
           <td><a href="javascript:;" onclick="TimingPointModify('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$TimingInfo.TName/}')">修改</a> |
             <a href="javascript:;" onclick="TimingPointDelete('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$TimingInfo.TName/}')">删除</a> |
             <a href="javascript:;" onclick="TimingPointAdd('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">添加</a> |

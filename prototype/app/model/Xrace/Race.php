@@ -1199,9 +1199,10 @@ class Xrace_Race extends Base_Widget
 		return  $PriceList;
 	}
 	//根据报名记录生成指定场次比赛选手的计时记录到配置文件
-	public function genRaceLogToText($RaceId,$UserId = 0)
+	public function genRaceLogToText($RaceId,$RaceUserId = 0)
 	{
-		$RaceId = intval($RaceId);
+        $oSports = new Xrace_Sports();
+        $RaceId = intval($RaceId);
 		//获取比赛信息
 		$RaceInfo = $this->getRace($RaceId,"RaceId,RaceTypeId,StartTime,EndTime,RaceStageId,RaceGroupId,RaceName,comment,RouteInfo");
         //如果获取到比赛信息
@@ -1214,13 +1215,22 @@ class Xrace_Race extends Base_Widget
 			$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
 			//地图相关数据解包
 			$RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
-            $TimingPointList = array('Sports'=>array(),'Point'=>array());
+			$RaceInfo['TotalDistence'] = 0;
+            $TimingPointList = array('Sports'=>array(),'Point'=>array(),'RaceInfo'=>$RaceInfo);
             //如果有配置赛段信息
 			if(isset($RaceInfo['comment']['DetailList']) && count($RaceInfo['comment']['DetailList']))
 			{
                 //循环赛段信息
 				foreach($RaceInfo['comment']['DetailList'] as $SportsType => $TimingList)
 				{
+                    //获取运动信息
+                    $SportsTypeInfo = $oSports->getSportsType($TimingList['SportsTypeId'],"*");
+                    if(isset($SportsTypeInfo['SportsTypeId']))
+                    {
+                        $SportsTypeInfo['TimingId'] = $TimingList['TimingId'];
+                        //保存运动本身信息
+                        $TimingPointList['Sports'][$SportsType]['SportsTypeInfo'] = $SportsTypeInfo;
+                    }
 				    //每个分段的距离初始化为0
 					$SectionDistence = 0;
 					//初始化空数组
@@ -1233,14 +1243,12 @@ class Xrace_Race extends Base_Widget
                         //如果计时点数据获取成功
 						if(isset($TimingInfo['TimingId']))
 						{
-							unset($RaceInfo['comment']['DetailList']);
-							$TimingPointList['RaceInfo'] = $RaceInfo;
 							//数据解包
 							$TimingInfo['comment'] = json_decode($TimingInfo['comment'],true);
 							//如果解包后有计时点数据
 							if(count($TimingInfo['comment']))
 							{
-								//循环计时点数据
+                                //循环计时点数据
 								foreach($TimingInfo['comment'] as $TimingPoint)
 								{
 								    //如果有计时点
@@ -1248,14 +1256,6 @@ class Xrace_Race extends Base_Widget
 									{
 									    //依次累加
 										$TimingCount++;
-										$oSports = new Xrace_Sports();
-										//获取运动信息
-                                        $SportsTypeInfo = $oSports->getSportsType($TimingList['SportsTypeId'],"*");
-                                        if(isset($SportsTypeInfo['SportsTypeId']))
-										{
-											$SportsTypeInfo['TimingId']=$TimingList['TimingId'];
-											//保存运动本身信息
-											$TimingPointList['Sports'][$SportsType]['SportsTypeInfo'] = $SportsTypeInfo;
 											// 按照计时点通过测次数进行循环
 											for($j = 0;$j<$TimingPoint['Round'];$j++)
 											{
@@ -1276,17 +1276,19 @@ class Xrace_Race extends Base_Widget
 												$t['TName'].= ($j==0)?"":"*".($j+1);
 												$t['inTime'] = 0;
 												//每个分段内距离相互累加 如果距离为正数
-                                                $t['ToNext'] = intval($t['ToNext']);
-                                                $SectionDistence += ($i==0)?0:(($TimingPointList['Point'][$i]['ToNext']>0)?$TimingPointList['Point'][$i]['ToNext']:0);
-												$t['CurrentDistense'] = $SectionDistence;
-												$t['SportsTypeName'] = $SportsTypeInfo['SportsTypeName'];
+                                                $t['ToPrevious'] = intval($t['ToPrevious']);
+                                                //计算分段距离
+                                                $SectionDistence += ($TimingPoint['ToPrevious']>=0?$TimingPoint['ToPrevious']:0);
+                                                //计算总距离
+                                                $RaceInfo['TotalDistence'] += ($TimingPoint['ToPrevious']>=0?$TimingPoint['ToPrevious']:0);
+                                                $t['CurrentDistense'] = $SectionDistence;
+                                                $t['TotalDistence'] = $RaceInfo['TotalDistence'];
                                                 $t['SpeedDisplayType'] = $SportsTypeInfo['SpeedDisplayType'];
 												//初始化通过的用户列表
 												$t['UserList'] = array();
 												$TimingPointList['Point'][$i+1] = $t;
 												$i++;
 											}
-										}
 									}
 								}
 							}
@@ -1302,8 +1304,8 @@ class Xrace_Race extends Base_Widget
 				{
 				    $TimingPointList['LastId'] = 0;
 				    //生成查询条件
-					$params = array('RaceId'=>$RaceInfo['RaceId'],'UserId'=>$UserId);
-					if($UserId==0)
+					$params = array('RaceId'=>$RaceInfo['RaceId'],'RaceUserId'=>$RaceUserId);
+					if($RaceUserId==0)
 					{
                         //保存配置文件
 					    $this->TimgingDataSave($RaceInfo['RaceId'],$TimingPointList);
@@ -1316,7 +1318,7 @@ class Xrace_Race extends Base_Widget
                     //如果获取到选手名单
 					if(count($RaceUserList))
 					{
-						//循环选手列表
+					    //循环选手列表
 						foreach($RaceUserList as $ApplyId => $ApplyInfo)
 						{
 						    //获取用户信息
@@ -1324,7 +1326,9 @@ class Xrace_Race extends Base_Widget
 							//如果获取到用户
 							if($RaceUserInfo['RaceUserId'])
 							{
-								$TeamInfo = $oTeam->getTeamInfo($ApplyInfo['TeamId']);
+                                //保存用户姓名到总表
+							    $RaceUserList[$ApplyId]['Name'] = $RaceUserInfo['Name'];
+							    $TeamInfo = $oTeam->getTeamInfo($ApplyInfo['TeamId']);
                                 if(!isset($TeamInfo['TeamId']))
 								{
 									$TeamInfo = array('TeamName'=>"个人");
@@ -1346,16 +1350,14 @@ class Xrace_Race extends Base_Widget
 										$TimingPointList['OrderInfo'] = $OrderInfo;
 									}
 								}
-								if(isset($ApplyInfo['comment']['BDDeviceId']) && (strlen($ApplyInfo['comment']['BDDeviceId'])>4))
-								{
-									$TimingPointList['RaceUserInfo']['ApplyComment']['BDLocationUrl'] = "http://182.92.140.26:8000/rest/sdk.location.queryLocation/226/0?deviceId=".$ApplyInfo['comment']['BDDeviceId']."&beginTime=beginTime&endTime=endTime";
-								}
-								//存储报名信息
-								//$TimingPointList['ApplyInfo'] = $ApplyInfo;
-                                //保存配置文件
+								unset($TimingPointList['Sports'],$TimingPointList['RaceInfo']);
+
+								//保存配置文件
                                 $this->UserTimgingDataSave($RaceInfo['RaceId'],$RaceUserInfo['RaceUserId'],$TimingPointList);
 							}
 						}
+                        //保存用户列表到本地文件
+                        $this->RaceUserListSave($RaceId,$RaceUserList);
 					}
 					else
 					{
@@ -1673,6 +1675,22 @@ class Xrace_Race extends Base_Widget
             //生成配置文件
             Base_Common::rebuildConfig($filePath,$fileName,$TimingData,"Timing");
         }
+    }
+    //保存比赛的用户列表
+    public function RaceUserListSave($RaceId,$UserList)
+    {
+            $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
+            $fileName = "UserList.php";
+            //生成配置文件
+            Base_Common::rebuildConfig($filePath,$fileName,$UserList,"UserList");
+    }
+    //保存比赛的用户列表
+    public function getRaceUserListByFile($RaceId)
+    {
+        $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
+        $fileName = "UserList.php";
+        //生成配置文件
+        return Base_Common::loadConfig($filePath,$fileName);
     }
     //根据用户ID和比赛ID获取用户该场比赛的详情
     public function getUserRaceInfo($RaceId,$RaceUserId)

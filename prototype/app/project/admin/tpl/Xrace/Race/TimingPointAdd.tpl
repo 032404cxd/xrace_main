@@ -24,8 +24,8 @@
     <th align="center" class="rowtip"><input type="text" class="span2" name="ChipId" id="ChipId" value="" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">距下一点<br>(米，负数不计时)</th>
-    <th align="center" class="rowtip"><input type="text" class="span2" name="ToNext" id="ToNext" value="" /></th>
+    <th align="center" class="rowtip">距上一点<br>(米，负数不计时)</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="ToPrevious" id="ToPrevious" value="" /></th>
   </tr>
   <tr>
     <th align="center" class="rowtip">圈数(次)</th>
