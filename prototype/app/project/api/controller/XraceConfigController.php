@@ -1151,7 +1151,8 @@ class XraceConfigController extends AbstractController
         //BIB号码
         $BIB = trim($this->request->BIB);
         //赛事ID必须大于0
-        if ($RaceId) {
+        if ($RaceId)
+        {
             //获取比赛信息
             $RaceInfo = $this->oRace->getRace($RaceId);
             //检测主键存在,否则值为空
@@ -1169,7 +1170,6 @@ class XraceConfigController extends AbstractController
                         die();
                     }
                 }
-
                 //获取选手和车队名单
                 $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,0, 0);
                 if (count($RaceUserList['RaceUserList']))
@@ -1189,10 +1189,10 @@ class XraceConfigController extends AbstractController
                     {
                         foreach($v['UserList'] as $k2 => $v2)
                         {
-                            if(($RaceGroupId == 0) || (($RaceGroupId >0) && ($RaceGroupId == $v2['RaceGroupId'])))
-                            {
-                                $UserRaceTimingInfo['Point'][$k]['UserList'][$k2]['Rank'] = $k2+1;
-                            }
+                            //if(($RaceGroupId == 0) || (($RaceGroupId >0) && ($RaceGroupId == $v2['RaceGroupId'])))
+                            //{
+                            //    $UserRaceTimingInfo['Point'][$k]['UserList'][$k2]['Rank'] = $k2+1;
+                            //}
                             if ((strlen(trim($BIB)) && !strstr( $v2['BIB'], $BIB)) || (($RaceGroupId >0) && ($RaceGroupId != $v2['RaceGroupId'])))
                             {
                                 unset($UserRaceTimingInfo['Point'][$k]['UserList'][$k2]);
@@ -1202,10 +1202,10 @@ class XraceConfigController extends AbstractController
                     }
                     foreach($UserRaceTimingInfo['Total'] as $k => $v)
                     {
-                        if(($RaceGroupId == 0) || (($RaceGroupId >0) && ($RaceGroupId == $v['RaceGroupId'])))
-                        {
-                            $UserRaceTimingInfo['Total'][$k]['Rank'] = $k+1;
-                        }
+                        //if(($RaceGroupId == 0) || (($RaceGroupId >0) && ($RaceGroupId == $v['RaceGroupId'])))
+                        //{
+                        //    $UserRaceTimingInfo['Total'][$k]['Rank'] = $k+1;
+                        //}
                         if ((strlen(trim($BIB)) && !strstr( $v['BIB'], $BIB)) || (($RaceGroupId >0) && ($RaceGroupId != $v['RaceGroupId'])))
                         {
                             unset($UserRaceTimingInfo['Total'][$k]);

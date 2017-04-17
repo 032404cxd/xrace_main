@@ -249,6 +249,8 @@ class Xrace_Mylaps extends Base_Widget
                                 //循环当前计时点排名
                                 foreach($UserRaceInfoList['Point'][$i]['UserList'] as $key => $UserInfo)
                                 {
+                                    // 生成总排名
+                                    $UserRaceInfoList['Point'][$i]['UserList'][$key]['Rank'] = $key+1;
                                     //依次填入分组数据
                                     $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
                                     //排名保存
@@ -322,6 +324,8 @@ class Xrace_Mylaps extends Base_Widget
                                 {
                                     $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
                                     $UserRaceInfoList['Total'][$key]['GroupRank'] = count($DivisionList[$UserInfo['RaceGroupId']]);
+                                    // 生成总排名
+                                    $UserRaceInfoList['Total'][$key]['Rank'] = $key+1;
                                 }
                                 $UserRaceInfoList['LastId'] = $TimingInfo['Id'];
                                 $UserRaceInfoList['LastUpdateRecordCount'] = $TimingRecordTable['RecordCount'];
@@ -385,6 +389,8 @@ class Xrace_Mylaps extends Base_Widget
                                     //循环当前计时点排名
                                     foreach($UserRaceInfoList['Point'][$i]['UserList'] as $key => $UserInfo)
                                     {
+                                        // 生成总排名
+                                        $UserRaceInfoList['Point'][$i]['UserList'][$key]['Rank'] = $key+1;
                                         //依次填入分组数据
                                         $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
                                         //排名保存
@@ -472,6 +478,8 @@ class Xrace_Mylaps extends Base_Widget
                                     {
                                         $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
                                         $UserRaceInfoList['Total'][$key]['GroupRank'] = count($DivisionList[$UserInfo['RaceGroupId']]);
+                                        // 生成总排名
+                                        $UserRaceInfoList['Total'][$key][$key]['Rank'] = $key+1;
                                     }
                                     $UserRaceInfoList['LastId'] = $TimingInfo['Id'];
                                     $UserRaceInfoList['LastUpdateRecordCount'] = $TimingRecordTable['RecordCount'];
@@ -577,6 +585,8 @@ class Xrace_Mylaps extends Base_Widget
                                 //循环当前计时点排名
                                 foreach($UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'] as $key => $UserInfo)
                                 {
+                                    // 生成总排名
+                                    $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['UserList'][$key]['Rank'] = $key+1;
                                     //依次填入分组数据
                                     $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
                                     //排名保存
@@ -664,6 +674,8 @@ class Xrace_Mylaps extends Base_Widget
                                 {
                                     $DivisionList[$UserInfo['RaceGroupId']][] = $UserInfo['BIB'];
                                     $UserRaceInfoList['Total'][$key]['GroupRank'] = count($DivisionList[$UserInfo['RaceGroupId']]);
+                                    // 生成总排名
+                                    $UserRaceInfoList['Total'][$key]['Rank'] = $key+1;
                                 }
                                 $UserRaceInfoList['LastId'] = $TimingInfo['Id'];
                                 $UserRaceInfoList['LastUpdateRecordCount'] = $TimingRecordTable['RecordCount'];
@@ -716,6 +728,11 @@ class Xrace_Mylaps extends Base_Widget
                         }
                         $UInfo['Total']['Credit'] = $UserRaceTimingInfo['Total'][$k]['Credit'];
                     }
+                    if(($RInfo['RaceUserId']==$v['RaceUserId']))
+                    {
+                        $UInfo['Point'][$Point]['Rank'] = $RInfo['Rank'];
+                        $UInfo['Point'][$Point]['GroupRank'] = $RInfo['GroupRank'];
+                    }
                 }
             }
             foreach($UInfo['Point'] as $p => $pInfo)
@@ -730,7 +747,6 @@ class Xrace_Mylaps extends Base_Widget
             }
             //保存个人当前计时点的信息
             $oRace->UserTimgingDataSave($RaceInfo['RaceId'],$v['RaceUserId'],$UInfo,0);
-
 		    if(($v['TeamId']>0) && ($v['CurrentPosition'] == count($UserRaceTimingInfo['Point'])))
 			{
 			    if(isset($TeamRankList[$v['RaceGroupId']][$v['TeamId']]) && count($TeamRankList[$v['RaceGroupId']][$v['TeamId']]['UserList'])<$RaceInfo['comment']['TeamResultRank'])
