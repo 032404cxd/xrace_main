@@ -1215,7 +1215,7 @@ class Xrace_Race extends Base_Widget
 			$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
 			//地图相关数据解包
 			$RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
-			$RaceInfo['TotalDistence'] = 0;
+			$RaceInfo['TotalDistance'] = 0;
             $TimingPointList = array('Sports'=>array(),'Point'=>array(),'RaceInfo'=>$RaceInfo);
             //如果有配置赛段信息
 			if(isset($RaceInfo['comment']['DetailList']) && count($RaceInfo['comment']['DetailList']))
@@ -1232,7 +1232,7 @@ class Xrace_Race extends Base_Widget
                         $TimingPointList['Sports'][$SportsType]['SportsTypeInfo'] = $SportsTypeInfo;
                     }
 				    //每个分段的距离初始化为0
-					$SectionDistence = 0;
+					$SectionDistance = 0;
 					//初始化空数组
 					$TimingPointList['Sports'][$SportsType]['TimingPointList'] = array();
 					//如果有配置计时点信息
@@ -1278,11 +1278,11 @@ class Xrace_Race extends Base_Widget
 												//每个分段内距离相互累加 如果距离为正数
                                                 $t['ToPrevious'] = intval($t['ToPrevious']);
                                                 //计算分段距离
-                                                $SectionDistence += ($TimingPoint['ToPrevious']>=0?$TimingPoint['ToPrevious']:0);
+                                                $SectionDistance += ($TimingPoint['ToPrevious']>=0?$TimingPoint['ToPrevious']:0);
                                                 //计算总距离
-                                                $RaceInfo['TotalDistence'] += ($TimingPoint['ToPrevious']>=0?$TimingPoint['ToPrevious']:0);
-                                                $t['CurrentDistense'] = $SectionDistence;
-                                                $t['TotalDistence'] = $RaceInfo['TotalDistence'];
+                                                $RaceInfo['TotalDistance'] += ($TimingPoint['ToPrevious']>=0?$TimingPoint['ToPrevious']:0);
+                                                $t['CurrentDistance'] = $SectionDistance;
+                                                $t['TotalDistance'] = $RaceInfo['TotalDistance'];
                                                 $t['SpeedDisplayType'] = $SportsTypeInfo['SpeedDisplayType'];
 												//初始化通过的用户列表
 												$t['UserList'] = array();
@@ -1335,7 +1335,9 @@ class Xrace_Race extends Base_Widget
 								}
 								//存储用户信息
 								$TimingPointList['RaceUserInfo'] = array('Name'=>$RaceUserInfo['Name'],'RaceUserId' => $RaceUserInfo['RaceUserId'],'RaceGroupId'=>$ApplyInfo['RaceGroupId'],'TeamId'=> $ApplyInfo['TeamId'],'TeamName'=>$TeamInfo['TeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
-								//数据解包
+                                //保存用户姓名到总表
+                                $RaceUserList[$ApplyId]['TeamName'] = $TeamInfo['TeamName'];
+                                //数据解包
 								$ApplyInfo['comment'] = json_decode($ApplyInfo['comment'],true);
 								//如果有关联的订单数据
 								if(isset($ApplyInfo['comment']['order_id']))
@@ -1350,7 +1352,7 @@ class Xrace_Race extends Base_Widget
 										$TimingPointList['OrderInfo'] = $OrderInfo;
 									}
 								}
-								unset($TimingPointList['Sports'],$TimingPointList['RaceInfo']);
+								unset($TimingPointList['RaceInfo']);
 
 								//保存配置文件
                                 $this->UserTimgingDataSave($RaceInfo['RaceId'],$RaceUserInfo['RaceUserId'],$TimingPointList);

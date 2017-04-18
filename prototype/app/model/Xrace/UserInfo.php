@@ -1956,4 +1956,19 @@ class Xrace_UserInfo extends Base_Widget
         $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
         return $this->db->update($table_to_process, $bind, '`RaceUserId` = ? and `RaceStageId` = ?', array($RaceUserId,$RaceStageId));
     }
+    /**
+     * 根据BIB获取选手的阿伯名记录
+     * @param char $BIB 选手号码
+     * @param char $RaceId 比赛ID
+     * @param string $fields 所要获取的数据列
+     * @return array
+     */
+    public function getRaceApplyUserInfoByBIB($RaceId,$BIB,$fields = '*')
+    {
+        $RaceId = intval($RaceId);
+        $BIB = trim($BIB);
+        $table_to_process = Base_Widget::getDbTable($this->table_race);
+        return $this->db->selectRow($table_to_process, $fields, '`RaceId` = ? and `BIB` = ?', array($RaceId,$BIB));
+    }
+
 }

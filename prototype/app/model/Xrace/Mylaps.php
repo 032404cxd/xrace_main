@@ -71,7 +71,6 @@ class Xrace_Mylaps extends Base_Widget
             //重新生成选手的mylaps排名数据
             $oRace->genRaceLogToText($RaceId);
         }
-        die();
         $UserRaceTimingInfo = $oRace->GetRaceTimingOriginalInfo($RaceId,0);
         //初始化比赛时间列表
         $TimeList = array();
@@ -109,13 +108,14 @@ class Xrace_Mylaps extends Base_Widget
 		echo "计时点计算:".$oRace->getRaceTimingResultType($ResultType)."\n<br>";
         echo "总成绩计算:".$oRace->getFinalResultType($FinalResultType)."\n<br>";
 		//获取选手和车队名单
-		$RaceUserList = $oUser->getRaceUserListByRace($RaceId,0,0,0);
+		//$RaceUserList = $oUser->getRaceUserListByRace($RaceId,0,0,0);
+        $RaceUserList = $oRace->getRaceUserListByFile($RaceId);
         //初始化空的芯片列表
 		$ChipList = array();
 		//初始化空的用户列表
 		$UserList = array();
 		//循环报名记录
-		foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
+		foreach ($RaceUserList as $ApplyId => $ApplyInfo)
 		{
 			//如果有配置芯片数据和BIB
 			if (trim($ApplyInfo['ChipId']) && trim($ApplyInfo['BIB']))
@@ -126,7 +126,7 @@ class Xrace_Mylaps extends Base_Widget
 				$UserList[$ApplyInfo['ChipId']] = $ApplyInfo;
 			}
 		}
-		echo "比赛时间：".$RaceInfo['StartTime'].".".sprintf("%03d",isset($RaceInfo['comment']['RaceStartMicro'])?$RaceInfo['comment']['RaceStartMicro']:0)."~".$RaceInfo['EndTime']."<br>\n";
+        echo "比赛时间：".$RaceInfo['StartTime'].".".sprintf("%03d",isset($RaceInfo['comment']['RaceStartMicro'])?$RaceInfo['comment']['RaceStartMicro']:0)."~".$RaceInfo['EndTime']."<br>\n";
 		echo "芯片列表：".implode(",",$ChipList)."\n";
         //获取文件最后的
         $LastId = $UserRaceTimingInfo['LastId'];
@@ -206,10 +206,10 @@ class Xrace_Mylaps extends Base_Widget
                                 //记录经过时间
                                 $UserRaceInfo['Point'][$i]['inTime'] = $inTime;
                                 //如果前一点的距离为非负数，则取当前时间和前一点差值作为经过时间，否则不计时
-                                $UserRaceInfo['Point'][$i]['PointTime'] = isset($UserRaceInfo['Point'][$i-1]['ToNext'])&&intval($UserRaceInfo['Point'][$i-1]['ToNext'])>=0?(isset($UserRaceInfo['Point'][$i-1]['inTime'])?sprintf("%0.3f",($UserRaceInfo['Point'][$i]['inTime']-$UserRaceInfo['Point'][$i-1]['inTime'])):0):0;
-                                $UserRaceInfo['Point'][$i-1]['PointSpeed'] = isset($UserRaceInfo['Point'][$i-1])?(Base_Common::speedDisplayParth($UserRaceInfo['Point'][$i-1]['SpeedDisplayType'],$UserRaceInfo['Point'][$i]['PointTime'],($UserRaceInfo['Point'][$i-1]['ToNext'])>=0?$UserRaceInfo['Point'][$i-1]['ToNext']:0)):"";
-                                $UserRaceInfo['Point'][$i]['SportsTime'] = sprintf("%0.3f",$UserRaceInfo['Point'][$i]['CurrentDistense']==0?$UserRaceInfo['Point'][$i]['PointTime']:($UserRaceInfo['Point'][$i]['PointTime']+$UserRaceInfo['Point'][$i-1]['SportsTime']));
-                                $UserRaceInfo['Point'][$i]['SportsSpeed'] = Base_Common::speedDisplayParth($UserRaceInfo['Point'][$i-1]['SpeedDisplayType'],$UserRaceInfo['Point'][$i]['SportsTime'],$UserRaceInfo['Point'][$i]['CurrentDistense']);
+                                $UserRaceInfo['Point'][$i]['PointTime'] = isset($UserRaceInfo['Point'][$i]['ToPrevious'])&&intval($UserRaceInfo['Point'][$i]['ToPrevious'])>=0?(isset($UserRaceInfo['Point'][$i-1]['inTime'])?sprintf("%0.3f",($UserRaceInfo['Point'][$i]['inTime']-$UserRaceInfo['Point'][$i-1]['inTime'])):0):0;
+                                $UserRaceInfo['Point'][$i]['PointSpeed'] = isset($UserRaceInfo['Point'][$i])?(Base_Common::speedDisplayParth($UserRaceInfo['Point'][$i]['SpeedDisplayType'],$UserRaceInfo['Point'][$i]['PointTime'],($UserRaceInfo['Point'][$i]['ToPrevious'])>=0?$UserRaceInfo['Point'][$i]['ToPrevious']:0)):"";
+                                $UserRaceInfo['Point'][$i]['SportsTime'] = sprintf("%0.3f",$UserRaceInfo['Point'][$i]['CurrentDistanse']==$UserRaceInfo['Point'][$i]['ToPrevious']?$UserRaceInfo['Point'][$i]['PointTime']:($UserRaceInfo['Point'][$i]['PointTime']+$UserRaceInfo['Point'][$i-1]['SportsTime']));
+                                $UserRaceInfo['Point'][$i]['SportsSpeed'] = Base_Common::speedDisplayParth($UserRaceInfo['Point'][$i]['SpeedDisplayType'],$UserRaceInfo['Point'][$i]['SportsTime'],$UserRaceInfo['Point'][$i]['CurrentDistanse']);
 
                                 $TotalNetTime = isset($UserRaceInfo['Point'][$i-1]['TotalNetTime'])?sprintf("%0.3f",($UserRaceInfo['Point'][$i-1]['TotalNetTime']+$UserRaceInfo['Point'][$i]['PointTime'])):sprintf("%0.3f",$UserRaceInfo['Point'][$i]['PointTime']);
                                 if($i==1)
@@ -232,7 +232,7 @@ class Xrace_Mylaps extends Base_Widget
                                 //将当前计时点最小的过线记录保存
                                 $UserRaceInfoList['Point'][$i]['inTime'] = $UserRaceInfoList['Point'][$i]['inTime'] == 0 ? $inTime : sprintf("%0.3f", min($UserRaceInfoList['Point'][$i]['inTime'], $ChipTime));
                                 //新增当前点的过线记录
-                                $UserRaceInfoList['Point'][$i]['UserList'][count($UserRaceInfoList['Point'][$i]['UserList'])] = array("PointTime"=>$UserRaceInfo['Point'][$i]['PointTime'],"PointSpeed"=>$UserRaceInfo['Point'][$i-1]['PointSpeed'] ,"TotalTime" => $TotalTime,"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => sprintf("%0.3f",$ChipTime), 'RaceUserId' => $UserList[$TimingInfo['Chip']]['RaceUserId'],'TeamName'=>$UserList[$TimingInfo['Chip']]['TeamName'],'RaceGroupId'=>$UserList[$TimingInfo['Chip']]['RaceGroupId']);
+                                $UserRaceInfoList['Point'][$i]['UserList'][count($UserRaceInfoList['Point'][$i]['UserList'])] = array("PointTime"=>$UserRaceInfo['Point'][$i]['PointTime'],"PointSpeed"=>$UserRaceInfo['Point'][$i]['PointSpeed'] ,"TotalTime" => $TotalTime,"TotalNetTime"=>0, "Name" => $UserList[$TimingInfo['Chip']]['Name'], "BIB" => $UserList[$TimingInfo['Chip']]['BIB'], "inTime" => sprintf("%0.3f",$ChipTime), 'RaceUserId' => $UserList[$TimingInfo['Chip']]['RaceUserId'],'TeamName'=>$UserList[$TimingInfo['Chip']]['TeamName'],'RaceGroupId'=>$UserList[$TimingInfo['Chip']]['RaceGroupId']);
                                 //初始化一个空的数组
                                 $t = array();
                                 //循环每个人的过线记录
@@ -348,10 +348,10 @@ class Xrace_Mylaps extends Base_Widget
                                     //记录经过时间
                                     $UserRaceInfo['Point'][$i]['inTime'] = $inTime;
                                     //如果前一点的距离为非负数，则取当前时间和前一点差值作为经过时间，否则不计时
-                                    $UserRaceInfo['Point'][$i]['PointTime'] = intval($UserRaceInfo['Point'][$i-1]['ToNext'])>=0?(sprintf("%0.3f",($UserRaceInfo['Point'][$i-1]['inTime'])?$UserRaceInfo['Point'][$i]['inTime']-$UserRaceInfo['Point'][$i-1]['inTime']:0)):0;
-                                    $UserRaceInfo['Point'][$i-1]['PointSpeed'] = Base_Common::speedDisplayParth($UserRaceInfo['Point'][$i-1]['SpeedDisplayType'],$UserRaceInfo['Point'][$i]['PointTime'],($UserRaceInfo['Point'][$i-1]['ToNext'])>=0?$UserRaceInfo['Point'][$i-1]['ToNext']:0)  ;//($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['ToNext'])>=0?(sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime'])?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['inTime']-$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime']:0)):0;
-                                    $UserRaceInfo['Point'][$i]['SportsTime'] = sprintf("%0.3f",$UserRaceInfo['Point'][$i]['CurrentDistense']==0?$UserRaceInfo['Point'][$i]['PointTime']:($UserRaceInfo['Point'][$i]['PointTime']+$UserRaceInfo['Point'][$i-1]['SportsTime']));
-                                    $UserRaceInfo['Point'][$i]['SportsSpeed'] = Base_Common::speedDisplayParth($UserRaceInfo['Point'][$i-1]['SpeedDisplayType'],$UserRaceInfo['Point'][$i]['SportsTime'],$UserRaceInfo['Point'][$i]['CurrentDistense']);
+                                    $UserRaceInfo['Point'][$i]['PointTime'] = intval($UserRaceInfo['Point'][$i]['ToPrevious'])>=0?(sprintf("%0.3f",($UserRaceInfo['Point'][$i-1]['inTime'])?$UserRaceInfo['Point'][$i]['inTime']-$UserRaceInfo['Point'][$i-1]['inTime']:0)):0;
+                                    $UserRaceInfo['Point'][$i]['PointSpeed'] = Base_Common::speedDisplayParth($UserRaceInfo['Point'][$i]['SpeedDisplayType'],$UserRaceInfo['Point'][$i]['PointTime'],($UserRaceInfo['Point'][$i]['ToPrevious'])>=0?$UserRaceInfo['Point'][$i]['ToPrevious']:0);
+                                    $UserRaceInfo['Point'][$i]['SportsTime'] = sprintf("%0.3f",$UserRaceInfo['Point'][$i]['CurrentDistanse']==$UserRaceInfo['Point'][$i]['ToPrevious']?$UserRaceInfo['Point'][$i]['PointTime']:($UserRaceInfo['Point'][$i]['PointTime']+$UserRaceInfo['Point'][$i-1]['SportsTime']));
+                                    $UserRaceInfo['Point'][$i]['SportsSpeed'] = Base_Common::speedDisplayParth($UserRaceInfo['Point'][$i]['SpeedDisplayType'],$UserRaceInfo['Point'][$i]['SportsTime'],$UserRaceInfo['Point'][$i]['CurrentDistanse']);
                                     $TotalNetTime = isset($UserRaceInfo['Point'][$i-1]['TotalNetTime'])?sprintf("%0.3f",($UserRaceInfo['Point'][$i-1]['TotalNetTime']+$UserRaceInfo['Point'][$i]['PointTime'])):sprintf("%0.3f",$UserRaceInfo['Point'][$i]['PointTime']);
                                     if($i==1)
                                     {
@@ -537,10 +537,10 @@ class Xrace_Mylaps extends Base_Widget
                             {
                                 $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['inTime'] = sprintf("%0.3f",$ChipTime);
                                 //如果前一点的距离为非负数，则取当前时间和前一点差值作为经过时间，否则不计时
-                                $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime'] = ($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['ToNext'])>=0?(sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime'])?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['inTime']-$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime']:0)):0;
-                                $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['PointSpeed'] = Base_Common::speedDisplayParth($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['SpeedDisplayType'],$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime'],($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['ToNext'])>=0?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['ToNext']:0)  ;//($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['ToNext'])>=0?(sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime'])?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['inTime']-$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime']:0)):0;
-                                $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['SportsTime'] = sprintf("%0.3f",$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['CurrentDistense']==0?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime']:($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime']+$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['SportsTime']));
-                                $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['SportsSpeed'] = Base_Common::speedDisplayParth($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['SpeedDisplayType'],$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['SportsTime'],$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['CurrentDistense']);
+                                $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime'] = ($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['ToPrevious'])>=0?(sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime'])?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['inTime']-$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['inTime']:0)):0;
+                                $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointSpeed'] = Base_Common::speedDisplayParth($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['SpeedDisplayType'],$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime'],($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['ToPrevious'])>=0?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['ToPrevious']:0);
+                                $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['SportsTime'] = sprintf("%0.3f",$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['CurrentDistanse']==$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['ToPrevious']?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime']:($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime']+$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['SportsTime']));
+                                $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['SportsSpeed'] = Base_Common::speedDisplayParth($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['SpeedDisplayType'],$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['SportsTime'],$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['CurrentDistanse']);
                                 $TotalTime = sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['TotalTime'])?$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['TotalTime']+$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime']:$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime']);
                                 $TotalNetTime = isset($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['TotalNetTime'])?sprintf("%0.3f",($UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']-1]['TotalNetTime']+$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime'])):sprintf("%0.3f",$UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['PointTime']);
                                 $UserRaceInfo['Point'][$UserRaceInfo['CurrentPoint']]['TotalTime'] = $TotalTime;
