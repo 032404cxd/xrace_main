@@ -1310,7 +1310,7 @@ class Xrace_Race extends Base_Widget
                         //保存配置文件
 					    $this->TimgingDataSave($RaceInfo['RaceId'],$TimingPointList);
 					}
-					unset($TimingPointList['RaceInfo']);
+					//unset($TimingPointList['RaceInfo']);
 					$oUser = new Xrace_UserInfo();
 					$oTeam = new Xrace_Team();
 					//获取选手名单
@@ -1352,7 +1352,7 @@ class Xrace_Race extends Base_Widget
 										$TimingPointList['OrderInfo'] = $OrderInfo;
 									}
 								}
-								unset($TimingPointList['RaceInfo']);
+								//($TimingPointList['RaceInfo']);
 
 								//保存配置文件
                                 $this->UserTimgingDataSave($RaceInfo['RaceId'],$RaceUserInfo['RaceUserId'],$TimingPointList);
