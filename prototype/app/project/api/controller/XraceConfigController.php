@@ -1009,6 +1009,8 @@ class XraceConfigController extends AbstractController
         $RaceId = abs(intval($this->request->RaceId));
         //比赛ID
         $RaceUserId = abs(intval($this->request->RaceUserId));
+        //比赛ID
+        $RaceGroupId = abs(intval($this->request->RaceGroupId));
         //用户BIB
         $BIB = trim($this->request->BIB);
         $Force = abs(intval($this->request->Force));
@@ -1034,11 +1036,13 @@ class XraceConfigController extends AbstractController
                     $RaceUserId = $UserApplyInfo['RaceUserId'];
                 }
             }
-            if ($RaceUserId > 0) {
-                $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId, $RaceUserId);
+            if ($RaceUserId > 0)
+            {
                 //获取用户比赛的详情
+                $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId, $RaceUserId);
                 //如果有查出数据
-                if (!isset($UserRaceInfo['RaceUserInfo'])) {
+                if (!isset($UserRaceInfo['RaceUserInfo']))
+                {
                     //重新生成该场比赛所有人的配置数据
                     $this->oRace->genRaceLogToText($RaceId, $RaceUserId);
                     //重新获取比赛详情
@@ -1046,8 +1050,10 @@ class XraceConfigController extends AbstractController
                 }
                 $UserRaceInfo['ApplyInfo']['RaceStatus'] = $this->oRace->getUserRaceStatus($UserRaceInfo);
                 $result = array("return" => isset($UserRaceInfo['ApplyInfo']) ? 1 : 0, "UserRaceInfo" => $UserRaceInfo);
-            } else {
-                $UserRaceInfo = $this->oRace->GetUserRaceTimingInfo($RaceId);
+            }
+            else
+            {
+                $UserRaceInfo = $this->oRace->GetUserRaceTimingInfo($RaceId,$RaceGroupId);
                 $result = array("return" => isset($UserRaceInfo['RaceInfo']) ? 1 : 0, "UserRaceInfo" => $UserRaceInfo);
             }
         }

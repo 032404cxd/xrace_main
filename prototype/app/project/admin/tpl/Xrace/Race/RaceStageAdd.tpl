@@ -19,8 +19,14 @@
 				{/tpl:loop}
 			</select></td>
 	</tr>
+	<td>积分抵扣比例(0%-100%)</td>
+	<td align="left"><input name="CreditRate[min]" type="text" class="span1" id="CreditRate[min]" value="0" />% - <input name="CreditRate[max]" type="text" class="span1" id="CreditRate[max]" value="0" />%</td>
+	</tr>
 	<td>单次报名人数上限</td>
 	<td align="left"><input name="ApplyLimit" type="text" class="span3" id="ApplyLimit" /></td>
+	</tr>
+	<td>积分抵扣最小单位</td>
+	<td align="left"><input name="CreditStack" type="text" class="span3" id="CreditStack" value="100" /></td>
 	</tr>
 <tr class="hover"><td>所属赛事</td>
 	<td align="left">	<select name="RaceCatalogId" id="RaceCatalogId" size="1" onchange="getGroupList()">

@@ -37,10 +37,10 @@
     <th align="center" class="rowtip" colspan="10">选手名次</th>
   </tr>
 
-  {tpl:loop $RaceResultList.UserRaceTimingInfo.Sports $Sid $SInfo}
+  {tpl:loop $RaceResultList.UserRaceInfo.Sports $Sid $SInfo}
   <tr><th align="center" class="rowtip" rowspan="{tpl:$SInfo.TimingPointList func="count(@@)"/}">{tpl:$SInfo.SportsTypeInfo.SportsTypeName/}</th>
     {tpl:loop $SInfo.TimingPointList $id $Tid}
-    {tpl:loop $RaceResultList.UserRaceTimingInfo.Point $Pid $PointInfo}
+    {tpl:loop $RaceResultList.UserRaceInfo.Point $Pid $PointInfo}
     {tpl:if($Tid==$Pid)}
     <th align="center" class="rowtip">{tpl:$PointInfo.TName/}<p>{tpl:$PointInfo.CurrentDistance/}米<p>{tpl:$PointInfo.TotalDistance/}米<p>{tpl:$PointInfo.UserList func="count(@@)"/}人通过</th>
     {tpl:if(count($PointInfo.UserList)>=1)}
@@ -75,7 +75,7 @@
     <th  align="center" class="rowtip" colspan="2">当前位置</th>
     <th  align="center" class="rowtip" colspan="2">积分获取</th>
   </tr>
-  {tpl:loop $RaceResultList.UserRaceTimingInfo.Total $Tid $TInfo}
+  {tpl:loop $RaceResultList.UserRaceInfo.Total $Tid $TInfo}
   <tr>
     <th  align="center" class="rowtip">{tpl:$TInfo.GroupRank/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.Name/}</th>
@@ -101,7 +101,7 @@
     <th  align="center" class="rowtip" colspan="2">总时间差</th>
     <th  align="center" class="rowtip" colspan="2">总净时间差</th>
   </tr>
-  {tpl:loop $RaceResultList.UserRaceTimingInfo.Team $Gid $GroupInfo}
+  {tpl:loop $RaceResultList.UserRaceInfo.Team $Gid $GroupInfo}
         {tpl:if($RaceGroupId == $Gid)}
         {tpl:loop $GroupInfo $Tid $TeamInfo}
         <tr>

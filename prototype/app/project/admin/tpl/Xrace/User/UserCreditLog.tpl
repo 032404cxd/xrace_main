@@ -120,7 +120,8 @@
         </select>
 分组： <select name="RaceGroupId" id="RaceGroupId" size="1" class="span2" onchange="getThirdByStage('group')">
         </select>
-    <input type="submit" name="Submit" value="查询" />{tpl:$export_var/}
+    <p>积分比例： <input type="text" class="span2" name="OrderId" value="{tpl:$OrderId/}">
+    <p><input type="submit" name="Submit" value="查询" />{tpl:$export_var/}
 </form>
 <fieldset><legend>积分更新记录</legend>
 <table width="99%" align="center" class="table table-bordered table-striped">
@@ -130,24 +131,24 @@
         <th align="center" class="rowtip">更新时间</th>
           <th align="center" class="rowtip">变更数量</th>
         <th align="center" class="rowtip">积分</th>
-        <th align="center" class="rowtip">比赛</th>
+          <th align="center" class="rowtip">动作</th>
+          <th align="center" class="rowtip">比赛</th>
         <th align="center" class="rowtip">组别</th>
-        <th align="center" class="rowtip">操作</th>
+          <th align="center" class="rowtip">订单号</th>
+        <th align="center" class="rowtip">状态</th>
       </tr>
     {tpl:loop $CreditLog.CreditLog $LogInfo}
       <tr class="hover">
         <td align="center">{tpl:$LogInfo.Id/}</td>
-        <td align="center">{tpl:$LogInfo.UserId/}</td>
+        <td align="center">{tpl:$LogInfo.UserName/}</td>
         <td align="center">{tpl:$LogInfo.Time/}</td>
         <td align="center">{tpl:$LogInfo.Credit/}</td>
           <td align="center">{tpl:$LogInfo.CreditName/}</td>
           <td align="center">{tpl:$LogInfo.ActionName/}</td>
           <td align="center">{tpl:$LogInfo.RaceName/}</td>
           <td align="center">{tpl:$LogInfo.RaceGroupName/}</td>
-        <td align="center">{tpl:$UserInfo.LastLoginTime/}<br>{tpl:$UserInfo.LoginSourceName/}</td>
-        <!--<td align="center"><a  href="javascript:;" onclick="userDetail('{tpl:$UserInfo.UserId/}')">详细</a>{tpl:if($UserInfo.AuthStatus==1)} | <a  href="javascript:;" onclick="userAuth('{tpl:$UserInfo.UserId/}')">审核</a>{/tpl:if} | {tpl:$UserInfo.License/} | {tpl:$UserInfo.Team/} | <a  href="javascript:;" onclick="userPasswordUpdate('{tpl:$UserInfo.UserId/}')">更新密码</a> | <a  href="javascript:;" onclick="userMobileUpdate('{tpl:$UserInfo.UserId/}')">更新手机</a></td>-->
-          <td align="center"><a  href="javascript:;" onclick="userDetail('{tpl:$UserInfo.UserId/}')">详细</a></td>
-
+          <td align="center">{tpl:$LogInfo.OrderId/}</td>
+          <td align="center">{tpl:if(1==$LogInfo.Status)}已生效{tpl:else}待确认{/tpl:if}</td>
       </tr>
     {/tpl:loop}
     <tr><th colspan="10" align="center" class="rowtip">{tpl:$page_content/}</th></tr>

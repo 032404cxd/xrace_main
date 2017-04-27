@@ -14,6 +14,10 @@
 			{/tpl:loop}
 		</select></td>
 </tr>
+<tr class="hover">
+<td>消费比例(分)</td>
+<td align="left"><input type="text" class="span1" name="CreditRate"  id="CreditRate" value="" size="50" /></td>
+</tr>
 	<tr class="noborder"><td></td>
 <td><button type="submit" id="app_add_submit">提交</button></td>
 </tr>

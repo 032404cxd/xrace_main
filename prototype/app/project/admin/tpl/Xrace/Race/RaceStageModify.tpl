@@ -26,9 +26,15 @@ function RaceStageIconDelete(sid,name,logo_id){
             {/tpl:loop}
         </select></td>
 </tr>
+<td>积分抵扣比例(0%-100%)</td>
+<td align="left"><input name="CreditRate[min]" type="text" class="span1" id="CreditRate[min]" value="{tpl:$RaceStageInfo.comment.CreditRate.min/}" />% - <input name="CreditRate[max]" type="text" class="span1" id="CreditRate[max]" value="{tpl:$RaceStageInfo.comment.CreditRate.max/}" />%</td>
+</tr>
     <td>单次报名人数上限</td>
     <td align="left"><input name="ApplyLimit" type="text" class="span3" id="ApplyLimit" value="{tpl:$RaceStageInfo.comment.ApplyLimit/}" /></td>
     </tr>
+	<td>积分抵扣最小单位</td>
+	<td align="left"><input name="CreditStack" type="text" class="span3" id="CreditStack" value="{tpl:$RaceStageInfo.comment.CreditStack/}" /></td>
+	</tr>
 <tr class="hover"><td>赛事分站Id</td>
 <td align="left">{tpl:$RaceStageInfo.RaceStageId/}</td>
 </tr>

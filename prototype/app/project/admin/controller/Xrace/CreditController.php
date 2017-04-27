@@ -95,7 +95,7 @@ class Xrace_CreditController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			//获取页面参数
-			$bind=$this->request->from('CreditName','RaceCatalogId');
+			$bind=$this->request->from('CreditName','RaceCatalogId','CreditRate');
 			//积分名称不能为空
 			if(trim($bind['CreditName'])=="")
 			{
@@ -108,6 +108,8 @@ class Xrace_CreditController extends AbstractController
 			}
 			else
 			{
+                //消费比例强制取正整数
+                $bind['CreditRate'] = abs(intval($bind['CreditRate']));
 				$res = $this->oCredit->insertCredit($bind);
 				$response = $res ? array('errno' => 0) : array('errno' => 9);
 			}
@@ -151,7 +153,7 @@ class Xrace_CreditController extends AbstractController
 		{
 
 			//获取页面参数
-			$bind=$this->request->from('CreditId','CreditName','RaceCatalogId');
+			$bind=$this->request->from('CreditId','CreditName','RaceCatalogId',"CreditRate");
 			//积分名称不能为空
 			if(trim($bind['CreditName'])=="")
 			{
@@ -164,7 +166,9 @@ class Xrace_CreditController extends AbstractController
 			}
 			else
 			{
-				$res = $this->oCredit->updateCredit($bind['CreditId'],$bind);
+				//消费比例强制取正整数
+			    $bind['CreditRate'] = abs(intval($bind['CreditRate']));
+			    $res = $this->oCredit->updateCredit($bind['CreditId'],$bind);
 				$response = $res ? array('errno' => 0) : array('errno' => 9);
 			}
 			echo json_encode($response);

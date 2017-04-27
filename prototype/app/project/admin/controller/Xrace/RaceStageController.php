@@ -268,7 +268,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','Display','SpecialDiscount','ApplyLimit');
+		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','Display','SpecialDiscount','ApplyLimit','CreditRate','CreditStack');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -327,6 +327,14 @@ class Xrace_RaceStageController extends AbstractController
             $bind['comment']['ApplyLimit'] = abs(intval($bind['ApplyLimit']));
             //删除原有数据
             unset($bind['ApplyLimit']);
+            //付款金额的积分抵扣比例上下限
+            $bind['comment']['CreditRate'] = array("min"=>abs($bind['CreditRate']['min']),"max"=>abs($bind['CreditRate']['max']));
+            //删除原有数据
+            unset($bind['CreditRate']);
+            //付款金额的积分使用的最小单位
+            $bind['comment']['CreditStack'] = abs(intval($bind['CreditStack']));
+            //删除原有数据
+            unset($bind['CreditStack']);
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//图片数据压缩
@@ -405,7 +413,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageUpdateAction()
 	{
 		//获取 页面参数
-		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','SpecialDiscount','Display','ApplyLimit');
+		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','SpecialDiscount','Display','ApplyLimit','CreditRate','CreditStack');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -472,6 +480,14 @@ class Xrace_RaceStageController extends AbstractController
             $bind['comment']['ApplyLimit'] = abs(intval($bind['ApplyLimit']));
             //删除原有数据
             unset($bind['ApplyLimit']);
+            //付款金额的积分抵扣比例上下限
+            $bind['comment']['CreditRate'] = array("min"=>abs($bind['CreditRate']['min']),"max"=>abs($bind['CreditRate']['max']));
+            //删除原有数据
+            unset($bind['CreditRate']);
+            //付款金额的积分使用的最小单位
+            $bind['comment']['CreditStack'] = abs(intval($bind['CreditStack']));
+            //删除原有数据
+            unset($bind['CreditStack']);
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//图片数据压缩

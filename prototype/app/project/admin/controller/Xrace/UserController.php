@@ -27,6 +27,7 @@ class Xrace_UserController extends AbstractController
         $this->oUserInfo = new Xrace_UserInfo();
         $this->oManager = new Widget_Manager();
 		$this->oRace = new Xrace_Race();
+        $this->oUserInfo = new Xrace_UserInfo();
 
 	}
 	//用户列表
@@ -1246,8 +1247,10 @@ class Xrace_UserController extends AbstractController
             $CreditId = intval($this->request->CreditId);
             //动作ID
             $ActionId = intval($this->request->ActionId);
+            //订单ID
+            $OrderId = trim($this->request->OrderId);
             //传入的参数列表
-            $params = array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"CreditId"=>$CreditId,"ActionId"=>$ActionId);
+            $params = array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"CreditId"=>$CreditId,"ActionId"=>$ActionId,"OrderId"=>$OrderId);
             //获取赛事列表
             $RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"RaceCatalogId,RaceCatalogName",0);
             //获取积分列表
@@ -1319,6 +1322,16 @@ class Xrace_UserController extends AbstractController
                 $CreditLog['CreditLog'][$Id]['RaceName'] = isset($RaceList[$LogInfo['RaceId']])?$RaceList[$LogInfo['RaceId']]['RaceName']:"未知";
                 //保存分组名称
                 $CreditLog['CreditLog'][$Id]['RaceGroupName'] = isset($RaceGroupList[$LogInfo['RaceGroupId']])?$RaceGroupList[$LogInfo['RaceGroupId']]['RaceGroupName']:"未知";
+                if(!isset($UserList[$LogInfo['UserId']]))
+                {
+                    $UserInfo = $this->oUserInfo->getUser($LogInfo['UserId'],"UserId,Name");
+                    if(isset($UserInfo['UserId']))
+                    {
+                        $UserList[$LogInfo['UserId']] = $UserInfo;
+                    }
+                }
+                //保存用户姓名
+                $CreditLog['CreditLog'][$Id]['UserName'] = isset($UserList[$LogInfo['UserId']])?$UserList[$LogInfo['UserId']]['Name']:"未知用户";
             }
             //模板渲染
             include $this->tpl('Xrace_User_UserCreditLog');

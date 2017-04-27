@@ -632,7 +632,8 @@ class Xrace_Race extends Base_Widget
 					//如果需要被更新的计时点数据存在
 					if(isset($SportsTypeInfo['TimingDetailList']['comment'][$TimingId]))
 					{
-						//替换内容
+						$bind['CreditList'] = $SportsTypeInfo['TimingDetailList']['comment'][$TimingId]['CreditList'];
+					    //替换内容
 						$SportsTypeInfo['TimingDetailList']['comment'][$TimingId] = $bind;
 						//重新打包计时点数据
 						$updateBind = array('comment' => json_encode($SportsTypeInfo['TimingDetailList']['comment']));
@@ -1539,11 +1540,12 @@ class Xrace_Race extends Base_Widget
 	{
 		if($RaceGroupId>0)
         {
-            $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.race.user.list.by.bib',array('Force'=>1,'RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId));
+
+            $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.user.race.info',array('Force'=>1,'RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId));
         }
         else
         {
-            $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.race.user.list.by.bib',array('Force'=>1,'RaceId'=>$RaceId));
+            $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.user.race.info',array('Force'=>1,'RaceId'=>$RaceId));
         }
         $return = Base_Common::do_post($url);
 		return json_decode($return,true);
@@ -1739,12 +1741,30 @@ class Xrace_Race extends Base_Widget
         }
     }
     //根据用户ID和比赛ID获取用户该场比赛的详情
-    public function GetUserRaceTimingInfo($RaceId)
+    public function GetUserRaceTimingInfo($RaceId,$RaceGroupId)
     {
         $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."_Data/";
         $fileName = "Total.php";
         //载入预生成的配置文件
-        return Base_Common::loadConfig($filePath,$fileName);
+        $file = Base_Common::loadConfig($filePath,$fileName);
+        if($RaceGroupId>0)
+        {
+            foreach($file['Point'] as $p => $pInfo)
+            {
+                foreach($pInfo['UserList'] as $key => $value)
+                {
+                    if($value['RaceGroupId']!=$RaceGroupId)
+                    {
+                        unset($file['Point'][$p]['UserList'][$key]);
+                    }
+                }
+            }
+            return $file;
+        }
+        else
+        {
+            return $file;
+        }
     }
     //根据用户ID和比赛ID获取用户该场比赛的详情
     public function GetRaceTimingOriginalInfo($RaceId,$Cache = 0)

@@ -34,6 +34,7 @@ function creditModify(mid){
     <th align="center" class="rowtip">对应赛事</th>
     <th align="center" class="rowtip">积分类目ID</th>
     <th align="center" class="rowtip">积分类目名称</th>
+    <th align="center" class="rowtip">消费比例</th>
     <th align="center" class="rowtip">操作</th>
   </tr>
 
@@ -45,6 +46,7 @@ function creditModify(mid){
   <tr class="hover">
     <td align="center">{tpl:$CreditInfo.CreditId/}</td>
     <td align="center">{tpl:$CreditInfo.CreditName/}</td>
+    <td align="center">{tpl:if($CreditInfo.CreditRate>0)}{tpl:$CreditInfo.CreditRate/}分{tpl:else}不可消费{/tpl:if}</td>
     <td align="center"><a  href="javascript:;" onclick="creditDelete('{tpl:$CreditInfo.CreditId/}','{tpl:$CreditInfo.CreditName/}')">删除</a> |  <a href="javascript:;" onclick="creditModify('{tpl:$CreditInfo.CreditId/}');">修改</a></td>
   </tr>
 {/tpl:loop}
