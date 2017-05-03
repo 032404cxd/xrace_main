@@ -28,8 +28,10 @@
 <form action="{tpl:$this.sign/}&ac=user.race.list.update" name="user_race_list_update_form" id="user_race_list_update_form" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
 <input type="hidden" name="RaceUserId" id="RaceUserId" value="{tpl:$UserId/}" />
+    <input type="hidden" name="CheckInType" id="CheckInType" value="{tpl:$CheckInType/}" />
 
-  <table id="container" width="99%" align="center" class="table table-bordered table-striped">
+
+    <table id="container" width="99%" align="center" class="table table-bordered table-striped">
     <tr><th align="center" class="rowtip" colspan="5">{tpl:$RaceUserInfo.Name/} 共计报名记录{tpl:$UserRaceList func="count(@@)"/} {tpl:$CheckInUrl/}</th></tr>
     {tpl:if(count($UserRaceList))}
   <tr>
@@ -83,7 +85,9 @@
         } else {
           var message = '选手信息修改成功';
           RaceStageId=$("#RaceStageId");
-          divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=race.stage.user.check.in&RaceStageId=' + RaceStageId.val());}});
+            CheckInType=$("#CheckInType");
+
+            divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=race.stage.user.check.in&RaceStageId=' + RaceStageId.val() + '&CheckInType=' + CheckInType.val());}});
         }
       }
     };

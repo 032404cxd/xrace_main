@@ -1302,4 +1302,25 @@ EOF;
         }
         closedir($dir);
     }
+    //根据频率计算输入时刻对应的时间范围
+    function getFrequencyTimeRange($Time,$Frequency)
+    {
+        switch ($Frequency)
+        {
+             case "day":
+                 $return = array("StartTime" => date("Y-m-d 00:00:00"),"EndTime" => date("Y-m-d 23:59:59",$Time));
+                break;
+            case "week":
+                $return = array("StartTime" => date("Y-m-d 00:00:00",$Time - (date("N")-1)*86400),"EndTime" => date("Y-m-d 23:59:59",$Time + (7-date("N"))*86400));
+                break;
+            case "month":
+                $return = array("StartTime" => date("Y-m-01 00:00:00",$Time),"EndTime" => date("Y-m-t 23:59:59",$Time));
+                break;
+            case "year":
+                $return = array("StartTime" => date("Y-01-01 00:00:00",$Time),"EndTime" => date("Y-12-31 23:59:59",$Time));
+                break;
+        }
+        return $return;
+    }
+
 }

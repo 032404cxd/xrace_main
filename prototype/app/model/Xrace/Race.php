@@ -1592,7 +1592,7 @@ class Xrace_Race extends Base_Widget
 		}
 		return $RaceCombinationList;
 	}
-	public function RaceStageCheckIn($RaceStageId,$CheckInCode)
+	public function RaceStageCheckInByCode($RaceStageId,$CheckInCode)
     {
         //用户ID
         $U = hexdec($CheckInCode);
@@ -1618,6 +1618,42 @@ class Xrace_Race extends Base_Widget
             {
                 return false;
             }
+        }
+    }
+    public function RaceStageCheckInById($RaceStageId,$IdNo)
+    {
+        $oUser = new Xrace_UserInfo();
+        //根据证件号获取用户信息
+        $RaceUserInfo = $oUser->getRaceUserByColumn("IdNo",$IdNo);
+        //如果已经被占用
+        if(isset($RaceUserInfo['RaceUserId']))
+        {
+            //获取签到信息
+            $UserCheckInInfo = $oUser->getUserCheckInInfo($RaceUserInfo['RaceUserId'], $RaceStageId);
+            //如果已经签到，直接返回成功
+            if ($UserCheckInInfo['CheckinStatus'] == 1)
+            {
+                return $RaceUserInfo['RaceUserId'];
+            }
+            else
+            {
+                //更新
+                $oUser->updateUserCheckInInfo($RaceUserInfo['RaceUserId'], $RaceStageId, array('CheckinStatus' => 1, 'CheckInTime' => date("Y-m-d H:i:s", time())));
+                //复查数据
+                $UserCheckInInfo = $oUser->getUserCheckInInfo($RaceUserInfo['RaceUserId'], $RaceStageId);
+                if ($UserCheckInInfo['CheckinStatus'] == 1)
+                {
+                    return $RaceUserInfo['RaceUserId'];
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            return false;
         }
     }
     public function getUserCheckStatus($RaceStageId,$RaceId,$CheckInCode)

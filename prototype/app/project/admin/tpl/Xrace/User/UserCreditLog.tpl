@@ -120,7 +120,7 @@
         </select>
 分组： <select name="RaceGroupId" id="RaceGroupId" size="1" class="span2" onchange="getThirdByStage('group')">
         </select>
-    <p>积分比例： <input type="text" class="span2" name="OrderId" value="{tpl:$OrderId/}">
+    <p>订单号： <input type="text" class="span2" name="OrderId" value="{tpl:$OrderId/}">
     <p><input type="submit" name="Submit" value="查询" />{tpl:$export_var/}
 </form>
 <fieldset><legend>积分更新记录</legend>

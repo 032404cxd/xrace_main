@@ -3125,7 +3125,8 @@ class Xrace_RaceStageController extends AbstractController
             {
                 $CheckInStatus[$Status]['StatusUrl'] = $StatusInfo['CheckInStatusName'].":"."<a href='".Base_Common::getUrl('','xrace/race.stage','rase.stage.user.check.in.status',array('RaceStageId'=>$RaceStageInfo['RaceStageId'],'UserCheckInStatus'=>$Status)) ."'>".$StatusInfo['UserCount']."人</a>";
             }
-            $CheckInUrl = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.stage.user.check.in',array('RaceStageId'=>$RaceStageInfo['RaceStageId'])) ."'>去签到</a>";
+            $CheckInByCodeUrl = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.stage.user.check.in',array('CheckInType'=>'Code','RaceStageId'=>$RaceStageInfo['RaceStageId'])) ."'>扫码签到</a>";
+            $CheckInByIdUrl = "<a href='".Base_Common::getUrl('','xrace/race.stage','race.stage.user.check.in',array('CheckInType'=>'Id','RaceStageId'=>$RaceStageInfo['RaceStageId'])) ."'>证件号签到</a>";
             //渲染模板
             include $this->tpl('Xrace_Race_RaceStageUserCheckInList');
         }
@@ -3202,6 +3203,7 @@ class Xrace_RaceStageController extends AbstractController
         $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
         if($PermissionCheck['return'])
         {
+            $CheckInType = trim($this->request->CheckInType);
             //比赛ID
             $RaceStageId = intval($this->request->RaceStageId);
             //分站数据
@@ -3220,8 +3222,16 @@ class Xrace_RaceStageController extends AbstractController
     public function userCheckInAction()
     {
         //获取 页面参数
-        $bind=$this->request->from('CheckInCode','RaceStageId');
-        $CheckIn = $this->oRace->RaceStageCheckIn($bind['RaceStageId'],$bind['CheckInCode']);
+        $bind=$this->request->from('CheckInCode','RaceStageId','IdNo','CheckInType');
+        if($bind['CheckInType']=="Code")
+        {
+            $CheckIn = $this->oRace->RaceStageCheckInByCode($bind['RaceStageId'],$bind['CheckInCode']);
+        }
+        else
+        {
+            $CheckIn = $this->oRace->RaceStageCheckInById($bind['RaceStageId'],$bind['IdNo']);
+        }
+
         if($CheckIn)
         {
             $response = array('errno' => 0,'RaceUserId'=>$CheckIn);
@@ -3240,6 +3250,8 @@ class Xrace_RaceStageController extends AbstractController
         $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
         if($PermissionCheck['return'])
         {
+            //用户ID
+            $CheckInType = trim($this->request->CheckInType);
             //用户ID
             $RaceUserId = intval($this->request->RaceUserId);
             //比赛分站
