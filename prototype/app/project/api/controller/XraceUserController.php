@@ -21,7 +21,6 @@ class XraceUserController extends AbstractController
         $this->oUser = new Xrace_UserInfo();
     }
 
-    //insert into xrace_user.UserInfo (UserId,Name,Birthday,Sex,WeChatId,Mobile) SELECT UserId,name,birth_day,sex,wx_open_id,phone FROM `user_profile` where phone != '' and phone != 'tbd' and phone not in (select Mobile from xrace_user.UserInfo) limit 50
     /**
      *获取所用户信息(缓存)
      */
@@ -173,14 +172,8 @@ class XraceUserController extends AbstractController
      */
     public function thirdPartyLoginAction()
     {
-        //$text  = '{"openid": "odLjsvnZwRS4lduV6D7DpS5hJoyY","nickname": "GUI Ling","headimgurl": "http://wx.qlogo.cn/mmopen/fl6pKMZtTyXGYHHVno0td0cv2VR9HHUEp2pz6p9qLAfTrOVtP07pgNSytgfKm4uBgGjXic0sGTkZKc7lFvFOKE999tY8jfEfj/0","sex": "2","province": "上海","city": "长宁"}';
-        //$text  = '{"openid": "odLjsvvYfXvkm9Rkrd4HAHXeqvA8","nickname": "JiMMy","headimgurl": "http://wx.qlogo.cn/mmopen/s6icJeKAt9X2zFZiafUjibkZhkibib8ickRZMDeoIwpfAeh04htIbSecdkU5uoW0AdAucU1kM4tEnKuw6uW6zeaWBYwLMYj9evlJvy/0","sex": "0","province": "","city": ""}';
-        //$text  = '{"openid": "odLjsvnl2cUkbbbM8EBvZmJOX7Sw","nickname": "栋辉tim","headimgurl": "http://wx.qlogo.cn/mmopen/fl6pKMZtTyXGYHHVno0td2q2q1K7U1r4Gx1Hib8mL7lVQiaCdux7ZrtAZicmeOu79ZOuhGicDmSUC9LiaqIRwIzQbVIzyvwbXmyn3/0","sex": "1","province": "上海","city": "浦东新区"}';
-            $text="";
         //身份数据
         $LoginData = isset($this->request->LoginData) ? trim($this->request->LoginData) : $text;
-
-
         //第三方来源
         $LoginSource = isset($this->request->LoginSource) ? trim($this->request->LoginSource) : "WeChat";
         //客户端
@@ -206,9 +199,6 @@ class XraceUserController extends AbstractController
             //结果数组 返回失败
             $result = array("return" => 0,"comment" => "登录失败，请重试");
         }
-        //$filePath = __APP_ROOT_DIR__ . "Login" . "/" . "ThirdParty" . "/".date("Ymd",time())."/";
-        //$fileName = "Return" . ".php";
-        //Base_Common::rebuildConfig($filePath, $fileName, $result, "ReturnData");
         echo json_encode($result);
     }
     /**
@@ -562,14 +552,6 @@ class XraceUserController extends AbstractController
                     }
                     else
                     {
-                        //如果紧急联系人姓名和手机长度不足
-                       // if((strlen($ContactName) <2) || (strlen($ContactMobile) <=8))
-                        //{
-                       //     //返回错误
-                       //     $result = array("return" => 0,"comment"=>"请输入合法紧急联系人姓名和联系方式");
-                       // }
-                        //else
-                       // {
                             //生成用户信息
                             $UserInfo = array('Name'=>$Name,'Sex'=>$Sex,'IdNo'=>$IdNo,'IdType'=>$IdType,'Birthday'=>$Birthday,"ICE"=>json_encode(array("1"=>array('Name'=>$ContactName,'ContactMobile'=>$ContactMobile))));
                             if($IdType==1)
@@ -597,8 +579,6 @@ class XraceUserController extends AbstractController
                                 //返回错误
                                 $result = array("return" => 0,"comment"=>"更新失败");
                             }
-                       // }
-
                     }
                 }
             }
@@ -696,28 +676,6 @@ class XraceUserController extends AbstractController
             $result = array("return" => 0,"NeedLogin"=>1);
         }
         echo json_encode($result);
-    }
-    //更新用户的身份信息（身份证，姓名）
-    public function getCodeAction()
-    {
-        $RegId = isset($this->request->RegId) ? abs(intval($this->request->RegId)) :0;
-        //获取注册记录
-        $RegInfo = $this->oUser->getRegInfo($RegId);
-        echo "here is the RegInfo";
-        echo "<pre>";
-        print_R($RegInfo);
-
-    }
-    //更新用户的身份信息（身份证，姓名）
-    public function getResetCodeAction()
-    {
-        $ResetId = isset($this->request->ResetId) ? abs(intval($this->request->ResetId)) :0;
-        //获取注册记录
-        $ResetInfo = $this->oUser->getResetInfo($ResetId);
-        echo "here is the RegInfo";
-        echo "<pre>";
-        print_R($ResetInfo);
-
     }
     //更新用户的身份信息（身份证，姓名）
     public function testDeleteAction()

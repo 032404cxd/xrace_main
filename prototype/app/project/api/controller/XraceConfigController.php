@@ -1017,7 +1017,8 @@ class XraceConfigController extends AbstractController
         //获取比赛信息
         $RaceInfo = $this->oRace->getRace($RaceId);
         //检测主键存在,否则值为空
-        if (isset($RaceInfo['RaceId'])) {
+        if (isset($RaceInfo['RaceId']))
+        {
             $RaceInfo['comment'] = json_decode($RaceInfo['comment'], true);
             if ($RaceInfo['comment']['ResultNeedConfirm'] == 1) {
                 if ($Force != 1 && $RaceInfo['comment']['RaceResultConfirm']['ConfirmStatus'] != 1) {
@@ -1026,8 +1027,8 @@ class XraceConfigController extends AbstractController
                     die();
                 }
             }
-
-            if (!$RaceUserId) {
+            if (!$RaceUserId && $BIB != "")
+            {
                 //根据用户的BIB获取比赛报名信息
                 $UserApplyInfo = $this->oUser->getRaceApplyUserInfoByBIB($RaceId, $BIB);
                 //如果查询到报名记录

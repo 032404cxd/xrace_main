@@ -3,18 +3,6 @@
   function RaceResultList(rid,uid,rname){
     RaceResultListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.result.list&RaceId=' + rid + '&RaceUserId=' + uid, {title:rname+'成绩单',width:800,height:750});
   }
-  function RaceAdd(sid,gid){
-    RaceAddBox = divBox.showBox('{tpl:$this.sign/}&ac=race.add&RaceGroupId=' + gid + '&RaceStageId=' + sid, {title:'添加比赛',width:800,height:750});
-  }
-  function RaceModify(rid,rname,gid){
-    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.modify&RaceId=' + rid + '&RaceGroupId=' + gid, {title:'修改比赛-'+rname,width:800,height:750});
-  }
-  function RaceUserUpload(rid,rname,gid){
-    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.upload.submit&RaceId=' + rid + '&RaceGroupId=' + gid, {title:'批量导入报名记录-'+rname,width:300,height:150});
-  }
-  function RaceUserList(rid,rname,gname){
-    RaceUserListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.list&RaceId=' + rid, {title:gname+'-'+rname+'选手名单',width:800,height:750});
-  }
 </script>
 <form action="{tpl:$this.sign/}&ac=race.update" name="form" id="form" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
@@ -30,7 +18,7 @@
 
       <table width="99%" align="center" class="table table-bordered table-striped">
   <tr>
-    <th align="center" class="rowtip" colspan="15">最后更新时间{tpl:$RaceResultList.UserRaceTimingInfo.LastUpdateTime func="date('Y-m-d H:i:s.u',@@)"/}</th>
+    <th align="center" class="rowtip" colspan="15">最后更新时间{tpl:$RaceResultList.UserRaceInfo.LastUpdateTime func="date('Y-m-d H:i:s.u',@@)"/}</th>
   </tr>
   <tr>
     <th align="center" class="rowtip" colspan="2">计时点</th>

@@ -85,7 +85,7 @@ class Xrace_Race extends Base_Widget
     }
 
 	//获取所有赛事的列表(已缓存)
-	public function getRaceCatalogList($Display = 0,$fields = "*",$Cache = 0)
+	public function getRaceCatalogList($Display = 0,$fields = "*",$Cache = 0,$wherePermission = "")
 	{
         $oMemCache = new Base_Cache_Memcache("xrace");
         //如果需要获取缓存
@@ -114,8 +114,10 @@ class Xrace_Race extends Base_Widget
         if(isset($NeedDB))
         {
             $table_to_process = Base_Widget::getDbTable($this->table);
-            $whereDisplay = $Display == 1?" and Display = '1'":"";
-            $sql = "SELECT $fields FROM " . $table_to_process . " where 1 ".$whereDisplay." ORDER BY RaceCatalogId ASC";
+            $whereDisplay = $Display == 1?" Display = '1'":"";
+            $whereCondition = array($whereDisplay,$wherePermission);
+            $where = Base_common::getSqlWhere($whereCondition);
+            $sql = "SELECT $fields FROM " . $table_to_process . " where 1 ".$where." ORDER BY RaceCatalogId ASC";
             $return = $this->db->getAll($sql);
             $RaceCatalogList = array();
             if(count($return))
@@ -257,19 +259,19 @@ class Xrace_Race extends Base_Widget
 		return $this->db->delete($table_to_process, '`RaceGroupId` = ?', $RaceGroupId);
 	}
 	//根据赛事获取所有分站列表
-	public function getRaceStageList($RaceCatalogId,$fields = "*",$Display = 0)
+	public function getRaceStageList($RaceCatalogId,$fields = "*",$Display = 0,$wherePermission = "")
 	{
 		$RaceCatalogId = trim($RaceCatalogId);
 		//初始化查询条件
 		$whereCatalog = ($RaceCatalogId != 0)?" RaceCatalogId = $RaceCatalogId":"";
         $whereDisplay = $Display == 1?" Display = '1'":"";
 
-		$whereCondition = array($whereCatalog,$whereDisplay);
+		$whereCondition = array($whereCatalog,$whereDisplay,$wherePermission);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$table_to_process = Base_Widget::getDbTable($this->table_stage);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceCatalogId,RaceStageId DESC";
-        $return = $this->db->getAll($sql);
+		$return = $this->db->getAll($sql);
 		$RaceStageList = array();
 		if(count($return))
 		{
@@ -377,32 +379,6 @@ class Xrace_Race extends Base_Widget
 		$where = Base_common::getSqlWhere($whereCondition);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceId asc";
         $return = $this->db->getAll($sql);
-		$RaceList = array();
-		foreach($return as $key => $value)
-		{
-			$RaceList[$value['RaceId']] = $value;
-			if(isset($RaceList[$value['RaceId']]['comment']))
-			{
-				$RaceList[$value['RaceId']]['comment'] = json_decode($RaceList[$value['RaceId']]['comment'],true);
-			}
-		}
-		return $RaceList;
-	}
-	
-	//获取赛事分站和赛事组别获取比赛列表
-	public function getRaceListBak($RaceStageId,$RaceGroupId,$fields = '*')
-	{
-		$RaceStageId = intval($RaceStageId);
-		$RaceGroupId = intval($RaceGroupId);
-		$table_to_process = Base_Widget::getDbTable($this->table_race);
-		if(!$RaceGroupId)
-		{
-			$return = $this->db->select($table_to_process, $fields, '`RaceStageId` = ?', array($RaceStageId));
-		}
-		else
-		{
-			$return = $this->db->select($table_to_process, $fields, '`RaceStageId` = ? and `RaceGroupId` = ?', array($RaceStageId,$RaceGroupId));
-		}
 		$RaceList = array();
 		foreach($return as $key => $value)
 		{
@@ -1323,19 +1299,20 @@ class Xrace_Race extends Base_Widget
 						foreach($RaceUserList as $ApplyId => $ApplyInfo)
 						{
 						    //获取用户信息
-							$RaceUserInfo = $oUser->getRaceUser($ApplyInfo["RaceUserId"],'RaceUserId,Name');
+							$RaceUserInfo = $oUser->getRaceUser($ApplyInfo["RaceUserId"],'CreateUserId,RaceUserId,Name');
 							//如果获取到用户
 							if($RaceUserInfo['RaceUserId'])
 							{
                                 //保存用户姓名到总表
 							    $RaceUserList[$ApplyId]['Name'] = $RaceUserInfo['Name'];
+                                $RaceUserList[$ApplyId]['CreateUserId'] = $RaceUserInfo['CreateUserId'];
 							    $TeamInfo = $oTeam->getTeamInfo($ApplyInfo['TeamId']);
                                 if(!isset($TeamInfo['TeamId']))
 								{
 									$TeamInfo = array('TeamName'=>"个人");
 								}
 								//存储用户信息
-								$TimingPointList['RaceUserInfo'] = array('Name'=>$RaceUserInfo['Name'],'RaceUserId' => $RaceUserInfo['RaceUserId'],'RaceGroupId'=>$ApplyInfo['RaceGroupId'],'TeamId'=> $ApplyInfo['TeamId'],'TeamName'=>$TeamInfo['TeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
+								$TimingPointList['RaceUserInfo'] = array('CreateUserId'=>$RaceUserInfo['CreateUserId'],'Name'=>$RaceUserInfo['Name'],'RaceUserId' => $RaceUserInfo['RaceUserId'],'RaceGroupId'=>$ApplyInfo['RaceGroupId'],'TeamId'=> $ApplyInfo['TeamId'],'TeamName'=>$TeamInfo['TeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
                                 //保存用户姓名到总表
                                 $RaceUserList[$ApplyId]['TeamName'] = $TeamInfo['TeamName'];
                                 //数据解包
@@ -1353,8 +1330,6 @@ class Xrace_Race extends Base_Widget
 										$TimingPointList['OrderInfo'] = $OrderInfo;
 									}
 								}
-								//($TimingPointList['RaceInfo']);
-
 								//保存配置文件
                                 $this->UserTimgingDataSave($RaceInfo['RaceId'],$RaceUserInfo['RaceUserId'],$TimingPointList);
 							}
@@ -1965,5 +1940,39 @@ class Xrace_Race extends Base_Widget
             }
         }
         return $RaceUserList;
+    }
+    public function updateCreditByRaceResult($RaceId)
+    {
+
+        //获取成绩列表
+        $RaceResultList = $this->getRaceResult($RaceId);
+        if(count($RaceResultList['UserRaceInfo']['Total']))
+        {
+            $oCredit = new Xrace_Credit();
+            $CreditLog = $oCredit->getCreditLog(array("RaceId"=>$RaceId));
+            //循环所有用户
+            foreach($RaceResultList['UserRaceInfo']['Total'] as $UserInfo)
+            {
+                //如果用户可以获得积分
+                if(isset($UserInfo['Credit']))
+                {
+                    print_R($UserInfo);
+                    continue;
+                    //循环各个累加的积分
+                    foreach($UserInfo['Credit'] as $CreditId => $Credit)
+                    {
+                        //根据比赛和分组的记录，获取积分更新记录
+                        //$CreditLog = $this->oCredit->getCreditLog(array("RaceId"=>$RaceId),$fields = array("*"))
+                        //积分更新
+                        //$updateCredit = $this->oCredit->Credit(array("CreditId"=>$CreditId,"Credit"=>$Credit),array("RaceId"=>$RaceId, "RaceGroupId"=>$UserInfo["RaceGroupId"]),$UserInfo['UserId']);
+                        //echo "updateCredit:".$updateCredit."<br>";
+                    }
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 }

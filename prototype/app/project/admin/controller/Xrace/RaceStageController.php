@@ -19,7 +19,8 @@ class Xrace_RaceStageController extends AbstractController
 	 * product对象
 	 * @var object
 	 */
-        protected $oProduct;
+    protected $oProduct;
+    protected $oCredit;
 	/**
 	 * 初始化
 	 * (non-PHPdoc)
@@ -30,7 +31,9 @@ class Xrace_RaceStageController extends AbstractController
 		parent::init();
 		$this->oRace = new Xrace_Race();
 		$this->oProduct = new Xrace_Product();
-	}
+        $this->oCredit = new Xrace_Credit();
+
+    }
 	//赛事分站列表页面
 	public function indexAction()
 	{
@@ -38,14 +41,15 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
-			//获取站点根域名
+			$DataPermissionListWhere = $this->manager->getDataPermissionByGroupWhere();
+		    //获取站点根域名
 			$RootUrl = "http://".$_SERVER['HTTP_HOST'];
 			//赛事ID
 			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0,$DataPermissionListWhere);
 			//赛事分站列表
-			$RaceStageArr = $this->oRace->getRaceStageList($RaceCatalogId,"RaceStageId,RaceStageName,RaceCatalogId,comment,StageStartDate,StageEndDate,RaceStageIcon,Display");
+			$RaceStageArr = $this->oRace->getRaceStageList($RaceCatalogId,"RaceStageId,RaceStageName,RaceCatalogId,comment,StageStartDate,StageEndDate,RaceStageIcon,Display",0,$DataPermissionListWhere);
 			//比赛-分组的层级规则
 			$RaceStructureList  = $this->oRace->getRaceStructure();
 			//赛事分组列表
@@ -361,8 +365,8 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceStageId = intval($this->request->RaceStageId);
 			//赛事列表
 			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
-			//分站数据
-			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'*');
+            //分站数据
+            $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'*');
 			//分组列表
 			$RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
 			//数据解包
@@ -1330,9 +1334,8 @@ class Xrace_RaceStageController extends AbstractController
 			{
 				//获取当前分站信息
 				$RaceStageInfo = $this->oRace->getRaceStage($RaceInfo['RaceStageId'],'RaceStageId,RaceStageName,comment,RaceCatalogId');
-                $oCredit = new Xrace_Credit();
                 //获取关联赛事下的积分类目列表
-                $CreditArr = $oCredit->getCreditList($RaceStageInfo['RaceCatalogId']);
+                $CreditArr = $this->oCredit->getCreditList($RaceStageInfo['RaceCatalogId']);
                 //解包压缩数组
 				$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
 				//数据解包
@@ -1808,9 +1811,8 @@ class Xrace_RaceStageController extends AbstractController
             if(isset($RaceInfo['RaceId']))
             {
                 $RaceStageInfo = $this->oRace->getRaceStage($RaceInfo['RaceStageId'],"RaceCatalogId,RaceStageId");
-                $oCredit = new Xrace_Credit();
                 //获取关联赛事下的积分类目列表
-                $CreditArr = $oCredit->getCreditList($RaceStageInfo['RaceCatalogId']);
+                $CreditArr = $this->oCredit->getCreditList($RaceStageInfo['RaceCatalogId']);
                 //渲染模板
                 include $this->tpl('Xrace_Race_TimingPointCreditAdd');
             }
@@ -1871,7 +1873,6 @@ class Xrace_RaceStageController extends AbstractController
                 $RaceInfo['comment'] = isset($RaceInfo['comment'])?json_decode($RaceInfo['comment'],true):array();
                 //获取关联的赛事分站信息
                 $RaceStageInfo = $this->oRace->getRaceStageInfo($RaceInfo['RaceStageId'],"RaceCatalogId,RaceStageId");
-                $this->oCredit = new Xrace_Credit();
                 //获取关联赛事下的积分类目列表
                 $CreditArr = $this->oCredit->getCreditList($RaceStageInfo['RaceCatalogId']);
                 //获取运动类型信息
@@ -3398,35 +3399,15 @@ class Xrace_RaceStageController extends AbstractController
         $PermissionCheck = $this->manager->checkMenuPermission(0);
         if($PermissionCheck['return'])
         {
-            $oCredit = new Xrace_Credit();
             //比赛ID
             $RaceId = intval($this->request->RaceId);
             //获取比赛信息
             $RaceInfo = $this->oRace->getRace($RaceId);
             //数据解包
             $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
-            //获取成绩列表
-            $RaceResultList = $this->oRace->getRaceResult($RaceId);
-            if(count($RaceResultList['UserRaceTimingInfo']['Total']))
-            {
-                //循环所有用户
-                foreach($RaceResultList['UserRaceTimingInfo']['Total'] as $UserInfo)
-                {
-                    //如果用户可以获得积分
-                    if(isset($UserInfo['Credit']))
-                   {
-                       //循环各个累加的积分
-                       foreach($UserInfo['Credit'] as $CreditId => $Credit)
-                       {
-                           //根据比赛和分组的记录，获取积分更新记录
-                           //$CreditLog = $oCredit->getCreditLog(array("RaceId"=>$RaceId),$fields = array("*"))
-                           //积分更新
-                           //$updateCredit = $oCredit->Credit(array("CreditId"=>$CreditId,"Credit"=>$Credit),array("RaceId"=>$RaceId, "RaceGroupId"=>$UserInfo["RaceGroupId"]),$UserInfo['UserId']);
-                           //echo "updateCredit:".$updateCredit."<br>";
-                       }
-                   }
-                }
-            }
+            //根据比赛结果更新积分
+            $update = $this->oRace->updateCreditByRaceResult($RaceId);
+
         }
         else
         {
@@ -3690,7 +3671,7 @@ class Xrace_RaceStageController extends AbstractController
         $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
         if($PermissionCheck['return'])
         {
-            //报名记录ID
+            //比赛ID
             $RaceId = intval($this->request->RaceId);
             //执行检录
             $RaceResultConfirm = $this->oRace->RaceResultConfirm($RaceId, $this->manager->id);
@@ -3703,4 +3684,132 @@ class Xrace_RaceStageController extends AbstractController
             include $this->tpl('403');
         }
     }
+    //补给点列表
+    public function aidStationListAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission(0);
+        if($PermissionCheck['return'])
+        {
+            $oAidStation = new Xrace_AidStation();
+            //报名记录ID
+            $RaceStageId = intval($this->request->RaceStageId);
+            //分站数据
+            $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'RaceStageId,RaceStageName');
+            //执行检录
+            $AidStationList = $oAidStation->getAidStationIdList(array("RaceStageId"=>$RaceStageId));
+            //渲染模板
+            include $this->tpl('Xrace_Race_AidStationList');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //删除补给点
+    public function aidStationDeleteAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            $oAidStation = new Xrace_AidStation();
+            //比赛ID
+            $AidStationId = intval($this->request->AidStationId);
+            //删除
+            $oAidStation->deleteAidStation($AidStationId);
+            //返回之前页面
+            $this->response->goBack();
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //修改比赛配置信息填写页面
+    public function aidStationAddAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            $oAidStation = new Xrace_AidStation();
+            //补给点ID
+            $RaceStageId = intval($this->request->RaceStageId);
+            //渲染模板
+            include $this->tpl('Xrace_Race_AidStationAdd');
+
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //修改补给点配置信息填写页面
+    public function aidStationModifyAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            $oAidStation = new Xrace_AidStation();
+            //补给点ID
+            $AidStationId = intval($this->request->AidStationId);
+            //获取比赛信息
+            $AidStationInfo = $oAidStation->getAidStation($AidStationId);
+            //渲染模板
+            include $this->tpl('Xrace_Race_AidStationModify');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //修改补给点
+    public function aidStationUpdateAction()
+    {
+        //获取 页面参数
+        $bind=$this->request->from('AidStationId','AidStationName','AidStationComment');
+        if($bind['AidStationName']=="")
+        {
+            $response = array('errno' => 1);
+        }
+        else
+        {
+            $oAidStation = new Xrace_AidStation();
+            //获取分站信息
+            $AidStationInfo = $oAidStation->getAidStation($bind['AidStationId']);
+            //更新比赛
+            $UpdateAidStation = $oAidStation->updateAidStation($bind['AidStationId'],$bind);
+            $response = $UpdateAidStation ? array('errno' => 0,'RaceStageId'=>$AidStationInfo['RaceStageId']) : array('errno' => 9);
+        }
+        echo json_encode($response);
+        return true;
+    }
+    //添加补给点
+    public function aidStationInsertAction()
+    {
+        //获取 页面参数
+        $bind=$this->request->from('RaceStageId','AidStationName','AidStationComment');
+        if($bind['AidStationName']=="")
+        {
+            $response = array('errno' => 1);
+        }
+        else
+        {
+            $oAidStation = new Xrace_AidStation();
+            //获取分站信息
+            $AidStationInfo = $oAidStation->getAidStation($bind['AidStationId']);
+            //更新比赛
+            $UpdateAidStation = $oAidStation->insertAidStation($bind);
+            $response = $UpdateAidStation ? array('errno' => 0,'RaceStageId'=>$bind['RaceStageId']) : array('errno' => 9);
+        }
+        echo json_encode($response);
+        return true;
+    }
+
 }

@@ -1363,8 +1363,6 @@ class Xrace_UserInfo extends Base_Widget
     public function insertToken($bind,$false=0)
     {
         $Time = time();
-        //继续拼接Token
-        //$bind['Token'] = md5($bind['Token']."|".$Time."|".rand(1,999));
         //拼接时间
         $bind['Time'] = date("Y-m-d H:i:s",$Time);
         $table_to_process = Base_Widget::getDbTable($this->table_login);

@@ -144,6 +144,51 @@ class DataGroupController extends AbstractController
 		}
 		$this->response->goBack();
 	}
+
+    /**
+     * 获取当前用户组的权限配置页面
+     * @params data_groups 用户组id
+     */
+    public function permissionByGroupAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission(0);
+        if($PermissionCheck['return'])
+        {
+            $group_id = intval($this->request->group_id);
+            $oGroup = new Widget_Group();
+            $group = $oGroup->get($group_id);
+            $totalPermission = $this->manager->getPermissionList($group_id);
+            include $this->tpl('DataGroup_PermissionList');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    /**
+     * 更新当前用户组的权限配置
+     * @params data_groups 用户组id
+     */
+    public function permissionModifyAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("UpdateDataGroup");
+        if($PermissionCheck['return'])
+        {
+            //获取 页面参数
+            $bind=$this->request->from('group_id','RaceCatalogList');
+            $update = $this->manager->updateDataPermissionByGroup($bind);
+            //返回之前页面
+            $this->response->goBack();
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
 }
 
 

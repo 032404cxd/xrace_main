@@ -101,6 +101,10 @@ $table['config_menu_purview']['num'] = 1;
 $table['config_menu_permission']['db'] = 'xrace_config';
 $table['config_menu_permission']['num'] = 1;
 
+#数据权限
+$table['config_data_permission']['db'] = 'xrace_config';
+$table['config_data_permission']['num'] = 1;
+
 //操作日志
 $table['config_logs_manager']['db'] = 'xrace_config';
 $table['config_logs_manager']['num'] = 16;
@@ -164,5 +168,10 @@ $table['RaceUserInfo']['num'] = 1;
 #用户审核状态
 $table['UserReg']['db'] = 'xrace_user';
 $table['UserReg']['num'] = 1;
+
+#补给点
+$table['config_aid_station']['db'] = 'xrace_config';
+$table['config_aid_station']['num'] = 1;
+
 
 return $table;
