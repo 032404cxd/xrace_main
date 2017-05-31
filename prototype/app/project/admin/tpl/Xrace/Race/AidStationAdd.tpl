@@ -7,12 +7,12 @@
 		</td>
 	</tr>
 	</tr>	<tr class="noborder"><td></td>
-<td><button type="submit" id="race_add_submit">提交</button></td>
+<td><button type="submit" id="aid_station_add_submit">提交</button></td>
 </tr>
 </table>
 </form>
 <script type="text/javascript">
-$('#race_add_submit').click(function(){
+$('#aid_station_add_submit').click(function(){
 	var options = {
 		dataType:'json',
 		beforeSubmit:function(formData, jqForm, options) {},
@@ -28,7 +28,7 @@ $('#race_add_submit').click(function(){
 			}
 		}
 	};
-	$('#race_add_form').ajaxForm(options);
+	$('#aid_station_add_form').ajaxForm(options);
 });
 </script>
 {tpl:tpl contentFooter/}

@@ -865,4 +865,67 @@ class XraceTeamController extends AbstractController
         }
         echo json_encode($result);
     }
+    /**
+     *更新用户的队员
+     */
+    public function modifyUserMemberAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            //获取用户信息
+            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId']);
+            //尚未创建比赛用户
+            if($UserInfo['RaceUserId']==0)
+            {
+                //创建关联的比赛用户
+                $UserInfo['RaceUserId'] = $this->oUser->CreateRaceUserByUserInfo($UserInfo['UserId']);
+            }
+            //用户ID  如果未指定则用Token对应的用户
+            $RaceUserId = abs(intval($this->request->RaceUserId))>0 ? abs(intval($this->request->RaceUserId)) : 0;
+            $bind=$this->request->from('CommentName');
+            //获得用户信息
+            $RaceUserInfo = $this->oUser->getRaceUser($RaceUserId);
+            //如果获取到用户
+            if(isset($RaceUserInfo['RaceUserId']))
+            {
+                //获取用户的队员列表
+                $UserMemberList = $this->oTeam->getUserMemberList($UserInfo['RaceUserId']);
+                //如果用户不在列表中
+                if(isset($UserMemberList[$RaceUserInfo['RaceUserId']]))
+                {
+                    //更新成员
+                    $update = $this->oTeam->updateUserMember($UserInfo['RaceUserId'],$RaceUserInfo['RaceUserId'],$bind);
+                    //如果离开成功
+                    if($update)
+                    {
+                        $result = array("return" => 1, "comment" => "更新成功");
+                    }
+                    else
+                    {
+                        $result = array("return" => 0, "comment" => "更新失败，请重试");
+                    }
+                }
+                else
+                {
+                    $result = array("return" => 1, "comment" => "更新失败，请重试");
+                }
+
+            }
+            else
+            {
+                $result = array("return" => 0, "comment" => "需要更新的用户不存在");
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    //ALTER TABLE `usermemberlist` ADD `CommentName` VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '备注名' AFTER `LastUpdateTime`;
 }

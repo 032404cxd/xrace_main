@@ -203,12 +203,12 @@ class Xrace_Race extends Base_Widget
 	}
 	//根据赛事获取所有组别列表
 	//赛事ID为0则获取全部组别
-	public function getRaceGroupList($RaceCatalogId,$fields = "*")
+	public function getRaceGroupList($RaceCatalogId,$fields = "*",$wherePermission = "")
 	{
 		$RaceCatalogId = intval($RaceCatalogId);
 		//初始化查询条件
 		$whereCatalog = ($RaceCatalogId != 0)?" RaceCatalogId = $RaceCatalogId":"";
-		$whereCondition = array($whereCatalog);
+		$whereCondition = array($whereCatalog,$wherePermission);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$table_to_process = Base_Widget::getDbTable($this->table_group);
@@ -265,7 +265,6 @@ class Xrace_Race extends Base_Widget
 		//初始化查询条件
 		$whereCatalog = ($RaceCatalogId != 0)?" RaceCatalogId = $RaceCatalogId":"";
         $whereDisplay = $Display == 1?" Display = '1'":"";
-
 		$whereCondition = array($whereCatalog,$whereDisplay,$wherePermission);
 		//生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);

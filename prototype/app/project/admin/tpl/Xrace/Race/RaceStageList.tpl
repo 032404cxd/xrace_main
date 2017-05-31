@@ -51,7 +51,7 @@
   </tr>
   {tpl:loop $RaceCatalogInfoInfo.RaceStageList $RaceStageId $RaceStageInfo}
   <tr>
-    <th align="center" class="rowtip" >{tpl:$RaceStageInfo.RaceStageName/}<br>{tpl:$RaceStageInfo.RaceStructureName/}</th>
+    <th align="center" class="rowtip" >{tpl:$RaceStageInfo.RaceStageName/}<br>{tpl:$RaceStageInfo.RaceStageId/}/{tpl:$RaceStageInfo.RaceStructureName/}</th>
     <th align="center">{tpl:$RaceStageInfo.RaceStageIconList/}</th>
     <th align="center" class="rowtip" >{tpl:$RaceStageInfo.StageStartDate/}<br>~<br>{tpl:$RaceStageInfo.StageEndDate/}</th>
     <td align="center" class="rowtip" >{tpl:$RaceStageInfo.RaceList/}</td>

@@ -3811,5 +3811,111 @@ class Xrace_RaceStageController extends AbstractController
         echo json_encode($response);
         return true;
     }
+    //修改补给点权限配置信息填写页面
+    public function aidStationPermissionModifyAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            $oAidStation = new Xrace_AidStation();
+            //补给点ID
+            $AidStationId = intval($this->request->AidStationId);
+            //获取补给点信息
+            $AidStationInfo = $oAidStation->getAidStation($AidStationId);
+            //数据解包
+            $AidStationInfo['comment'] = json_decode($AidStationInfo['comment'],true);
+            //获取分站信息
+            $RaceStageInfo = $this->oRace->getRaceStage($AidStationInfo['RaceStageId'],"RaceStageId,comment");
+            //数据解包
+            $RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
+            if($RaceStageInfo['comment']['RaceStructure'] != "race")
+            {
+                $RaceList = array();
+                //获取比赛列表
+                $RaceArr = $this->oRace->getRaceList(array("RaceStageId"=>$AidStationInfo['RaceStageId']),"RaceId,RaceName,RaceGroupId");
+                foreach($RaceArr as $RaceId => $RaceInfo)
+                {
+                    if(!isset($RaceGroupList[$RaceInfo['RaceGroupId']]))
+                    {
+                        $RaceList[$RaceInfo['RaceGroupId']]['RaceGroupInfo'] = $this->oRace->getRaceGroup($RaceInfo['RaceGroupId'],"RaceGroupId,RaceGroupName");
+                    }
+                    $RaceList[$RaceInfo['RaceGroupId']]['RaceList'][$RaceId] = $RaceInfo;
+                    if(isset($AidStationInfo['comment']['RaceList'][$RaceId][$RaceInfo['RaceGroupId']]))
+                    {
+                        $RaceList[$RaceInfo['RaceGroupId']]['RaceList'][$RaceId]['selected'] = 1;
+                    }
+
+                }
+            }
+            else
+            {
+                //获取比赛列表
+                $RaceList = $this->oRace->getRaceList(array("RaceStageId"=>$AidStationInfo['RaceStageId']),"RaceId,RaceName,RaceGroupId,comment");
+                $RaceGroupList = array();
+                foreach($RaceList as $RaceId => $RaceInfo)
+                {
+                    foreach($RaceInfo['comment']['SelectedRaceGroup'] as $RaceGroupId => $RaceGroup)
+                    {
+                        if(!isset($RaceGroupList[$RaceGroupId]))
+                        {
+                            $RaceGroupList[$RaceGroupId] = $this->oRace->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName");
+                        }
+                        if(isset($AidStationInfo['comment']['RaceList'][$RaceId][$RaceGroupId]))
+                        {
+                            $RaceList[$RaceId]['comment']['SelectedRaceGroup'][$RaceGroupId]['selected'] = 1;
+                        }
+                        $RaceList[$RaceId]['comment']['SelectedRaceGroup'][$RaceGroupId]['RaceGroupName'] = $RaceGroupList[$RaceGroupId]["RaceGroupName"];
+                    }
+                }
+            }
+            //渲染模板
+            include $this->tpl('Xrace_Race_AidStationPermissionModify');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //修改补给点权限配置信息填写页面
+    public function aidStationPermissionUpdateAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            $oAidStation = new Xrace_AidStation();
+            //补给点ID
+            $AidStationId = intval($this->request->AidStationId);
+            //比赛-分组列表
+            $RaceList = $this->request->RaceList;
+            //获取补给点信息
+            $AidStationInfo = $oAidStation->getAidStation($AidStationId);
+            //数据解包
+            $AidStationInfo['comment'] = json_decode($AidStationInfo['comment'],true);
+            //初始化选中的比赛列表
+            $AidStationInfo['comment']['RaceList'] = array();
+            foreach($RaceList as $RaceId => $RaceInfo)
+            {
+                foreach($RaceInfo as $RaceGroupId => $selected)
+                {
+                    if($selected)
+                    {
+                        $AidStationInfo['comment']['RaceList'][$RaceId][$RaceGroupId] = 1;
+                    }
+                }
+            }
+            $AidStationInfo['comment'] = json_encode($AidStationInfo['comment']);
+            $UpdateAidStation = $oAidStation->updateAidStation($AidStationId,$AidStationInfo);
+            //返回之前页面
+            $this->response->goBack();
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
 
 }

@@ -677,8 +677,6 @@ class Widget_Manager extends Base_Widget
         {
             return "0";
         }
-        //print_R($PermissionList);
-
     }
 
 }

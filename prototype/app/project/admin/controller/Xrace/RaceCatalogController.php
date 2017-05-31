@@ -34,10 +34,11 @@ class Xrace_RaceCatalogController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
+            $DataPermissionListWhere = $this->manager->getDataPermissionByGroupWhere();
 			//当前站点根域名
 			$RootUrl = "http://".$_SERVER['HTTP_HOST'];
 			//获取赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0,$DataPermissionListWhere);
 			foreach($RaceCatalogList as $RaceCatalogId => $RaceCatalogInfo)
 			{
 				$RaceCatalogList[$RaceCatalogId]['RaceCatalogName'].=($RaceCatalogInfo['Display'])?"":"(隐藏)";

@@ -362,4 +362,15 @@ class Xrace_Team extends Base_Widget
         $table_to_process = Base_Widget::getDbTable($this->table_member);
         return $this->db->delete($table_to_process, '`OwnerRaceUserId` = ? and `RaceUserId` = ?', array($OwnerRaceUserId,$RaceUserId));
     }
+
+    /**
+     * 更新单个用户用成员记录
+     * @param array $bind 所要添加的数据列
+     * @return boolean
+     */
+    public function updateUserMember($OwnerRaceUserId,$RaceUserId,$bind)
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_member);
+        return $this->db->update($table_to_process, $bind,'`OwnerRaceUserId` = ? and `RaceUserId` = ?', array($OwnerRaceUserId,$RaceUserId));
+    }
 }

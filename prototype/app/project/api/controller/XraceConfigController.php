@@ -1320,9 +1320,9 @@ class XraceConfigController extends AbstractController
     public function getRaceUserCheckInListAction()
     {
         //用户ID
-        $UserId = abs(intval($this->request->UserId));
+        $RaceUserId = abs(intval($this->request->RaceUserId));
         //获取用户签到信息
-        $UserCheckInList = $this->oUser->getRaceUserCheckInList(array('UserId'=>$UserId));
+        $UserCheckInList = $this->oUser->getRaceUserCheckInList(array('RaceUserId'=>$RaceUserId));
         //初始化空的分站列表
         $RaceStageList = array();
         foreach($UserCheckInList as $key => $CheckInInfo)
@@ -1348,6 +1348,42 @@ class XraceConfigController extends AbstractController
         foreach($CombinationList as $Id => $CombinationInfo)
         {
             print_R($CombinationInfo);
+        }
+    }
+    public function socketTestAction()
+    {
+        $oMylaps = new Xrace_Mylaps();
+        $text = "jjj@Passing@c=CR43438|ct=CX|t=14:38:00.132|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=CR43438|b=-1@8@$";
+        $text1 = "jjj@Passing@c=HZ06571|ct=CX|t=14:44:02.841|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=HZ06571|b=-1@c=KW48567|ct=CX|t=14:44:02.906|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=KW48567|b=-1@c=KW47671|ct=CX|t=14:44:02.922|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=KW47671|b=-1@c=SF92741|ct=CX|t=14:44:02.934|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=SF92741|b=-1@c=CC39407|ct=CX|t=14:44:02.843|d=170519|l=3|dv=1|re=0|an=-1|g=-1|n=CC39407|b=-1@c=CX79393|ct=CX|t=14:44:02.964|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=CX79393|b=-1@c=KH14107|ct=CX|t=14:44:02.860|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=KH14107|b=-1@c=KP66964|ct=CX|t=14:44:02.974|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=KP66964|b=-1@15@$";
+        $text2 = "L86490|ct=CX|t=14:44:02.831|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=RL86490|b=-1@c=GV59557|ct=CX|t=14:44:02.881|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=GV59557|b=-1@c=HP46938|ct=CX|t=14:44:02.847|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=HP46938|b=-1@14@$";
+        $text3 = "jjj@Passing@c=RN12649|ct=CX|t=14:37:59.979|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=RN12649|b=-1@c=FN59312|ct=CX|t=14:38:00.030|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=FN59312|b=-1@c=RX80579|ct=CX|t=14:37:59.976|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=RX80579|b=-1@c=FK59372|ct=CX|t=14:38:00.010|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=FK59372|b=-1@c=GK26410|ct=CX|t=14:37:59.990|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=GK26410|b=-1@c=GK85644|ct=CX|t=14:38:00.065|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=GK85644|b=-1@c=KW81076|ct=CX|t=14:38:00.046|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=KW81076|b=-1@c=KW47671|ct=CX|t=14:38:00.101|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=KW47671|b=-1@c=KP66964|ct=CX|t=14:38:00.111|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=KP66964|b=-1@c=GW97627|ct=CX|t=14:38:00.128|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=GW97627|b=-1@c=HZ50378|ct=CX|t=14:38:00.187|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=HZ50378|b=-1@c=KX88173|ct=CX|t=14:38:00.010|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=KX88173|b=-1@7@$";
+        $textArr = array(
+            "jjj@Passing@c=CR43438|ct=CX|t=14:38:00.132|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=CR43438|b=-1@8@$",
+            "jjj@Passing@c=GV59557|ct=CX|t=14:38:00.246|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=GV59557|b=-1@c=KW48567|ct=CX|t=14:38:00.214|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=KW48567|b=-1@c=LH81075|ct=CX|t=14:38:00.049|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=LH81075|b=-1@c=HL59534|ct=CX|t=14:38:00.135|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=HL59534|b=-1@c=FK79732|ct=CX|t=14:38:00.184|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=FK79732|b=-1@c=HG68397|ct=CX|t=14:38:00.073|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=HG68397|b=-1@c=KW60342|ct=CX|t=14:38:00.273|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=KW60342|b=-1@9@$",
+            "jjj@Passing@c=HX78750|ct=CX|t=14:38:00.135|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=HX78750|b=-1@c=KH14107|ct=CX|t=14:38:00.162|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=KH14107|b=-1@10@$",
+            "jjj@Passing@c=FS43924|ct=CX|t=14:38:00.082|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=FS43924|b=-1@",
+            "jjj@Passing@c=FS43924|ct=CX|t=14:38:00.082|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=FS43924|b=-1@c=LF82251|ct=CX|t=14:38:00.187|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=LF82251|b=-1@c=GG77645|ct=CX|t=14:38:00.106|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=GG77645|b=-1@c=FK82108|ct=CX|t=14:38:00.244|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=FK82108|b=-1@c=GN29338|ct=CX|t=14:38:00.313|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=GN29338|b=-1@c=HZ06571|ct=CX|t=14:38:00.176|d=170519|l=1|dv=1|re=0|an=-1|g",
+            "=-1|n=HZ06571|b=-1@c=HG47276|ct=CX|t=14:38:00.405|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=HG47276|b=-1@c=HP46938|ct=CX|t=14:38:00.181|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=HP46938|b=-1@11@$");
+
+        $MessageArr =  array("Text" =>$text3,"PassingMessage"=>"");
+
+
+        $Last = "";
+        foreach($textArr as $Key => $Value)
+        {
+            $MessageArr =  array("Text" =>$Last.$Value,"PassingMessage"=>"");
+            echo "LastText:".$MessageArr["Text"]."<br><br>";
+            do{
+                $MessageArr = $oMylaps->popMylapsPassingMessage($MessageArr['Text']);
+                //print_R($MessageArr);
+                //echo "<br><br>";
+                //die();
+                //sleep(1);
+                echo "PassingMessage:".$MessageArr['PassingMessage']."<br>";
+                //echo "Text:".$MessageArr['Text']."<br><br>";
+            }
+            while($MessageArr['PassingMessage'] != "");
+            $Last = $MessageArr['Text'];
         }
     }
 }

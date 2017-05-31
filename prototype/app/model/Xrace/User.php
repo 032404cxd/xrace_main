@@ -681,7 +681,7 @@ class Xrace_User extends Base_Widget
         //获取需要用到的表名
         $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
         //获得比赛ID
-        $whereUser = isset($params['UserId'])?" UserId = ".$params['UserId']:"";
+        $whereUser = isset($params['RaceUserId'])?" RaceUserId = ".$params['RaceUserId']:"";
         //获得比赛ID
         $whereRaceStage = isset($params['RaceStageId'])?" RaceStageId = ".$params['RaceStageId']:"";
         //获得赛事ID

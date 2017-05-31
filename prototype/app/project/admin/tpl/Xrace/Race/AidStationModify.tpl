@@ -7,12 +7,12 @@
 		</td>
 	</tr>
 <tr class="noborder"><td></td>
-<td><button type="submit" id="aid_station_add_submit">提交</button></td>
+<td><button type="submit" id="aid_station_modify_submit">提交</button></td>
 </tr>
 </table>
 </form>
 <script type="text/javascript">
-$('#aid_station_add_submit').click(function(){
+$('#aid_station_modify_submit').click(function(){
 	var options = {
 		dataType:'json',
 		beforeSubmit:function(formData, jqForm, options) {},

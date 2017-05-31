@@ -880,4 +880,54 @@ class Xrace_Mylaps extends Base_Widget
             return array('return'=>false,'LastUpdateTime'=>$RecordCountSorted['LastUpdateTime']);
         }
     }
+    public function popMylapsPassingMessage($Text)
+    {
+        //发送开始记号
+        $StartFlag = 'jjj@Passing';
+        $PassingHead = '@c=';
+        //如果在头部找到
+        if(is_numeric(stripos($Text,$StartFlag)))
+        {
+            //将开始符号截掉
+            $Text = substr($Text,strlen($StartFlag)+1);
+            //echo $Text;
+            $TempText = $Text;
+        }
+        else
+        {
+           // echo "222";
+            //将头部无用数据截掉
+            $nextStart = stripos($Text,$PassingHead);
+            $TempText = substr($Text,$nextStart+1);
+        }
+        //再次寻找下一个开始符
+        $nextStart = stripos($TempText,$PassingHead);
+        //如果找到
+        if($nextStart>0)
+        {
+            $PassingMessage = substr($TempText,0,$nextStart);
+            //$PassingMessage = substr($PassingMessage,0,stripos($PassingMessage,"@"));
+            return array("Text" =>substr($TempText,$nextStart),"PassingMessage"=>$PassingMessage);
+        }
+        else
+        {
+            if(substr($Text,-1)=="$" || substr($Text,-1)=="@")
+            {
+                //$PassingMessage = substr($Text,0,$nextStart);
+                //echo $TempText."<br>";
+                //echo str
+                //$t = explode("@",$TempText);
+                //print_R($t);
+                //die();
+                $PassingMessage = substr($TempText,0,stripos($TempText,"@"));
+                //$PassingMessage = substr($TempText,0,strlen($t[1])+1);
+
+                return array("Text" =>"","PassingMessage"=>$PassingMessage);
+            }
+            else
+            {
+                return array("Text" =>$Text,"PassingMessage"=>"");
+            }
+        }
+    }
 }
