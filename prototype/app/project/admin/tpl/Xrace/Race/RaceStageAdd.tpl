@@ -6,6 +6,9 @@
 <td>赛事分站名称</td>
 	<td align="left"><input type="text" class="span3" name="RaceStageName"  id="RaceStageName" value=""  /></td>
 </tr>
+<td>赛事举办地</td>
+<td align="left"><input name="Location" type="text" class="span3" id="Location" value=""/></td>
+</tr>
 <td>分站通票价格</td>
 <td align="left"><input name="PriceList" type="text" class="span3" id="PriceList" value="0" /></td>
 </tr>

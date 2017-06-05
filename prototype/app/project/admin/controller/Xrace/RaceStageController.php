@@ -272,7 +272,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','Display','SpecialDiscount','ApplyLimit','CreditRate','CreditStack');
+		$bind=$this->request->from('Location','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','Display','SpecialDiscount','ApplyLimit','CreditRate','CreditStack');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -417,7 +417,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageUpdateAction()
 	{
 		//获取 页面参数
-		$bind = $this->request->from('RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','SpecialDiscount','Display','ApplyLimit','CreditRate','CreditStack');
+		$bind = $this->request->from('Location','RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','SpecialDiscount','Display','ApplyLimit','CreditRate','CreditStack');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
