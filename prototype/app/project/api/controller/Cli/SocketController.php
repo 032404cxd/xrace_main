@@ -11,73 +11,84 @@ class Cli_SocketController extends Base_Controller_Action
 		parent::init();
 		$this->socketPath =  "/www/opt";
 		//$this->oSocketServer = new Connect_SocketServer();
-        $this->oSocketClient = new Xrace_Connect_SocketClient();
+        //$this->oSocketClient = new Xrace_Connect_SocketClient();
         //$this->oSocketQueue = new Config_SocketQueue();
 	}
 	
 	function socketServerAction()
 	{
-		set_time_limit(0);
-			$ipserver = '192.168.8.110';
+        $oMylaps = new Xrace_Mylaps();
+
+		    set_time_limit(0);
+			$ipserver = '139.196.172.182';
 			//$ipserver = '192.168.30.37';
 
 			$SocketPort = 9999;
 			$errno = 1;
 			$timeout = 1;
-			$buff = 1024;	//�����С
+			$buffLength = 1024;
 			echo "Server:".$ipserver.",Port:".$SocketPort."\n";
 			$socket=stream_socket_server('tcp://'.$ipserver.':'.$SocketPort, $errno, $errstr);
 			echo "socket:".$socket."\n";
 			stream_set_blocking($socket,0);
-			//���socket�Ѿ�����,����socket���Ӳ���ȡ��Ϣ
 			while(true)
 			{
 				$conn = @stream_socket_accept($socket,-1);
-				$Buff_to_process = "";
-				while($conn)
-				{		
-					echo "conn:".$conn."\n";
-					$buff = fread($conn,4096);
-					echo "buff:".$buff."\n";
-					$length = strlen($buff);
+				$Buff_to_process = array("Text" =>"","PassingMessage"=>"");
+                $Last = "";
+                if($conn)
+                {
                     fwrite($conn,"ServerName@AckPong@Version2.1@$");
-					if($length === 0)
-					{
-						echo "waiting";
-						sleep(1);
-					    //echo "unset";
-					    //unset($conn);
-						//break;
-					}
-					else
-					{
-						/*
-					    $format="V2Length/vuType/V2Msg";
-						if(!isset($Buff_to_process))
-						{
-							$Buff_to_process = "";
-						}
-						$Buff_to_process .= $buff;
-						do
-						{
-							echo "here";
-						    $unpack_buff =  @unpack($format,$Buff_to_process);
-							$text = substr($Buff_to_process,0,$unpack_buff['Length1']);
-							$unpackArry =  @unpack($format,$text);
-                            echo $unpackArry['uType']."\n";
-                            print_R($unpackArry);
-							$Buff_to_process = substr($Buff_to_process,strlen($text),strlen($Buff_to_process)-strlen($text));
-							echo "last:".strlen($Buff_to_process)."\n";
-							$unpack2_buff = @unpack($format,$Buff_to_process);
-						}
-						while(($unpack2_buff['Length1'] <= strlen($Buff_to_process))&&($unpack2_buff['Length1']>0));
-						*/
-					}
-					
+                }
+                while($conn)
+				{
+                    echo "conn:".$conn."\n";
+                    $buff = fread($conn,$buffLength);
+                    //echo "buff:".$buff."\n";
+                    $length = strlen($buff);
+                    if($length>0)
+                    {
+                        $Buff_to_process =  array("Text" =>$Last.$buff,"PassingMessage"=>"");
+                        //echo "LastText:".$Buff_to_process["Text"]."\n";
+                        do{
+                            $Buff_to_process = $oMylaps->popMylapsPassingMessage($Buff_to_process['Text']);
+                            $MylapsInfoArr  = base_common::parthMylapsArr(base_common::parthStrToArr($Buff_to_process['PassingMessage']));
+                            echo "芯片：".$MylapsInfoArr['c']."过线，时间：".$MylapsInfoArr["d"]." ".$MylapsInfoArr["t"]."\n";
+                            //echo "PassingMessage:".$Buff_to_process['PassingMessage']."\n";
+                            sleep(1);
+                        }
+                        while($Buff_to_process['PassingMessage'] != "");
+                        $Last = $Buff_to_process['Text'];
+                    }
+                    sleep(1);
+
+
 				}
 			}
-
 	}
+    function text()
+    {
+        $MessageArr =  array("Text" =>$text3,"PassingMessage"=>"");
+
+
+        $Last = "";
+        foreach($textArr as $Key => $Value)
+        {
+            $MessageArr =  array("Text" =>$Last.$Value,"PassingMessage"=>"");
+            echo "LastText:".$MessageArr["Text"]."<br><br>";
+            do{
+                $MessageArr = $oMylaps->popMylapsPassingMessage($MessageArr['Text']);
+                //print_R($MessageArr);
+                //echo "<br><br>";
+                //die();
+                //sleep(1);
+                echo "PassingMessage:".$MessageArr['PassingMessage']."<br>";
+                //echo "Text:".$MessageArr['Text']."<br><br>";
+            }
+            while($MessageArr['PassingMessage'] != "");
+            $Last = $MessageArr['Text'];
+        }
+    }
 	function socketServerNewAction()
     {
         set_time_limit(10);
@@ -175,6 +186,8 @@ class Cli_SocketController extends Base_Controller_Action
 						sleep(1);
 			}
     }
+
+
     
 	function writeTxt($filename,$content)
 	{

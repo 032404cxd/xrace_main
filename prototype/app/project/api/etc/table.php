@@ -178,4 +178,12 @@ $table['user_stage_checkin']['num'] = 1;
 $table['UserLogin']['db'] = 'xrace_user';
 $table['UserLogin']['num'] = 1;
 
+#用户验证列表
+$table['UserAuthCode']['db'] = 'xrace_user';
+$table['UserAuthCode']['num'] = 1;
+
+#用户验证日志
+$table['UserAuthCodeLog']['db'] = 'xrace_user';
+$table['UserAuthCodeLog']['num'] = 1;
+
 return $table;

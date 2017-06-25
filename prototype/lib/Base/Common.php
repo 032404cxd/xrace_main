@@ -1217,6 +1217,7 @@ EOF;
     }
     function dayuSMS($params)
     {
+        print_R($params);
         include('Third/dayu/TopSdk.php');
         $t1 = microtime(true);
         $c = new TopClient;
@@ -1229,8 +1230,9 @@ EOF;
         $req->setSmsParam(json_encode($params['smsContent']));
         $req->setRecNum($params['Mobile']);
         $req->setSmsTemplateCode(Base_Common::getSMSCode($params['SMSCode']));
-
         $resp = $c->execute($req);
+        print_R($resp);
+
         $Log = json_encode(array("return"=>$resp,"TimeLag" =>microtime(true)-$t1 ));
 
         return $Log;
@@ -1240,7 +1242,8 @@ EOF;
         $SmsCodeList = array(
         //发送短信验证码
              "SMS_Validate_Code"=>"SMS_5910467",
-            "SMS_Reset_Password"=>"SMS_10385744"
+            "SMS_Reset_Password"=>"SMS_10385744",
+            "ValidateCode"=>"SMS_71010201",
 
         );
         return $SmsCodeList[$CodeName];
@@ -1321,6 +1324,45 @@ EOF;
                 break;
         }
         return $return;
+    }
+    //将字符串解包为数组
+    function parthStrToArr($Str)
+    {
+        $return = array();
+        //以|作为分隔符解开
+        $t = explode("|",$Str);
+        {
+            foreach($t as $key => $value)
+            {
+                //以=作为分割符解开
+                $t2 = explode("=",$value);
+                //如果存在数组前两个
+                if(isset($t2['1']))
+                {
+                    //存入结果数组
+                    $return[$t2['0']] = $t2['1'];
+                }
+            }
+        }
+        if(count($return)>=1)
+        {
+            return $return;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    function parthMylapsArr($Arr)
+    {
+        if(isset($Arr['t']) &&isset($Arr['d']))
+        {
+            $Date = substr($Arr['d'],0,2)."-".substr($Arr['d'],2,2)."-".substr($Arr['d'],4,2);
+            $t = explode(".",$Arr['t']);
+            $DateTime = $Date." ".$t['0'];
+            $Arr['ChipTime'] =  strtotime($DateTime)+$t['1']/1000;
+        }
+        return $Arr;
     }
 
 }

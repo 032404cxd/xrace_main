@@ -43,8 +43,7 @@
     <th align="center" class="rowtip">比赛名称</th>
     <th align="center" class="rowtip">必选/单选</th>
     <th align="center" class="rowtip">个人/团队</th>
-    <th align="center" class="rowtip">报名时间</th>
-    <th align="center" class="rowtip">比赛时间</th>
+    <th align="center" class="rowtip">报名时间/比赛时间</th>
     <th align="center" class="rowtip">比赛进程</th>
     <th align="center" class="rowtip">操作</th>
   </tr>
@@ -58,11 +57,10 @@
       <p>男：{tpl:if($RaceInfo.comment.SexUser.Min.1==0)}不限{tpl:else}{tpl:$RaceInfo.comment.SexUser.Min.1/}{/tpl:if} - {tpl:if($RaceInfo.comment.SexUser.Max.1==0)}不限{tpl:else}{tpl:$RaceInfo.comment.SexUser.Max.1/}人 {/tpl:if}
       <p>女：{tpl:if($RaceInfo.comment.SexUser.Min.2==0)}不限{tpl:else}{tpl:$RaceInfo.comment.SexUser.Min.2/}{/tpl:if} - {tpl:if($RaceInfo.comment.SexUser.Max.2==0)}不限{tpl:else}{tpl:$RaceInfo.comment.SexUser.Max.2/}人 {/tpl:if}
     </th>
-    <th align="center" class="rowtip" width="15%">{tpl:$RaceInfo.ApplyStartTime/}<br>~<br>{tpl:$RaceInfo.ApplyEndTime/}</th>
-    <th align="center" class="rowtip" width="18%">{tpl:$RaceInfo.StartTime/}.{tpl:$RaceInfo.comment.RaceStartMicro func="sprintf('%03d',@@)"/}<br>~<br>{tpl:$RaceInfo.EndTime/}</th>
+    <th align="center" class="rowtip" width="15%">{tpl:$RaceInfo.ApplyStartTime/}<br>~<br>{tpl:$RaceInfo.ApplyEndTime/}<p>{tpl:$RaceInfo.StartTime/}.{tpl:$RaceInfo.comment.RaceStartMicro func="sprintf('%03d',@@)"/}<br>~<br>{tpl:$RaceInfo.EndTime/}</th>
     <th align="center" class="rowtip">{tpl:$RaceInfo.RaceStatus/}</th>
     <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceModify('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceGroupId/}')">修改</a> | <a href="javascript:;" onclick="RaceUserUpload('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceGroupId/}')">导入报名</a>
-     | <a href="{tpl:$this.sign/}&ac=race.detail&RaceId={tpl:$RaceInfo.RaceId/}&RaceGroupId={tpl:$RaceInfo.RaceGroupId/}">计时点</a> | <a href="javascript:;" onclick="RaceUserList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">名单</a> | <a href="javascript:;" onclick="AutoAsignBIB('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">自动分配BIB</a>
+     | <a href="{tpl:$this.sign/}&ac=race.detail&RaceId={tpl:$RaceInfo.RaceId/}&RaceGroupId={tpl:$RaceInfo.RaceGroupId/}">计时点</a> | <a href="{tpl:$this.sign/}&ReturnType=1&ac=race.user.list&RaceId={tpl:$RaceInfo.RaceId/}">名单</a> | <a href="javascript:;" onclick="AutoAsignBIB('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">自动分配BIB</a>
       | <a  href="javascript:;" onclick="RaceResultUpdate('{tpl:$RaceInfo.RaceId/}')">成绩更新</a> | <a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">成绩单</a> {tpl:if($RaceInfo.comment.ResultNeedConfirm==1)}| {tpl:if($RaceInfo.comment.RaceResultConfirm.ConfirmStatus==1)}成绩已发布{tpl:else}<a  href="javascript:;" onclick="RaceResultConfirm('{tpl:$RaceInfo.RaceId/}');">成绩确认发布</a>{/tpl:if}{/tpl:if}
       | <a  href="javascript:;" onclick="RaceDelete('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">删除</a> | <a  href="javascript:;" onclick="RaceCopy('{tpl:$RaceInfo.RaceId/}')">复制</a> | <a href="{tpl:$this.sign/}&ac=race.check.in.submit&RaceId={tpl:$RaceInfo.RaceId/}" target="_blank">检录</a></th>
     </th>

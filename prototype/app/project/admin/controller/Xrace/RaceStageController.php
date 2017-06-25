@@ -2055,7 +2055,10 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
-            //比赛ID
+		    $RaceStatus = strlen(trim($this->request->RaceStatus))?trim($this->request->RaceStatus):"all";
+            //页面返回模式
+		    $ReturnType = intval($this->request->ReturnType);
+		    //比赛ID
             $AutoAsign = intval($this->request->AutoAsign);
 			//比赛ID
 			$RaceId = intval($this->request->RaceId);
@@ -2069,12 +2072,14 @@ class Xrace_RaceStageController extends AbstractController
 			//生成查询条件
 			$params = array('RaceId'=>$RaceInfo['RaceId']);
 			$oUser = new Xrace_UserInfo();
-			//获取选手名单
-			$RaceUserList = $oUser->getRaceUserListByRace($RaceInfo['RaceId'],$RaceGroupId,0,0);
+            $UserApplyStatusList = $oUser->getUserApplyStatusList();
+            //获取选手名单
+			$RaceUserList = $oUser->getRaceUserListByRace($RaceInfo['RaceId'],$RaceGroupId,$RaceStatus,0,0);
 			if($AutoAsign==1)
             {
                 $RaceUserList = $this->oRace->autoAsignBIB($RaceId,$RaceUserList);
             }
+
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceUserList');
 		}
@@ -2558,6 +2563,100 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+    //用户DNF填写页面
+    public function userRaceDnfApplyAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            $manager_name = $this->manager->name;
+            $oUser = new Xrace_UserInfo();
+            //报名记录ID
+            $ApplyId = intval($this->request->ApplyId);
+            //获取报名记录
+            $UserRaceApplyInfo = $oUser->getRaceApplyUserInfo($ApplyId,"RaceId,RaceStageId,RaceGroupId");
+            //页面渲染
+            include $this->tpl('Xrace_Race_RaceUserDNF');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //用户DNF
+    public function userRaceDnfAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            $oUser = new Xrace_UserInfo();
+
+            //报名记录ID
+            $ApplyId = intval($this->request->ApplyId);
+            $Reason = trim($this->request->Reason);
+            //更新数据
+            $res = $oUser->UserRaceDNF($ApplyId, $Reason, $this->manager->id);
+            //返回之前页面
+            $response = $res ? array('errno' => 0) : array('errno' => 9);
+            echo json_encode($response);
+            return true;
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //用户DNS填写页面
+    public function userRaceDnsApplyAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            $manager_name = $this->manager->name;
+            $oUser = new Xrace_UserInfo();
+            //报名记录ID
+            $ApplyId = intval($this->request->ApplyId);
+            //获取报名记录
+            $UserRaceApplyInfo = $oUser->getRaceApplyUserInfo($ApplyId,"RaceId,RaceStageId,RaceGroupId");
+            //页面渲染
+            include $this->tpl('Xrace_Race_RaceUserDNS');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //用户DNS
+    public function userRaceDnsAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            $oUser = new Xrace_UserInfo();
+
+            //报名记录ID
+            $ApplyId = intval($this->request->ApplyId);
+            $Reason = trim($this->request->Reason);
+            //更新数据
+            $res = $oUser->UserRaceDNS($ApplyId, $Reason, $this->manager->id);
+            //返回之前页面
+            $response = $res ? array('errno' => 0) : array('errno' => 9);
+            echo json_encode($response);
+            return true;
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
 		//整场比赛用户退出比赛
 	public function userRaceDeleteByRaceAction()
 	{

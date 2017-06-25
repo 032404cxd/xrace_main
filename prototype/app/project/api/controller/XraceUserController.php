@@ -172,8 +172,10 @@ class XraceUserController extends AbstractController
      */
     public function thirdPartyLoginAction()
     {
+        $LoginData  = '{"openid": "odLjsvvYfXvkm9Rkrd4HAHXeqvA8","nickname": "JiMMy","headimgurl": "http://wx.qlogo.cn/mmopen/s6icJeKAt9X2zFZiafUjibkZhkibib8ickRZMDeoIwpfAeh04htIbSecdkU5uoW0AdAucU1kM4tEnKuw6uW6zeaWBYwLMYj9evlJvy/0","sex": "0","province": "","city": ""}';
+        //$LoginData  = '{"openid": "odLjsvnl2cUkbbbM8EBvZmJOX7Sw","nickname": "鏍嬭緣tim","headimgurl": "http://wx.qlogo.cn/mmopen/fl6pKMZtTyXGYHHVno0td2q2q1K7U1r4Gx1Hib8mL7lVQiaCdux7ZrtAZicmeOu79ZOuhGicDmSUC9LiaqIRwIzQbVIzyvwbXmyn3/0","sex": "1","province": "涓婃捣","city": "娴︿笢鏂板尯"}';
         //身份数据
-        $LoginData = isset($this->request->LoginData) ? trim($this->request->LoginData) : $text;
+        $LoginData = isset($this->request->LoginData) ? trim($this->request->LoginData) : $LoginData;
         //第三方来源
         $LoginSource = isset($this->request->LoginSource) ? trim($this->request->LoginSource) : "WeChat";
         //客户端
@@ -181,7 +183,7 @@ class XraceUserController extends AbstractController
         //身份数据解包
         $LoginData = json_decode($LoginData,true);
         //尝试第三方登录
-        $Login = $this->oUser->ThirdPartyLogin($LoginData,$LoginSource);
+        $Login = $this->oUser->ThirdPartyLoginNew($LoginData,$LoginSource);
         //登录成功
         if(isset($Login['UserId']))
         {
@@ -552,6 +554,215 @@ class XraceUserController extends AbstractController
                     }
                     else
                     {
+                        //生成用户信息
+                        $UserInfo = array('Name'=>$Name,'Sex'=>$Sex,'IdNo'=>$IdNo,'IdType'=>$IdType,'Birthday'=>$Birthday,"ICE"=>json_encode(array("1"=>array('Name'=>$ContactName,'ContactMobile'=>$ContactMobile))));
+                        if($IdType==1)
+                        {
+                            $UserInfo['Birthday'] = substr($IdNo,6,4)."-".substr($IdNo,10,2)."-".substr($IdNo,12,2);
+                            $UserInfo['Sex'] = $Sex==0?$Sex:(intval(substr($IdNo,16,1))%2==0?2:1);
+                        }
+                        //更新用户
+                        $UpdateUser = $this->oUser->updateUser($TokenInfo['UserId'],$UserInfo);
+                        //如果创建成功
+                        if($UpdateUser)
+                        {
+                            if($IdUserInfo['RaceUserId']==0)
+                            {
+                                //根据用户创建比赛用户
+                                $RaceUserId = $this->oUser->createRaceUserByUserInfo($TokenInfo['UserId']);
+                            }
+                            //强制获取用户信息
+                            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"*",0);
+                            //返回用户信息
+                            $result = array("return" => 1,"UserInfo"=>$UserInfo);
+                        }
+                        else
+                        {
+                            //返回错误
+                            $result = array("return" => 0,"comment"=>"更新失败");
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+
+    //更新用户的身份信息（身份证，姓名）
+    public function updateUserIdentityApplyAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"UserId,Mobile",0);
+            //如果手机号码长度大于8
+            if(strlen($UserInfo['Mobile'])>8)
+            {
+                //发短信
+                $return = $this->oUser->userValidateAuthApply($TokenInfo['UserId'],"IdModify","Mobile",$UserInfo['Mobile']);
+                if($return)
+                {
+                    //返回失败，要求绑定手机
+                    $result = array("return" => 1,"NeedMobile"=>1,"comment"=>"短信发送成功");
+                }
+                else
+                {
+                    //返回失败，要求绑定手机
+                    $result = array("return" => 0,"NeedMobile"=>1,"comment"=>"短信发送失败");
+                }
+
+            }
+            else
+            {
+                //返回失败，要求绑定手机
+                $result = array("return" => 0,"NeedMobile"=>1);
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    // 申请更新用户的手机号码
+    public function updateUserMobileApplyAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"UserId,Mobile",0);
+            //如果手机号码长度大于8
+            if(strlen($UserInfo['Mobile'])>8)
+            {
+                //发短信
+                $return = $this->oUser->userValidateAuthApply($TokenInfo['UserId'],"MobileModify","Mobile",$UserInfo['Mobile']);
+                if($return)
+                {
+                    //返回成功
+                    $result = array("return" => 1,"NeedMobile"=>1,"comment"=>"短信发送成功");
+                }
+                else
+                {
+                    //返回失败，要求绑定手机
+                    $result = array("return" => 0,"NeedMobile"=>1,"comment"=>"短信发送失败");
+                }
+
+            }
+            else
+            {
+                //手机号码
+                $Mobile = isset($this->request->Mobile) ? trim($this->request->Mobile) : "";
+                if(strlen($Mobile)>=8)
+                {
+                    //发短信
+                    $return = $this->oUser->userValidateAuthApply($TokenInfo['UserId'],"MobileModify","Mobile",$Mobile);
+                    if($return)
+                    {
+                        //返回成功
+                        $result = array("return" => 1,"NeedMobile"=>1,"comment"=>"短信发送成功");
+                    }
+                    else
+                    {
+                        //返回失败，要求绑定手机
+                        $result = array("return" => 0,"NeedMobile"=>1,"comment"=>"短信发送失败");
+                    }
+                }
+                else
+                {
+                    //返回失败，要求重写手机号码
+                    $result = array("return" => 0,"NeedMobile"=>1,"comment"=>"请输入有效的手机号码");
+                }
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    //更新用户的身份信息（身份证，姓名）
+    public function updateUserIdentityByValidateCodeAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            //验证码
+            $ValidateCode = trim($this->request->ValidateCode);
+            //获取用户信息
+            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"UserId,Mobile",0);
+            //先验证短信
+            $validate = $this->oUser->userValidateAuth($TokenInfo['UserId'],"IdModify",$ValidateCode);
+            //验证成功
+            if($validate['return'])
+            {
+                //证件号码
+                $Birthday = trim($this->request->Birthday);
+                //获取证件类型列表
+                $IdTypeList = $this->oUser->getAuthIdType();
+                //获取证件类型列表
+                $SexList = $this->oUser->getSexList();
+                //用户姓名
+                $Name = trim($this->request->Name);
+                //证件号码
+                $IdNo = trim($this->request->IdNo);
+                //证件类型
+                $IdType = abs(intval($this->request->IdType));
+                //如果不在证件类型范围内，默认为身份证
+                $IdType = isset($IdTypeList[$IdType])?$IdType:1;
+                //证件类型
+                $Sex = abs(intval($this->request->Sex));
+                //如果不在证件类型范围内，默认为身份证
+                $Sex = isset($SexList[$Sex])?$Sex:0;
+                //紧急联系人姓名
+                $ContactName = trim($this->request->ContactName);
+                //证件号码
+                $ContactMobile = trim($this->request->ContactMobile);
+                //如果证件号码长度不足
+                if(strlen($IdNo) <=6)
+                {
+                    //发短信
+                    $this->oUser->userValidateAuthApply($TokenInfo['UserId'],"IdModify","Mobile",$UserInfo['Mobile']);
+                    //返回错误
+                    $result = array("return" => 0,"comment"=>"请输入合法的证件号");
+                }
+                else
+                {
+                    //根据证件号码获取用户信息
+                    $IdUserInfo = $this->oUser->getUserByColumn("IdNo",$IdNo);
+                    //如果已经被占用 且不是该用户本人
+                    if(isset($IdUserInfo['UserId']) && ($IdUserInfo['UserId']!=$TokenInfo['UserId']))
+                    {
+                        $this->oUser->userValidateAuthApply($TokenInfo['UserId'],"IdModify","Mobile",$UserInfo['Mobile']);
+                        //返回错误
+                        $result = array("return" => 0,"comment"=>"证件号码已经被其他用户使用");
+                    }
+                    else
+                    {
+                        //如果姓名长度不足
+                        if(strlen($Name) <=2)
+                        {
+                            $this->oUser->userValidateAuthApply($TokenInfo['UserId'],"IdModify","Mobile",$UserInfo['Mobile']);
+                            //返回错误
+                            $result = array("return" => 0,"comment"=>"请输入合法的姓名");
+                        }
+                        else
+                        {
                             //生成用户信息
                             $UserInfo = array('Name'=>$Name,'Sex'=>$Sex,'IdNo'=>$IdNo,'IdType'=>$IdType,'Birthday'=>$Birthday,"ICE"=>json_encode(array("1"=>array('Name'=>$ContactName,'ContactMobile'=>$ContactMobile))));
                             if($IdType==1)
@@ -576,11 +787,93 @@ class XraceUserController extends AbstractController
                             }
                             else
                             {
+                                $this->oUser->userValidateAuthApply($TokenInfo['UserId'],"IdModify","Mobile",$UserInfo['Mobile']);
                                 //返回错误
                                 $result = array("return" => 0,"comment"=>"更新失败");
                             }
+                        }
                     }
                 }
+            }
+            else
+            {
+                //返回错误
+                $result = array("return" => 0,"comment"=>"验证失败，短信验证码已重发");
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    //更新用户的手机号码
+    public function updateUserMobileByValidateCodeAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            //验证码
+            $ValidateCode = trim($this->request->ValidateCode);
+            //获取用户信息
+            $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"UserId,Mobile",0);
+            //先验证短信
+            $validate = $this->oUser->userValidateAuth($TokenInfo['UserId'],"IdModify",$ValidateCode);
+            //验证成功
+            if($validate['return'])
+            {
+                //如果手机号码长度大于8
+                if(strlen($UserInfo['Mobile'])>8)
+                {
+                    //生成用户信息
+                    $UserInfo = array('Mobile'=>"",'ContactMobile'=>"");
+                    //更新用户
+                    $UpdateUser = $this->oUser->updateUser($TokenInfo['UserId'],$UserInfo);
+                    //如果更新成功
+                    if($UpdateUser)
+                    {
+                        //强制获取用户信息
+                        $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"*",0);
+                        //返回用户信息
+                        $result = array("return" => 1,"UserInfo"=>$UserInfo);
+                    }
+                    else
+                    {
+                        $this->oUser->userValidateAuthApply($TokenInfo['UserId'],"IdModify","Mobile",$UserInfo['Mobile']);
+                        //返回错误
+                        $result = array("return" => 0,"comment"=>"更新失败");
+                    }
+                }
+                else
+                {
+                    //生成用户信息
+                    $UserInfo = array('Mobile'=>$validate['Mobile'],'ContactMobile'=>$validate['Mobile']);
+                    //更新用户
+                    $UpdateUser = $this->oUser->updateUser($TokenInfo['UserId'],$UserInfo);
+                    //如果更新成功
+                    if($UpdateUser)
+                    {
+                        //强制获取用户信息
+                        $UserInfo = $this->oUser->getUserInfo($TokenInfo['UserId'],"*",0);
+                        //返回用户信息
+                        $result = array("return" => 1,"UserInfo"=>$UserInfo);
+                    }
+                    else
+                    {
+                        $this->oUser->userValidateAuthApply($TokenInfo['UserId'],"IdModify","Mobile",$validate['Mobile']);
+                        //返回错误
+                        $result = array("return" => 0,"comment"=>"更新失败");
+                    }
+                }
+            }
+            else
+            {
+                //返回错误
+                $result = array("return" => 0,"comment"=>"更新失败，短信验证码已重发");
             }
         }
         else
@@ -956,4 +1249,26 @@ class XraceUserController extends AbstractController
         }
         echo json_encode($result);
     }
+    public function validateAuthTestAction()
+    {
+        $UserId = "10086";
+        $Action = "IdModify";
+        $AuthType = "Mobile";
+        $AuthKey = "13918180325";
+        $return = $this->oUser->userValidateAuthApply($UserId,$Action,$AuthType,$AuthKey);
+        echo "here".$return;
+
+    }
+
+    public function validateCodeTestAction()
+    {
+        $UserId = "10086";
+        $Action = "IdModify";
+        $AuthType = "Mobile";
+        $AuthKey = "18621758237";
+        $ValidateCode = "543335";
+        $validate = $this->oUser->userValidateAuth($UserId,$Action,$ValidateCode);
+        echo "validate:".$validate."<br>";
+    }
+
 }

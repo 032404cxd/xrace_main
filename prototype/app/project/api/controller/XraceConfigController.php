@@ -981,7 +981,7 @@ class XraceConfigController extends AbstractController
             //检测主键存在,否则值为空
             if (isset($RaceInfo['RaceId'])) {
                 //获取选手和车队名单
-                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,$TeamId, 1);
+                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,"all",$TeamId, 1);
                 if (count($RaceUserList['RaceUserList'])) {
                     //返回车手名单和车队列表
                     $result = array("return" => 1, "RaceUserList" => $RaceUserList['RaceUserList'], "TeamList" => $RaceUserList['TeamList']);
@@ -1193,7 +1193,7 @@ class XraceConfigController extends AbstractController
             {
                 $RaceUserList = $this->oRace->getRaceUserListByFile($RaceId);
                 //获取选手和车队名单
-                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,0, 0);
+                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,"all",0, 0);
                 if (count($RaceUserList['RaceUserList']))
                 {
                     $TeamList = array();
@@ -1380,6 +1380,8 @@ class XraceConfigController extends AbstractController
                 //die();
                 //sleep(1);
                 echo "PassingMessage:".$MessageArr['PassingMessage']."<br>";
+                //print_R(base_common::parthStrToArr($MessageArr['PassingMessage']));
+                print_R(base_common::parthMylapsArr(base_common::parthStrToArr($MessageArr['PassingMessage'])));
                 //echo "Text:".$MessageArr['Text']."<br><br>";
             }
             while($MessageArr['PassingMessage'] != "");

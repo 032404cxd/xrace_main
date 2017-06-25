@@ -17,6 +17,8 @@ class Xrace_UserInfo extends Base_Widget
     protected $table_reset = 'UserResetPassword';
     protected $table_reset_log = 'UserResetPasswordLog';
     protected $table_stage_checkin = 'user_stage_checkin';
+    protected $table_auth = 'UserAuthCode';
+    protected $table_auth_log = 'UserAuthCodeLog';
 
     //登录方式列表
     protected $loginSource = array('WeChat'=>"微信",'Weibo'=>"微博",'Mobile'=>"手机");
@@ -40,6 +42,14 @@ class Xrace_UserInfo extends Base_Widget
     protected $race_user_checkin_status = array('0'=>'全部','1'=>"已检录",'2'=>"未检录");
     //用户签到短信发送状态
     protected $user_checkin_sms_sent_status = array('3'=>"不需发送",'1'=>"待发送",'2'=>"已发送");
+    //选手报名记录状态
+    protected $user_apply_status = array('all'=>"全部",'0'=>"正常",'1'=>"DNS",'2'=>"DNF");
+
+
+
+    //用户需要通过验证码方式的动作列表
+    protected $validate_code_action = array('IdModify'=>"更新证件信息",'MobileModify'=>"更新手机号码");
+
         //获取性别列表
 	public function getSexList()
 	{
@@ -96,6 +106,17 @@ class Xrace_UserInfo extends Base_Widget
     public function getLoginSourceList()
     {
         return $this->loginSource;
+    }
+
+    //获得用户需要通过验证码方式的动作列表
+    public function getValidateCodeActionList()
+    {
+        return $this->validate_code_action;
+    }
+    //获得用户报名记录状态列表
+    public function getUserApplyStatusList()
+    {
+        return $this->user_apply_status;
     }
 
     /**
@@ -317,6 +338,17 @@ class Xrace_UserInfo extends Base_Widget
         {
             //从数据库中获取
             $UserInfo = $this->getUser($UserId, "*");
+            //如果用户信息中的联系方式为空
+            if(strlen(trim($UserInfo['Mobile']))<=8 )
+            {
+                //可以报名
+                $UserInfo['NeedMobile'] = 1;
+            }
+            else
+            {
+                //可以报名
+                $UserInfo['NeedMobile'] = 0;
+            }
             //如果用户信息中包含不少于六位的证件号码 和 不少于两位的姓名
             if(strlen(trim($UserInfo['IdNo']))>=6 && strlen(trim($UserInfo['Name']))>=2)
             {
@@ -898,6 +930,135 @@ class Xrace_UserInfo extends Base_Widget
         }
     }
     /**
+     * 第三方登录
+     * @param array $LoginData 登陆用的数据集
+     * @param string $LoginSource 第三方登录的来源
+     * @return array
+     */
+    public function ThirdPartyLoginNew($LoginData,$LoginSource)
+    {
+        $oMemCache = new Base_Cache_Memcache("xrace");
+        switch ($LoginSource)
+        {
+            case "WeChat":
+                if(isset($LoginData['openid']))
+                {
+                    //获取缓存
+                    $m = $oMemCache->get("ThirdParty_".$LoginSource."_".$LoginData['openid']);
+                    //缓存数据解包
+                    $m = json_decode($m,true);
+                    //如果获取到的数据为0
+                    if(intval($m['UserId'])==0)
+                    {
+                        //根据第三方平台ID查询用户
+                        $UserInfo = $this->getUserByColumn("WeChatId",$LoginData['openid'],"UserId,WeChatInfo,LastLoginTime,LastLoginSource");
+                        //如果查询到
+                        if(isset($UserInfo['UserId']))
+                        {
+                            //微信数据解包
+                            $UserInfo['WeChatInfo'] = json_decode($UserInfo['WeChatInfo'],true);
+                            //用户数据比对
+                            if(array_diff($UserInfo['WeChatInfo'],$LoginData))
+                            {
+                                //echo "UserInfo Cached";
+                            }
+                            else
+                            {
+                                //更新用户数据
+                                $WeChatInfo = $LoginData;
+                                $UserInfoUpdate = array('WeChatInfo' => json_encode($WeChatInfo));
+                                $this->updateUser($UserInfo['UserId'], $UserInfoUpdate);
+                            }
+                            //写缓存
+                            $UserInfoCache = array_merge($LoginData,array("UserId"=>$UserInfo['UserId']));
+                            $oMemCache->set("ThirdParty_".$LoginSource."_".$LoginData['openid'],json_encode($UserInfoCache),86400);
+                            return $UserInfoCache;
+                        }
+                        else
+                        {
+                            //获取当前时间
+                            $Time = date("Y-m-d H:i:s",time());
+                            $this->db->begin();
+                            $UserInfo = array('WeChatId' => $LoginData['openid'],'WeChatInfo' => json_encode($LoginData),'LastLoginSource' => "WeChat",'RegTime'=>$Time,'LastLoginTime'=>$Time);
+                            //创建用户
+                            $UserId = $this->insertUser($UserInfo);
+                            //写入注册记录
+                            $UserRegInfo = array("RegPlatform"=>"WeChat","RegKey"=>$LoginData['openid'],"RegTime"=>$Time,"ValidateCode"=>"","ThirdPartyInfo"=>json_encode($LoginData));
+                            $insertRegLog = $this->insertRegLog($UserRegInfo);
+                            if($UserId)
+                            {
+                                echo "User Created";
+                                $this->db->commit();
+                                return array("UserId"=>$UserId,"UserInfo"=>$this->getUserInfo($UserId), "LoginSource"=>"WeChat");
+                            }
+                            else
+                            {
+                                $this->db->rollBack();
+                                return false;
+                            }
+                        }
+                    }
+                    else//拿到缓存
+                    {
+                        //获取用户信息
+                        $UserInfo = $this->getUserInfo($m['UserId']);
+                        if(isset($UserInfo['UserId']))
+                        {
+                            //微信数据解包
+                            $UserInfo['WeChatInfo'] = json_decode($UserInfo['WeChatInfo'],true);
+                            //用户数据比对
+                            if(!array_diff($UserInfo['WeChatInfo'],$LoginData))
+                            {
+                                //echo "UserInfo Cached";
+                            }
+                            else
+                            {
+                                //更新用户数据
+                                $WeChatInfo = $LoginData;
+                                //待更新微信的数据
+                                $UserInfoUpdate = array('WeChatInfo' => json_encode($WeChatInfo));
+                                //更新微信数据
+                                $this->updateUser($UserInfo['UserId'], $UserInfoUpdate);
+                                //重新获取用户数据
+                                $UserInfo = $this->getUserInfo($UserInfo['UserId'],"*",0);
+                            }
+                            //写缓存
+                            $UserInfoCache = array_merge($LoginData,array("UserId"=>$UserInfo['UserId']));
+                            $oMemCache->set("ThirdParty_".$LoginSource."_".$LoginData['openid'],json_encode($UserInfoCache),86400);
+                            return $UserInfoCache;
+                        }
+                        else
+                        {
+                            //获取当前时间
+                            $Time = date("Y-m-d H:i:s",time());
+                            $this->db->begin();
+                            $UserInfo = array('WeChatId' => $LoginData['openid'],'WeChatInfo' => json_encode($LoginData),'LastLoginSource' => "WeChat",'RegTime'=>$Time,'LastLoginTime'=>$Time);
+                            //创建用户
+                            $UserId = $this->insertUser($UserInfo);
+                            //写入注册记录
+                            $UserRegInfo = array("RegPlatform"=>"WeChat","RegKey"=>$LoginData['openid'],"RegTime"=>$Time,"ValidateCode"=>"","ThirdPartyInfo"=>json_encode($LoginData));
+                            $insertRegLog = $this->insertRegLog($UserRegInfo);
+                            if($UserId)
+                            {
+                                echo "User Created";
+                                $this->db->commit();
+                                return array("UserId"=>$UserId,"UserInfo"=>$this->getUserInfo($UserId), "LoginSource"=>"WeChat");
+                            }
+                            else
+                            {
+                                $this->db->rollBack();
+                                return false;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+        }
+    }
+    /**
      * 第三方登录时绑定手机
      * @param string $Mobile 用户手机号码
      * @param string $RegId 注册ID
@@ -1125,16 +1286,58 @@ class Xrace_UserInfo extends Base_Widget
         $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
         //获得赛事ID
         $whereCheckIn = $params['CheckInStatus']>0 ?" CheckInStatus = '".$params['CheckInStatus']."' ":"";
+        //根据选手报名状态
+        $whereStatus = $params['RaceStatus']!="all" ?" RaceStatus = '".$params['RaceStatus']."' ":"";
         //所有查询条件置入数组
-        $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage,$whereCheckIn,$whereRaceIgnore);
+        $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage,$whereCheckIn,$whereRaceIgnore,$whereStatus);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
         $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by BIB,RaceGroupId,TeamId,ApplyId desc";
         $return = $this->db->getAll($sql);
         return $return;
     }
+    //获取报名记录
+    public function getRaceUserStatusCountList($params,$fields = array('*'))
+    {
+        $fields = array("RaceStatus","UserCount"=>"count(1)");
+        //生成查询列
+        $fields = Base_common::getSqlFields($fields);
+        //获取需要用到的表名
+        $table_to_process = Base_Widget::getDbTable($this->table_race);
+        //获得比赛ID
+        $whereStage = isset($params['RaceStageId'])?" RaceStageId = '".$params['RaceStageId']."' ":"";
+        //获得比赛ID
+        $whereRace = isset($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
+        //排除比赛ID
+        $whereRaceIgnore = isset($params['RaceIdIgnore'])?" RaceId != '".$params['RaceIdIgnore']."' ":"";
+        //获得用户ID
+        $whereRaceUser = (isset($params['RaceUserId']) && $params['RaceUserId']!="0")?" RaceUserId = '".$params['RaceUserId']."' ":"";
+        //获得组别ID
+        $whereGroup = (isset($params['RaceGroupId'])  && $params['RaceGroupId']!=0)?" RaceGroupId = '".$params['RaceGroupId']."' ":"";
+        //获得赛事ID
+        $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
+        //获得赛事ID
+        //$whereCheckIn = $params['CheckInStatus']>0 ?" CheckInStatus = '".$params['CheckInStatus']."' ":"";
+        //所有查询条件置入数组
+        $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage,$whereRaceIgnore);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." group by RaceStatus desc";
+        $return = $this->db->getAll($sql);
+        $UserApplyStatusList = $this->getUserApplyStatusList();
+        foreach($UserApplyStatusList as $Status => $StatusName)
+        {
+            $ReturnArr[$Status] = array("StatusName"=>$StatusName,"UserCount"=>0);
+        }
+        foreach($return as $RaceStatus => $UserCount)
+        {
+            $ReturnArr[$UserCount['RaceStatus']]["UserCount"] += $UserCount['UserCount'];
+            $ReturnArr["all"]["UserCount"] += $UserCount['UserCount'];
+        }
+        return $ReturnArr;
+    }
     //获取某场比赛的报名名单
-    public function getRaceUserListByRace($RaceId,$RaceGroupId,$TeamId=0,$Cache = 1)
+    public function getRaceUserListByRace($RaceId,$RaceGroupId,$RaceStatus="all",$TeamId=0,$Cache = 1)
     {
         $oMemCache = new Base_Cache_Memcache("xrace");
         //如果需要获取缓存
@@ -1163,7 +1366,7 @@ class Xrace_UserInfo extends Base_Widget
         if(isset($NeedDB))
         {
             //生成查询条件
-            $params = array('RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId);
+            $params = array('RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId,'RaceStatus'=>$RaceStatus);
             //获取选手名单
             $UserList = $this->getRaceUserList($params);
             //初始化空的返回值列表
@@ -1254,6 +1457,7 @@ class Xrace_UserInfo extends Base_Widget
                 }
             }
         }
+        $RaceUserList['RaceStatus'] = $this->getRaceUserStatusCountList($params);
         return $RaceUserList;
     }
     public function makeToken($UserId,$IP,$LoginSource)
@@ -1967,6 +2171,311 @@ class Xrace_UserInfo extends Base_Widget
         $BIB = trim($BIB);
         $table_to_process = Base_Widget::getDbTable($this->table_race);
         return $this->db->selectRow($table_to_process, $fields, '`RaceId` = ? and `BIB` = ?', array($RaceId,$BIB));
+    }
+
+    /**
+     * 添加单个用户的验证记录
+     * @param intval $UserId 用户ID
+     * @param string $Action 动作
+     * @return array
+     */
+    public function getValidateAuthInfo($UserId,$Action)
+    {
+        $UserId = intval($UserId);
+        $Action = trim($Action);
+        $table_to_process = Base_Widget::getDbTable($this->table_auth);
+        return $this->db->selectRow($table_to_process, "*", '`UserId` = ? and `Action` = ?', array($UserId,$Action));
+    }
+    /**
+     * 更新单个用户的验证记录
+     * @param intval $UserId 用户ID
+     * @param string $Action 动作
+     * @param array $bind 更新的内容
+     * @return array
+     */
+    public function updateValidateAuthInfo($UserId,$Action,$bind)
+    {
+        $UserId = intval($UserId);
+        $Action = trim($Action);
+        $table_to_process = Base_Widget::getDbTable($this->table_auth);
+        return $this->db->update($table_to_process, $bind, '`UserId` = ? and `Action` = ?', array($UserId,$Action));
+    }
+    /**
+     * 删除单个用户的验证记录
+     * @param string $AuthId 验证记录
+     * @return array
+     */
+    public function deleteValidateAuthInfo($AuthId)
+    {
+        $AuthId = intval($AuthId);
+        $table_to_process = Base_Widget::getDbTable($this->table_auth);
+        return $this->db->delete($table_to_process,'`AuthId` = ?',$AuthId);
+    }
+    /**
+     * 新增单个用户的验证记录
+     * @param intval $UserId 用户ID
+     * @param string $Action 动作
+     * @return array
+     */
+    public function insertValidateAuthInfo($bind)
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_auth);
+        return $this->db->insert($table_to_process, $bind);
+    }
+    /**
+     * 新增单个用户的验证日志
+     * @param array $bind 记录内容
+     * @return array
+     */
+    public function insertValidateAuthLog($bind)
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_auth_log);
+        return $this->db->insert($table_to_process, $bind);
+    }
+
+    /**
+     * 用户申请发送验证码
+     * @param intval $UserId 用户ID
+     * @param string $Action 动作
+     * @param string $AuthType 验证码发送方式
+     * @param string $AuthKey 验证发送方唯一KEY
+     * @return array
+     */
+    public function userValidateAuthApply($UserId,$Action,$AuthType,$AuthKey)
+    {
+        //获取用户当前是否有未完成的验证
+        $AuthInfo = $this->getValidateAuthInfo($UserId,$Action);
+        //获取所有需要验证码的动作列表
+        $ValidateCodeActionList = $this->getValidateCodeActionList();
+        //如果指定动作不在范围内
+        if(!isset($ValidateCodeActionList[$Action]))
+        {
+            //返回错误
+            return false;
+        }
+        //如果找到
+        if(isset($AuthInfo['AuthId']))
+        {
+            //获取当前时间
+            $Time = time();
+            //生成验证码
+            $ValidateCode = sprintf("%06d",rand(1,999999));
+            //待更新数据
+            $bind = array("AuthType"=>$AuthType,"AuthKey"=>$AuthKey,"ApplyTime"=>date("Y-m-d H:i:s",$Time),"ExceedTime"=>date("Y-m-d H:i:s",$Time+1800),"ValidateCode"=>$ValidateCode);
+            //重置状态
+            $reset = $this->updateValidateAuthInfo($UserId,$Action,$bind);
+            //如果更新成功
+            if($reset)
+            {
+                //如果验证方式为手机
+                if($AuthType=="Mobile")
+                {
+                    $params = array(
+                        "smsContent" => array("code"=>$ValidateCode,"action"=>$ValidateCodeActionList[$Action]),
+                        "Mobile"=> $AuthKey,
+                        "SMSCode"=>"ValidateCode"
+                    );
+                    Base_common::dayuSMS($params);
+                }
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            //获取当前时间
+            $Time = time();
+            //生成验证码
+            $ValidateCode = sprintf("%06d",rand(1,999999));
+            //待更新数据
+            $bind = array("UserId"=>$UserId,"Action"=>$Action,"AuthType"=>$AuthType,"AuthKey"=>$AuthKey,"ApplyTime"=>date("Y-m-d H:i:s",$Time),"ExceedTime"=>date("Y-m-d H:i:s",$Time+1800),"ValidateCode"=>$ValidateCode);
+            //重置状态
+            $reset = $this->insertValidateAuthInfo($bind);
+            //如果更新成功
+            if($reset)
+            {
+                //如果验证方式为手机
+                if($AuthType=="Mobile")
+                {
+                    $params = array(
+                        "smsContent" => array("code"=>$ValidateCode,"action"=>$ValidateCodeActionList[$Action]),
+                        "Mobile"=> $AuthKey,
+                        "SMSCode"=>"ValidateCode"
+                    );
+                    Base_common::dayuSMS($params);
+                }
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+    /**
+     * 用户申请发送验证码
+     * @param intval $UserId 用户ID
+     * @param string $Action 动作
+     * @param string $AuthType 验证码发送方式
+     * @param string $AuthKey 验证发送方唯一KEY
+     * @return array
+     */
+    public function userValidateAuth($UserId,$Action,$ValidateCode)
+    {
+        //获取用户当前是否有未完成的验证
+        $AuthInfo = $this->getValidateAuthInfo($UserId,$Action);
+        //如果找到
+        if(isset($AuthInfo['AuthId']))
+        {
+            $this->insertValidateAuthLog(array_merge($AuthInfo,array("UserEntered"=>$ValidateCode,"UserEnteredTime"=>date("Y-m-d H:i:s",time()))));
+            //如果已经超时
+            if(strtotime($AuthInfo['ExceedTime'])<time())
+            {
+                //获取当前时间
+                $Time = time();
+                //生成验证码
+                $ValidateCode = sprintf("%06d",rand(1,999999));
+                //待更新数据
+                $bind = array("AuthType"=>$AuthInfo['AuthType'],"AuthKey"=>$AuthInfo['AuthKey'],"ApplyTime"=>date("Y-m-d H:i:s",$Time),"ExceedTime"=>date("Y-m-d H:i:s",$Time+1800),"ValidateCode"=>$ValidateCode);
+                //重置状态
+                $reset = $this->updateValidateAuthInfo($UserId,$Action,$bind);
+                //如果更新成功
+                if($reset)
+                {
+                    //获取所有需要验证码的动作列表
+                    $ValidateCodeActionList = $this->getValidateCodeActionList();
+                    //如果验证方式为手机
+                    if($AuthInfo['AuthType']=="Mobile")
+                    {
+                        $params = array(
+                            "smsContent" => array("code"=>$ValidateCode,"action"=>$ValidateCodeActionList[$Action]),
+                            "Mobile"=> $AuthInfo['AuthKey'],
+                            "SMSCode"=>"ValidateCode"
+                        );
+                        Base_common::dayuSMS($params);
+                    }
+                    return array("return"=>-1,"Mobile"=>$AuthInfo['AuthKey']);
+                }
+                else
+                {
+                    return array("return"=>0,"Mobile"=>$AuthInfo['AuthKey']);
+                }
+            }
+            else
+            {
+                //如果验证码正确
+                if($ValidateCode == $AuthInfo['ValidateCode'])
+                {
+                    $this->deleteValidateAuthInfo($AuthInfo['AuthId']);
+                    return array("return"=>1,"Mobile"=>$AuthInfo['AuthKey']);
+                }
+                else
+                {
+                    //获取当前时间
+                    $Time = time();
+                    //生成验证码
+                    $ValidateCode = sprintf("%06d",rand(1,999999));
+                    //待更新数据
+                    $bind = array("AuthType"=>$AuthInfo['AuthType'],"AuthKey"=>$AuthInfo['AuthKey'],"ApplyTime"=>date("Y-m-d H:i:s",$Time),"ExceedTime"=>date("Y-m-d H:i:s",$Time+1800),"ValidateCode"=>$ValidateCode);
+                    //重置状态
+                    $reset = $this->updateValidateAuthInfo($UserId,$Action,$bind);
+                    //如果更新成功
+                    if($reset)
+                    {
+                        //获取所有需要验证码的动作列表
+                        $ValidateCodeActionList = $this->getValidateCodeActionList();
+                        //如果验证方式为手机
+                        if($AuthInfo['AuthType']=="Mobile")
+                        {
+                            $params = array(
+                                "smsContent" => array("code"=>$ValidateCode,"action"=>$ValidateCodeActionList[$Action]),
+                                "Mobile"=> $AuthInfo['AuthKey'],
+                                "SMSCode"=>"ValidateCode"
+                            );
+                            Base_common::dayuSMS($params);
+                        }
+                        return array("return"=>-1,"Mobile"=>$AuthInfo['AuthKey']);
+                    }
+                    else
+                    {
+                        return array("return"=>0,"Mobile"=>$AuthInfo['AuthKey']);
+                    }
+                }
+            }
+        }
+        else
+        {
+            return array("return"=>0,"Mobile"=>$AuthInfo['AuthKey']);
+        }
+    }
+    public function UserRaceDNF($ApplyId,$Reason,$manager_id)
+    {
+        //获取报名记录
+        $UserRaceApplyInfo = $this->getRaceApplyUserInfo($ApplyId);
+        //如果找到
+        if($UserRaceApplyInfo['ApplyId'])
+        {
+            //如果已经DNF
+            if($UserRaceApplyInfo['RaceStatus']==2)
+            {
+                return true;
+            }
+            //如果已经DNF
+            elseif($UserRaceApplyInfo['RaceStatus']==1)
+            {
+                return true;
+            }
+            else
+            {
+                //数据解包
+                $comment = json_decode($UserRaceApplyInfo['comment'],true);
+                //记录时间，操作人员和理由
+                $comment['DNF'] = array("Time"=>time(),"Reason"=>$Reason,"manager_id"=>$manager_id);
+                $bind = array("comment"=>json_encode($comment),"RaceStatus"=>2);
+                //更新报名记录
+                return $this->updateRaceUserApply($ApplyId,$bind);
+            }
+        }
+        else
+        {
+            return fasle;
+        }
+    }
+    public function UserRaceDNS($ApplyId,$Reason,$manager_id)
+    {
+        //获取报名记录
+        $UserRaceApplyInfo = $this->getRaceApplyUserInfo($ApplyId);
+        //如果找到
+        if($UserRaceApplyInfo['ApplyId'])
+        {
+            //如果已经DNF
+            if($UserRaceApplyInfo['RaceStatus']==2)
+            {
+                return true;
+            }
+            //如果已经DNF
+            elseif($UserRaceApplyInfo['RaceStatus']==1)
+            {
+                return true;
+            }
+            else
+            {
+                //数据解包
+                $comment = json_decode($UserRaceApplyInfo['comment'],true);
+                //记录时间，操作人员和理由
+                $comment['DNS'] = array("Time"=>time(),"Reason"=>$Reason,"manager_id"=>$manager_id);
+                $bind = array("comment"=>json_encode($comment),"RaceStatus"=>1);
+                //更新报名记录
+                return $this->updateRaceUserApply($ApplyId,$bind);
+            }
+        }
+        else
+        {
+            return fasle;
+        }
     }
 
 }
