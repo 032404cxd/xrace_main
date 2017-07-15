@@ -540,7 +540,7 @@ EOF;
 		{
 			foreach($Params as $key => $value)
 			{
-				if($value)
+				if(strlen($value)>0)
 				{
 					if(!in_array($key,array('ctl','ac')))
 					{

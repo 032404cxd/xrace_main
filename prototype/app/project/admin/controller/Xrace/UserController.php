@@ -101,6 +101,77 @@ class Xrace_UserController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+    //用户列表
+    public function raceUserListAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission(0);
+        if($PermissionCheck['return'])
+        {
+            //获取登录方式列表
+            $LoginSourceList = $this->oUserInfo->getLoginSourceList();
+            //获取性别列表
+            $SexList = $this->oUserInfo->getSexList();
+            //获取实名认证状态列表
+            $AuthStatusList = $this->oUserInfo->getAuthStatus();
+            //获取实名认证证件类型列表
+            $AuthIdTypesList = $this->oUser->getAuthIdType();
+            //页面参数预处理
+            $params['Sex'] = isset($SexList[intval($this->request->Sex)])?intval($this->request->Sex):-1;
+            $params['Name'] = urldecode(trim($this->request->Name))?substr(urldecode(trim($this->request->Name)),0,8):"";
+            $params['NickName'] = urldecode(trim($this->request->NickName))?substr(urldecode(trim($this->request->NickName)),0,8):"";
+            $params['AuthStatus'] = isset($AuthStatusList[$this->request->AuthStatus])?intval($this->request->AuthStatus):-1;
+            //分页参数
+            $params['Page'] = abs(intval($this->request->Page))?abs(intval($this->request->Page)):1;
+            $params['PageSize'] = 20;
+            //获取用户列表时需要获得记录总数
+            $params['getCount'] = 1;
+            //获取用户列表
+            $UserList = $this->oUserInfo->getUserList($params);
+            //导出EXCEL链接
+            $export_var = "<a href =".(Base_Common::getUrl('','xrace/user','user.list.download',$params))."><导出表格></a>";
+            //翻页参数
+            $page_url = Base_Common::getUrl('','xrace/user','index',$params)."&Page=~page~";
+            $page_content =  base_common::multi($UserList['UserCount'], $page_url, $params['Page'], $params['PageSize'], 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');
+            foreach($UserList['UserList'] as $UserId => $UserInfo)
+            {
+                //用户性别
+                $UserList['UserList'][$UserId]['Sex'] = isset($SexList[$UserInfo['Sex']])?$SexList[$UserInfo['Sex']]:"保密";
+                /*
+                //实名认证状态
+                if(isset($AuthStatusList[$UserInfo['AuthStatus']]))
+                {
+                    if($UserInfo['AuthStatus'] == 2 && isset($AuthIdTypesList[intval($UserInfo['IdType'])]))
+                    {
+                        //如果当前已经认证，则同时拼接上认证的证件类型
+                        $UserList['UserList'][$UserId]['AuthStatus'] = $AuthStatusList[$UserInfo['AuthStatus']]."/".$AuthIdTypesList[intval($UserInfo['IdType'])];
+                    }
+                    else
+                    {
+                        $UserList['UserList'][$UserId]['AuthStatus'] = $AuthStatusList[$UserInfo['AuthStatus']];
+                    }
+                }
+                */
+                //实名认证状态
+                //$UserList['UserList'][$UserId]['AuthStatus'] = isset($AuthStatusList[$UserInfo['AuthStatus']])?$AuthStatusList[$UserInfo['AuthStatus']]:"未知";
+                //$UserList['UserList'][$UserId]['AuthStatus'] = ($UserInfo['auth_state'] == 2 && isset($AuthIdTypesList[intval($UserInfo['id_type'])]))?$UserList['UserList'][$UserId]['AuthStatus']."/".$AuthIdTypesList[intval($UserInfo['id_type'])]:$UserList['UserList'][$UserId]['AuthStatus'];
+                //用户生日
+                $UserList['UserList'][$UserId]['Birthday'] = is_null($UserInfo['Birthday'])?"未知":$UserInfo['Birthday'];
+                $UserList['UserList'][$UserId]['LoginSourceName'] = isset($LoginSourceList[$UserInfo['LastLoginSource']])?$LoginSourceList[$UserInfo['LastLoginSource']]:"未知";
+                //用户执照
+                $UserList['UserList'][$UserId]['License'] = "<a href='".Base_Common::getUrl('','xrace/user','license.list',array('UserId'=>$UserId)) ."'>执照</a>";
+                //用户执照
+                $UserList['UserList'][$UserId]['Team'] = "<a href='".Base_Common::getUrl('','xrace/user','user.team.list',array('UserId'=>$UserId)) ."'>队伍</a>";
+            }
+            //模板渲染
+            include $this->tpl('Xrace_User_UserList');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
 	//用户列表下载
 	public function userListDownloadAction()
 	{
@@ -110,13 +181,12 @@ class Xrace_UserController extends AbstractController
 		{
             //获取登录方式列表
             $LoginSourceList = $this->oUserInfo->getLoginSourceList();
-			//获取性别列表
-			$SexList = $this->oUser->getSexList();
+            //获取性别列表
+            $SexList = $this->oUserInfo->getSexList();
             //获取实名认证状态列表
             $AuthStatusList = $this->oUserInfo->getAuthStatus();
             //获取实名认证证件类型列表
             $AuthIdTypesList = $this->oUser->getAuthIdType();
-
 			//页面参数预处理
 			$params['Sex'] = isset($SexList[intval($this->request->Sex)])?intval($this->request->Sex):-1;
 			$params['Name'] = urldecode(trim($this->request->Name))?substr(urldecode(trim($this->request->Name)),0,8):"";
@@ -1224,7 +1294,7 @@ class Xrace_UserController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-    //用户列表
+    //用户积分变更记录
     public function userCreditLogAction()
     {
         //检查权限
@@ -1265,7 +1335,6 @@ class Xrace_UserController extends AbstractController
             //获取用户列表时需要获得记录总数
             $params['getCount'] = 1;
             //获取积分类目列表
-            //获取用户列表
             $CreditLog = $oCredit->getCreditLog($params);
             $page_url = Base_Common::getUrl('','xrace/user','user.credit.log',$params)."&Page=~page~";
             $page_content =  base_common::multi($CreditLog['CreditLogCount'], $page_url, $params['Page'], $params['PageSize'], 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');
@@ -1335,6 +1404,68 @@ class Xrace_UserController extends AbstractController
             }
             //模板渲染
             include $this->tpl('Xrace_User_UserCreditLog');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //用户报名记录汇总
+    public function userRaceListAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("UserRaceList");
+        if($PermissionCheck['return'])
+        {
+            $oAction = new Xrace_Action();
+            $oCredit = new Xrace_Credit();
+            //赛事ID
+            $RaceCatalogId = intval($this->request->RaceCatalogId);
+            //赛事分站ID
+            $RaceStageId = intval($this->request->RaceStageId);
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //比赛分组
+            $RaceGroupId = intval($this->request->RaceGroupId);
+            //获取赛事列表
+            $RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"RaceCatalogId,RaceCatalogName",0);
+            //赛事分站列表
+            $RaceStageArr = $this->oRace->getRaceStageList($RaceCatalogId,"RaceStageId,RaceStageName");
+            //生成参数列表
+            $params = array('RaceCatalogId'=>$RaceCatalogId,'RaceStageId'=>$RaceStageId,'RaceId'=>$RaceId,"RaceGroupId"=>$RaceGroupId,"RaceStatus"=>"all","TeamId"=>0,"Cache"=>0);
+            //分页参数
+            $params['Page'] = abs(intval($this->request->Page))?abs(intval($this->request->Page)):1;
+            $params['PageSize'] = 20;
+            //获取用户列表时需要获得记录总数
+            $params['getCount'] = 1;
+            //获取报名记录列表
+            $RaceUserList = $this->oUserInfo->getRaceUserListByRace($params);
+            //获取用户列表
+            $page_url = Base_Common::getUrl('','xrace/user','user.race.list',$params)."&Page=~page~";
+            $page_content =  base_common::multi($RaceUserList['LogCount'], $page_url, $params['Page'], $params['PageSize'], 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');
+            //初始化空的比赛列表
+            $RaceList = array();
+            //循环积分变更记录
+            foreach($RaceUserList['RaceUserList'] as $Id => $LogInfo)
+            {
+                //如果在积分列表里面没有该记录
+                if(!isset($RaceList[$LogInfo['RaceId']]))
+                {
+                    //重新获取积分信息
+                    $RaceInfo = $this->oRace->getRace($LogInfo['RaceId'],"RaceId,RaceName");
+                    //如果获取到
+                    if(isset($RaceInfo['RaceId']))
+                    {
+                        //保存到积分列表中
+                        $RaceList[$LogInfo['RaceId']] = $RaceInfo;
+                    }
+                }
+                //保存积分名称
+                $RaceUserList['RaceUserList'][$Id]['RaceName'] = isset($RaceList[$LogInfo['RaceId']])?$RaceList[$LogInfo['RaceId']]['RaceName']:"未知";
+            }
+            //模板渲染
+            include $this->tpl('Xrace_User_UserRaceList');
         }
         else
         {

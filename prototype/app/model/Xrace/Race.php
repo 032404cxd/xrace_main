@@ -1334,7 +1334,7 @@ class Xrace_Race extends Base_Widget
 							}
 						}
                         //保存用户列表到本地文件
-                        $this->RaceUserListSave($RaceId,$RaceUserList);
+                        $this->RaceUserListSave($RaceId,array("RaceUserList"=>$RaceUserList));
 					}
 					else
 					{
@@ -1599,6 +1599,42 @@ class Xrace_Race extends Base_Widget
         $oUser = new Xrace_UserInfo();
         //根据证件号获取用户信息
         $RaceUserInfo = $oUser->getRaceUserByColumn("IdNo",$IdNo);
+        //如果已经被占用
+        if(isset($RaceUserInfo['RaceUserId']))
+        {
+            //获取签到信息
+            $UserCheckInInfo = $oUser->getUserCheckInInfo($RaceUserInfo['RaceUserId'], $RaceStageId);
+            //如果已经签到，直接返回成功
+            if ($UserCheckInInfo['CheckinStatus'] == 1)
+            {
+                return $RaceUserInfo['RaceUserId'];
+            }
+            else
+            {
+                //更新
+                $oUser->updateUserCheckInInfo($RaceUserInfo['RaceUserId'], $RaceStageId, array('CheckinStatus' => 1, 'CheckInTime' => date("Y-m-d H:i:s", time())));
+                //复查数据
+                $UserCheckInInfo = $oUser->getUserCheckInInfo($RaceUserInfo['RaceUserId'], $RaceStageId);
+                if ($UserCheckInInfo['CheckinStatus'] == 1)
+                {
+                    return $RaceUserInfo['RaceUserId'];
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public function RaceStageCheckInByRaceUserId($RaceStageId,$RaceUserId)
+    {
+        $oUser = new Xrace_UserInfo();
+        //根据证件号获取用户信息
+        $RaceUserInfo = $oUser->getRaceUser($RaceUserId);
         //如果已经被占用
         if(isset($RaceUserInfo['RaceUserId']))
         {

@@ -12,7 +12,7 @@
 </fieldset>
 <form action="{tpl:$this.sign/}" name="form" id="form" method="post">
     队伍名称:<input type="text" class="span2" name="TeamName" value="{tpl:$params.TeamName/}" />
-    <input type="submit" name="Submit" value="查询" />{tpl:$export_var/}
+    <input type="submit" name="Submit" value="查询" />
 </form>
 <fieldset><legend>队伍列表</legend>
 <table width="99%" align="center" class="table table-bordered table-striped">

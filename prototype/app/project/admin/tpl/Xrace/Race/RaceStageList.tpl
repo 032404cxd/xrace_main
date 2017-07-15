@@ -8,6 +8,9 @@
   function RaceStageModify(mid){
     modifyRaceStageBox = divBox.showBox('{tpl:$this.sign/}&ac=race.stage.modify&RaceStageId=' + mid, {title:'修改赛事分站',width:800,height:600});
   }
+  function RaceStageResultQR(mid){
+      modifyRaceStageBox = divBox.showBox('{tpl:$this.sign/}&ac=race.stage.result.qr&RaceStageId=' + mid, {title:'成绩查询页面',width:430,height:430});
+  }
   function RaceStageDelete(p_id, p_name){
     deleteRaceStageBox= divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.stage.delete&RaceStageId=' + p_id;}});
   }
@@ -58,7 +61,7 @@
     <td align="center" class="rowtip" >{tpl:$RaceStageInfo.SelectedGroupList/}</td>
     <td align="center" class="rowtip" ><a href="javascript:;" onclick="ProductModify('{tpl:$RaceStageInfo.RaceStageId/}');">{tpl:$RaceStageInfo.SelectedProductList/}</a></td>
     <td align="center" class="rowtip" >{tpl:$RaceStageInfo.RaceStageStatus.StageStatusName/}</td>
-    <th align="center" class="rowtip" ><a href="{tpl:$this.sign/}&ac=race.stage.user.check.in.status&RaceStageId={tpl:$RaceStageInfo.RaceStageId/}">签到</a> | <a  href="javascript:;" onclick="RaceStageDelete('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceStageInfo.RaceStageName/}');">删除</a> |  <a href="javascript:;" onclick="RaceStageModify('{tpl:$RaceStageInfo.RaceStageId/}');">修改</a> | <a href="javascript:;" onclick="ProductModify('{tpl:$RaceStageInfo.RaceStageId/}');">产品</a> | <a href="{tpl:$this.sign/}&ac=race.combination.list&RaceStageId={tpl:$RaceStageInfo.RaceStageId/}">套餐组合</a> | <a href="{tpl:$this.sign/}&ac=mylpas.list.download&RaceStageId={tpl:$RaceStageInfo.RaceStageId/}">Mylaps名单</a>| <a href="{tpl:$this.sign/}&ac=aid.station.list&RaceStageId={tpl:$RaceStageInfo.RaceStageId/}">补给点</a></th></tr>
+    <th align="center" class="rowtip" ><a href="{tpl:$this.sign/}&ac=race.stage.user.check.in.status&RaceStageId={tpl:$RaceStageInfo.RaceStageId/}">签到</a> | <a  href="javascript:;" onclick="RaceStageDelete('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceStageInfo.RaceStageName/}');">删除</a> |  <a href="javascript:;" onclick="RaceStageModify('{tpl:$RaceStageInfo.RaceStageId/}');">修改</a> | <a href="javascript:;" onclick="ProductModify('{tpl:$RaceStageInfo.RaceStageId/}');">产品</a> | <a href="{tpl:$this.sign/}&ac=race.combination.list&RaceStageId={tpl:$RaceStageInfo.RaceStageId/}">套餐组合</a> | <a href="{tpl:$this.sign/}&ac=mylpas.list.download&RaceStageId={tpl:$RaceStageInfo.RaceStageId/}">Mylaps名单</a>| <a href="{tpl:$this.sign/}&ac=aid.station.list&RaceStageId={tpl:$RaceStageInfo.RaceStageId/}">补给点</a>| <a href="javascript:;" onclick="RaceStageResultQR('{tpl:$RaceStageInfo.RaceStageId/}');">成绩查询</a></th></tr>
 
   </tr>
   {/tpl:loop}

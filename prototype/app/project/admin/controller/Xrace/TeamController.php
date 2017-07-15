@@ -105,8 +105,6 @@ class Xrace_TeamController extends AbstractController
                 //保存创建者姓名
                 $TeamList['TeamList'][$TeamId]['CreateUserName'] =  isset($CreateUserInfo['Name'])?$CreateUserInfo['Name']:"未知用户";
             }
-            //导出EXCEL链接
-			$export_var = "<a href =".(Base_Common::getUrl('','xrace/team','team.list.download',$params))."><导出表格></a>";
 			//翻页参数
 			$page_url = Base_Common::getUrl('','xrace/team','index',$params)."&Page=~page~";
 			$page_content =  base_common::multi($TeamList['TeamCount'], $page_url, $params['Page'], $params['PageSize'], 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');

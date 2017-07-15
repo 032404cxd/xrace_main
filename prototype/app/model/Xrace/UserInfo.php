@@ -555,7 +555,6 @@ class Xrace_UserInfo extends Base_Widget
     {
         //生成查询列
         $fields = Base_common::getSqlFields(array("UserCount"=>"count(UserId)"));
-
         //获取需要用到的表名
         $table_to_process = Base_Widget::getDbTable($this->table);
         //性别判断
@@ -1275,6 +1274,71 @@ class Xrace_UserInfo extends Base_Widget
         //获得比赛ID
         $whereStage = isset($params['RaceStageId'])?" RaceStageId = '".$params['RaceStageId']."' ":"";
         //获得比赛ID
+        $whereRace = isset($params['RaceId']) && intval($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
+        //排除比赛ID
+        $whereRaceIgnore = isset($params['RaceIdIgnore'])?" RaceId != '".$params['RaceIdIgnore']."' ":"";
+        //获得用户ID
+        $whereRaceUser = (isset($params['RaceUserId']) && $params['RaceUserId']!="0")?" RaceUserId = '".$params['RaceUserId']."' ":"";
+        //获得组别ID
+        $whereGroup = (isset($params['RaceGroupId']) && intval($params['RaceGroupId'])  && $params['RaceGroupId']!=0)?" RaceGroupId = '".$params['RaceGroupId']."' ":"";
+        //获得赛事ID
+        $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
+        //获得赛事ID
+        $whereCheckIn = (isset($params['CheckInStatus']) && $params['CheckInStatus']>0) ?" CheckInStatus = '".$params['CheckInStatus']."' ":"";
+        //根据选手报名状态
+        $whereStatus = (isset($params['RaceStatus']) && $params['RaceStatus']!="all") ?" RaceStatus = '".$params['RaceStatus']."' ":"";
+        //所有查询条件置入数组
+        $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage,$whereCheckIn,$whereRaceIgnore,$whereStatus);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        //分页参数
+        $limit  = isset($params['Page'])&&$params['Page']?" limit ".($params['Page']-1)*$params['PageSize'].",".$params['PageSize']." ":"";
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by ApplyId,BIB,RaceGroupId,TeamId desc".$limit;
+        $return = $this->db->getAll($sql);
+        return $return;
+    }
+    /**
+     * 获取用户数量
+     * @param $fields  所要获取的数据列
+     * @param $params 传入的条件列表
+     * @return integer
+     */
+    public function getUserCheckInCount($params)
+    {
+        //生成查询列
+        $fields = Base_common::getSqlFields(array("UserCount"=>"count(distinct(RaceUserId))"));
+        //获取需要用到的表名
+        $table_to_process = Base_Widget::getDbTable($this->table);
+        //获得比赛ID
+        $whereStage = isset($params['RaceStageId'])?" RaceStageId = '".$params['RaceStageId']."' ":"";
+        //获得比赛ID
+        $whereRace = isset($params['RaceId']) && intval($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
+        //排除比赛ID
+        $whereRaceIgnore = isset($params['RaceIdIgnore'])?" RaceId != '".$params['RaceIdIgnore']."' ":"";
+        //获得用户ID
+        $whereRaceUser = (isset($params['RaceUserId']) && $params['RaceUserId']!="0")?" RaceUserId = '".$params['RaceUserId']."' ":"";
+        //获得组别ID
+        $whereGroup = (isset($params['RaceGroupId']) && intval($params['RaceGroupId'])  && $params['RaceGroupId']!=0)?" RaceGroupId = '".$params['RaceGroupId']."' ":"";
+        //获得赛事ID
+        $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
+        //所有查询条件置入数组
+        $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage,$whereRaceIgnore);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
+        return $this->db->getOne($sql);
+    }
+    //获取报名各状态的名单
+    public function getRaceUserCheckInStatusCountList($params,$fields = array('*'))
+    {
+        $fields = array("CheckInStatus","UserCount"=>"count(distinct(RaceUserId))");
+        //生成查询列
+        $fields = Base_common::getSqlFields($fields);
+        //获取需要用到的表名
+        $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
+        //获得比赛ID
+        $whereStage = isset($params['RaceStageId'])?" RaceStageId = ".$params['RaceStageId']."":"";
+        //获得比赛ID
         $whereRace = isset($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
         //排除比赛ID
         $whereRaceIgnore = isset($params['RaceIdIgnore'])?" RaceId != '".$params['RaceIdIgnore']."' ":"";
@@ -1285,18 +1349,26 @@ class Xrace_UserInfo extends Base_Widget
         //获得赛事ID
         $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
         //获得赛事ID
-        $whereCheckIn = $params['CheckInStatus']>0 ?" CheckInStatus = '".$params['CheckInStatus']."' ":"";
-        //根据选手报名状态
-        $whereStatus = $params['RaceStatus']!="all" ?" RaceStatus = '".$params['RaceStatus']."' ":"";
+        //$whereCheckIn = $params['CheckInStatus']>0 ?" CheckInStatus = '".$params['CheckInStatus']."' ":"";
         //所有查询条件置入数组
-        $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage,$whereCheckIn,$whereRaceIgnore,$whereStatus);
+        $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage,$whereRaceIgnore);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
-        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by BIB,RaceGroupId,TeamId,ApplyId desc";
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." group by CheckInStatus desc";
         $return = $this->db->getAll($sql);
-        return $return;
+        $UserCheckInStatusList = $this->getStageUserCheckInStatus();
+        foreach($UserCheckInStatusList as $Status => $StatusName)
+        {
+            $ReturnArr[$Status] = array("StatusName"=>$StatusName,"UserCount"=>0);
+        }
+        foreach($return as $RaceStatus => $UserCount)
+        {
+            $ReturnArr[$UserCount['CheckInStatus']]["UserCount"] += $UserCount['UserCount'];
+            $ReturnArr[0]["UserCount"] += $UserCount['UserCount'];
+        }
+        return $ReturnArr;
     }
-    //获取报名记录
+    //获取报名各状态的名单
     public function getRaceUserStatusCountList($params,$fields = array('*'))
     {
         $fields = array("RaceStatus","UserCount"=>"count(1)");
@@ -1337,14 +1409,15 @@ class Xrace_UserInfo extends Base_Widget
         return $ReturnArr;
     }
     //获取某场比赛的报名名单
-    public function getRaceUserListByRace($RaceId,$RaceGroupId,$RaceStatus="all",$TeamId=0,$Cache = 1)
+    //public function getRaceUserListByRace($RaceId,$RaceGroupId,$RaceStatus="all",$TeamId=0,$Cache = 1)
+    public function getRaceUserListByRace($params)
     {
         $oMemCache = new Base_Cache_Memcache("xrace");
         //如果需要获取缓存
-        if($Cache == 1)
+        if($params['Cache'] == 1)
         {
             //获取缓存
-            $m = $oMemCache->get("RaceUserList_".$RaceId);
+            $m = $oMemCache->get("RaceUserList_".$params['RaceId']);
             //缓存解开
             $RaceUserList = json_decode($m,true);
             //如果数据为空
@@ -1366,7 +1439,7 @@ class Xrace_UserInfo extends Base_Widget
         if(isset($NeedDB))
         {
             //生成查询条件
-            $params = array('RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId,'RaceStatus'=>$RaceStatus);
+            //$params = array('RaceId'=>$params['RaceId'],'RaceGroupId'=>$params['RaceGroupId'],'RaceStatus'=>$params['RaceStatus']);
             //获取选手名单
             $UserList = $this->getRaceUserList($params);
             //初始化空的返回值列表
@@ -1424,19 +1497,19 @@ class Xrace_UserInfo extends Base_Widget
                 if(count($RaceUserList['RaceUserList']))
                 {
                     //写入缓存
-                    $oMemCache -> set("RaceUserList_".$RaceId,json_encode($RaceUserList),86400);
+                    $oMemCache -> set("RaceUserList_".$params['RaceId'],json_encode($RaceUserList),86400);
                 }
             }
         }
         //如果需要筛选的队伍ID在队伍列表中
-        if(isset($RaceUserList['TeamList'][$TeamId]))
+        if(isset($RaceUserList['TeamList'][$params['TeamId']]))
         {
             //循环名单
             foreach($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
             {
 
                 //如果不是想要的队伍
-                if($ApplyInfo['TeamId'] != $TeamId)
+                if($ApplyInfo['TeamId'] != $params['TeamId'])
                 {
                     //删除数据
                     unset($RaceUserList['RaceUserList'][$ApplyId]);
@@ -1444,7 +1517,7 @@ class Xrace_UserInfo extends Base_Widget
             }
         }
         //如果只要个人报名选手
-        elseif($TeamId == -1)
+        elseif($params['TeamId'] == -1)
         {
             //循环名单
             foreach($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
@@ -1458,6 +1531,7 @@ class Xrace_UserInfo extends Base_Widget
             }
         }
         $RaceUserList['RaceStatus'] = $this->getRaceUserStatusCountList($params);
+        $RaceUserList['LogCount'] = $this->getRaceUserLogCount($params);
         return $RaceUserList;
     }
     public function makeToken($UserId,$IP,$LoginSource)
@@ -2122,8 +2196,10 @@ class Xrace_UserInfo extends Base_Widget
         $whereRaceStage = isset($params['RaceStageId'])?" RaceStageId = ".$params['RaceStageId']:"";
         //获得赛事
         $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = ".$params['RaceCatalogId']:"";
+        //签到状态
+        $whereCheckIn = isset($params['CheckinStatus']) && intval($params['CheckinStatus'])>0?" CheckinStatus = '".$params['CheckinStatus']."'":"";
         //所有查询条件置入数组
-        $whereCondition = array($whereUser,$whereCatalog,$whereRaceStage);
+        $whereCondition = array($whereUser,$whereCatalog,$whereRaceStage,$whereCheckIn);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
         $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by CheckInStatus,RaceCatalogId,RaceStageId,RaceUserId desc";

@@ -151,7 +151,6 @@ class Xrace_Team extends Base_Widget
 
 		//所有查询条件置入数组
 		$whereCondition = array($whereTeamName,$whereCatalog);
-		print_R($whereCondition);
         //生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		//生成条件列

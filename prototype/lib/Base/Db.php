@@ -724,13 +724,17 @@ class Base_Db
 		$table_list = $this->getAll("show tables where Tables_in_$db like '$table'");
 		return count($table_list);
 	}
-    public function getTableRecoudCount($TableName)
+    public function getTableRecoudCount($TableName,$LastId = 0)
     {
         $t = explode(".",$TableName);
         $db = $t[0];
         $table = $t[1];
         $this->query("use $db");
-        $sql = "select count(1) as count,max(UpdateTime) as LastUpdateTime from $TableName";
+        $sql = "select count(1) as count,min(time) as LastTime from $TableName";
+        if($LastId>0)
+        {
+            $sql.= "where Id > $LastId";
+        }
         $recordCount = $this->getRow($sql);
         return $recordCount;
     }

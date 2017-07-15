@@ -31,13 +31,13 @@ class Xrace_Mylaps extends Base_Widget
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
         $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by Id asc".$Limit;
+        echo $sql."<br>";
         $return = $this->db->getAll($sql);
         return array("Record"=>$return,"sql"=>$sql);
     }
 	//根据比赛ID生成该场比赛的MYLAPS计时数据
 	public function genMylapsTimingInfo($RaceId,$Force = 0,$Cache = 0)
 	{
-        $Text = "RaceId:".$RaceId."\n";
         $oUser = new Xrace_UserInfo();
         $oRace = new Xrace_Race();
         $oCredit = new Xrace_Credit();
@@ -49,8 +49,10 @@ class Xrace_Mylaps extends Base_Widget
         $GenStart = microtime(true);
 		//获取比赛信息
 		$RaceInfo = $oRace->getRace($RaceId);
-        if($RaceInfo['ToProcess']==1)
+        //如果是待处理的比赛
+		if($RaceInfo['ToProcess']==1)
         {
+            //更新状态
             $update = $oRace->updateRace($RaceId,array("ToProcess"=>0));
         }
         //解包压缩的数据
@@ -59,14 +61,27 @@ class Xrace_Mylaps extends Base_Widget
         $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
         //从文件载入计时信息
         $UserRaceTimingInfo = $oRace->GetRaceTimingOriginalInfo($RaceId,0);
-        $TimingRecordTable = $this->getTimingRecord($RaceInfo['RouteInfo']['MylapsPrefix'],$UserRaceTimingInfo['LastUpdateRecordCount'],$Force);
-        if($TimingRecordTable['return']!=1)
+        //检查记录变动情况，数量变动或者强制更新，则重建排序后的数据
+        $RecordCheck = $this->checkTimingRecord($RaceInfo['RouteInfo']['MylapsPrefix'],$Force);
+        //如果检查失败
+        if($RecordCheck['return']==false)
         {
-            echo "not rebuild";
+            echo "data error";
             die();
         }
+        if($UserRaceTimingInfo['LastId'] >0)
+        {
+            //检查记录顺序情况
+            $RecordSequenceCheck = $this->checkTimingRecordSqeuence($RaceInfo['RouteInfo']['MylapsPrefix'],$UserRaceTimingInfo['LastId'],$UserRaceTimingInfo['LastTime'],$RecordCheck['rebuild']==1?0:1);
+            //顺序错误导致重建
+            if($RecordSequenceCheck['restart'] == 1)
+            {
+                //重新生成选手的mylaps排名数据
+                $oRace->genRaceLogToText($RaceId);
+            }
+        }
         //如果强制重新更新计时数
-        if($Force==1 || $TimingRecordTable['return'] == 1)
+        if($Force==1)
         {
             //重新生成选手的mylaps排名数据
             $oRace->genRaceLogToText($RaceId);
@@ -114,9 +129,9 @@ class Xrace_Mylaps extends Base_Widget
 		//初始化空的用户列表
 		$UserList = array();
 		//循环报名记录
-		foreach ($RaceUserList as $ApplyId => $ApplyInfo)
+		foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
 		{
-			//如果有配置芯片数据和BIB
+		    //如果有配置芯片数据和BIB
 			if (trim($ApplyInfo['ChipId']) && trim($ApplyInfo['BIB']))
 			{
 				//拼接字符串加入到芯片列表
@@ -130,7 +145,7 @@ class Xrace_Mylaps extends Base_Widget
         //获取文件最后的
         $LastId = $UserRaceTimingInfo['LastId'];
         //单页记录数量
-		$pageSize = 1000;
+		$pageSize = 10;
 		//默认第一次有获取到
 		$Count = $pageSize;
 		//初始化当前芯片（选手）
@@ -138,7 +153,7 @@ class Xrace_Mylaps extends Base_Widget
 		while ($Count == $pageSize)
 		{
 		    //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
-			$params = array('StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),'prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"0");
+			$params = array('StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+0*3600),'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+0*3600),'prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"0");
 			//获取计时数据
 			$TimingList = $this->getTimingData($params);
 			//依次循环计时数据
@@ -147,7 +162,7 @@ class Xrace_Mylaps extends Base_Widget
                 //最后获取到的记录ID
 			    $LastId = $TimingInfo['Id'];
 				//mylaps系统中生成的时间一直比当前时间晚8小时，修正
-				$TimingInfo['ChipTime'] = strtotime($TimingInfo['ChipTime']) - 8 * 3600;
+				$TimingInfo['ChipTime'] = strtotime($TimingInfo['ChipTime']) - 0 * 3600;
 				//调试信息
 				$ChipTime = $TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000;
 				//对于毫秒数据进行四舍五入
@@ -158,6 +173,8 @@ class Xrace_Mylaps extends Base_Widget
 				$ChipTime = $TimingInfo['ChipTime']+$miliSec;
 				//格式化成过线时间
                 $inTime = sprintf("%0.3f", $ChipTime);
+                $inTime = sprintf("%0.3f", $TimingInfo['time']);
+
                 //如果时间在比赛的开始时间和结束时间之内
                 $RaceStartTime = $TimeList[$UserList[$TimingInfo['Chip']]['RaceGroupId']]['RaceStartTime'];
                 $RaceEndTime = $TimeList[$UserList[$TimingInfo['Chip']]['RaceGroupId']]['RaceEndTime'];
@@ -328,7 +345,9 @@ class Xrace_Mylaps extends Base_Widget
                                     $UserRaceInfoList['Total'][$key]['Rank'] = $key+1;
                                 }
                                 $UserRaceInfoList['LastId'] = $TimingInfo['Id'];
-                                $UserRaceInfoList['LastUpdateRecordCount'] = $TimingRecordTable['RecordCount'];
+                                $UserRaceInfoList['LastTime'] = $TimingInfo['time'];
+
+                                //$UserRaceInfoList['LastUpdateRecordCount'] = $TimingRecordTable['RecordCount'];
                                 //保存配置文件
                                 $oRace->TimgingDataSave($RaceInfo['RaceId'],$UserRaceInfoList,$Cache);
                                 echo "getdataCount1:".count($UserRaceInfoList)."<br>";
@@ -482,7 +501,7 @@ class Xrace_Mylaps extends Base_Widget
                                         $UserRaceInfoList['Total'][$key][$key]['Rank'] = $key+1;
                                     }
                                     $UserRaceInfoList['LastId'] = $TimingInfo['Id'];
-                                    $UserRaceInfoList['LastUpdateRecordCount'] = $TimingRecordTable['RecordCount'];
+                                    $UserRaceInfoList['LastTime'] = $TimingInfo['time'];
                                     //保存配置文件
                                     $oRace->TimgingDataSave($RaceInfo['RaceId'],$UserRaceInfoList,$Cache);
                                     echo "getdataCount2:".count($UserRaceInfoList)."<br>";
@@ -681,7 +700,7 @@ class Xrace_Mylaps extends Base_Widget
                                     $UserRaceInfoList['Total'][$key]['Rank'] = $key+1;
                                 }
                                 $UserRaceInfoList['LastId'] = $TimingInfo['Id'];
-                                $UserRaceInfoList['LastUpdateRecordCount'] = $TimingRecordTable['RecordCount'];
+                                $UserRaceInfoList['LastTime'] = $TimingInfo['time'];
                                 //保存配置文件
                                 $oRace->TimgingDataSave($RaceInfo['RaceId'],$UserRaceInfoList,$Cache);
                                 echo "getdataCount3:".count($UserRaceInfoList)."<br>";
@@ -836,9 +855,9 @@ class Xrace_Mylaps extends Base_Widget
 		//写入日志文件
 		Base_Common::appendLog($filePath,$fileName,$Text);
 	}
-	public function getTimingRecord($TableName,$LastUpdateRecordCount,$Force)
+	//检查计时记录的数量是否变动
+	public function checkTimingRecord($TableName,$Force)
     {
-        echo "LastUpdateRecordCount:".$LastUpdateRecordCount."<br>";
         //获取需要用到的表名
         $table_to_process = Base_Widget::getDbTable($this->table);
         $table_to_process = str_replace($this->table,$TableName.$this->table,$table_to_process);
@@ -848,36 +867,100 @@ class Xrace_Mylaps extends Base_Widget
         $RecordCount = $this->db->getTableRecoudCount($table_to_process);
         //排序后的记录数量
         $RecordCountSorted = $this->db->getTableRecoudCount($table_to_copy);
-        //如果排序后记录数量比较少 或 上次处理数据时候的记录数量与当前不一致 或 要求强制更新
-        if(($RecordCount['count'] > $RecordCountSorted['count']) || ($RecordCountSorted['count'] != $LastUpdateRecordCount) || $Force == 1)
+        //如果排序后记录数量不一致  或 要求强制更新
+        if(($RecordCount['count'] != $RecordCountSorted['count']) || ($Force == 1))
         {
-            echo "StartToRebuild";
+            echo "StartToRebuild<br>/n";
             //事务开始
             $this->db->begin();
             //清空数据
             $truncate = $this->db->query("truncate ".$table_to_copy);
             //排序/重建数据
-            $rebuild_sql = "insert into ".$table_to_copy." (chip,chiptime,chiptype,pc,reader,Antenna,MilliSecs,Location,LapRaw) select chip,chiptime,chiptype,pc,reader,Antenna,MilliSecs,Location,LapRaw from ".$table_to_process." order by ChipTime,right(MilliSecs,3)";
+            $rebuild_sql = "insert into ".$table_to_copy." (chip,chiptime,chiptype,pc,reader,Antenna,MilliSecs,Location,LapRaw,time) select chip,chiptime,chiptype,pc,reader,Antenna,MilliSecs,Location,LapRaw,time from ".$table_to_process." order by time";
             $rebuild = $this->db->query($rebuild_sql);
+            //如果都成功
             if($truncate && $rebuild)
             {
                 //返回成功
                 $this->db->commit();
-                $RecordCountSorted = $this->db->getTableRecoudCount($table_to_copy);
-                return array('return'=>true,'RecordCount'=>$RecordCountSorted['count'],'LastUpdateTime'=>$RecordCountSorted['LastUpdateTime']);
+                //重新获取表数据
+                echo "RebuildFinished<br>/n";
+                return array('return'=>true,'rebuild'=>1);
             }
             else
             {
-                echo "fail";
                 //返回失败
                 $this->db->rollBack();
-                return array('return'=>false,'LastUpdateTime'=>$RecordCountSorted['LastUpdateTime']);
+                return array('return'=>false);
             }
         }
         else
         {
             //返回失败
-            return array('return'=>false,'LastUpdateTime'=>$RecordCountSorted['LastUpdateTime']);
+            return array('return'=>true);
+        }
+    }
+    //检查计时记录的顺序是否正确
+    public function checkTimingRecordSqeuence($TableName,$LastId,$LastTime,$rebuild=0)
+    {
+        //获取需要用到的表名
+        $table_to_process = Base_Widget::getDbTable($this->table);
+        $table_to_process = str_replace($this->table,$TableName.$this->table,$table_to_process);
+        //检查需要有可能需要重建的表名（排序后）
+        $table_to_copy = $this->db->copyTable($this->table_sorted,$table_to_process."_sorted");
+        //如果有更新到某条记录
+        if($LastId>0)
+        {
+            //获取之后添加的记录的最小更新时间
+            $CurrentLastRecord = $this->db->getTableRecoudCount($table_to_copy,$LastId);
+        }
+        if($rebuild == 0)
+        {
+            //新记录的最小时间小于已更新记录的最大时间（时间错位）
+            if($CurrentLastRecord['LastTime']<$LastTime)
+            {
+                //返回错误
+                return array('return'=>false,'restart'=>1);
+            }
+            else
+            {
+                //返回成功
+                return array('return'=>true);
+            }
+        }
+        else
+        {
+            //新记录的最小时间小于已更新记录的最大时间（时间错位）
+            if($CurrentLastRecord['LastTime']<$LastTime)
+            {
+                echo "StartToRebuild<br>/n";
+                //事务开始
+                $this->db->begin();
+                //清空数据
+                $truncate = $this->db->query("truncate ".$table_to_copy);
+                //排序/重建数据
+                $rebuild_sql = "insert into ".$table_to_copy." (chip,chiptime,chiptype,pc,reader,Antenna,MilliSecs,Location,LapRaw,time) select chip,chiptime,chiptype,pc,reader,Antenna,MilliSecs,Location,LapRaw,time from ".$table_to_process." order by time";
+                $rebuild = $this->db->query($rebuild_sql);
+                //如果都成功
+                if($truncate && $rebuild)
+                {
+                    //返回成功
+                    $this->db->commit();
+                    echo "RebuildFinished<br>/n";
+                    return array('return'=>true,'rebuild'=>1,'restart'=>1);
+                }
+                else
+                {
+                    //返回失败
+                    $this->db->rollBack();
+                    return array('return'=>false);
+                }
+            }
+            else
+            {
+                //返回失败
+                return array('return'=>true);
+            }
         }
     }
     public function popMylapsPassingMessage($Text)

@@ -981,7 +981,8 @@ class XraceConfigController extends AbstractController
             //检测主键存在,否则值为空
             if (isset($RaceInfo['RaceId'])) {
                 //获取选手和车队名单
-                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,"all",$TeamId, 1);
+                $params = array('RaceId'=>$RaceId,"RaceStatus"=>"all","TeamId"=>$TeamId,"Cache"=>0);
+                $RaceUserList = $this->oUser->getRaceUserListByRace($params);
                 if (count($RaceUserList['RaceUserList'])) {
                     //返回车手名单和车队列表
                     $result = array("return" => 1, "RaceUserList" => $RaceUserList['RaceUserList'], "TeamList" => $RaceUserList['TeamList']);
@@ -1193,7 +1194,8 @@ class XraceConfigController extends AbstractController
             {
                 $RaceUserList = $this->oRace->getRaceUserListByFile($RaceId);
                 //获取选手和车队名单
-                $RaceUserList = $this->oUser->getRaceUserListByRace($RaceId, 0,"all",0, 0);
+                $params = array('RaceId'=>$RaceId,"RaceStatus"=>"all","TeamId"=>0,"Cache"=>0);
+                $RaceUserList = $this->oUser->getRaceUserListByRace($params);
                 if (count($RaceUserList['RaceUserList']))
                 {
                     $TeamList = array();
