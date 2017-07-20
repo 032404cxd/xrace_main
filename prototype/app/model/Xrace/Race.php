@@ -1521,6 +1521,7 @@ class Xrace_Race extends Base_Widget
         {
             $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.user.race.info',array('Force'=>1,'RaceId'=>$RaceId));
         }
+        echo $url;
         $return = Base_Common::do_post($url);
 		return json_decode($return,true);
 	}
@@ -1803,6 +1804,13 @@ class Xrace_Race extends Base_Widget
                     {
                         unset($file['Point'][$p]['UserList'][$key]);
                     }
+                }
+            }
+            foreach($file['Total'] as $key => $value)
+            {
+                if($value['RaceGroupId']!=$RaceGroupId)
+                {
+                    unset($file['Total'][$key]);
                 }
             }
             return $file;

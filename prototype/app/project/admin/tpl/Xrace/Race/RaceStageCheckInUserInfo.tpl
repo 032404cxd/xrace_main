@@ -10,7 +10,7 @@
         <tr class="hover">
             <th align="center" class="rowtip" rowspan="6">选手信息</th>
             <th align="center" class="rowtip">姓名</th>
-            <td align="left">{tpl:if($$RaceUserInfo.RaceUserId>0)}{tpl:$RaceUserInfo.Name/}{tpl:else}无此用户{/tpl:if}</td>
+            <td align="left">{tpl:if($RaceUserInfo.RaceUserId>0)}{tpl:$RaceUserInfo.Name/}{tpl:else}无此用户{/tpl:if}</td>
         </tr>
         <tr class="hover">
             <th align="center" class="rowtip">证件类型</th>
@@ -33,7 +33,7 @@
             <td align="left">{tpl:$RaceUserInfo.Sex/}</td>
         </tr>
 
-        {tpl:if($$RaceUserInfo.RaceUserId>0)}
+        {tpl:if($RaceUserInfo.RaceUserId>0)}
         <tr class="hover">
             <th align="center" colspan="3"><button type="submit" id="check_in_submit">提交</button></th>
         </tr>

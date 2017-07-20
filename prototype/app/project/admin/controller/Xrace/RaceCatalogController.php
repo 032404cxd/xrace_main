@@ -102,6 +102,10 @@ class Xrace_RaceCatalogController extends AbstractController
 			$bind['comment'] = json_encode($bind['comment']);
 			//添加赛事记录
 			$res = $this->oRace->insertRaceCatalog($bind);
+			if($res)
+            {
+                $flag = $this->manager->insertDataPermission($this->data_groups,$res);
+            }
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
 		}
 		echo json_encode($response);

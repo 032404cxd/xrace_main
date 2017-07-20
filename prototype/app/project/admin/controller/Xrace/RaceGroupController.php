@@ -83,8 +83,9 @@ class Xrace_RaceGroupController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceGroupInsert");
 		if($PermissionCheck['return'])
 		{
+            $DataPermissionListWhere = $this->manager->getDataPermissionByGroupWhere();
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0,$DataPermissionListWhere);
 			//模板渲染
 			include $this->tpl('Xrace_Race_RaceGroupAdd');
 		}
@@ -101,9 +102,10 @@ class Xrace_RaceGroupController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceGroupInsert");
 		if($PermissionCheck['return'])
 		{
+            $DataPermissionListWhere = $this->manager->getDataPermissionByGroupWhere();
 			//检查权限
 			$bind=$this->request->from('RaceGroupName','RaceCatalogId');
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0,$DataPermissionListWhere);
 			if(trim($bind['RaceGroupName'])=="")
 			{
 				$response = array('errno' => 1);
@@ -134,10 +136,11 @@ class Xrace_RaceGroupController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceGroupModify");
 		if($PermissionCheck['return'])
 		{
+            $DataPermissionListWhere = $this->manager->getDataPermissionByGroupWhere();
 			//赛事分组ID
 			$RaceGroupId = trim($this->request->RaceGroupId);
 			//赛事列表
-			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0);
+			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0,$DataPermissionListWhere);
 			//赛事分组信息
 			$RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,'*');
 			//数据解包

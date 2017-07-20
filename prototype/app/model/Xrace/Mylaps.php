@@ -153,7 +153,7 @@ class Xrace_Mylaps extends Base_Widget
 		while ($Count == $pageSize)
 		{
 		    //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
-			$params = array('StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+0*3600),'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+0*3600),'prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"0");
+			$params = array('StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),'prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"0");
 			//获取计时数据
 			$TimingList = $this->getTimingData($params);
 			//依次循环计时数据
@@ -162,7 +162,7 @@ class Xrace_Mylaps extends Base_Widget
                 //最后获取到的记录ID
 			    $LastId = $TimingInfo['Id'];
 				//mylaps系统中生成的时间一直比当前时间晚8小时，修正
-				$TimingInfo['ChipTime'] = strtotime($TimingInfo['ChipTime']) - 0 * 3600;
+				$TimingInfo['ChipTime'] = strtotime($TimingInfo['ChipTime']) - 8 * 3600;
 				//调试信息
 				$ChipTime = $TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000;
 				//对于毫秒数据进行四舍五入
@@ -173,7 +173,7 @@ class Xrace_Mylaps extends Base_Widget
 				$ChipTime = $TimingInfo['ChipTime']+$miliSec;
 				//格式化成过线时间
                 $inTime = sprintf("%0.3f", $ChipTime);
-                $inTime = sprintf("%0.3f", $TimingInfo['time']);
+                $inTime = sprintf("%0.3f", $TimingInfo['time'])-8*3600;
 
                 //如果时间在比赛的开始时间和结束时间之内
                 $RaceStartTime = $TimeList[$UserList[$TimingInfo['Chip']]['RaceGroupId']]['RaceStartTime'];
@@ -201,7 +201,8 @@ class Xrace_Mylaps extends Base_Widget
                 }
                 else
                 {
-                    //比赛中数据
+                    //比赛中数据 超时判断
+                    echo $ChipTime."-".$RaceEndTime."\n";
                     if ($ChipTime <= $RaceEndTime)
                     {
                         echo $num."-".$TimingInfo['Location']."-".($ChipTime)."-".date("Y-m-d H:i:s", $TimingInfo['ChipTime']).".".(substr($miliSec,2))."<br>\n";

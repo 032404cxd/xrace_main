@@ -2207,6 +2207,16 @@ class Xrace_UserInfo extends Base_Widget
         return $return;
     }
     /**
+     * 新增单个用户签到记录
+     * @param string $bind 所要更新的数据列
+     * @return array
+     */
+    public function insertUserCheckInInfo($bind)
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_stage_checkin);
+        return $this->db->insert($table_to_process, $bind);
+    }
+    /**
      * 获取单个用户签到记录
      * @param char $UserId 用户ID
      * @param char $RaceStageId 分站ID

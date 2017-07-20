@@ -9,7 +9,7 @@
 		<td align="left"><input name="RaceUserList[1]" type="file" class="span2" id="RaceUserList[1]" /></td>
 
 	</tr>
-	<tr class="hover"><td>格式</td><td align="left">BIB,组别,姓名,性别,证件类型,证件号码,芯片,手机,队伍</td></tr>
+	<tr class="hover"><td>格式</td><td align="left">BIB,组别,姓名,性别,芯片,证件类型,证件号码,手机,队伍</td></tr>
 <tr class="noborder"><td></td>
 <td><button type="submit" id="race_add_submit">提交</button></td>
 </tr>
