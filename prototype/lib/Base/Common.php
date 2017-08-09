@@ -865,6 +865,35 @@ EOF;
 		}
 		return implode(":",$Text).(isset($T[1])?".".substr($T[1],0,4):"");
 	}
+    function parthTime($Time)
+    {
+        $T = explode(".",$Time);
+        if(intval($T[0])>=3600)
+        {
+            $Text['Hour'] = intval($T[0]/3600);
+        }
+        else
+        {
+            //$Text['Hour'] = "00";
+        }
+        if(intval($T[0])>60)
+        {
+            $Text['Minute'] = sprintf("%02d",(intval($T[0])%3600)/60);
+        }
+        else
+        {
+            $Text['Minute'] = "00";
+        }
+        if($T[0]>=10)
+        {
+            $Text['Second'] = sprintf("%02d",intval($T[0])%60);
+        }
+        else
+        {
+            $Text['Second'] = sprintf("%02d",intval($T[0])%60);
+        }
+        return date("Y-m-d H:i:s",$T[0]).".".substr($T[1],0,4);
+    }
 	function cutstr($str,$len,$replace = '...')
 	{
 		$ascLen=strlen($str);
@@ -1217,7 +1246,7 @@ EOF;
     }
     function dayuSMS($params)
     {
-        print_R($params);
+        //print_R($params);
         include('Third/dayu/TopSdk.php');
         $t1 = microtime(true);
         $c = new TopClient;
@@ -1231,7 +1260,7 @@ EOF;
         $req->setRecNum($params['Mobile']);
         $req->setSmsTemplateCode(Base_Common::getSMSCode($params['SMSCode']));
         $resp = $c->execute($req);
-        print_R($resp);
+        //print_R($resp);
 
         $Log = json_encode(array("return"=>$resp,"TimeLag" =>microtime(true)-$t1 ));
 
