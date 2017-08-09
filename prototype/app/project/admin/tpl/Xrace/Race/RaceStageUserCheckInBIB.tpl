@@ -27,8 +27,8 @@
 </script>
 <form action="{tpl:$this.sign/}&ac=user.race.list.update" name="user_race_list_update_form" id="user_race_list_update_form" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
-<input type="hidden" name="RaceUserId" id="RaceUserId" value="{tpl:$UserId/}" />
-    <input type="hidden" name="CheckInType" id="CheckInType" value="{tpl:$CheckInType/}" />
+<input type="hidden" name="RaceUserId" id="RaceUserId" value="{tpl:$RaceUserId/}" />
+<input type="hidden" name="CheckInType" id="CheckInType" value="{tpl:$CheckInType/}" />
 
 
     <table id="container" width="99%" align="center" class="table table-bordered table-striped">
@@ -65,7 +65,10 @@
     <th align="center" class="rowtip"><input type="text" class="span2 chip-txt" name="UserRaceList[{tpl:$Aid/}][ChipId]" id="UserRaceList[{tpl:$UserInfo.UserId/}][ChipId]" value="{tpl:$UserInfo.ChipId/}" /></th>
   </tr>
   {/tpl:loop}
-  <tr class="noborder"><td colspan = 7><button type="submit" id="user_list_update_submit">提交</button></td>
+
+        <tr class="noborder"><td align="center" class="rowtip">补给代码列表<p>以","分割</td><td colspan = 6><textarea name="AidCodeList" id="AidCodeList" class="span5" rows="4">{tpl:$UserCheckInInfo.comment.AidCodeList func="implode(',',@@)"/}</textarea></td>
+        </tr>
+        <tr class="noborder"><td colspan = 7><button type="submit" id="user_list_update_submit">提交</button></td>
   </tr>
   {tpl:else}
   {/tpl:if}

@@ -13,7 +13,7 @@
     deleteTimingPointBox= divBox.confirmBox({content:'是否删除 ' + tname + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=timing.point.delete&RaceId=' + rid +  '&SportsTypeId=' + tid + '&TimingId=' + pid;}});
   }
   function SportsTypeDelete(sid,gid,rid,tid, p_name){
-    deleteSportsTypeBox= divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.sports.type.delete&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&SportsTypeId=' + tid + '&RaceId=' + rid;}});
+    deleteSportsTypeBox= divBox.confirmBox({content:'是否删除分段 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.sports.type.delete&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&SportsTypeId=' + tid + '&RaceId=' + rid;}});
   }
   function CreditAdd(rid,tid,pid){
     TimingPointCreditAddBox = divBox.showBox('{tpl:$this.sign/}&ac=timing.point.credit.add&RaceId=' + rid + '&SportsTypeId=' + tid + '&TimingId=' + pid, {title:'添加积分',width:400,height:450});

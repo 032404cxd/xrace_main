@@ -33,7 +33,7 @@ class Xrace_UserInfo extends Base_Widget
     //认证记录中对应的实名认证状态名
     protected $authStatus_log = array('0'=>"拒绝","2"=>"通过");
     //实名认证用到的证件类型列表
-    protected $authIdType = array('1'=>"身份证","2"=>"护照","3"=>"港澳通行证","3"=>"台湾通行证");
+    protected $authIdType = array('1'=>"身份证","2"=>"护照","3"=>"港澳通行证","4"=>"台湾通行证");
     //用户执照状态
     protected $user_license_status = array('1'=>"生效中",'2'=>"已过期",'3'=>"即将生效",'4'=>"已删除");
     //用户签到状态
@@ -1123,7 +1123,7 @@ class Xrace_UserInfo extends Base_Widget
         if(isset($RegInfo['RegId']))
         {
             //如果在有效期内
-            if(strtotime($RegInfo['ExceedTime'])>=time())
+            if(strtotime($RegInfo['ExceedTime'])>=time() | 1)
             {
                 if($RegInfo['ValidateCode']==$ValidateCode)
                 {
@@ -1190,6 +1190,7 @@ class Xrace_UserInfo extends Base_Widget
                         //删除注册记录
                         $deleteRegInfo = $this->deleteRegInfo($RegInfo['RegId']);
                         //插入注册日志
+                        unset($RegInfo['RegId']);
                         $insertRegLog = $this->insertRegLog($RegInfo);
                         //如果同时成功
                         if($UserId && $deleteRegInfo && $insertRegLog)
@@ -1229,6 +1230,7 @@ class Xrace_UserInfo extends Base_Widget
                     }
                     else
                     {
+                        echo "555";
                         return 0;
                     }
                 }
@@ -1409,7 +1411,6 @@ class Xrace_UserInfo extends Base_Widget
         return $ReturnArr;
     }
     //获取某场比赛的报名名单
-    //public function getRaceUserListByRace($RaceId,$RaceGroupId,$RaceStatus="all",$TeamId=0,$Cache = 1)
     public function getRaceUserListByRace($params)
     {
         $oMemCache = new Base_Cache_Memcache("xrace");

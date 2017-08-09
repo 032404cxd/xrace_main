@@ -12,6 +12,12 @@ class Cli_MylapsController extends Base_Controller_Action{
     
     public function timingAction()
     {
+        $Text = date("Y-m-d H:i:s",time()).":Start To Process\n";
+        $filePath = __APP_ROOT_DIR__."log/Timing/";
+        $fileName = date("Y-m-d",time()).".log";
+        //写入日志文件
+        Base_Common::appendLog($filePath,$fileName,$Text);
+
 		$RaceId = $this->request->RaceId;
         $Force = $this->request->Force;
 		if($RaceId)
@@ -23,6 +29,11 @@ class Cli_MylapsController extends Base_Controller_Action{
 			$RaceList = $this->oRace->getRaceList(array("inRun"=>1,"ToProcess"=>1),"RaceId,ToProcess");
 			foreach($RaceList as $RaceId => $RaceInfo)
 			{
+                $Text = date("Y-m-d H:i:s",time()).":Start To Process RaceId:".$RaceId."\n";
+                $filePath = __APP_ROOT_DIR__."log/Timing/";
+                $fileName = date("Y-m-d",time()).".log";
+                //写入日志文件
+                Base_Common::appendLog($filePath,$fileName,$Text);
 			    $this->oMylaps->genMylapsTimingInfo($RaceId,$RaceInfo['ToProcess'],0);
 			}
 		}

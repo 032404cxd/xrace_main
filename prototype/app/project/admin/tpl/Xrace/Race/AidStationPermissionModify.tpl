@@ -20,7 +20,7 @@
 		<th align="center" class="rowtip">{tpl:$RaceInfo.RaceName/}</th>
 		<th align="center" class="rowtip">
             {tpl:loop $RaceInfo.comment.SelectedRaceGroup $RaceGroupId $RaceGroupInfo}
-            {tpl:$RaceGroupInfo.RaceGroupName/} <input type="checkbox"  name="RaceList[{tpl:$RaceId/}][{tpl:$RaceGroupId/}][Selected]"  {tpl:if($RaceGroupInfo.selected > 0)}checked{/tpl:if} value="1"/>  <p>
+            {tpl:$RaceGroupInfo.RaceGroupName/} <input type="checkbox"  name="RaceList[{tpl:$RaceId/}][{tpl:$RaceGroupId/}][Selected]"  {tpl:if($RaceGroupInfo.selected > 0)}checked{/tpl:if} value="1"/>  领取次数 ： <input type="text" id="RaceList[{tpl:$RaceId/}][{tpl:$RaceGroupId/}][AidCount]" name="RaceList[{tpl:$RaceId/}][{tpl:$RaceGroupId/}][AidCount]"  class="span1" value="{tpl:$RaceGroupInfo.AidCount/}"/>  <p>
 			{/tpl:loop}
 		</th>
 	</tr>

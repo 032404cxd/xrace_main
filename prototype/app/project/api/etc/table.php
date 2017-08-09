@@ -186,4 +186,8 @@ $table['UserAuthCode']['num'] = 1;
 $table['UserAuthCodeLog']['db'] = 'xrace_user';
 $table['UserAuthCodeLog']['num'] = 1;
 
+#搜索关键字
+$table['config_search_keyword']['db'] = 'xrace_config';
+$table['config_search_keyword']['num'] = 1;
+
 return $table;

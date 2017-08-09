@@ -1014,7 +1014,11 @@ class XraceConfigController extends AbstractController
         $RaceGroupId = abs(intval($this->request->RaceGroupId));
         //用户BIB
         $BIB = trim($this->request->BIB);
+        //是否强制获取
         $Force = abs(intval($this->request->Force));
+        //是否获取特定点位信息
+        $Point = intval($this->request->Point)?intval($this->request->Point):0;
+        $returnType = intval($this->request->returnType)?intval($this->request->returnType):0;
         //获取比赛信息
         $RaceInfo = $this->oRace->getRace($RaceId);
         //检测主键存在,否则值为空
@@ -1056,6 +1060,42 @@ class XraceConfigController extends AbstractController
             else
             {
                 $UserRaceInfo = $this->oRace->GetUserRaceTimingInfo($RaceId,$RaceGroupId);
+                if(isset($UserRaceInfo['Point'][$Point]))
+                {
+                    foreach($UserRaceInfo['Point'] as $key => $value)
+                    {
+                        if($key != $Point)
+                        {
+                            unset($UserRaceInfo['Point'][$key]);
+                        }
+                    }
+                    if($returnType == 1)
+                    {
+                        $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'], true);
+                        $UserList = $this->oRace->getRaceUserListByFile($RaceInfo['RaceId']);
+                        foreach($UserRaceInfo['Point'][$Point]['UserList'] as $key => $value)
+                        {
+                            if($RaceInfo['RouteInfo']['RaceTimingResultType']=="net")
+                            {
+                                $StartTime = $value['inTime'];
+                            }
+                            else
+                            {
+                                $StartTime = $value['inTime']-$value['TotalTime'];
+                            }
+                            //print_R($UserList);
+                            foreach($UserList['RaceUserList'] as $key2 => $UserInfo)
+                            {
+                                if($UserInfo['RaceUserId'] == $value['RaceUserId'])
+                                {
+                                    $text = $UserInfo['ChipId'].",".$value['Name'].",".$UserInfo['BIB'].",".$StartTime.",".$UserInfo['TeamName']."<br>";
+                                }
+                            }
+                            echo $text;
+                        }
+                        die();
+                    }
+                }
                 $result = array("return" => isset($UserRaceInfo['RaceInfo']) ? 1 : 0, "UserRaceInfo" => $UserRaceInfo);
             }
         }

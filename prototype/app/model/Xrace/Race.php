@@ -1698,10 +1698,11 @@ class Xrace_Race extends Base_Widget
     //保存比赛的计时信息
     public function TimgingDataSave($RaceId,$TimingData,$Cache = 0)
     {
-        $oMemCache = new Base_Cache_Memcache("xrace");
+        $Cache = 0;
         //如果需要获取缓存
         if($Cache == 1)
         {
+            $oMemCache = new Base_Cache_Memcache("xrace");
             //写入缓存
             $oMemCache -> set("TimingData_".$RaceId,json_encode($TimingData),3600);
         }
@@ -1716,9 +1717,10 @@ class Xrace_Race extends Base_Widget
     //保存用户的比赛计时信息
     public function UserTimgingDataSave($RaceId,$RaceUserId,$TimingData,$Cache = 0)
     {
-        $oMemCache = new Base_Cache_Memcache("xrace");
+        $Cache = 0;
+        //$oMemCache = new Base_Cache_Memcache("xrace");
         //写入缓存
-        $oMemCache -> set("TimingData_".$RaceId."_".$RaceUserId,json_encode($TimingData),3600);
+        //$oMemCache -> set("TimingData_".$RaceId."_".$RaceUserId,json_encode($TimingData),3600);
         if($Cache == 0)
         {
             $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/"."UserList"."/";
@@ -1740,7 +1742,7 @@ class Xrace_Race extends Base_Widget
     {
         $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
         $fileName = "UserList.php";
-        //生成配置文件
+        //载入预生成的配置文件
         return Base_Common::loadConfig($filePath,$fileName);
     }
     //根据用户ID和比赛ID获取用户该场比赛的详情

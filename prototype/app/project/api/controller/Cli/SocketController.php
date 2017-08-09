@@ -66,8 +66,25 @@ class Cli_SocketController extends Base_Controller_Action
 				}
 			}
 	}
-    function text()
+	function textTestAction()
     {
+        $FileName = dirname(dirname(dirname(__FILE__)));
+        $FileName = $FileName.'\html\Socket\test.txt';
+        $handle = fopen($FileName, "r");
+
+        $oMylaps = new Xrace_Mylaps();
+        $text = "jjj@Passing@c=CR43438|ct=CX|t=14:38:00.132|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=CR43438|b=-1@8@$";
+        $text1 = "jjj@Passing@c=HZ06571|ct=CX|t=14:44:02.841|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=HZ06571|b=-1@c=KW48567|ct=CX|t=14:44:02.906|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=KW48567|b=-1@c=KW47671|ct=CX|t=14:44:02.922|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=KW47671|b=-1@c=SF92741|ct=CX|t=14:44:02.934|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=SF92741|b=-1@c=CC39407|ct=CX|t=14:44:02.843|d=170519|l=3|dv=1|re=0|an=-1|g=-1|n=CC39407|b=-1@c=CX79393|ct=CX|t=14:44:02.964|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=CX79393|b=-1@c=KH14107|ct=CX|t=14:44:02.860|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=KH14107|b=-1@c=KP66964|ct=CX|t=14:44:02.974|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=KP66964|b=-1@15@$";
+        $text2 = "L86490|ct=CX|t=14:44:02.831|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=RL86490|b=-1@c=GV59557|ct=CX|t=14:44:02.881|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=GV59557|b=-1@c=HP46938|ct=CX|t=14:44:02.847|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=HP46938|b=-1@14@$";
+        $text3 = "jjj@Passing@c=RN12649|ct=CX|t=14:37:59.979|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=RN12649|b=-1@c=FN59312|ct=CX|t=14:38:00.030|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=FN59312|b=-1@c=RX80579|ct=CX|t=14:37:59.976|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=RX80579|b=-1@c=FK59372|ct=CX|t=14:38:00.010|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=FK59372|b=-1@c=GK26410|ct=CX|t=14:37:59.990|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=GK26410|b=-1@c=GK85644|ct=CX|t=14:38:00.065|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=GK85644|b=-1@c=KW81076|ct=CX|t=14:38:00.046|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=KW81076|b=-1@c=KW47671|ct=CX|t=14:38:00.101|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=KW47671|b=-1@c=KP66964|ct=CX|t=14:38:00.111|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=KP66964|b=-1@c=GW97627|ct=CX|t=14:38:00.128|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=GW97627|b=-1@c=HZ50378|ct=CX|t=14:38:00.187|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=HZ50378|b=-1@c=KX88173|ct=CX|t=14:38:00.010|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=KX88173|b=-1@7@$";
+        $textArr = array(
+            "jjj@Passing@c=KG78429|ct=CX|t=14:38:00.132|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=CR43438|b=-1@8@$",
+            "jjj@Passing@c=GV59557|ct=CX|t=14:38:00.246|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=GV59557|b=-1@c=KW48567|ct=CX|t=14:38:00.214|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=KW48567|b=-1@c=LH81075|ct=CX|t=14:38:00.049|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=LH81075|b=-1@c=HL59534|ct=CX|t=14:38:00.135|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=HL59534|b=-1@c=FK79732|ct=CX|t=14:38:00.184|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=FK79732|b=-1@c=HG68397|ct=CX|t=14:38:00.073|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=HG68397|b=-1@c=KW60342|ct=CX|t=14:38:00.273|d=170519|l=2|dv=1|re=0|an=-1|g=-1|n=KW60342|b=-1@9@$",
+            "jjj@Passing@c=HX78750|ct=CX|t=14:38:00.135|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=HX78750|b=-1@c=KH14107|ct=CX|t=14:38:00.162|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=KH14107|b=-1@10@$",
+            "jjj@Passing@c=FS43924|ct=CX|t=14:38:00.082|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=FS43924|b=-1@",
+            "jjj@Passing@c=FS43924|ct=CX|t=14:38:00.082|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=FS43924|b=-1@c=LF82251|ct=CX|t=14:38:00.187|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=LF82251|b=-1@c=GG77645|ct=CX|t=14:38:00.106|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=GG77645|b=-1@c=FK82108|ct=CX|t=14:38:00.244|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=FK82108|b=-1@c=GN29338|ct=CX|t=14:38:00.313|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=GN29338|b=-1@c=HZ06571|ct=CX|t=14:38:00.176|d=170519|l=1|dv=1|re=0|an=-1|g",
+            "=-1|n=HZ06571|b=-1@c=HG47276|ct=CX|t=14:38:00.405|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=HG47276|b=-1@c=HP46938|ct=CX|t=14:38:00.181|d=170519|l=1|dv=1|re=0|an=-1|g=-1|n=HP46938|b=-1@11@$");
+
         $MessageArr =  array("Text" =>$text3,"PassingMessage"=>"");
 
 
@@ -75,84 +92,43 @@ class Cli_SocketController extends Base_Controller_Action
         foreach($textArr as $Key => $Value)
         {
             $MessageArr =  array("Text" =>$Last.$Value,"PassingMessage"=>"");
-            echo "LastText:".$MessageArr["Text"]."<br><br>";
+            //echo "LastText:".$MessageArr["Text"]."<br><br>";
             do{
                 $MessageArr = $oMylaps->popMylapsPassingMessage($MessageArr['Text']);
                 //print_R($MessageArr);
                 //echo "<br><br>";
                 //die();
                 //sleep(1);
-                echo "PassingMessage:".$MessageArr['PassingMessage']."<br>";
+                //echo "PassingMessage:".$MessageArr['PassingMessage']."<br>";
+                //print_R(base_common::parthStrToArr($MessageArr['PassingMessage']));
+                $PassingInfo = (base_common::parthMylapsArr(base_common::parthStrToArr($MessageArr['PassingMessage'])));
+                $ChipId = $PassingInfo['c'];
+                if(strlen($ChipId)>3)
+                {
+                    //$Text = fread($handle, filesize ($FileName));
+                    //循环到文件结束
+                    while(!feof($handle))
+                    {
+                        //获取每行信息
+                        $content = fgets($handle, 8080);
+                        if(substr($content,0,strlen($ChipId)) == $ChipId)
+                        {
+                            echo $content;
+                            $t = explode(",",$content);
+                            echo Base_Common::parthTimeLag(time()-$t[3])."<br>";
+                        }
+                    }
+                }
+
                 //echo "Text:".$MessageArr['Text']."<br><br>";
             }
             while($MessageArr['PassingMessage'] != "");
             $Last = $MessageArr['Text'];
         }
-    }
-	function socketServerNewAction()
-    {
-        set_time_limit(10);
-        $commonProtocol = getprotobyname("tcp");
-        $socket = socket_create(AF_INET, SOCK_STREAM, $commonProtocol);
-        if ($socket) {
-            $result = socket_bind($socket, '192.168.8.110', 9999);
-            if ($result) {
-                $result = socket_listen($socket, 5);
-                if ($result) {
-                    echo "监听成功";
-                }
-            }
-        }else{
-            echo "监听失败";
-        }
-        do {
-            if (($msgsock = socket_accept($socket))) { /* 发送提示信息给连接上来的用户 */
-                $msg = "==========================================\r\n" .
-                    "Welcome to the PHP Test Server. \r\n\r\n" .
-                    "To quit, type 'quit'. \r\n" .
-                    "To shut down the server type 'shutdown'.\r\n" .
-                    "To get help message type 'help'.\r\n" .
-                    "==========================================\r\n" .
-                    "php>";
-            }
 
-            socket_write($msgsock, $msg, strlen($msg));
 
-            do {
-                $buf = socket_read($msgsock, 2048, PHP_BINARY_READ);
 
-                if (false === $buf) {
-                    echo "socket_read() failed: reason: " . socket_strerror($result) . "\n";
-                    break 2;
-                }
-                if (!$buf = trim($buf)) {
-                    continue;
-                } /* 客户端输入quit命令时候关闭客户端连接 */
-                if ($buf == 'q') {
-                    break;
-                } /* 客户端输入shutdown命令时候服务端和客户端都关闭 */
-                if ($buf == 'shutdown') {
-                    socket_close($msgsock);
-                    break 2;
-                } /* 客户端输入help命令时候输出帮助信息 */
-                if ($buf == 'h') {
-                    $msg = " PHP Server Help Message \r\n\r\n" .
-                        " To quit, type 'quit'. \r\n" .
-                        " To shut down the server type 'shutdown'.\r\n" .
-                        " To get help message type 'help'.\r\n" .
-                        "php> ";
-                    socket_write($msgsock, $msg, strlen($msg));
-                    continue;
-                } /* 客户端输入命令不存在时提示信息 */
-                $talkback = "PHP: unknow command '$buf'.\r\nphp> ";
-                socket_write($msgsock, $talkback, strlen($talkback));
-                echo "$buf\n";
-            } while (true);
-            socket_close($msgsock);
-        }while (true);
-        /* 关闭Socket连接 */
-        socket_close($socket);
-    }
+}
     
     function socketClientAction()
     {

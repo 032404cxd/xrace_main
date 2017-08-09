@@ -17,6 +17,11 @@ $table['user_credit_log_total']['num'] = 1;
 $table['user_credit_log']['db'] = 'xrace_user';
 $table['user_credit_log']['num'] = 1;
 
+#搜索关键字
+$table['config_search_keyword']['db'] = 'xrace_config';
+$table['config_search_keyword']['num'] = 1;
+
+
 #积分类目
 $table['config_credit']['db'] = 'xrace_config';
 $table['config_credit']['num'] = 1;
@@ -172,6 +177,14 @@ $table['UserReg']['num'] = 1;
 #补给点
 $table['config_aid_station']['db'] = 'xrace_config';
 $table['config_aid_station']['num'] = 1;
+
+#补给代码
+$table['config_aid_code']['db'] = 'xrace_config';
+$table['config_aid_code']['num'] = 1;
+
+#补给代码分类
+$table['config_aid_code_type']['db'] = 'xrace_config';
+$table['config_aid_code_type']['num'] = 1;
 
 
 return $table;
