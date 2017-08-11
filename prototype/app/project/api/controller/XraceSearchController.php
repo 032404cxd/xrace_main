@@ -9,6 +9,8 @@ class XraceSearchController extends AbstractController
      *对象声明
      */
     protected $oSearch;
+    protected $oRace;
+
 
     /**
      * 初始化
@@ -19,6 +21,8 @@ class XraceSearchController extends AbstractController
     {
         parent::init();
         $this->oSearch = new Xrace_Search();
+        $this->oRace = new Xrace_Race();
+
     }
 
     /**
@@ -67,5 +71,22 @@ class XraceSearchController extends AbstractController
                 }
             }
         }
+        //初始化空的赛事列表
+        $RaceCatalogList = array();
+        foreach($SearchResultArr["RaceStageList"] as $key => $value)
+        {
+            //获得分站信息
+            $SearchResultArr["RaceStageList"][$key] = $this->oRace->getRaceStage($key,"RaceStageId,RaceCatalogId,RaceStageName");
+            //如果未获取过
+            if(!isset($RaceCatalogList[$SearchResultArr["RaceStageList"][$key]['RaceCatalogId']]))
+            {
+                $RaceCatalogList[$SearchResultArr["RaceStageList"][$key]['RaceCatalogId']] = $this->oRace->getRaceCatalog($SearchResultArr["RaceStageList"][$key]['RaceCatalogId'],"RaceCatalogId,RaceCatalogName");
+            }
+            $SearchResultArr["RaceStageList"][$key]['RaceCatalogName'] = $RaceCatalogList[$SearchResultArr["RaceStageList"][$key]['RaceCatalogId']]['RaceCatalogName'];
+
+        }
+        $result = array("return"=>1,"SearchResultArr"=>$SearchResultArr);
+        echo json_encode($result);
+
     }
 }

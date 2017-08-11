@@ -723,7 +723,20 @@ class XraceTeamController extends AbstractController
             $UserMemberList = $this->oTeam->getUserMemberList($UserInfo['RaceUserId']);
             foreach($UserMemberList as $RaceUserId => $MemberInfo)
             {
+                //获取关联比赛选手信息
                 $UserMemberList[$RaceUserId]['MemberInfo'] = $this->oUser->getRaceUser($RaceUserId);
+                //根据比赛用户ID关联获取用户信息
+                $UserInfo = $this->oUser->getUserByColumn("RaceUserId", $RaceUserId,"UserId,WeChatId,WeChatInfo");
+                //如果获取到
+                if(isset($UserInfo['UserId']));
+                {
+                    //如果对应微信openId长度大于10
+                    if(strlen($UserInfo['WeChatId'])>10)
+                    {
+                        $UserMemberList[$RaceUserId]['MemberInfo']['WeChatInfo'] = json_decode($UserInfo['WeChatInfo'],true);
+                    }
+                }
+
             }
             /*
             //如果本人不在列表中
