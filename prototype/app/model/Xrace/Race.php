@@ -1899,6 +1899,7 @@ class Xrace_Race extends Base_Widget
             return false;
         }
     }
+    //自动分配BIB
     public function autoAsignBIB($RaceId,$RaceUserList)
     {
         $oUser = new Xrace_UserInfo();

@@ -3,30 +3,14 @@
 <input type="hidden" name="AidStationId" id="AidStationId" value="{tpl:$AidStationInfo.AidStationId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped">
 
-    {tpl:if($RaceStageInfo.comment.RaceStructure!="race")}
-    {tpl:loop $RaceList $RaceGroupId $RaceGroupInfo}
+    {tpl:loop $AidCodeTypeList $AidCodeTypeId $AidCodeTypeInfo}
 	<tr>
-		<th align="center" class="rowtip">{tpl:$RaceGroupInfo.RaceGroupInfo.RaceGroupName/}</th>
+		<th align="center" class="rowtip">{tpl:$AidCodeTypeInfo.AidCodeTypeName/}</th>
 		<th align="center" class="rowtip">
-            {tpl:loop $RaceGroupInfo.RaceList $RaceId $RaceInfo}
-            {tpl:$RaceInfo.RaceName/} <input type="checkbox"  name="RaceList[{tpl:$RaceId/}][{tpl:$RaceGroupId/}][Selected]"  {tpl:if($RaceInfo.selected > 0)}checked{/tpl:if} value="1"/> <p>
-                {/tpl:loop}
-		</th>
-	</tr>
-    {/tpl:loop}
-    {tpl:else}
-    {tpl:loop $RaceList $RaceId $RaceInfo}
-	<tr>
-		<th align="center" class="rowtip">{tpl:$RaceInfo.RaceName/}</th>
-		<th align="center" class="rowtip">
-            {tpl:loop $RaceInfo.comment.SelectedRaceGroup $RaceGroupId $RaceGroupInfo}
-            {tpl:$RaceGroupInfo.RaceGroupName/} <input type="checkbox"  name="RaceList[{tpl:$RaceId/}][{tpl:$RaceGroupId/}][Selected]"  {tpl:if($RaceGroupInfo.selected > 0)}checked{/tpl:if} value="1"/>  领取次数 ： <input type="text" id="RaceList[{tpl:$RaceId/}][{tpl:$RaceGroupId/}][AidCount]" name="RaceList[{tpl:$RaceId/}][{tpl:$RaceGroupId/}][AidCount]"  class="span1" value="{tpl:$RaceGroupInfo.AidCount/}"/>  <p>
-			{/tpl:loop}
+ 		<input type="checkbox"  name="AidCodeTypeList[{tpl:$AidCodeTypeId/}][Selected]"  {tpl:if($AidCodeTypeInfo.selected > 0)}checked{/tpl:if} value="1"/>领取次数 ： <input type="text" id="AidCodeTypeList[{tpl:$AidCodeTypeId/}][AidCount]" name="AidCodeTypeList[{tpl:$AidCodeTypeId/}][AidCount]"  class="span1" value="{tpl:$AidCodeTypeInfo.AidCount/}"/>
 		</th>
 	</tr>
 	{/tpl:loop}
-    {/tpl:if}
-
 	<tr class="noborder"><td></td>
 <td><button type="submit" id="aid_station_permission_submit">提交</button></td>
 </tr>

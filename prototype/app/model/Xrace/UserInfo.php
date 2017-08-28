@@ -49,6 +49,8 @@ class Xrace_UserInfo extends Base_Widget
 
     //用户需要通过验证码方式的动作列表
     protected $validate_code_action = array('IdModify'=>"更新证件信息",'MobileModify'=>"更新手机号码");
+    //芯片归还状态
+    protected $chip_return_status = array('all'=>"全部",'0'=>"未归还",'1'=>"已归还");
 
         //获取性别列表
 	public function getSexList()
@@ -117,6 +119,11 @@ class Xrace_UserInfo extends Base_Widget
     public function getUserApplyStatusList()
     {
         return $this->user_apply_status;
+    }
+    //获得芯片归还状态列表
+    public function getChipReturnStatusList()
+    {
+        return $this->chip_return_status;
     }
 
     /**
@@ -1230,7 +1237,6 @@ class Xrace_UserInfo extends Base_Widget
                     }
                     else
                     {
-                        echo "555";
                         return 0;
                     }
                 }
@@ -1289,8 +1295,14 @@ class Xrace_UserInfo extends Base_Widget
         $whereCheckIn = (isset($params['CheckInStatus']) && $params['CheckInStatus']>0) ?" CheckInStatus = '".$params['CheckInStatus']."' ":"";
         //根据选手报名状态
         $whereStatus = (isset($params['RaceStatus']) && $params['RaceStatus']!="all") ?" RaceStatus = '".$params['RaceStatus']."' ":"";
+        //根据芯片归还状态
+        $whereChipReturned = (isset($params['ChipReturned']) && $params['ChipReturned']!="all") ?" RaceStatus = '".$params['ChipReturned']."' ":"";
+        //是否已经发放芯片
+        $whereChip = $params['Chip']==1 ?" ChipId != '' ":"";
+        //芯片ID
+        $whereChipId = isset($params['ChipId']) ?" ChipId = '".$params['ChipId']."' ":"";
         //所有查询条件置入数组
-        $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage,$whereCheckIn,$whereRaceIgnore,$whereStatus);
+        $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage,$whereCheckIn,$whereRaceIgnore,$whereStatus,$whereChipReturned,$whereChip,$whereChipId);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
         //分页参数
@@ -1439,8 +1451,6 @@ class Xrace_UserInfo extends Base_Widget
         }
         if(isset($NeedDB))
         {
-            //生成查询条件
-            //$params = array('RaceId'=>$params['RaceId'],'RaceGroupId'=>$params['RaceGroupId'],'RaceStatus'=>$params['RaceStatus']);
             //获取选手名单
             $UserList = $this->getRaceUserList($params);
             //初始化空的返回值列表
@@ -2563,6 +2573,162 @@ class Xrace_UserInfo extends Base_Widget
         {
             return fasle;
         }
+    }
+    //芯片归还
+    public function ChipReturn($ApplyId)
+    {
+        //获取报名记录
+        $ApplyInfo = $this->getRaceApplyUserInfo($ApplyId);
+        //如果记录找到
+        if(isset($ApplyInfo['ApplyId']))
+        {
+            //数据解包
+            $ApplyInfo['comment'] = json_decode($ApplyInfo['comment'],true);
+            //如果已经归还
+            if($ApplyInfo['ChipReturned']==1)
+            {
+                //如果归还时间有效
+                if(isset($ApplyInfo['comment']['ChipReturnTime']) && isset($ApplyInfo['comment']['ChipReturnTime'])>0)
+                {
+
+                }
+                else
+                {
+                    //保存当前时间
+                    $ApplyInfo['comment']['ChipReturnTime'] = time();
+                    //数据解包
+                    $ApplyInfo['comment'] = json_encode($ApplyInfo['comment']);
+                    //更新数据
+                    $this->updateRaceUserApply($ApplyId,$ApplyInfo);
+                }
+                return true;
+            }
+            else
+            {
+                //保存归还状态
+                $ApplyInfo['ChipReturned'] = 1;
+                //保存当前时间
+                $ApplyInfo['comment']['ChipReturnTime'] = time();
+                //数据解包
+                $ApplyInfo['comment'] = json_encode($ApplyInfo['comment']);
+                //更新数据
+                return $this->updateRaceUserApply($ApplyId,$ApplyInfo);
+            }
+        }
+    }
+    //获取单个分站的芯片归还状态
+    public function getChipReturnStatus($RaceStageId,$ReturnStatus,$Page,$PageSize)
+    {
+        $params = array("RaceStageId"=>$RaceStageId);
+        //获取总计芯片发放数量
+        $TotalChipCount = $this->getChipCount($params,array("Count(distinct(ChipId)) as ChipCount"));
+        //获取芯片归还状态汇总
+        $ChipReturnStatusCount = $this->getChipReturnStatusCount($params,array("ChipCount"=>"Count(distinct(ChipId))","ChipReturned"));
+        //获取状态列表
+        $ChipReutrnStatusList = $this->getChipReturnStatusList();
+        //初始化空的返回值列表
+        $return = array("StatusList"=>array(),"ChipList"=>array());
+        foreach($ChipReutrnStatusList as $key => $value)
+        {
+            $return["StatusList"][$key] = array("StatusName"=>$value,"ChipCount"=>0);
+        }
+        //依次填入数据
+        foreach($ChipReturnStatusCount as $key => $value)
+        {
+            $return["StatusList"][$value['ChipReturned']]['ChipCount'] = $value['ChipCount'];
+        }
+        $return["StatusList"]['all']['ChipCount'] = $TotalChipCount;
+        //获取报名记录
+        $UserRaceApplyList = $this->getChipList(array("RaceStageId"=>$RaceStageId,"ChipReturned"=>$ReturnStatus,"Chip"=>1,"Page"=>$Page,"PageSize"=>$PageSize));
+        //循环报名记录
+        foreach($UserRaceApplyList as $key => $value)
+        {
+            $return["ChipList"][$value['ChipReturned']][$value['ChipId']][$value['ApplyId']] = $value;
+        }
+        ksort($return["ChipList"]);
+        return $return;
+    }
+    //获取报名记录
+    public function getChipReturnStatusCount($params,$fields = array('*'))
+    {
+        //生成查询列
+        $fields = Base_common::getSqlFields($fields);
+        //获取需要用到的表名
+        $table_to_process = Base_Widget::getDbTable($this->table_race);
+        //获得比赛ID
+        $whereStage = isset($params['RaceStageId'])?" RaceStageId = '".$params['RaceStageId']."' ":"";
+        //获得比赛ID
+        $whereRace = isset($params['RaceId']) && intval($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
+        //是否已经发放芯片
+        $whereChip = " ChipId != '' ";
+        //所有查询条件置入数组
+        $whereCondition = array($whereRace,$whereStage,$whereChip);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        //分页参数
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." group by ChipReturned desc";
+        $return = $this->db->getAll($sql);
+        return $return;
+    }
+    //获取报名记录
+    public function getChipCount($params,$fields = array('*'))
+    {
+        //生成查询列
+        $fields = Base_common::getSqlFields($fields);
+        //获取需要用到的表名
+        $table_to_process = Base_Widget::getDbTable($this->table_race);
+        //获得比赛ID
+        $whereStage = isset($params['RaceStageId'])?" RaceStageId = '".$params['RaceStageId']."' ":"";
+        //获得比赛ID
+        $whereRace = isset($params['RaceId']) && intval($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
+        //是否已经发放芯片
+        $whereChip = " ChipId != '' ";
+        //所有查询条件置入数组
+        $whereCondition = array($whereRace,$whereStage,$whereChip);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        //分页参数
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
+        $return = $this->db->getOne($sql);
+        return $return;
+    }
+    //获取报名记录
+    public function getChipList($params,$fields = array('*'))
+    {
+        //生成查询列
+        $fields = Base_common::getSqlFields($fields);
+        //获取需要用到的表名
+        $table_to_process = Base_Widget::getDbTable($this->table_race);
+        //获得比赛ID
+        $whereStage = isset($params['RaceStageId'])?" RaceStageId = '".$params['RaceStageId']."' ":"";
+        //获得比赛ID
+        $whereRace = isset($params['RaceId']) && intval($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
+        //是否已经发放芯片
+        $whereChip = " ChipId != '' ";
+        //根据芯片归还状态
+        $whereChipReturned = (isset($params['ChipReturned']) && $params['ChipReturned']!="all") ?" ChipReturned = '".$params['ChipReturned']."' ":"";
+        //所有查询条件置入数组
+        $whereCondition = array($whereRace,$whereStage,$whereChip,$whereChipReturned);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        //分页参数
+        $limit  = isset($params['Page'])&&$params['Page']?" limit ".($params['Page']-1)*$params['PageSize'].",".$params['PageSize']." ":"";
+        $sql = "SELECT distinct(ChipId) FROM $table_to_process where 1 ".$where." order by  ChipReturned,ChipId desc".$limit;
+        $return = $this->db->getAll($sql);
+        //初始化空的芯片列表
+        $ChipList = array();
+        foreach($return as $key => $value)
+        {
+            $ChipList[] = '"'.$value['ChipId'].'"';
+        }
+        $ChipList = implode(",",$ChipList);
+        //所有查询条件置入数组
+        $whereCondition = array($whereRace,$whereStage,$whereChipReturned);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        $sql = "SELECT $fields from $table_to_process where ChipId in (".$ChipList.") ".$where;
+        $return = $this->db->getAll($sql);
+        return $return;
     }
 
 }

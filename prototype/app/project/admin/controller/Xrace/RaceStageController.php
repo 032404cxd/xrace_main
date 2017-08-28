@@ -3904,6 +3904,14 @@ class Xrace_RaceStageController extends AbstractController
             $AidStationInfo = $oAidStation->getAidStation($AidStationId);
             //数据解包
             $AidStationInfo['comment'] = json_decode($AidStationInfo['comment'],true);
+            //获取分类列表
+            $AidCodeTypeList = $oAidStation->getAidCodeTypeByStage($AidStationInfo['RaceStageId']);
+            foreach($AidStationInfo['comment']["AidCodeTypeList"] as $AidCodeTypeId => $AidCount)
+            {
+                $AidCodeTypeList[$AidCodeTypeId]['selected'] = 1;
+                $AidCodeTypeList[$AidCodeTypeId]['AidCount'] = $AidCount;
+            }
+
             //获取分站信息
             $RaceStageInfo = $this->oRace->getRaceStage($AidStationInfo['RaceStageId'],"RaceStageId,comment");
             //数据解包
@@ -3970,21 +3978,18 @@ class Xrace_RaceStageController extends AbstractController
             //补给点ID
             $AidStationId = intval($this->request->AidStationId);
             //比赛-分组列表
-            $RaceList = $this->request->RaceList;
+            $AidCodeTypeList = $this->request->AidCodeTypeList;
             //获取补给点信息
             $AidStationInfo = $oAidStation->getAidStation($AidStationId);
             //数据解包
             $AidStationInfo['comment'] = json_decode($AidStationInfo['comment'],true);
             //初始化选中的比赛列表
-            $AidStationInfo['comment']['RaceList'] = array();
-            foreach($RaceList as $RaceId => $RaceInfo)
+            $AidStationInfo['comment']['AidCodeTypeList'] = array();
+            foreach($AidCodeTypeList as $AidCodeTypeId => $AidCodeTypeInfo)
             {
-                foreach($RaceInfo as $RaceGroupId => $RaceGroupInfo)
+                if($AidCodeTypeInfo['Selected'] && $AidCodeTypeInfo['AidCount']>0)
                 {
-                    if($RaceGroupInfo['Selected'] && $RaceGroupInfo['AidCount']>0)
-                    {
-                        $AidStationInfo['comment']['RaceList'][$RaceId][$RaceGroupId] = $RaceGroupInfo['AidCount'];
-                    }
+                    $AidStationInfo['comment']['AidCodeTypeList'][$AidCodeTypeId] = $AidCodeTypeInfo['AidCount'];
                 }
             }
             $AidStationInfo['comment'] = json_encode($AidStationInfo['comment']);
@@ -4188,4 +4193,114 @@ class Xrace_RaceStageController extends AbstractController
         }
     }
 
+    public function chipReturnStatusAction()
+    {
+        $oUser = new Xrace_UserInfo();
+        //分站ID
+        $RaceStageId = intval($this->request->RaceStageId);
+        //分站ID
+        $ReturnStatus = strlen(trim($this->request->ReturnStatus))?trim($this->request->ReturnStatus):"all";
+        //分页参数
+        $Page = abs(intval($this->request->Page))?abs(intval($this->request->Page)):1;
+        $PageSize = 20;
+        //获取分站信息
+        $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,"RaceStageId,RaceStageName");
+        //获取分站的芯片归还信息列表
+        $ReturnStatusList = $oUser->getChipReturnStatus($RaceStageId,$ReturnStatus,$Page,$PageSize);
+        foreach($ReturnStatusList["StatusList"] as $key => $value)
+        {
+            $ReturnStatusList["StatusList"][$key]['StatusUrl'] = "<a href='".Base_Common::getUrl('','xrace/race.stage','chip.return.status',array('RaceStageId'=>$RaceStageInfo['RaceStageId'],'ReturnStatus'=>$key)) ."'>".$value['ChipCount']."</a>";
+        }
+        //初始化空的比赛列表，分组列表，选手列表
+        $RaceList = array();
+        $RaceGroupList = array();
+        $RaceUserList = array();
+        foreach($ReturnStatusList["StatusList"] as $key => $value)
+        {
+            $ReturnStatusList["StatusList"][$key]['StatusUrl'] = "<a href='".Base_Common::getUrl('','xrace/race.stage','chip.return.status',array('RaceStageId'=>$RaceStageInfo['RaceStageId'],'ReturnStatus'=>$key)) ."'>".$value['ChipCount']."</a>";
+        }
+        foreach($ReturnStatusList["ChipList"] as $Status => $StatusInfo)
+        {
+            foreach($StatusInfo as $ChipId => $ChipInfo)
+            {
+                foreach($ChipInfo as $ApplyId => $ApplyInfo)
+                {
+                    if(!isset($RaceGroupList[$ApplyInfo['RaceGroupId']]))
+                    {
+                        $RaceGroupList[$ApplyInfo['RaceGroupId']] = $this->oRace->getRaceGroup($ApplyInfo['RaceGroupId'],"RaceGroupId,RaceGroupName");
+                    }
+                    if(!isset($RaceList[$ApplyInfo['RaceId']]))
+                    {
+                        $RaceList[$ApplyInfo['RaceId']] = $this->oRace->getRace($ApplyInfo['RaceId'],"RaceId,RaceName");
+                    }
+                    if(!isset($RaceUserList[$ApplyInfo['RaceUserId']]))
+                    {
+                        $RaceUserList[$ApplyInfo['RaceUserId']] = $oUser->getRaceUser($ApplyInfo['RaceUserId'],"RaceUserId,Name");
+                    }
+                    $ReturnStatusList["ChipList"][$Status][$ChipId][$ApplyId]['RaceGroupName'] = $RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupName'];
+                    $ReturnStatusList["ChipList"][$Status][$ChipId][$ApplyId]['RaceName'] = $RaceList[$ApplyInfo['RaceId']]['RaceName'];
+                    $ReturnStatusList["ChipList"][$Status][$ChipId][$ApplyId]['Name'] = $RaceUserList[$ApplyInfo['RaceUserId']]['Name'];
+
+                }
+            }
+        }
+        $params = array("RaceStageId"=>$RaceStageId,"ReturnStatus"=>$ReturnStatus,"PageSize"=>$PageSize);
+        $page_url = Base_Common::getUrl('','xrace/race.stage','chip.return.status',$params)."&Page=~page~";
+        $page_content =  base_common::multi($ReturnStatusList["StatusList"][$ReturnStatus]["ChipCount"], $page_url, $Page, $PageSize, 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');
+        //渲染模板
+        include $this->tpl('Xrace_Race_RaceStageChipReturnList');
+    }
+    public function chipStatusAction()
+    {
+        //芯片ID
+        $ChipId = trim($this->request->ChipId);
+        //分站ID
+        $RaceStageId = intval($this->request->RaceStageId);
+        $oUser = new Xrace_UserInfo();
+        //获取报名记录
+        $UserRaceApplyList = $oUser->getRaceUserList(array("RaceStageId"=>$RaceStageId,"Chip"=>1,"ChipId"=>$ChipId));
+        foreach($UserRaceApplyList as $ApplyId => $ApplyInfo)
+        {
+            if(!isset($RaceGroupList[$ApplyInfo['RaceGroupId']]))
+            {
+                $RaceGroupList[$ApplyInfo['RaceGroupId']] = $this->oRace->getRaceGroup($ApplyInfo['RaceGroupId'],"RaceGroupId,RaceGroupName");
+            }
+            if(!isset($RaceList[$ApplyInfo['RaceId']]))
+            {
+                $RaceList[$ApplyInfo['RaceId']] = $this->oRace->getRace($ApplyInfo['RaceId'],"RaceId,RaceName");
+            }
+            if(!isset($RaceUserList[$ApplyInfo['RaceUserId']]))
+            {
+                $RaceUserList[$ApplyInfo['RaceUserId']] = $oUser->getRaceUser($ApplyInfo['RaceUserId'],"RaceUserId,Name");
+            }
+            $UserRaceApplyList[$ApplyId]['RaceGroupName'] = $RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupName'];
+            $UserRaceApplyList[$ApplyId]['RaceName'] = $RaceList[$ApplyInfo['RaceId']]['RaceName'];
+            $UserRaceApplyList[$ApplyId]['Name'] = $RaceUserList[$ApplyInfo['RaceUserId']]['Name'];
+        }
+        //渲染模板
+        include $this->tpl('Xrace_Race_RaceStageChipStatus');
+    }
+    public function chipReturnAction()
+    {
+        //获取要操作的报名记录列表
+        $ApplyList = $this->request->ApplyList;
+        $oUser = new Xrace_UserInfo();
+        $Success = 0;
+        //循环列表
+        foreach($ApplyList as $ApplyId => $ApplyInfo)
+        {
+            //依次归还
+            $return = $oUser->ChipReturn($ApplyId);
+            //如果成功
+            if($return)
+            {
+                //成功次数累加
+                $Success++;
+            }
+        }
+        $response = $Success ? array('errno' => 0,'Success'=>$Success) : array('errno' => 9);
+        echo json_encode($response);
+        //$oUser->ChipReturn(1374903);
+        //ALTER TABLE `user_race` ADD `ChipReturned` ENUM('0','1') NOT NULL DEFAULT '0' COMMENT '是否芯片已归还 0否1是' AFTER `RaceStatus`, ADD INDEX (`ChipReturned`);
+    }
 }
