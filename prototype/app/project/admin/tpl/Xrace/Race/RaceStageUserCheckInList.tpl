@@ -4,7 +4,7 @@
         RaceUserInfoBox = divBox.showBox('{tpl:$this.sign/}&ac=race.stage.check.in.user.info&RaceUserId=' + uid + '&RaceStageId=' + rid, {title:rname+'个人信息',width:800,height:750});
     }
 </script>
-<fieldset><legend>{tpl:$RaceStageInfo.RaceStageName/} 选手签到列表 <a href="{tpl:$this.sign/}">返回</a>   ------>{tpl:$CheckInByCodeUrl/}--{tpl:$CheckInByIdUrl/}</legend>
+<fieldset><legend>{tpl:$RaceStageInfo.RaceStageName/} 选手签到列表 <a href="{tpl:$this.sign/}">返回</a>   ------>{tpl:$CheckInByCodeUrl/}--{tpl:$CheckInByIdUrl/}--{tpl:$CheckInByBIBUrl/}</legend>
   <table width="99%" align="center" class="table table-bordered table-striped">
     <tr><th align="center" class="rowtip" colspan="4">
         {tpl:loop $CheckInStatus $Cid $CheckInStatusInfo}

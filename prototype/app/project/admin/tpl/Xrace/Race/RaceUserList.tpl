@@ -9,8 +9,8 @@
   function UserRaceDNS(aid,uname) {
       DNSUserRaceBox = divBox.showBox('{tpl:$this.sign/}&ac=user.race.dns.apply&ApplyId=' + aid, {title:uname+'DNF确认',width:550,height:300});
   }
-  function UserRaceDeleteByRace(rid){
-    deleteUserRaceByRaceBox = divBox.confirmBox({content:'确定全部退出比赛?',ok:function(){location.href = '{tpl:$this.sign/}&ac=user.race.delete.by.race&RaceId=' + rid;}});
+  function UserRaceStatusRestore(aid,uname){
+    restoreUserRaceStatusBox = divBox.confirmBox({content:'确定将'+uname+'的比赛状态恢复?',ok:function(){location.href = '{tpl:$this.sign/}&ac=user.race.status.restore&ApplyId=' + aid;}});
   }
   function UserRaceDeleteByGroup(rid,gid,gname){
     deleteUserRaceByRaceBox = divBox.confirmBox({content:'确定'+gname+'全部退出比赛?',ok:function(){location.href = '{tpl:$this.sign/}&ac=user.race.delete.by.race&RaceId=' + rid + '&RaceGroupId=' + gid;}});
@@ -47,7 +47,7 @@
     <th align="center" class="rowtip">{tpl:$UserInfo.ApplyTime/}</th>
     <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$Aid/}][BIB]" id="UserList[{tpl:$UserInfo.UserId/}][BIB]" value="{tpl:$UserInfo.BIB/}" />{tpl:if($UserInfo.TBD>0)}{tpl:if($UserInfo.TBD==1)}待确认{tpl:else}其他{/tpl:if}{/tpl:if}</th>
     <th align="center" class="rowtip"><input type="text" class="span2" name="UserList[{tpl:$Aid/}][ChipId]" id="UserList[{tpl:$UserInfo.UserId/}][ChipId]" value="{tpl:$UserInfo.ChipId/}" /></th>
-    <th align="center" class="rowtip">{tpl:if($UserInfo.RaceStatus==2)}DNF{tpl:else}<a href="javascript:;" onclick="UserRaceDNF('{tpl:$UserInfo.ApplyId/}','{tpl:$UserInfo.Name/}')">DNF</a>{/tpl:if} | {tpl:if($UserInfo.RaceStatus==1)}DNS{tpl:else}<a href="javascript:;" onclick="UserRaceDNS('{tpl:$UserInfo.ApplyId/}','{tpl:$UserInfo.Name/}')">DNS</a>{/tpl:if}</th>
+    <th align="center" class="rowtip">{tpl:if($UserInfo.RaceStatus==2)}DNF{tpl:else}<a href="javascript:;" onclick="UserRaceDNF('{tpl:$UserInfo.ApplyId/}','{tpl:$UserInfo.Name/}')">DNF</a>{/tpl:if} | {tpl:if($UserInfo.RaceStatus==1)}DNS{tpl:else}<a href="javascript:;" onclick="UserRaceDNS('{tpl:$UserInfo.ApplyId/}','{tpl:$UserInfo.Name/}')">DNS</a>{/tpl:if}{tpl:if($UserInfo.RaceStatus!=0)} | <a href="javascript:;" onclick="UserRaceStatusRestore('{tpl:$UserInfo.ApplyId/}','{tpl:$UserInfo.Name/}')">恢复</a>{/tpl:if}</th>
   </tr>
   {/tpl:loop}
   <tr class="noborder"><td colspan = 7><button type="submit" id="race_user_list_update_submit">提交更新</button></td>

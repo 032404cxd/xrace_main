@@ -1279,7 +1279,7 @@ class Xrace_UserInfo extends Base_Widget
         $fields = Base_common::getSqlFields($fields);
         //获取需要用到的表名
         $table_to_process = Base_Widget::getDbTable($this->table_race);
-        //获得比赛ID
+        //获得分站ID
         $whereStage = isset($params['RaceStageId'])?" RaceStageId = '".$params['RaceStageId']."' ":"";
         //获得比赛ID
         $whereRace = isset($params['RaceId']) && intval($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
@@ -1301,8 +1301,10 @@ class Xrace_UserInfo extends Base_Widget
         $whereChip = $params['Chip']==1 ?" ChipId != '' ":"";
         //芯片ID
         $whereChipId = isset($params['ChipId']) ?" ChipId = '".$params['ChipId']."' ":"";
+        //BIB
+        $whereBIB = isset($params['BIB']) ?" BIB = '".$params['BIB']."' ":"";
         //所有查询条件置入数组
-        $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage,$whereCheckIn,$whereRaceIgnore,$whereStatus,$whereChipReturned,$whereChip,$whereChipId);
+        $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage,$whereCheckIn,$whereRaceIgnore,$whereStatus,$whereChipReturned,$whereChip,$whereChipId,$whereBIB);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
         //分页参数
@@ -2506,6 +2508,33 @@ class Xrace_UserInfo extends Base_Widget
         else
         {
             return array("return"=>0,"Mobile"=>$AuthInfo['AuthKey']);
+        }
+    }
+    public function UserRaceStatusRestore($ApplyId)
+    {
+        //获取报名记录
+        $UserRaceApplyInfo = $this->getRaceApplyUserInfo($ApplyId);
+        //如果找到
+        if($UserRaceApplyInfo['ApplyId'])
+        {
+            //如果是正常状态
+            if($UserRaceApplyInfo['RaceStatus']==0)
+            {
+                return true;
+            }
+            else
+            {
+                //数据解包
+                $comment = json_decode($UserRaceApplyInfo['comment'],true);
+                unset($comment['DNF'],$comment['DNS']);
+                $bind = array("comment"=>json_encode($comment),"RaceStatus"=>0);
+                //更新报名记录
+                return $this->updateRaceUserApply($ApplyId,$bind);
+            }
+        }
+        else
+        {
+            return fasle;
         }
     }
     public function UserRaceDNF($ApplyId,$Reason,$manager_id)

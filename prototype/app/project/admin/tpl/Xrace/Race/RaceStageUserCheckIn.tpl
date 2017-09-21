@@ -6,10 +6,16 @@
         RaceUserInfoBox = divBox.showBox('{tpl:$this.sign/}&ac=race.stage.check.in.user.info&CheckInType=IdNo&IdNo=' + IdNo.val() + '&RaceStageId=' + rid, {title:'个人信息',width:800,height:750});
         return false;
     }
-    function RaceUserInfoByCode(rid)
+    function RaceUserInfoByID(rid)
     {
         CheckInCode=$("#CheckInCode");
         RaceUserInfoBox = divBox.showBox('{tpl:$this.sign/}&ac=race.stage.check.in.user.info&CheckInType=Code&CheckInCode=' + CheckInCode.val() + '&RaceStageId=' + rid, {title:'个人信息',width:800,height:750});
+        return false;
+    }
+    function RaceUserInfoByBIB(rid)
+    {
+        BIB=$("#BIB");
+        RaceUserInfoBox = divBox.showBox('{tpl:$this.sign/}&ac=race.stage.check.in.user.info&CheckInType=BIB&BIB=' + BIB.val() + '&RaceStageId=' + rid, {title:'个人信息',width:800,height:750});
         return false;
     }
 </script>
@@ -23,8 +29,13 @@
         <td><input type="text" class="span4" name="CheckInCode"  id="CheckInCode" value="" size="50" /></td>
         <td><a href="javascript:;" onclick="RaceUserInfoByCode('{tpl:$RaceStageInfo.RaceStageId/}')">点击提交</a></td>
           {tpl:else}
-            <td>证件号：<input type="text" class="span4" name="IdNo"  id="IdNo" value="" size="50" /></td>
-        <td><a href="javascript:;" onclick="RaceUserInfoById('{tpl:$RaceStageInfo.RaceStageId/}')">点击提交</a></td>
+              {tpl:if($CheckInType=="Id")}
+              <td><input type="text" class="span4" name="CheckInCode"  id="CheckInCode" value="" size="50" /></td>
+              <td><a href="javascript:;" onclick="RaceUserInfoByID('{tpl:$RaceStageInfo.RaceStageId/}')">点击提交</a></td>
+              {tpl:else}
+                  <td>BIB：<input type="text" class="span4" name="BIB"  id="BIB" value="" size="50" /></td>
+                  <td><a href="javascript:;" onclick="RaceUserInfoByBIB('{tpl:$RaceStageInfo.RaceStageId/}')">点击提交</a></td>
+              {/tpl:if}
           {/tpl:if}
       </tr>
     </table>

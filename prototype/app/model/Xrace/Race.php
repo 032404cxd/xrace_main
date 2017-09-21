@@ -1490,14 +1490,15 @@ class Xrace_Race extends Base_Widget
 				}
 			}
 			//如果没通过任何一个计时点
-			if($passedPoint==0)
+			//if($passedPoint==0)
+			if($UserRaceInfo['Total']['RaceStatus']==1)
 			{
 				$RaceStatus = array("RaceStatus"=>3,"RaceStatusName"=>"DNS");
 			}
 			else
 			{
 				//如果通过了终点
-				if($UserRaceInfo['Point'][count($UserRaceInfo['Point'])]['inTime']>0)
+				if(($UserRaceInfo['Point'][count($UserRaceInfo['Point'])]['inTime']>0) && ($UserRaceInfo['Total']['RaceStatus']==0))
 				{
 					$RaceStatus = array("RaceStatus"=>4,"RaceStatusName"=>"完赛");
 				}
@@ -1510,12 +1511,18 @@ class Xrace_Race extends Base_Widget
 		return $RaceStatus;
 	}
 	//获取某场比赛的成绩列表
-	public function getRaceResult($RaceId,$RaceGroupId = 0)
+	public function getRaceResult($RaceId,$RaceGroupId = 0,$RaceUserId = 0)
 	{
 		if($RaceGroupId>0)
         {
-
-            $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.user.race.info',array('Force'=>1,'RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId));
+            if($RaceUserId>0)
+            {
+                $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.user.race.info',array('Force'=>1,'RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId,'RaceUserId'=>$RaceUserId));
+            }
+            else
+            {
+                $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.user.race.info',array('Force'=>1,'RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId));
+            }
         }
         else
         {
