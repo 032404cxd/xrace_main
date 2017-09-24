@@ -190,4 +190,12 @@ $table['UserAuthCodeLog']['num'] = 1;
 $table['config_search_keyword']['db'] = 'xrace_config';
 $table['config_search_keyword']['num'] = 1;
 
+#用户芯片列表
+$table['ChipList']['db'] = 'xrace_user';
+$table['ChipList']['num'] = 1;
+
+#场地
+$table['config_arena']['db'] = 'rc_config';
+$table['config_arena']['num'] = 1;
+
 return $table;

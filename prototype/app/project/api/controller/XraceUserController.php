@@ -1249,26 +1249,232 @@ class XraceUserController extends AbstractController
         }
         echo json_encode($result);
     }
-    public function validateAuthTestAction()
+    /**
+     *用户添加自己的芯片
+     */
+    public function addUserChipAction()
     {
-        $UserId = "10086";
-        $Action = "IdModify";
-        $AuthType = "Mobile";
-        $AuthKey = "13918180325";
-        $return = $this->oUser->userValidateAuthApply($UserId,$Action,$AuthType,$AuthKey);
-        echo "here".$return;
-
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            //芯片
+            $ChipId = trim($this->request->ChipId);
+            //芯片类型
+            $ChipType = trim($this->request->ChipType);
+            //昵称
+            $NickName = trim(urldecode($this->request->NickName));
+            //如果长度为空，则用芯片ID填充
+            $NickName = strlen($NickName)?$NickName:$ChipId;
+            $oChip = new Xrace_Chip();
+            //获取芯片类型列表数组
+            $ChipTypeList = $oChip->getChipTypeList();
+            //如果不在类型列表内，则默认为Mylaps
+            $ChipType = isset($ChipTypeList[$ChipType])?$ChipType:1;
+            //获取芯片信息
+            $ChipInfo = $oChip->getChipInfo($ChipId);
+            //如果找到芯片信息
+            if(isset($ChipInfo['ChipId']))
+            {
+                //如果芯片已经属于自己
+                if($ChipInfo['UserId']==$TokenInfo['UserId'])
+                {
+                    //结果数组 返回用户信息
+                    $result = array("return" => 1,"comment" => "芯片已经添加过了，无需重复添加");
+                }
+                else
+                {
+                    //结果数组 返回用户信息
+                    $result = array("return" => 0,"comment" => "芯片添加失败，已经被其他用户绑定此芯片了哦");
+                }
+            }
+            else
+            {
+                //初始化芯片信息
+                $ChipInfo = array('ChipId'=>$ChipId,'UserId'=>$TokenInfo['UserId'],'ChipTypeId'=>$ChipType,'Nickname'=>$NickName);
+                //添加数据
+                $Add = $oChip->insertChip($ChipInfo);
+                //如果添加成功
+                if($Add)
+                {
+                    //结果数组
+                    $result = array("return" => 1,"comment" => "芯片添加成功");
+                }
+                else
+                {
+                    //结果数组
+                    $result = array("return" => 0,"comment" => "芯片添加失败，请稍后重试");
+                }
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
     }
-
-    public function validateCodeTestAction()
+    /**
+     *用户xiu该自己的芯片
+     */
+    public function updateUserChipAction()
     {
-        $UserId = "10086";
-        $Action = "IdModify";
-        $AuthType = "Mobile";
-        $AuthKey = "18621758237";
-        $ValidateCode = "543335";
-        $validate = $this->oUser->userValidateAuth($UserId,$Action,$ValidateCode);
-        echo "validate:".$validate."<br>";
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            //芯片
+            $ChipId = trim($this->request->ChipId);
+            //芯片类型
+            $ChipType = trim($this->request->ChipType);
+            //昵称
+            $NickName = trim(urldecode($this->request->NickName));
+            //如果长度为空，则用芯片ID填充
+            $NickName = strlen($NickName)?$NickName:$ChipId;
+            $oChip = new Xrace_Chip();
+            //获取芯片类型列表数组
+            $ChipTypeList = $oChip->getChipTypeList();
+            //如果不在类型列表内，则默认为Mylaps
+            $ChipType = isset($ChipTypeList[$ChipType])?$ChipType:1;
+            //获取芯片信息
+            $ChipInfo = $oChip->getChipInfo($ChipId);
+            //如果找到芯片信息
+            if(isset($ChipInfo['ChipId']))
+            {
+                //如果芯片已经属于自己
+                if($ChipInfo['UserId']==$TokenInfo['UserId'])
+                {
+                    $bind = array("NickName"=>$NickName);
+                    //更新芯片
+                    $update = $oChip->updateChipInfo($ChipId,$bind);
+                    //如果更新成功
+                    if($update)
+                    {
+                        //结果数组
+                        $result = array("return" => 1,"comment" => "芯片更新成功");
+                    }
+                    else
+                    {
+                        //结果数组
+                        $result = array("return" => 0,"comment" => "芯片更新失败，请稍后重试");
+                    }
+                }
+                else
+                {
+                    //结果数组
+                    $result = array("return" => 0,"comment" => "芯片添加失败，已经被其他用户绑定此芯片了哦");
+                }
+            }
+            else
+            {
+                    //结果数组
+                $result = array("return" => 0,"comment" => "芯片不存在哦，请检查后重试");
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    /**
+     *用户添加自己的芯片
+     */
+    public function getUserChipListAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            $oChip = new Xrace_Chip();
+            //获取芯片列表
+            $UserChipList = $oChip->getChipList(array("UserId"=>$TokenInfo['UserId']));
+            //结果数组 返回芯片列表
+            $result = array("return" => 1,"UserChipList"=>$UserChipList);
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    /**
+     *用户删除自己的芯片
+     */
+    public function deleteUserChipAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if($TokenInfo['UserId'])
+        {
+            //芯片
+            $ChipId = trim($this->request->ChipId);
+            $oChip = new Xrace_Chip();
+            //获取芯片信息
+            $ChipInfo = $oChip->getChipInfo($ChipId);
+            //如果找到芯片信息
+            if(isset($ChipInfo['ChipId']))
+            {
+                //如果芯片已经属于自己
+                if($ChipInfo['UserId']==$TokenInfo['UserId'])
+                {
+                    //删除芯片
+                    $delete = $oChip->deleteChip($ChipId);
+                    //如果删除成功
+                    if($delete)
+                    {
+                        //结果数组
+                        $result = array("return" => 1,"comment" => "芯片删除成功");
+                    }
+                    else
+                    {
+                        //结果数组
+                        $result = array("return" => 0,"comment" => "芯片删除失败，请稍后重试");
+                    }
+                }
+                else
+                {
+                    //结果数组
+                    $result = array("return" => 0,"comment" => "芯片删除失败，已经被其他用户绑定此芯片了哦");
+                }
+            }
+            else
+            {
+                //结果数组
+                $result = array("return" => 0,"comment" => "芯片不存在哦，请检查后重试");
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    /**
+     *用户约站
+     */
+    public function ApplyRaceAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if ($TokenInfo['UserId'])
+        {
+
+        }
     }
 
 }
