@@ -1462,9 +1462,9 @@ class XraceUserController extends AbstractController
         echo json_encode($result);
     }
     /**
-     *用户约站
+     *用户约战
      */
-    public function ApplyRaceAction()
+    public function applyRaceAction()
     {
         //Token
         $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
@@ -1473,8 +1473,148 @@ class XraceUserController extends AbstractController
         //如果获取到
         if ($TokenInfo['UserId'])
         {
-
+            //开始时间
+            $StartTime = abs(intval($this->request->StartTime));
+            //开始时间
+            $EndTime = abs(intval($this->request->EndTime));
+            //场地
+            $ArenaId = abs(intval($this->request->ArenaId));
+            //芯片
+            $ChipId = trim(urldecode($this->request->ChipId));
+            //如果结束时间时间小于当前时间
+            if($EndTime <= time())
+            {
+                $result = array("return" => 0,"comment"=>"您选择的时间段有误，请重新选择");
+            }
+            else
+            {
+                $oChip = new Xrace_Chip();
+                //获取芯片信息
+                $ChipInfo = $oChip->getChipInfo($ChipId);
+                //如果找到芯片信息
+                if(isset($ChipInfo['ChipId']))
+                {
+                    //如果芯片是用户本人的
+                    if($ChipInfo['UserId']==$TokenInfo['UserId'])
+                    {
+                        $oArena = new Xrace_Arena();
+                        //获取场地信息
+                        $ArenaInfo = $oArena->getArena($ArenaId,'ArenaId,ArenaName');
+                        //如果找到
+                        if(isset($ArenaInfo['ArenaId']))
+                        {
+                            $oUserRace = new Xrace_UserRace();
+                            //获取尚在处理的约战队列
+                            $UserApplyCount = $oUserRace->getUserRaceApplyCount(array("UserId"=>$TokenInfo['UserId'],"ArenaId"=>$ArenaInfo['ArenaId'],"ChipId"=>$ChipId));
+                            if($oUserRace->getMaxRaceAppplyCount() <= $UserApplyCount)
+                            {
+                                //返回失败
+                                $result = array("return" => 0, "comment" => "处理中的约战请求最多不超过".$oUserRace->getMaxRaceAppplyCount()."条哦");
+                            }
+                            else
+                            {
+                                //初始化数据 过期时间设为约战时间段结束前10分钟
+                                $ApplyInfo = array("ApplyExceedTime"=>$EndTime-600,"ChipName"=>$ChipInfo['NickName'],"UserId"=>$TokenInfo['UserId'],"ArenaId"=>$ArenaInfo['ArenaId'],"ApplyTime"=>time(),"ApplyStartTime"=>$StartTime,"ApplyEndTime"=>$EndTime,"ChipId"=>$ChipId);
+                                //添加记录
+                                $Apply = $oUserRace->insertRaceApply($ApplyInfo);
+                                //如果添加成功
+                                if($Apply)
+                                {
+                                    //返回成功
+                                    $result = array("return" => 1, "comment" => "加入队列，请等待系统为您分配对手");
+                                }
+                                else
+                                {
+                                    //返回成功
+                                    $result = array("return" => 0, "comment" => "加入队列失败，请稍后重试");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //返回失败
+                            $result = array("return" => 0, "comment" => "无此场地");
+                        }
+                    }
+                    else
+                    {
+                        //返回失败
+                        $result = array("return" => 0, "comment" => "芯片好像不是你的哦，选错了？");
+                    }
+                }
+                else
+                {
+                    //结果数组
+                    $result = array("return" => 0,"comment" => "芯片不存在哦，请检查后重试");
+                }
+            }
         }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
     }
-
+    /**
+     *用户约战队列
+     */
+    public function getUserApplyRaceQueueAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if ($TokenInfo['UserId'])
+        {
+            //场地
+            $ArenaId = abs(intval($this->request->ArenaId));
+            //芯片
+            $ChipId = trim(urldecode($this->request->ChipId));
+            //UserId
+            $UserId = abs(intval($this->request->UserId));
+            //如果指定选手是登陆用户本人
+            if($UserId == $TokenInfo['UserId'])
+            {
+                $params = array("ArenaId"=>$ArenaId,"ChipId"=>$ChipId,"UserId"=>$TokenInfo['UserId']);
+            }
+            elseif($UserId>0)
+            {
+                $params = array("ArenaId"=>$ArenaId,"ChipId"=>$ChipId,"UserId"=>$UserId);
+            }
+            else
+            {
+                $params = array("ArenaId"=>$ArenaId,"ChipId"=>$ChipId,"UserIgnore"=>$TokenInfo['UserId'],"UserId"=>$UserId);
+            }
+            $oUserRace = new Xrace_UserRace();
+            //获取用户约战队列
+            $UserRaceApplyList = $oUserRace->getUserRaceApplyList($params);
+            if(count($UserRaceApplyList['UserRaceApplyList']))
+            {
+                $oArena = new Xrace_Arena();
+                //获取场地列表
+                $ArenaList = $oArena->getAllArenaList("ArenaName,ArenaId");
+                $oUserInfo = new Xrace_UserInfo();
+                foreach($UserRaceApplyList['UserRaceApplyList'] as $ApplyId => $ApplyInfo)
+                {
+                    //如果用户列表中未找到这个用户
+                    if(!isset($UserList[$ApplyInfo['UserId']]))
+                    {
+                        //获取用户信息
+                        $UserList[$ApplyInfo['UserId']] = $oUserInfo->getUser($ApplyInfo['UserId'],"UserId,Name,Sex");
+                    }
+                    //用户姓名
+                    $UserRaceApplyList['UserRaceApplyList'][$ApplyId]['Name'] = isset($UserList[$ApplyInfo['UserId']]['Name'])?$UserList[$ApplyInfo['UserId']]['Name']:"未知用户";
+                    //场地名称
+                    $UserRaceApplyList['UserRaceApplyList'][$ApplyId]['ArenaName'] = isset($ArenaList[$ApplyInfo['ArenaId']])?$ArenaList[$ApplyInfo['ArenaId']]['ArenaName']:"未知场地";
+                }
+            }
+            $result = array("return" => 1,"UserRaceApplyQueue"=>$UserRaceApplyList['UserRaceApplyList']);
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
 }

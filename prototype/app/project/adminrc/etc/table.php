@@ -187,7 +187,7 @@ $table['config_aid_code_type']['db'] = 'rc_config';
 $table['config_aid_code_type']['num'] = 1;
 
 #约战队列
-$table['RaceApplyQueue']['db'] = 'rc_config';
+$table['RaceApplyQueue']['db'] = 'xrace_race';
 $table['RaceApplyQueue']['num'] = 1;
 
 return $table;

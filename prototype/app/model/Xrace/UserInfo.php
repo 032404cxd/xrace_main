@@ -401,8 +401,10 @@ class Xrace_UserInfo extends Base_Widget
  */
     public function getUser($UserId, $fields = '*')
     {
+        echo $UserId;
         $UserId = intval($UserId);
         $table_to_process = Base_Widget::getDbTable($this->table);
+        echo $table_to_process;
         return $this->db->selectRow($table_to_process, $fields, '`UserId` = ?', $UserId);
     }
     /**
@@ -1404,8 +1406,6 @@ class Xrace_UserInfo extends Base_Widget
         $whereGroup = (isset($params['RaceGroupId'])  && $params['RaceGroupId']!=0)?" RaceGroupId = '".$params['RaceGroupId']."' ":"";
         //获得赛事ID
         $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
-        //获得赛事ID
-        //$whereCheckIn = $params['CheckInStatus']>0 ?" CheckInStatus = '".$params['CheckInStatus']."' ":"";
         //所有查询条件置入数组
         $whereCondition = array($whereCatalog,$whereRaceUser,$whereGroup,$whereRace,$whereStage,$whereRaceIgnore);
         //生成条件列

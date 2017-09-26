@@ -49,7 +49,7 @@ class Xrace_Arena extends Base_Widget
 		return $this->db->selectRow($table_to_process, $fields, '`ArenaId` = ?', $ArenaId);
 	}
 	/**
-	 * 更新
+	 * 更新场地
 	 * @param integer $AppId
 	 * @param array $bind
 	 * @return boolean
@@ -61,7 +61,7 @@ class Xrace_Arena extends Base_Widget
 		return $this->db->update($table_to_process, $bind, '`ArenaId` = ?', $ArenaId);
 	}
 	/**
-	 * 插入
+	 * 新增场地
 	 * @param array $bind
 	 * @return boolean
 	 */
@@ -72,7 +72,7 @@ class Xrace_Arena extends Base_Widget
 	}
 
 	/**
-	 * 删除
+	 * 删除场地
 	 * @param integer $AppId
 	 * @return boolean
 	 */
@@ -105,4 +105,5 @@ class Xrace_Arena extends Base_Widget
         }
         return $DateList;
     }
+
 }

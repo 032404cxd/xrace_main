@@ -198,4 +198,8 @@ $table['ChipList']['num'] = 1;
 $table['config_arena']['db'] = 'rc_config';
 $table['config_arena']['num'] = 1;
 
+#约战队列
+$table['RaceApplyQueue']['db'] = 'xrace_race';
+$table['RaceApplyQueue']['num'] = 1;
+
 return $table;

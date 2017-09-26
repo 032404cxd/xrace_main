@@ -27,7 +27,6 @@ class Xrace_UserController extends AbstractController
         $this->oUserInfo = new Xrace_UserInfo();
         $this->oManager = new Widget_Manager();
 		$this->oRace = new Xrace_Race();
-        $this->oUserInfo = new Xrace_UserInfo();
 
 	}
 	//用户列表
