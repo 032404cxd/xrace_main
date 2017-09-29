@@ -17,23 +17,78 @@ class Xrace_Mylaps extends Base_Widget
         $fields = Base_common::getSqlFields($fields);
         //获取需要用到的表名
         $table_to_process = Base_Widget::getDbTable($this->table);
-        $table_to_process = str_replace($this->table,$params['prefix'].$this->table,$table_to_process)."_sorted";
+        if($params['sorted']!=1)
+        {
+            $table_to_process = str_replace($this->table,$params['prefix'].$this->table,$table_to_process);
+        }
+        else
+        {
+            $table_to_process = str_replace($this->table,$params['prefix'].$this->table,$table_to_process)."_sorted";
+        }
         //获得芯片ID
         $whereChip = isset($params['Chip'])?" Chip = '".$params['Chip']."' ":"";
-        $whereChipList = isset($params['ChipList'])?" Chip in (".$params['ChipList'].") ":"";
+        if(isset($params['ChipList']))
+        {
+            if($params['ChipList'] == "-1")
+            {
+                $whereChipList = "0";
+            }
+            else
+            {
+                $whereChipList = " Chip in (".$params['ChipList'].") ";
+            }
+        }
+        //$whereChipList = isset($params['ChipList']) && $params['ChipList'] != "0"?" Chip in (".$params['ChipList'].") ":"0";
         $whereStart = isset($params['LastId'])?" Id >".$params['LastId']." ":"";
         $whereStartTime = isset($params['StartTime'])?" ChipTime >'".$params['StartTime']."' ":"";
         $whereEndTime = isset($params['EndTime'])?" ChipTime <='".$params['EndTime']."' ":"";
-
         $Limit = " limit 0,".$params['pageSize'];
         //所有查询条件置入数组
         $whereCondition = array($whereChip,$whereChipList,$whereStart,$whereStartTime,$whereEndTime);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
-        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by Id asc".$Limit;
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by Id ".($params['revert']==1?"desc":"asc").$Limit;
         echo $sql."<br>";
         $return = $this->db->getAll($sql);
-        return array("Record"=>$return,"sql"=>$sql);
+        if($params['getCount']==1)
+        {
+            $RecordCount = $this->getTimingDataCount($params);
+            return array("Record"=>$return,"RecordCount"=>$RecordCount['RecordCount'],"sql"=>$sql);
+        }
+        else
+        {
+            return array("Record"=>$return,"sql"=>$sql);
+        }
+    }
+    public function getTimingDataCount($params,$sorted=1)
+    {
+        $fields = array("RecordCount"=>"count(1)");
+        //生成查询列
+        $fields = Base_common::getSqlFields($fields);
+        //获取需要用到的表名
+        $table_to_process = Base_Widget::getDbTable($this->table);
+        if($params['sorted']==1)
+        {
+            $table_to_process = str_replace($this->table,$params['prefix'].$this->table,$table_to_process);
+        }
+        else
+        {
+            $table_to_process = str_replace($this->table,$params['prefix'].$this->table,$table_to_process)."_sorted";
+        }
+        //获得芯片ID
+        $whereChip = isset($params['Chip'])?" Chip = '".$params['Chip']."' ":"";
+        $whereChipList = isset($params['ChipList']) && $params['ChipList'] != "0"?" Chip in (".$params['ChipList'].") ":"0";
+        $whereStart = isset($params['LastId'])?" Id >".$params['LastId']." ":"";
+        $whereStartTime = isset($params['StartTime'])?" ChipTime >'".$params['StartTime']."' ":"";
+        $whereEndTime = isset($params['EndTime'])?" ChipTime <='".$params['EndTime']."' ":"";
+        $Limit = " limit 0,".$params['pageSize'];
+        //所有查询条件置入数组
+        $whereCondition = array($whereChip,$whereChipList,$whereStart,$whereStartTime,$whereEndTime);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
+        $return = $this->db->getOne($sql);
+        return array("RecordCount"=>$return);
     }
 	//根据比赛ID生成该场比赛的MYLAPS计时数据
 	public function genMylapsTimingInfo($RaceId,$Force = 0,$Cache = 0)
@@ -153,7 +208,7 @@ class Xrace_Mylaps extends Base_Widget
 		while ($Count == $pageSize)
 		{
 		    //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
-			$params = array('StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),'prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"0");
+			$params = array('sorted'=>1,'StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),'prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"-1");
 			//获取计时数据
 			$TimingList = $this->getTimingData($params);
 			//依次循环计时数据

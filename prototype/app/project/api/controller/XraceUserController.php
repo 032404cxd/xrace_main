@@ -1567,6 +1567,10 @@ class XraceUserController extends AbstractController
         //如果获取到
         if ($TokenInfo['UserId'])
         {
+            //页码，默认为1
+            $Page = isset($this->request->Page) ? abs(intval($this->request->Page)) : 1;
+            //每页数量
+            $PageSize = isset($this->request->PageSize) ? abs(intval($this->request->PageSize)) : 5;
             //场地
             $ArenaId = abs(intval($this->request->ArenaId));
             //芯片
@@ -1576,15 +1580,15 @@ class XraceUserController extends AbstractController
             //如果指定选手是登陆用户本人
             if($UserId == $TokenInfo['UserId'])
             {
-                $params = array("ArenaId"=>$ArenaId,"ChipId"=>$ChipId,"UserId"=>$TokenInfo['UserId']);
+                $params = array("ArenaId"=>$ArenaId,"ChipId"=>$ChipId,"UserId"=>$TokenInfo['UserId'],"Page"=>$Page,"PageSize"=>$PageSize);
             }
             elseif($UserId>0)
             {
-                $params = array("ArenaId"=>$ArenaId,"ChipId"=>$ChipId,"UserId"=>$UserId);
+                $params = array("ArenaId"=>$ArenaId,"ChipId"=>$ChipId,"UserId"=>$UserId,"Page"=>$Page,"PageSize"=>$PageSize);
             }
             else
             {
-                $params = array("ArenaId"=>$ArenaId,"ChipId"=>$ChipId,"UserIgnore"=>$TokenInfo['UserId'],"UserId"=>$UserId);
+                $params = array("ArenaId"=>$ArenaId,"ChipId"=>$ChipId,"UserIgnore"=>$TokenInfo['UserId'],"UserId"=>$UserId,"Page"=>$Page,"PageSize"=>$PageSize);
             }
             $oUserRace = new Xrace_UserRace();
             //获取用户约战队列
@@ -1610,6 +1614,256 @@ class XraceUserController extends AbstractController
                 }
             }
             $result = array("return" => 1,"UserRaceApplyQueue"=>$UserRaceApplyList['UserRaceApplyList']);
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    /**
+     *用户对战队列
+     */
+    public function getUserRaceListAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if ($TokenInfo['UserId'])
+        {
+            //页码，默认为1
+            $Page = isset($this->request->Page) ? abs(intval($this->request->Page)) : 1;
+            //每页数量
+            $PageSize = isset($this->request->PageSize) ? abs(intval($this->request->PageSize)) : 5;
+            //场地
+            $ArenaId = abs(intval($this->request->ArenaId));
+            //芯片
+            $ChipId = trim(urldecode($this->request->ChipId));
+            //场地
+            $ArenaId = abs(intval($this->request->ArenaId));
+            //UserId
+            $UserId = abs(intval($this->request->UserId));
+            //如果指定选手是登陆用户本人
+            if($UserId == $TokenInfo['UserId'])
+            {
+                $params = array("ArenaId"=>$ArenaId,"ChipId"=>$ChipId,"ArenaId"=>$ArenaId,"UserId"=>$TokenInfo['UserId'],"Page"=>$Page,"PageSize"=>$PageSize);
+            }
+            elseif($UserId>0)
+            {
+                $params = array("ArenaId"=>$ArenaId,"ChipId"=>$ChipId,"ArenaId"=>$ArenaId,"UserId"=>$UserId,"Page"=>$Page,"PageSize"=>$PageSize);
+            }
+            else
+            {
+                $params = array("ArenaId"=>$ArenaId,"ChipId"=>$ChipId,"ArenaId"=>$ArenaId,"UserIgnore"=>$TokenInfo['UserId'],"UserId"=>$UserId,"Page"=>$Page,"PageSize"=>$PageSize);
+            }
+            $oUserRace = new Xrace_UserRace();
+            //获取用户约战队列
+            $UserRaceList = $oUserRace->getUserRaceList($params,array("UserRaceId,RaceId,ChipId"));
+            if(count($UserRaceList['UserRaceList']))
+            {
+                $oArena = new Xrace_Arena();
+                //初始化空的场地队列
+                $ArenaList = array();
+                foreach($UserRaceList['UserRaceList'] as $UserRaceId => $ApplyInfo)
+                {
+                    //获取关联的比赛信息
+                    $RaceInfo = $oUserRace->getUserRace($ApplyInfo['RaceId']);
+                    if(isset($RaceInfo['RaceId']))
+                    {
+                        if(!isset($ArenaList[$RaceInfo['ArenaId']]))
+                        {
+                            $ArenaList[$RaceInfo['ArenaId']] = $oArena->getArena($RaceInfo['ArenaId'],"ArenaId,ArenaName");
+                        }
+                        //场地名称
+                        $UserRaceList['UserRaceList'][$UserRaceId]['ArenaName'] = isset($ArenaList[$RaceInfo['ArenaId']])?$ArenaList[$RaceInfo['ArenaId']]['ArenaName']:"未知场地";
+                        $UserRaceList['UserRaceList'][$UserRaceId]['RaceStartTime'] = $RaceInfo['RaceStartTime'];
+                        $UserRaceList['UserRaceList'][$UserRaceId]['RaceEndTime'] = $RaceInfo['RaceEndTime'];
+                    }
+                }
+            }
+            $result = array("return" => 1,"UserRaceList"=>$UserRaceList['UserRaceList']);
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    /**
+     *用户约战信息
+     */
+    public function getUserApplyRaceInfoAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if ($TokenInfo['UserId'])
+        {
+            //申请记录
+            $ApplyId = abs(intval($this->request->ApplyId));
+            //申请记录
+            $ApplyId = abs(intval($this->request->ApplyId));
+            //芯片
+            $ChipId = trim($this->request->ChipId);
+
+            $oUserRace = new Xrace_UserRace();
+            //获取用户约战队列
+            $ApplyInfo = $oUserRace->getUserRaceApply($ApplyId);
+            if(isset($ApplyInfo['ApplyId']))
+            {
+                $oUserInfo = new Xrace_UserInfo();
+                //获取用户信息
+                $UserInfo = $oUserInfo->getUser($ApplyInfo['UserId'],"UserId,Name,Sex");
+                $oArena = new Xrace_Arena();
+                //获取场地信息
+                $ArenaInfo = $oArena->getArena($ApplyInfo['ArenaId'],'ArenaId,ArenaName');
+                //用户姓名
+                $ApplyInfo['Name'] = isset($UserInfo['Name'])?$UserInfo['Name']:"未知用户";
+                    //场地名称
+                $ApplyInfo['ArenaName'] = isset($ArenaInfo['ArenaId'])?$ArenaInfo['ArenaName']:"未知场地";
+                $result = array("return" => 1,"UserRaceApplyInfo"=>$ApplyInfo);
+            }
+            else
+            {
+                $result = array("return" => 0,"comment"=>"无此记录");
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    /**
+     *用户主动加入某个对战
+     */
+    public function userRaceToApplyAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if ($TokenInfo['UserId'])
+        {
+            //申请记录
+            $ApplyId = abs(intval($this->request->ApplyId));
+            //芯片
+            $ChipId = trim($this->request->ChipId);
+            $oUserRace = new Xrace_UserRace();
+            //获取用户约战队列
+            $ApplyInfo = $oUserRace->getUserRaceApply($ApplyId);
+            if(isset($ApplyInfo['ApplyId']))
+            {
+                //如果对战对手是自己
+                if($TokenInfo['UserId']==$ApplyInfo['UserId'])
+                {
+                    $result = array("return" => 0,"comment"=>"咦，不能和自己对战哦");
+                }
+                else
+                {
+                    //获取当前时间
+                    $Time = time();
+                    //如果尚未到这个约战的过期时间
+                    if($Time <= $ApplyInfo['ApplyExceedTime'])
+                    {
+                        //对战信息的处理（单人模式）
+                        $Apply = $oUserRace->insertUserAppliedRace($ApplyId,1,array(array("UserId"=>$TokenInfo['UserId'],"ChipId"=>$ChipId),array("UserId"=>$ApplyInfo['UserId'],"ChipId"=>$ApplyInfo['ChipId'])));
+                        //如果创建成功
+                        if($Apply)
+                        {
+                            //获取比赛信息
+                            $RaceInfo = $oUserRace->getUserRace($Apply);
+                            $oArena = new Xrace_Arena();
+                            $oChip = new Xrace_Chip();
+                            //获取场地信息
+                            $ArenaInfo = $oArena->getArena($RaceInfo['ArenaId'],'ArenaId,ArenaName');
+                            $RaceInfo['ArenaName'] = $ArenaInfo['ArenaName'];
+                            $UserList = $oUserRace->getUserRaceList(array("RaceId"=>$Apply));
+                            foreach($UserList['UserRaceList'] as $UserId => $ApplyInfo)
+                            {
+                                //获得用户信息
+                                $UserInfo = $this->oUser->getUserInfo($UserId,"UserId,Name");
+                                //保存用户姓名
+                                $UserList['UserRaceList'][$UserId]['Name'] = $UserInfo['Name'];
+                                //获取芯片信息
+                                $ChipInfo = $oChip->getChipInfo($ApplyInfo['ChipId'],"ChipId,NickName");
+                                //保存用户姓名
+                                $UserList['UserRaceList'][$UserId]['ChipName'] = $ChipInfo['NickName'];
+                            }
+                            //返回比赛信息
+                            $result = array("return" => 1,"comment"=>"约战成功！","RaceInfo"=>$RaceInfo,"UserList"=>$UserList['UserRaceList']);
+                        }
+                        else
+                        {
+                            $result = array("return" => 0,"comment"=>"约战失败！");
+                        }
+                    }
+                    else
+                    {
+                        $result = array("return" => 0,"comment"=>"约战请求过期了嘛，换个试试");
+                    }
+                }
+            }
+            else
+            {
+                $result = array("return" => 0,"comment"=>"无此记录");
+            }
+        }
+        else
+        {
+            $result = array("return" => 0,"NeedLogin"=>1);
+        }
+        echo json_encode($result);
+    }
+    /**
+     *获取用户对战详情
+     */
+    public function getUserAppliedRaceInfoAction()
+    {
+        //Token
+        $Token = isset($this->request->Token) ? trim($this->request->Token) : "";
+        //获取Tokenx信息
+        $TokenInfo = $this->oUser->getToken($Token);
+        //如果获取到
+        if ($TokenInfo['UserId'])
+        {
+            //比赛记录
+            $RaceId = abs(intval($this->request->RaceId));
+            $oUserRace = new Xrace_UserRace();
+            //获取比赛信息
+            $RaceInfo = $oUserRace->getUserRace($RaceId);
+            //如果找到比赛
+            if($RaceInfo['RaceId'])
+            {
+                $oArena = new Xrace_Arena();
+                $oChip = new Xrace_Chip();
+                //获取场地信息
+                $ArenaInfo = $oArena->getArena($RaceInfo['ArenaId'], 'ArenaId,ArenaName');
+                $RaceInfo['ArenaName'] = $ArenaInfo['ArenaName'];
+                $UserList = $oUserRace->getUserRaceList(array("RaceId" => $RaceId));
+                foreach ($UserList['UserRaceList'] as $UserRaceId => $ApplyInfo)
+                {
+                    //获得用户信息
+                    $UserInfo = $this->oUser->getUserInfo($ApplyInfo['UserId'], "UserId,Name");
+                    //保存用户姓名
+                    $UserList['UserRaceList'][$UserRaceId]['Name'] = $UserInfo['Name'];
+                    //获取芯片信息
+                    $ChipInfo = $oChip->getChipInfo($ApplyInfo['ChipId'], "ChipId,NickName");
+                    //保存用户姓名
+                    $UserList['UserRaceList'][$UserRaceId]['ChipName'] = $ChipInfo['NickName'];
+                }
+                //返回比赛信息
+                $result = array("return" => 1, "RaceInfo" => $RaceInfo, "UserList" => $UserList['UserRaceList']);
+            }
+            else
+            {
+                $result = array("return" => 0,"comment"=>"无此记录");
+            }
         }
         else
         {

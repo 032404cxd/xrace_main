@@ -3771,7 +3771,7 @@ class Xrace_RaceStageController extends AbstractController
             include $this->tpl('403');
         }
     }
-    //单场比赛的成绩单
+    //根据比赛记录更新选手的积分记录
     public function updateCreditByRaceResultAction()
     {
         //检查权限
@@ -3786,7 +3786,6 @@ class Xrace_RaceStageController extends AbstractController
             $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
             //根据比赛结果更新积分
             $update = $this->oRace->updateCreditByRaceResult($RaceId);
-
         }
         else
         {
@@ -4602,5 +4601,166 @@ class Xrace_RaceStageController extends AbstractController
         echo json_encode($response);
         //$oUser->ChipReturn(1374903);
         //ALTER TABLE `user_race` ADD `ChipReturned` ENUM('0','1') NOT NULL DEFAULT '0' COMMENT '是否芯片已归还 0否1是' AFTER `RaceStatus`, ADD INDEX (`ChipReturned`);
+    }
+    //单场比赛的成绩单
+    public function timingDetailListAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission(0);
+        if($PermissionCheck['return'])
+        {
+            $oUser = new Xrace_UserInfo();
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //芯片ID
+            $ChipId = trim(urldecode($this->request->ChipId));
+            //页码
+            $Page= intval($this->request->Page)?intval($this->request->Page):1;
+            //分页大小
+            $PageSize= intval($this->request->PageSize)?intval($this->request->PageSize):20;
+            //是否下载
+            $Download = intval($this->request->Download);
+            //获取比赛信息
+            $RaceInfo = $this->oRace->getRace($RaceId);
+            //数据解包
+            $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+            //解包路径相关的信息
+            $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
+            //获取成绩列表
+            if(count($RaceInfo['comment']['SelectedRaceGroup']))
+            {
+                //分组ID
+                if(count($RaceInfo['comment']['SelectedRaceGroup'])>1)
+                {
+                    $RaceGroupId = intval($this->request->RaceGroupId)>=0?intval($this->request->RaceGroupId):key($RaceInfo['comment']['SelectedRaceGroup']);
+
+                }
+                else
+                {
+                    $RaceGroupId = intval($this->request->RaceGroupId)?intval($this->request->RaceGroupId):key($RaceInfo['comment']['SelectedRaceGroup']);
+                }
+                $oUser = new Xrace_UserInfo();
+                //获取选手名单
+                $params = array('RaceId'=>$RaceInfo['RaceId'],"RaceGroupId"=>$RaceGroupId);
+                $RaceUserList = $oUser->getRaceUserListByRace($params);
+                //初始化空的芯片列表
+                $ChipList = array();
+                $UserUrlList = array();
+                $UserUrlList[""] = "<a href='" . Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"ChipId"=>"")) . "'>全部</a> ";
+                //循环报名记录
+                foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
+                {
+                    //如果有配置芯片数据和BIB
+                    if (trim($ApplyInfo['ChipId']) && trim($ApplyInfo['BIB']))
+                    {
+                        //拼接字符串加入到芯片列表
+                        $ChipList[] = "'" . $ApplyInfo['ChipId'] . "'";
+                        //分别保存用户的ID,姓名和BIB
+                        $UserList[$ApplyInfo['ChipId']] = $ApplyInfo;
+                        $UserUrlList[$ApplyInfo['ChipId']] = $ChipId==$ApplyInfo['ChipId']?$ApplyInfo['Name']." ":"<a href='" . Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"ChipId"=>urldecode($ApplyInfo['ChipId']))) . "'> ".$ApplyInfo['Name']."</a> ";
+                    }
+                }
+                $ChipList = isset($UserList[$ChipId])?array("'" . $ChipId . "'"):$ChipList;
+                $oMylaps = new Xrace_Mylaps();
+                //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
+                $params = array(
+                    'StartTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['StartTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),
+                    'EndTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['EndTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),
+                    'prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'], 'pageSize'=>$PageSize,'Page'=>$Page, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"-1",
+                    'sorted'=>1,'revert'=>1,'getCount'=>1);
+                //获取计时数据
+                $TimingList = $oMylaps->getTimingData($params);
+                foreach($TimingList['Record'] as $RecordId => $Record)
+                {
+                    $TimingList['Record'][$RecordId]['time'] = date("Y-m-d H:i:s",sprintf("%0.3f", $Record['time'])-8*3600).strstr($Record['time'], '.');
+                    $TimingList['Record'][$RecordId]['Name'] = $UserList[$Record['Chip']]['Name'];
+                }
+                $page_url = Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"Page"=>$Page,"PageSize"=>$PageSize,"ChipId"=>urldecode($ChipId)))."&Page=~page~";
+                $page_content =  base_common::multi($TimingList['RecordCount'], $page_url, $Page, $PageSize, 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');
+                //下载链接
+                $DownloadUrl = "<a href='" . Base_Common::getUrl('', 'xrace/race.stage', 'race.result.list', array('RaceId' => $RaceId, 'RaceGroupId' => $RaceGroupId,'Download'=>1)) . "'> 下载</a>";
+                //循环比赛已经开设的分组列表
+                foreach($RaceInfo['comment']['SelectedRaceGroup'] as $GroupId => $GroupInfo)
+                {
+                    $RaceGroupInfo = $this->oRace->getRaceGroup($GroupId,"RaceGroupId,RaceGroupName");
+                    if($RaceGroupInfo['RaceGroupId'])
+                    {
+                        $RaceGroupList[$GroupId]["RaceGroupInfo"] = $RaceGroupInfo;
+                        if($RaceGroupId == $RaceGroupInfo['RaceGroupId'])
+                        {
+                            $RaceGroupList[$GroupId]['DownloadUrl'] = $RaceGroupInfo['RaceGroupName'].$DownloadUrl;
+                        }
+                        else
+                        {
+                            $RaceGroupList[$GroupId]['DownloadUrl'] = "<a href='" . Base_Common::getUrl('', 'xrace/race.stage', 'timing.detail.list', array('RaceId' => $RaceId, 'RaceGroupId' => $GroupId)) . "'>" . $RaceGroupInfo['RaceGroupName'] . "</a>";
+                        }
+                    }
+                }
+                $DownloadUrl = "<a href='" . Base_Common::getUrl('', 'xrace/race.stage', 'race.result.list', array('RaceId' => $RaceId, 'RaceGroupId' => 0,'Download'=>1)) . "'> 下载</a>";
+                if(count($RaceInfo['comment']['SelectedRaceGroup'])>1)
+                {
+                    if($RaceGroupId == 0)
+                    {
+                        $RaceGroupList[0]['DownloadUrl'] = "全场".$DownloadUrl;
+                    }
+                    else
+                    {
+                        $RaceGroupList[0]['DownloadUrl'] = "<a href='" . Base_Common::getUrl('', 'xrace/race.stage', 'timing.detail.list', array('RaceId' => $RaceId, 'RaceGroupId' => 0)) . "'>" . "全场" . "</a>";
+                    }
+                    ksort($RaceGroupList);
+                }
+            }
+            else
+            {
+                //分组ID
+                $RaceGroupId = intval($this->request->RaceGroupId);
+                $oUser = new Xrace_UserInfo();
+                //获取选手名单
+                $params = array('RaceId'=>$RaceInfo['RaceId'],"RaceGroupId"=>$RaceGroupId);
+                $RaceUserList = $oUser->getRaceUserListByRace($params);
+                //初始化空的芯片列表
+                $ChipList = array();
+                $UserUrlList = array();
+                $UserUrlList[0] = "<a href='" . Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"ChipId"=>urldecode($ApplyInfo['ChipId']))) . "'>全部</a> ";
+                //循环报名记录
+                foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
+                {
+                    //如果有配置芯片数据和BIB
+                    if (trim($ApplyInfo['ChipId']) && trim($ApplyInfo['BIB']))
+                    {
+                        //拼接字符串加入到芯片列表
+                        $ChipList[] = "'" . $ApplyInfo['ChipId'] . "'";
+                        //分别保存用户的ID,姓名和BIB
+                        $UserList[$ApplyInfo['ChipId']] = $ApplyInfo;
+                        $UserUrlList[$ApplyInfo['ChipId']] = $ChipId==$ApplyInfo['ChipId']?$ApplyInfo['Name']." ":"<a href='" . Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"ChipId"=>urldecode($ApplyInfo['ChipId']))) . "'> ".$ApplyInfo['Name']."</a> ";
+                    }
+                }
+                $ChipList = isset($UserList[$ChipId])?array("'" . $ChipId . "'"):$ChipList;
+                $oMylaps = new Xrace_Mylaps();
+                //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
+                $params = array(
+                    'StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),
+                    'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),
+                    'prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'],  'pageSize'=>$PageSize,'Page'=>$Page,
+                    'ChipList'=>count($ChipList) ? implode(",",$ChipList):"-1",
+                    'sorted'=>1,'revert'=>1,'getCount'=>1);
+                //获取计时数据
+                $TimingList = $oMylaps->getTimingData($params);
+                foreach($TimingList['Record'] as $RecordId => $Record)
+                {
+                    $TimingList['Record'][$RecordId]['time'] = date("Y-m-d H:i:s",sprintf("%0.3f", $Record['time'])-8*3600).strstr($Record['time'], '.');
+                    $TimingList['Record'][$RecordId]['Name'] = $UserList[$Record['Chip']]['Name'];
+                }
+                $page_url = Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"Page"=>$Page,"PageSize"=>$PageSize,"ChipId"=>urldecode($ChipId)))."&Page=~page~";
+                $page_content =  base_common::multi($TimingList['RecordCount'], $page_url, $Page, $PageSize, 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');
+            }
+            //渲染模板
+            include $this->tpl('Xrace_Race_TimingDetail');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
     }
 }

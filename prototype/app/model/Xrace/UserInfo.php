@@ -401,10 +401,8 @@ class Xrace_UserInfo extends Base_Widget
  */
     public function getUser($UserId, $fields = '*')
     {
-        echo $UserId;
         $UserId = intval($UserId);
         $table_to_process = Base_Widget::getDbTable($this->table);
-        echo $table_to_process;
         return $this->db->selectRow($table_to_process, $fields, '`UserId` = ?', $UserId);
     }
     /**

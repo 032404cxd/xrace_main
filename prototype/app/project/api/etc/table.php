@@ -202,4 +202,12 @@ $table['config_arena']['num'] = 1;
 $table['RaceApplyQueue']['db'] = 'xrace_race';
 $table['RaceApplyQueue']['num'] = 1;
 
+#约战队列
+$table['AppliedRaceList']['db'] = 'xrace_race';
+$table['AppliedRaceList']['num'] = 1;
+
+#用户参赛信息
+$table['UserRaceList']['db'] = 'xrace_race';
+$table['UserRaceList']['num'] = 1;
+
 return $table;

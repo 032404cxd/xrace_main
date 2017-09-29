@@ -186,5 +186,13 @@ $table['config_aid_code']['num'] = 1;
 $table['config_aid_code_type']['db'] = 'xrace_config';
 $table['config_aid_code_type']['num'] = 1;
 
+//用户参加队伍列表
+$table['times']['db'] = 'mylaps';
+$table['times']['num'] = 1;
+
+//用户参加队伍列表
+$table['times_sorted']['db'] = 'mylaps';
+$table['times_sorted']['num'] = 1;
+
 
 return $table;
