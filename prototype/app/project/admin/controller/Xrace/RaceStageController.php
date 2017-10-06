@@ -768,6 +768,10 @@ class Xrace_RaceStageController extends AbstractController
 			$MaxTeamRank = 5;
 			for($i=1;$i<=$MaxTeamRank;$i++)
 			{$t[$i] = $i;}
+            //获取关联赛事下的积分类目列表
+            $CreditArr = $this->oCredit->getCreditList($RaceStageInfo['RaceCatalogId']);
+            $CreditArr[0] = array("CreditId"=>0,"CreditName"=>"全部","checked"=>1);
+            ksort($CreditArr);
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceAdd');
 		}
@@ -859,6 +863,17 @@ class Xrace_RaceStageController extends AbstractController
 				$MaxTeamRank = 5;
 				for($i=1;$i<=$MaxTeamRank;$i++)
 				{$t[$i] = $i;}
+                //获取关联赛事下的积分类目列表
+                $CreditArr = $this->oCredit->getCreditList($RaceStageInfo['RaceCatalogId']);
+				$CreditArr[0] = array("CreditId"=>0,"CreditName"=>"全部");
+				foreach($RaceInfo['RouteInfo']['ResultCreditList'] as $CreditId => $CreditInfo)
+                {
+                    if(isset($RaceInfo['RouteInfo']['ResultCreditList'][$CreditId]))
+                    {
+                        $CreditArr[$CreditId]['checked'] = 1;
+                    }
+                }
+                ksort($CreditArr);
 				//渲染模板
 				include $this->tpl('Xrace_Race_RaceModify');
 			}
@@ -898,9 +913,8 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsDB','MylapsPrefix','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm');
-        $test = intval($this->request->test);
-        //转化时间为时间戳
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsDB','MylapsPrefix','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm','CreditList','FinalResultType');
+		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
 		$StartTime = strtotime(trim($bind['StartTime']));
@@ -1015,7 +1029,29 @@ class Xrace_RaceStageController extends AbstractController
 				//成绩计算方式
 				$bind['RouteInfo']['RaceTimingResultType'] = trim($bind['RaceTimingResultType']);
 				unset($bind['RaceTimingResultType']);
-				//循环选定的分组
+                //成绩计算方式
+                $bind['RouteInfo']['FinalResultType'] = trim($bind['FinalResultType']);
+                unset($bind['FinalResultType']);
+                if($bind['RouteInfo']['FinalResultType']=='credit')
+                {
+                    if(isset($bind['CreditList'][0]))
+                    {
+                        foreach($bind['CreditList'] as $CreditId => $value)
+                        {
+                            if($CreditId!=0)
+                            {
+                                unset($bind['CreditList'][$CreditId]);
+                            }
+                        }
+                    }
+                    $bind['RouteInfo']['ResultCreditList'] = $bind['CreditList'];
+                }
+                else
+                {
+                    unset($bind['RouteInfo']['ResultCreditList']);
+                }
+                unset($bind['CreditList']);
+                //循环选定的分组
                 foreach($bind['SelectedRaceGroup'] as $Group => $GroupInfo)
                 {
                     //删除未选定的元素
@@ -1069,7 +1105,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsDB','MylapsPrefix','RaceTimingType','RaceTimingResultType','FinalResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsDB','MylapsPrefix','RaceTimingType','RaceTimingResultType','FinalResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm','CreditList');
         //转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -1198,6 +1234,25 @@ class Xrace_RaceStageController extends AbstractController
                 //成绩计算方式
                 $bind['RouteInfo']['FinalResultType'] = trim($bind['FinalResultType']);
                 unset($bind['FinalResultType']);
+                if($bind['RouteInfo']['FinalResultType']=='credit')
+                {
+                    if(isset($bind['CreditList'][0]))
+                    {
+                        foreach($bind['CreditList'] as $CreditId => $value)
+                        {
+                            if($CreditId!=0)
+                            {
+                                unset($bind['CreditList'][$CreditId]);
+                            }
+                        }
+                    }
+                    $bind['RouteInfo']['ResultCreditList'] = $bind['CreditList'];
+                }
+                else
+                {
+                    unset($bind['RouteInfo']['ResultCreditList']);
+                }
+                unset($bind['CreditList']);
                 //循环选定的分组
                 foreach($bind['SelectedRaceGroup'] as $Group => $GroupInfo)
                 {

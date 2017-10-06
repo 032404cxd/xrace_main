@@ -1,4 +1,16 @@
 {tpl:tpl contentHeader/}
+<script type="text/javascript">
+    function FinalResultChange(Rtype){
+        if(Rtype=="credit")
+        {
+            $("#CreditList").show();
+        }
+        else
+        {
+            $("#CreditList").hide();
+        }
+    }
+</script>
 <form id="race_add_form" name="race_add_form" action="{tpl:$this.sign/}&ac=race.update" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceInfo.RaceStageId/}" />
 <input type="hidden" name="RaceId" id="RaceId" value="{tpl:$RaceId/}" />
@@ -62,12 +74,14 @@
 			</select>
 		</th></tr>
 	<tr class="hover"><th align="center" class="rowtip">最终成绩计算方式</th><th align="center" class="rowtip">
-			<select name="FinalResultType" size="1" class="span2">
+			<select name="FinalResultType" size="1" class="span2"  onchange="FinalResultChange($(this).val())">
 				{tpl:loop $FinalResultTypeList $FinalResultType $FinalResultTypeName}
-				<option value="{tpl:$FinalResultType/}" {tpl:if($FinalResultType==$RaceInfo.RouteInfo.FinalResultType)}selected="selected"{/tpl:if}>{tpl:$FinalResultTypeName/}</option>
+				<option value="{tpl:$FinalResultType/}" {tpl:if($FinalResultType==$RaceInfo.RouteInfo.FinalResultType)}selected="selected"  {tpl:if($FinalResultType=="credit")}
+				{/tpl:if} {/tpl:if}>{tpl:$FinalResultTypeName/}</option>
 				{/tpl:loop}
 			</select>
-		</th></tr>
+			<input type="hidden" name="t" id="t" value="{tpl:$RaceInfo.RouteInfo.FinalResultType/}">
+			<div id="CreditList">{tpl:loop $CreditArr $CreditId $CreditInfo} <input type = 'checkbox' name = 'CreditList[{tpl:$CreditId/}]' {tpl:if($CreditInfo.checked==1)}checked{/tpl:if} value="1">{tpl:$CreditInfo.CreditName/} {/tpl:loop}</div></th></tr>
 	<tr class="hover"><th align="center" class="rowtip">团队排名/个人排名</th><th align="center" class="rowtip">
 			<select name="ResultType" size="1" class="span2">
 				{tpl:loop $RaceResultTypeList $RaceResulutType $RaceResulutName}
@@ -134,5 +148,17 @@ $('#race_add_submit').click(function(){
 	};
 	$('#race_add_form').ajaxForm(options);
 });
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        if($("#t").val()=="credit")
+        {
+            $("#CreditList").show();
+        }
+        else
+        {
+            $("#CreditList").hide();
+        }
+    });
 </script>
 {tpl:tpl contentFooter/}

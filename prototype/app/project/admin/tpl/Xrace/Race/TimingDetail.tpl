@@ -19,8 +19,9 @@
         {tpl:$url/}
         {/tpl:loop}
       <table width="99%" align="center" class="table table-bordered table-striped">
-    <th align="center" class="rowtip" colspan="2">芯片</th>
-    <th align="center" class="rowtip" colspan="10">选手</th>
+    <th align="center" class="rowtip" >芯片</th>
+    <th align="center" class="rowtip" >选手</th>
+    <th align="center" class="rowtip" >位置</th>
   </tr>
 
       {tpl:loop $TimingList.Record $id $RecordInfo}
@@ -29,10 +30,12 @@
     <th align="center" class="rowtip">{tpl:$RecordInfo.Chip/}</th>
           <th align="center" class="rowtip">{tpl:$RecordInfo.Name/}</th>
           <th align="center" class="rowtip">{tpl:$RecordInfo.time/}</th>
+            <th align="center" class="rowtip">{tpl:$RecordInfo.Location/}</th>
+
         </tr>
       {/tpl:loop}
           <tr>
-              <th align="center" class="rowtip" colspan="3">{tpl:$page_content/}</th>
+              <th align="center" class="rowtip" colspan="4">{tpl:$page_content/}</th>
           </tr>
 </table>
 

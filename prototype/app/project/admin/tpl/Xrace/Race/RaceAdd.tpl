@@ -1,4 +1,20 @@
 {tpl:tpl contentHeader/}
+<script type="text/javascript">
+    function FinalResultChange(Rtype){
+        if(Rtype=="credit")
+		{
+			$("#CreditList").show();
+		}
+		else
+		{
+			$("#CreditList").hide();
+		}
+    }
+    $(document).ready(function(){
+        $("#CreditList").hide();
+    });
+</script>
+
 <form id="race_add_form" name="race_add_form"" action="{tpl:$this.sign/}&ac=race.insert" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped">
@@ -67,12 +83,12 @@
 			</select>
 		</th></tr>
 	<tr class="hover"><th align="center" class="rowtip">最终成绩计算方式</th><th align="center" class="rowtip">
-			<select name="FinalResultType" size="1" class="span2">
+			<select name="FinalResultType" size="1" class="span2" onchange="FinalResultChange($(this).val())">
 				{tpl:loop $FinalResultTypeList $FinalResultType $FinalResultTypeName}
-				<option value="{tpl:$FinalResultType/}" >{tpl:$FinalResultTypeName/}</option>
+				<option value="{tpl:$FinalResultType/}">{tpl:$FinalResultTypeName/}</option>
 				{/tpl:loop}
 			</select>
-		</th></tr>
+			<div id="CreditList">{tpl:loop $CreditArr $CreditId $CreditInfo} <input type = 'checkbox' name = 'CreditList[{tpl:$CreditId/}]' {tpl:if($CreditInfo.checked==1)}checked{/tpl:if} value="1">{tpl:$CreditInfo.CreditName/} {/tpl:loop}</div></th></tr>
 	<tr class="hover"><th align="center" class="rowtip">团队排名/个人排名</th><th align="center" class="rowtip">
 			<select name="ResultType" size="1" class="span2">
 				{tpl:loop $RaceResultTypeList $RaceResulutType $RaceResulutName}

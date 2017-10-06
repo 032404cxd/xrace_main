@@ -190,4 +190,16 @@ $table['config_aid_code_type']['num'] = 1;
 $table['RaceApplyQueue']['db'] = 'xrace_race';
 $table['RaceApplyQueue']['num'] = 1;
 
+#约战队列
+$table['AppliedRaceList']['db'] = 'xrace_race';
+$table['AppliedRaceList']['num'] = 1;
+
+#用户参赛信息
+$table['UserRaceList']['db'] = 'xrace_race';
+$table['UserRaceList']['num'] = 1;
+
+#用户芯片列表
+$table['ChipList']['db'] = 'xrace_user';
+$table['ChipList']['num'] = 1;
+
 return $table;

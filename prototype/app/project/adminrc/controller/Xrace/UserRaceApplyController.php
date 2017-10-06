@@ -31,7 +31,7 @@ class Xrace_UserRaceApplyController extends AbstractController
         $this->oArena = new Xrace_Arena();
 
 	}
-	//用户列表
+	//用户约战待处理队列
 	public function indexAction()
 	{
 		//检查权限

@@ -1669,7 +1669,7 @@ class XraceUserController extends AbstractController
                 foreach($UserRaceList['UserRaceList'] as $UserRaceId => $ApplyInfo)
                 {
                     //获取关联的比赛信息
-                    $RaceInfo = $oUserRace->getUserRace($ApplyInfo['RaceId']);
+                    $RaceInfo = $oUserRace->getAppliedRace($ApplyInfo['RaceId']);
                     if(isset($RaceInfo['RaceId']))
                     {
                         if(!isset($ArenaList[$RaceInfo['ArenaId']]))
@@ -1777,7 +1777,7 @@ class XraceUserController extends AbstractController
                         if($Apply)
                         {
                             //获取比赛信息
-                            $RaceInfo = $oUserRace->getUserRace($Apply);
+                            $RaceInfo = $oUserRace->getAppliedRace($Apply);
                             $oArena = new Xrace_Arena();
                             $oChip = new Xrace_Chip();
                             //获取场地信息
@@ -1836,7 +1836,7 @@ class XraceUserController extends AbstractController
             $RaceId = abs(intval($this->request->RaceId));
             $oUserRace = new Xrace_UserRace();
             //获取比赛信息
-            $RaceInfo = $oUserRace->getUserRace($RaceId);
+            $RaceInfo = $oUserRace->getAppliedRace($RaceId);
             //如果找到比赛
             if($RaceInfo['RaceId'])
             {

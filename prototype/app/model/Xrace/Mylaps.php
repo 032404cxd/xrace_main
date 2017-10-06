@@ -38,7 +38,7 @@ class Xrace_Mylaps extends Base_Widget
                 $whereChipList = " Chip in (".$params['ChipList'].") ";
             }
         }
-        //$whereChipList = isset($params['ChipList']) && $params['ChipList'] != "0"?" Chip in (".$params['ChipList'].") ":"0";
+
         $whereStart = isset($params['LastId'])?" Id >".$params['LastId']." ":"";
         $whereStartTime = isset($params['StartTime'])?" ChipTime >'".$params['StartTime']."' ":"";
         $whereEndTime = isset($params['EndTime'])?" ChipTime <='".$params['EndTime']."' ":"";
