@@ -587,13 +587,13 @@ class Xrace_UserController extends AbstractController
 					$UserLicenseInfo['LicenseStatus'] = 2;
 				}
 				$UserLicenseList['UserLicenseList'][$UserLicenseId]['LicenseStatusName'] = $UserLicenseStatusList[$UserLicenseInfo['LicenseStatus']];
-				//获得赛组信息
+				//获得分组信息
 				$RaceGroupInfo = $this->oRace->getRaceGroup($UserLicenseInfo['RaceGroupId'], 'RaceGroupName');
-				//获得赛组名称
+				//保存分组名称
 				$UserLicenseList['UserLicenseList'][$UserLicenseId]['RaceGroupName'] = $RaceGroupInfo['RaceGroupName'];
-				//获得赛组信息
+				//获得赛事信息
 				$RaceCatalogInfo = $this->oRace->getRaceCatalog($UserLicenseInfo['RaceCatalogId'], 'RaceCatalogName',0);
-				//获得赛组名称
+				//保存赛事名称
 				$UserLicenseList['UserLicenseList'][$UserLicenseId]['RaceCatalogName'] = $RaceCatalogInfo['RaceCatalogName'];
 				//获得管理员信息
 				$UserLicenseList['UserLicenseList'][$UserLicenseId]['ManagerName'] = $this->oManager->getOne($UserLicenseInfo['ManagerId'], 'name');

@@ -65,6 +65,7 @@
     <th  align="center" class="rowtip" colspan="2">队伍</th>
     <th  align="center" class="rowtip" colspan="2">当前位置</th>
     <th  align="center" class="rowtip" colspan="2">积分获取</th>
+    <th  align="center" class="rowtip" colspan="2">总积分</th>
   </tr>
   {tpl:loop $RaceResultList.UserRaceInfo.Total $Tid $TInfo}
   <tr>
@@ -82,6 +83,7 @@
         {/tpl:loop}
         {/tpl:if}
     </th>
+    <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.TotalCredit/}</th>
   </tr>
   {/tpl:loop}
   <tr><th  align="center" class="rowtip" colspan="6">团队排名（每队第 {tpl:$RaceInfo.comment.TeamResultRank/} 人）</th></tr>

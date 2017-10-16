@@ -3841,6 +3841,8 @@ class Xrace_RaceStageController extends AbstractController
             $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
             //根据比赛结果更新积分
             $update = $this->oRace->updateCreditByRaceResult($RaceId);
+            //返回之前页面
+            $this->response->goBack();
         }
         else
         {
@@ -4654,8 +4656,6 @@ class Xrace_RaceStageController extends AbstractController
         }
         $response = $Success ? array('errno' => 0,'Success'=>$Success) : array('errno' => 9);
         echo json_encode($response);
-        //$oUser->ChipReturn(1374903);
-        //ALTER TABLE `user_race` ADD `ChipReturned` ENUM('0','1') NOT NULL DEFAULT '0' COMMENT '是否芯片已归还 0否1是' AFTER `RaceStatus`, ADD INDEX (`ChipReturned`);
     }
     //单场比赛的成绩单
     public function timingDetailListAction()

@@ -445,6 +445,8 @@ class Xrace_UserRace extends Base_Widget
                 {
                     //事务提交
                     $this->db->commit();
+                    $oAction = new Xrace_Action();
+                    $CreditList = $oAction->CreditByAction("rc_daily_race",$params['WinnerUser'],array("UserRaceId"=>$params['RaceId']));
                     return true;
                 }
                 else

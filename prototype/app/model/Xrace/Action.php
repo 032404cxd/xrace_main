@@ -99,7 +99,7 @@ class Xrace_Action extends Base_Widget
      * @param string $fields
      * @return array
      */
-    public function CreditByAction($Action,$UserId)
+    public function CreditByAction($Action,$UserId,$params)
     {
         //通过动作标识获取到动作的信息
         $ActionInfo = $this->getActionByAction($Action);
@@ -116,7 +116,7 @@ class Xrace_Action extends Base_Widget
             foreach($ActionInfo['CreditList'] as $key => $CreditInfo)
             {
                 //积分变更操作
-                $Credit = $oCredit->Credit($CreditInfo,array("ActionId"=>$ActionInfo['ActionId']),$UserId);
+                $Credit = $oCredit->Credit($CreditInfo,array_merge(array("ActionId"=>$ActionInfo['ActionId']),$params),$UserId);
                 //如果成功
                 if($Credit)
                 {

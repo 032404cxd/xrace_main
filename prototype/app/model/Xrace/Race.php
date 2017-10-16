@@ -1528,7 +1528,7 @@ class Xrace_Race extends Base_Widget
         {
             $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.user.race.info',array('Force'=>1,'RaceId'=>$RaceId));
         }
-        echo $url;
+        //echo $url;
         $return = Base_Common::do_post($url);
 		return json_decode($return,true);
 	}
@@ -1996,36 +1996,73 @@ class Xrace_Race extends Base_Widget
     }
     public function updateCreditByRaceResult($RaceId)
     {
-
+        $Success = 0;
         //获取成绩列表
         $RaceResultList = $this->getRaceResult($RaceId);
         if(count($RaceResultList['UserRaceInfo']['Total']))
         {
             $oCredit = new Xrace_Credit();
-            $CreditLog = $oCredit->getCreditLog(array("RaceId"=>$RaceId));
+            $oUser = new Xrace_UserInfo();
             //循环所有用户
-            foreach($RaceResultList['UserRaceInfo']['Total'] as $UserInfo)
+            foreach($RaceResultList['UserRaceInfo']['Total'] as $RaceUserInfo)
             {
                 //如果用户可以获得积分
-                if(isset($UserInfo['Credit']))
+                if(isset($RaceUserInfo['Credit']))
                 {
-                    print_R($UserInfo);
-                    continue;
-                    //循环各个累加的积分
-                    foreach($UserInfo['Credit'] as $CreditId => $Credit)
+                    $UserInfo = $oUser->getUserByColumn("RaceUserId",$RaceUserInfo['RaceUserId'],"UserId,RaceUserId");
+                    if(isset($UserInfo['UserId']))
                     {
                         //根据比赛和分组的记录，获取积分更新记录
-                        //$CreditLog = $this->oCredit->getCreditLog(array("RaceId"=>$RaceId),$fields = array("*"))
-                        //积分更新
-                        //$updateCredit = $this->oCredit->Credit(array("CreditId"=>$CreditId,"Credit"=>$Credit),array("RaceId"=>$RaceId, "RaceGroupId"=>$UserInfo["RaceGroupId"]),$UserInfo['UserId']);
-                        //echo "updateCredit:".$updateCredit."<br>";
+                        $CreditLog = $oCredit->getCreditLog(array("RaceId"=>$RaceId,"UserId"=>$UserInfo['UserId']),$fields = array("*"));
+                        continue;
+                        if(count($UserInfo['Credit']>0))
+                        {
+                            //循环各个累加的积分
+                            foreach($RaceUserInfo['Credit'] as $CreditId => $Credit)
+                            {
+                                $pass = 0;
+                                //循环积分日志
+                                foreach($CreditLog['CreditLog'] as $key => $CreditInfo)
+                                {
+                                    //如果有记录相符
+                                    if(($CreditInfo['RaceGroupId'] == $RaceUserInfo["RaceGroupId"]) && ($CreditInfo['RaceId'] == $RaceId) && ($CreditInfo['CreditId'] == $CreditId))
+                                    {
+                                        $pass = 1;
+                                    }
+                                }
+                                if($pass == 0)
+                                {
+                                    //积分更新
+                                    //$updateCredit = $oCredit->Credit(array("CreditId"=>$CreditId,"Credit"=>$Credit['Credit']),array("RaceId"=>$RaceId, "RaceGroupId"=>$RaceUserInfo["RaceGroupId"]),$UserInfo['UserId']);
+                                    if($updateCredit)
+                                    {
+                                        $Success ++;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //循环各个累加的积分
+                            foreach($RaceUserInfo['Credit'] as $CreditId => $Credit)
+                            {
+                                //积分更新
+                                //$updateCredit = $oCredit->Credit(array("CreditId"=>$CreditId,"Credit"=>$Credit['Credit']),array("RaceId"=>$RaceId, "RaceGroupId"=>$RaceUserInfo["RaceGroupId"]),$UserInfo['UserId']);
+                                if($updateCredit)
+                                {
+                                    $Success ++;
+                                }
+                            }
+                        }
+
                     }
                 }
             }
+            return $Success;
         }
         else
         {
-            return false;
+            return 0;
         }
     }
 }

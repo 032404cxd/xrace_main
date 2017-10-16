@@ -148,6 +148,7 @@ class Xrace_Credit extends Base_Widget
     }
     public function Credit($CreditInfo,$params,$UserId,$Status = 1)
     {
+        var_dump($params);
         //检查是否已经领取上限
         $Check = $this->checkCreditFrequency($UserId,$CreditInfo,$params);
         if(!$Check)
@@ -236,6 +237,8 @@ class Xrace_Credit extends Base_Widget
         $whereEndTime = isset($params['EndTime'])?" Time <= '".$params['EndTime']."' ":"";
         //订单
         $whereOrder = (isset($params['OrderId']) && $params['OrderId']!="")?" OrderId = '".$params['OrderId']."' ":"";
+        //订单
+        $whereUserApplied = (isset($params['UserApplied']) && $params['UserApplied']!=0)?" UserRaceId = '".$params['OrderId']."' ":"";
         //所有查询条件置入数组
         $whereCondition = array($whereAction,$whereCredit,$whereRace,$whereUser,$whereStartTime,$whereEndTime,$whereOrder);
         //生成条件列

@@ -1666,6 +1666,8 @@ class XraceUserController extends AbstractController
                 $oArena = new Xrace_Arena();
                 //初始化空的场地队列
                 $ArenaList = array();
+                //获取比赛状态列表
+                $RaceStatusList = $oUserRace->getRaceStausList();
                 foreach($UserRaceList['UserRaceList'] as $UserRaceId => $ApplyInfo)
                 {
                     //获取关联的比赛信息
@@ -1680,6 +1682,8 @@ class XraceUserController extends AbstractController
                         $UserRaceList['UserRaceList'][$UserRaceId]['ArenaName'] = isset($ArenaList[$RaceInfo['ArenaId']])?$ArenaList[$RaceInfo['ArenaId']]['ArenaName']:"未知场地";
                         $UserRaceList['UserRaceList'][$UserRaceId]['RaceStartTime'] = $RaceInfo['RaceStartTime'];
                         $UserRaceList['UserRaceList'][$UserRaceId]['RaceEndTime'] = $RaceInfo['RaceEndTime'];
+                        //保存比赛状态信息
+                        $UserRaceList['UserRaceList'][$UserRaceId]['RaceStatusName'] = $RaceStatusList[$RaceInfo['RaceStatus']];
                     }
                 }
             }
@@ -1842,10 +1846,21 @@ class XraceUserController extends AbstractController
             {
                 $oArena = new Xrace_Arena();
                 $oChip = new Xrace_Chip();
+                //获取比赛状态列表
+                $RaceStatusList = $oUserRace->getRaceStausList();
+                //获取用户对战状态列表
+                $UserRaceStausList = $oUserRace->getUserRaceStausList();
                 //获取场地信息
                 $ArenaInfo = $oArena->getArena($RaceInfo['ArenaId'], 'ArenaId,ArenaName');
+                //数据解包
+                $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+                //保存场地信息
                 $RaceInfo['ArenaName'] = $ArenaInfo['ArenaName'];
+                //保存比赛状态信息
+                $RaceInfo['RaceStatusName'] = $RaceStatusList[$RaceInfo['RaceStatus']];
+                //获取选手列表
                 $UserList = $oUserRace->getUserRaceList(array("RaceId" => $RaceId));
+                //循环选手列表
                 foreach ($UserList['UserRaceList'] as $UserRaceId => $ApplyInfo)
                 {
                     //获得用户信息
@@ -1856,6 +1871,9 @@ class XraceUserController extends AbstractController
                     $ChipInfo = $oChip->getChipInfo($ApplyInfo['ChipId'], "ChipId,NickName");
                     //保存用户姓名
                     $UserList['UserRaceList'][$UserRaceId]['ChipName'] = $ChipInfo['NickName'];
+                    //保存用户比赛状态
+                    $UserList['UserRaceList'][$UserRaceId]['ResultName'] = $UserRaceStausList[$ApplyInfo['Result']];
+
                 }
                 //返回比赛信息
                 $result = array("return" => 1, "RaceInfo" => $RaceInfo, "UserList" => $UserList['UserRaceList']);

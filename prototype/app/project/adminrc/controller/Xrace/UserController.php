@@ -1318,8 +1318,10 @@ class Xrace_UserController extends AbstractController
             $ActionId = intval($this->request->ActionId);
             //订单ID
             $OrderId = trim($this->request->OrderId);
+            //订单ID
+            $UserApplied = abs(intval($this->request->UserApplied));
             //传入的参数列表
-            $params = array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"CreditId"=>$CreditId,"ActionId"=>$ActionId,"OrderId"=>$OrderId);
+            $params = array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"CreditId"=>$CreditId,"ActionId"=>$ActionId,"OrderId"=>$OrderId,"UserApplied"=>$UserApplied);
             //获取赛事列表
             $RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"RaceCatalogId,RaceCatalogName",0);
             //获取积分列表

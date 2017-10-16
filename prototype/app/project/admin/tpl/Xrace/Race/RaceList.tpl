@@ -7,7 +7,7 @@
     RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.modify&RaceId=' + rid + '&RaceGroupId=' + gid, {title:'修改比赛-'+rname,width:1000,height:750});
   }
   function RaceUserUpload(rid,rname,gid){
-    RaceModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.upload.submit&RaceId=' + rid + '&RaceGroupId=' + gid, {title:'批量导入报名记录-'+rname,width:400,height:250});
+    RaceUserUploadBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.upload.submit&RaceId=' + rid + '&RaceGroupId=' + gid, {title:'批量导入报名记录-'+rname,width:400,height:250});
   }
   function RaceUserList(rid,rname,gname){
     RaceUserListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.list&RaceId=' + rid, {title:rname+'选手名单',width:1200,height:800});
@@ -19,19 +19,22 @@
     RaceResultListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.result.list&RaceId=' + rid , {title:rname+'成绩单',width:1000,height:750});
   }
   function TimingDetailList(rid,rname){
-      RaceResultListBox = divBox.showBox('{tpl:$this.sign/}&ac=timing.detail.list&RaceId=' + rid , {title:rname+'计时记录详情',width:1000,height:750});
+    TimingDetailListBox = divBox.showBox('{tpl:$this.sign/}&ac=timing.detail.list&RaceId=' + rid , {title:rname+'计时记录详情',width:1000,height:750});
   }
-  function RaceDelete(r_id, r_name){
-    deleteAppBox = divBox.confirmBox({content:'是否删除 ' + r_name + '?<p>关联的报名记录和计时点配置将同时删除',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.delete&RaceId=' + r_id;}});
+  function RaceDelete(rid, r_name){
+    deleteAppBox = divBox.confirmBox({content:'是否删除 ' + r_name + '?<p>关联的报名记录和计时点配置将同时删除',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.delete&RaceId=' + rid;}});
   }
   function RaceCopy(rid){
     RaceCopyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.copy.submit&RaceId=' + rid, {title:'复制比赛',width:400,height:200});
   }
-  function RaceResultUpdate(r_id){
-    deleteAppBox = divBox.confirmBox({content:'是否更新比赛记录?<p>将于几分钟内由定时任务更新',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.result.update&RaceId=' + r_id;}});
+  function RaceResultUpdate(rid){
+    RaceResultUpdateBox = divBox.confirmBox({content:'是否更新比赛记录?<p>将于几分钟内由定时任务更新',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.result.update&RaceId=' + rid;}});
   }
-  function RaceResultConfirm(r_id){
-      RaceResultConfirmBox= divBox.confirmBox({content:'确认成绩并发布 ?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.result.confirm&RaceId=' + r_id;}});
+  function RaceResultConfirm(rid){
+    RaceResultConfirmBox= divBox.confirmBox({content:'确认成绩并发布 ?',ok:function(){location.href = '{tpl:$this.sign/}&ac=race.result.confirm&RaceId=' + rid;}});
+  }
+  function UpdateUserCreditByRace(rid,rname){
+    UpdateUserCreditByRaceBox= divBox.confirmBox({content:'确定根据 '+ rname +' 比赛结果进行积分累加?',ok:function(){location.href = '{tpl:$this.sign/}&ac=update.credit.by.race.result&RaceId=' + rid;}});
   }
 </script>
 <form action="{tpl:$this.sign/}&ac=race.update" name="form" id="form" method="post">
@@ -65,7 +68,7 @@
     <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceModify('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceGroupId/}')">修改</a> | <a href="javascript:;" onclick="RaceUserUpload('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}','{tpl:$RaceGroupId/}')">导入报名</a>
      | <a href="{tpl:$this.sign/}&ac=race.detail&RaceId={tpl:$RaceInfo.RaceId/}&RaceGroupId={tpl:$RaceInfo.RaceGroupId/}">计时点</a> | <a href="{tpl:$this.sign/}&ReturnType=1&ac=race.user.list&RaceId={tpl:$RaceInfo.RaceId/}">名单</a> | <a href="javascript:;" onclick="AutoAsignBIB('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">自动分配BIB</a>
       | <a  href="javascript:;" onclick="RaceResultUpdate('{tpl:$RaceInfo.RaceId/}')">成绩更新</a> | <a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">成绩单</a> {tpl:if($RaceInfo.comment.ResultNeedConfirm==1)}| {tpl:if($RaceInfo.comment.RaceResultConfirm.ConfirmStatus==1)}成绩已发布{tpl:else}<a  href="javascript:;" onclick="RaceResultConfirm('{tpl:$RaceInfo.RaceId/}');">成绩确认发布</a>{/tpl:if}{/tpl:if}
-      | <a  href="javascript:;" onclick="RaceDelete('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">删除</a> | <a  href="javascript:;" onclick="RaceCopy('{tpl:$RaceInfo.RaceId/}')">复制</a> | <a href="{tpl:$this.sign/}&ac=race.check.in.submit&RaceId={tpl:$RaceInfo.RaceId/}" target="_blank">检录</a>| <a href="javascript:;" onclick="TimingDetailList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">计时记录详情</a></th>
+      | <a  href="javascript:;" onclick="RaceDelete('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">删除</a> | <a  href="javascript:;" onclick="RaceCopy('{tpl:$RaceInfo.RaceId/}')">复制</a> | <a href="{tpl:$this.sign/}&ac=race.check.in.submit&RaceId={tpl:$RaceInfo.RaceId/}" target="_blank">检录</a> | <a href="javascript:;" onclick="TimingDetailList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">计时记录详情</a>| <a href="javascript:;" onclick="UpdateUserCreditByRace('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">比赛积分累计</a></th>
     </th>
   </tr>
   {/tpl:loop}

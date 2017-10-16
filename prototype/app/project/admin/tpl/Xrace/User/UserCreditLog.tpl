@@ -134,6 +134,7 @@
           <th align="center" class="rowtip">动作</th>
           <th align="center" class="rowtip">比赛</th>
         <th align="center" class="rowtip">组别</th>
+          <th align="center" class="rowtip">用户对战ID</th>
           <th align="center" class="rowtip">订单号</th>
         <th align="center" class="rowtip">状态</th>
       </tr>
@@ -147,6 +148,7 @@
           <td align="center">{tpl:$LogInfo.ActionName/}</td>
           <td align="center">{tpl:$LogInfo.RaceName/}</td>
           <td align="center">{tpl:$LogInfo.RaceGroupName/}</td>
+          <td align="center">{tpl:$LogInfo.UserRaceId/}</td>
           <td align="center">{tpl:$LogInfo.OrderId/}</td>
           <td align="center">{tpl:if(1==$LogInfo.Status)}已生效{tpl:else}待确认{/tpl:if}</td>
       </tr>

@@ -107,7 +107,7 @@ $table['config_race_group']['db'] = 'xrace_config';
 $table['config_race_group']['num'] = 1;
 
 #管理员
-$table['config_manager']['db'] = 'xrace_config';
+$table['config_manager']['db'] = 'rc_config';
 $table['config_manager']['num'] = 1;
 
 #管理员组
