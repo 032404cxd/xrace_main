@@ -204,7 +204,7 @@ class Base_Db
             $this->errno = $sth->errorCode();
             $this->error = implode(',', $sth->errorInfo());
             $this->error .= "\n\n" . $this->getLogSql($sql, $params);
-            //print_R($this->error);
+            print_R($this->error);
             }
 		$this->log($sql, $params, microtime(true) - $start_time);
 
@@ -717,12 +717,13 @@ class Base_Db
 	}
 	public function checkTableExist($TableName)
 	{
-		$t = explode(".",$TableName);
+	    $t = explode(".",$TableName);
 		$db = $t[0];
 		$table = $t[1];
 		$this->query("use $db");
-		$table_list = $this->getAll("show tables where Tables_in_$db like '$table'");
-		return count($table_list);
+        $table_list = $this->getAll("show tables  like '$table'");
+
+        return count($table_list);
 	}
     public function getTableRecoudCount($TableName,$LastId = 0)
     {

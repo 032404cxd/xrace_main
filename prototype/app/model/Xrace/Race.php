@@ -232,11 +232,11 @@ class Xrace_Race extends Base_Widget
 		return $this->db->selectRow($table_to_process, $fields, '`RaceGroupId` = ?', $RaceGroupId);
 	}
     //根据分组名称获取单个赛事组别的信息
-    public function getRaceGroupByName($RaceGroupName, $fields = '*')
+    public function getRaceGroupByName($RaceGroupName,$RaceCatalogId,$fields = '*')
     {
         $RaceGroupName = trim($RaceGroupName);
         $table_to_process = Base_Widget::getDbTable($this->table_group);
-        return $this->db->selectRow($table_to_process, $fields, '`RaceGroupName` = ?', $RaceGroupName);
+        return $this->db->selectRow($table_to_process, $fields, '`RaceGroupName` = ? and `RaceCatalogId` = ?', array($RaceGroupName,$RaceCatalogId));
     }
 	//更新单个赛事组别
 	public function updateRaceGroup($RaceGroupId, array $bind)
@@ -2014,7 +2014,6 @@ class Xrace_Race extends Base_Widget
                     {
                         //根据比赛和分组的记录，获取积分更新记录
                         $CreditLog = $oCredit->getCreditLog(array("RaceId"=>$RaceId,"UserId"=>$UserInfo['UserId']),$fields = array("*"));
-                        continue;
                         if(count($UserInfo['Credit']>0))
                         {
                             //循环各个累加的积分
@@ -2033,7 +2032,7 @@ class Xrace_Race extends Base_Widget
                                 if($pass == 0)
                                 {
                                     //积分更新
-                                    //$updateCredit = $oCredit->Credit(array("CreditId"=>$CreditId,"Credit"=>$Credit['Credit']),array("RaceId"=>$RaceId, "RaceGroupId"=>$RaceUserInfo["RaceGroupId"]),$UserInfo['UserId']);
+                                    $updateCredit = $oCredit->Credit(array("CreditId"=>$CreditId,"Credit"=>$Credit['Credit']),array("RaceId"=>$RaceId, "RaceGroupId"=>$RaceUserInfo["RaceGroupId"]),$UserInfo['UserId']);
                                     if($updateCredit)
                                     {
                                         $Success ++;
@@ -2047,7 +2046,7 @@ class Xrace_Race extends Base_Widget
                             foreach($RaceUserInfo['Credit'] as $CreditId => $Credit)
                             {
                                 //积分更新
-                                //$updateCredit = $oCredit->Credit(array("CreditId"=>$CreditId,"Credit"=>$Credit['Credit']),array("RaceId"=>$RaceId, "RaceGroupId"=>$RaceUserInfo["RaceGroupId"]),$UserInfo['UserId']);
+                                $updateCredit = $oCredit->Credit(array("CreditId"=>$CreditId,"Credit"=>$Credit['Credit']),array("RaceId"=>$RaceId, "RaceGroupId"=>$RaceUserInfo["RaceGroupId"]),$UserInfo['UserId']);
                                 if($updateCredit)
                                 {
                                     $Success ++;

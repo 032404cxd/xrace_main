@@ -18,14 +18,14 @@
 
       <table width="99%" align="center" class="table table-bordered table-striped">
   <tr>
-    <th align="center" class="rowtip" colspan="15">最后更新时间{tpl:$RaceResultList.UserRaceInfo.LastUpdateTime func="date('Y-m-d H:i:s.u',@@)"/}</th>
+    <th align="center" class="rowtip" colspan="{tpl:$RaceResultList.UserRaceInfo.Total func="count(@@)+2"/}">最后更新时间{tpl:$RaceResultList.UserRaceInfo.LastUpdateTime func="date('Y-m-d H:i:s.u',@@)"/}</th>
   </tr>
         <tr>
-          <th align="center" class="rowtip" colspan="15">执行时间{tpl:$RaceResultList.UserRaceInfo.ProcessingTime/}</th>
+          <th align="center" class="rowtip" colspan="{tpl:$RaceResultList.UserRaceInfo.Total func="count(@@)+2"/}">执行时间{tpl:$RaceResultList.UserRaceInfo.ProcessingTime/}</th>
         </tr>
   <tr>
     <th align="center" class="rowtip" colspan="2">计时点</th>
-    <th align="center" class="rowtip" colspan="10">选手名次</th>
+    <th align="center" class="rowtip" colspan="{tpl:$RaceResultList.UserRaceInfo.Total func="count(@@)"/}">选手名次</th>
   </tr>
 
   {tpl:loop $RaceResultList.UserRaceInfo.Sports $Sid $SInfo}
@@ -56,7 +56,7 @@
   </tr>
 {/tpl:loop}
   {/tpl:loop}
-  <tr><th  align="center" class="rowtip" colspan="6">个人排名</th></tr>
+  <tr><th  align="center" class="rowtip" colspan="{tpl:$RaceResultList.UserRaceInfo.Total func="count(@@)+2"/}">个人排名</th></tr>
   <tr><th  align="center" class="rowtip">名次</th>
     <th  align="center" class="rowtip" colspan="2">姓名</th>
     <th  align="center" class="rowtip" colspan="2">总时间</th>

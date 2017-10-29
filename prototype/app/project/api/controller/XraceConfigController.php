@@ -1252,7 +1252,6 @@ class XraceConfigController extends AbstractController
                         $TeamList[$ApplyInfo['TeamId']] = array("TeamName"=>$ApplyInfo['TeamName']);
                     }
                     $RaceUserList = $t;
-                    //print_R($RaceUserList);
                     //返回车手名单和车队列表
                     $result = array("return" => 1, "RaceUserList" => count($RaceUserList)>0?$RaceUserList:array());
                 } else {

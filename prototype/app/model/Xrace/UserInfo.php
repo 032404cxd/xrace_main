@@ -1309,7 +1309,7 @@ class Xrace_UserInfo extends Base_Widget
         $where = Base_common::getSqlWhere($whereCondition);
         //分页参数
         $limit  = isset($params['Page'])&&$params['Page']?" limit ".($params['Page']-1)*$params['PageSize'].",".$params['PageSize']." ":"";
-        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by ApplyId,BIB,RaceGroupId,TeamId desc".$limit;
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by ChipId,BIB,RaceGroupId,TeamId,ApplyId ".$limit;
         $return = $this->db->getAll($sql);
         return $return;
     }
@@ -2256,7 +2256,7 @@ class Xrace_UserInfo extends Base_Widget
         return $this->db->update($table_to_process, $bind, '`RaceUserId` = ? and `RaceStageId` = ?', array($RaceUserId,$RaceStageId));
     }
     /**
-     * 根据BIB获取选手的阿伯名记录
+     * 根据BIB获取选手的报名名记录
      * @param char $BIB 选手号码
      * @param char $RaceId 比赛ID
      * @param string $fields 所要获取的数据列
@@ -2268,6 +2268,20 @@ class Xrace_UserInfo extends Base_Widget
         $BIB = trim($BIB);
         $table_to_process = Base_Widget::getDbTable($this->table_race);
         return $this->db->selectRow($table_to_process, $fields, '`RaceId` = ? and `BIB` = ?', array($RaceId,$BIB));
+    }
+    /**
+     * 根据BIB获取选手的阿伯名记录
+     * @param char $BIB 选手号码
+     * @param char $RaceId 比赛ID
+     * @param string $fields 所要获取的数据列
+     * @return array
+     */
+    public function getRaceApplyUserInfoByUser($RaceId,$RaceUserId,$fields = '*')
+    {
+        $RaceId = intval($RaceId);
+        $RaceUserId = intval($RaceUserId);
+        $table_to_process = Base_Widget::getDbTable($this->table_race);
+        return $this->db->selectRow($table_to_process, $fields, '`RaceId` = ? and `RaceUserId` = ?', array($RaceId,$RaceUserId));
     }
 
     /**
