@@ -2166,7 +2166,6 @@ class Xrace_RaceStageController extends AbstractController
             //获取选手名单
             $params = array('RaceId'=>$RaceInfo['RaceId'],"RaceGroupId"=>$RaceGroupId,"RaceStatus"=>$RaceStatus,"TeamId"=>0,"Cache"=>0);
             $RaceUserList = $oUser->getRaceUserListByRace($params);
-            print_R($RaceUserList);
 			if($AutoAsign==1)
             {
                 $RaceUserList = $this->oRace->autoAsignBIB($RaceId,$RaceUserList);
@@ -4871,7 +4870,6 @@ class Xrace_RaceStageController extends AbstractController
             //循环成绩总表
             foreach($RaceResultList['UserRaceInfo']['Total'] as $key => $UserInfo)
             {
-                print_R($UserInfo);
                 //如果用户未完赛
                 if($UserInfo['Finished'] == 0)
                 {
