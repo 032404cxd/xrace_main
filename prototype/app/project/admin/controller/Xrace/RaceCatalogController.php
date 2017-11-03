@@ -42,7 +42,9 @@ class Xrace_RaceCatalogController extends AbstractController
 			foreach($RaceCatalogList as $RaceCatalogId => $RaceCatalogInfo)
 			{
 				$RaceCatalogList[$RaceCatalogId]['RaceCatalogName'].=($RaceCatalogInfo['Display'])?"":"(隐藏)";
-			}
+				$RaceCatalogList[$RaceCatalogId]['RankingListUrl'] = "<a href='".Base_Common::getUrl('','xrace/race.catalog','ranking.list',array('RaceCatalogId'=>$RaceCatalogId)) ."'>排名</a>";
+
+            }
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceCatalogList');
 		}
@@ -233,4 +235,286 @@ class Xrace_RaceCatalogController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+    //批量DNS
+    public function rankingListAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceCatalogModify");
+        if($PermissionCheck['return'])
+        {
+            $oRanking = new Xrace_Ranking();
+            //获取排名计算方式
+            $RankingTypeList = $oRanking->getRankingType();
+            //赛事ID
+            $RaceCatalogId = intval($this->request->RaceCatalogId);
+            //获取赛事信息
+            $RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId,'*',0);
+            //获取赛事下的排名列表
+            $RankingList = $oRanking->getRankingList(array("RaceCatalogId"=>$RaceCatalogId));
+            foreach($RankingList as $RankingId => $RankingInfo)
+            {
+                $RankingList[$RankingId]['RankingTypeName'] = $RankingTypeList[$RankingInfo['RankingType']];
+                $RankingList[$RankingId]['RankingRaceListUrl'] = "<a href='".Base_Common::getUrl('','xrace/race.catalog','ranking.race.list',array('RankingId'=>$RankingId)) ."'>详情</a>";
+
+            }
+            //渲染模板
+            include $this->tpl('Xrace_Race_RankingList');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //修改排名信息页面
+    public function rankingModifyAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceCatalogModify");
+        if($PermissionCheck['return'])
+        {
+            $oRanking = new Xrace_Ranking();
+            //赛事ID
+            $RankingId = trim($this->request->RankingId);
+            //获取排名信息
+            $RankingInfo = $oRanking->getRanking($RankingId);
+            //渲染模板
+            include $this->tpl('Xrace_Race_RankingModify');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //添加排名信息页面
+    public function rankingAddAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceCatalogModify");
+        if($PermissionCheck['return'])
+        {
+            $oRanking = new Xrace_Ranking();
+            //赛事ID
+            $RaceCatalogId = trim($this->request->RaceCatalogId);
+            //渲染模板
+            include $this->tpl('Xrace_Race_RankingAdd');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //更新赛事信息
+    public function rankingInsertAction()
+    {
+        //获取页面参数
+        $bind=$this->request->from('RankingName','RaceCatalogId','RankingComment');
+        //赛事名称不能为空
+        if(trim($bind['RankingName'])=="")
+        {
+            $response = array('errno' => 1);
+        }
+        else
+        {
+            $oRanking = new Xrace_Ranking();
+            //修改赛事记录
+            $res = $oRanking->insertRanking($bind);
+            $response = $res ? array('errno' => 0) : array('errno' => 9);
+        }
+        echo json_encode($response);
+        return true;
+    }
+    //更新排名信息
+    public function rankingUpdateAction()
+    {
+        //获取页面参数
+        $bind=$this->request->from('RankingName','RankingId','RankingComment');
+        //赛事名称不能为空
+        if(trim($bind['RankingName'])=="")
+        {
+            $response = array('errno' => 1);
+        }
+        //赛事ID必须为正数
+        elseif(intval($bind['RankingId'])<=0)
+        {
+            $response = array('errno' => 2);
+        }
+        else
+        {
+            $oRanking = new Xrace_Ranking();
+            //获取原有数据
+            $RankingInfo = $oRanking->getRanking($bind['RankingId']);
+            //修改排名记录
+            $res = $oRanking->updateRanking($bind['RankingId'],$bind);
+            $response = $res ? array('errno' => 0) : array('errno' => 9);
+        }
+        echo json_encode($response);
+        return true;
+    }
+    //删除赛事
+    public function rankingDeleteAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceCatalogModify");
+        if($PermissionCheck['return'])
+        {
+            $oRanking = new Xrace_Ranking();
+            //赛事ID
+            $RankingId = intval($this->request->RankingId);
+            //删除赛事记录
+            $oRanking->deleteRanking($RankingId);
+            //返回原有页面
+            $this->response->goBack();
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //修改排名对应比赛-分组列表页面
+    public function rankingRaceListAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceCatalogModify");
+        if($PermissionCheck['return'])
+        {
+            $DataPermissionListWhere = $this->manager->getDataPermissionByGroupWhere();
+            $oRanking = new Xrace_Ranking();
+            //赛事ID
+            $RankingId = trim($this->request->RankingId);
+            //获取赛事信息
+            $RankingInfo = $oRanking->getRanking($RankingId);
+            $RankingListUrl = "<a href='".Base_Common::getUrl('','xrace/race.catalog','ranking.list',array('RaceCatalogId'=>$RankingInfo['RaceCatalogId'])) ."'>返回</a>";
+            //赛事分站列表
+            $RaceStageList = $this->oRace->getRaceStageList($RankingInfo['RaceCatalogId'],"RaceStageId,RaceStageName,RaceCatalogId,StageStartDate,StageEndDate,comment",0,$DataPermissionListWhere);
+            //比赛-分组的层级规则
+            $RaceStructureList  = $this->oRace->getRaceStructure();
+            //赛事分组列表
+            $RaceGroupList = $this->oRace->getRaceGroupList($RankingInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
+            //获取比赛列表
+            $OldRaceList = $oRanking->getRankingRaceList(array("RankingId"=>$RankingId));
+            foreach($RaceStageList as $RaceStageId => $RaceStageInfo)
+            {
+                //获取比赛结构名称
+                $RaceStageList[$RaceStageId]['RaceStructureName'] = $RaceStructureList[$RaceStageInfo['comment']['RaceStructure']];
+                if($RaceStageInfo['comment']['RaceStructure']=="race")
+                {
+                    //获取比赛列表
+                    $RaceList  =  $this->oRace->getRaceList(array("RaceStageId"=>$RaceStageId),"RaceId,RaceName,comment");
+                    foreach($RaceList as $RaceId => $RaceInfo)
+                    {
+                        $RaceStageList[$RaceStageId]['RaceList'][$RaceId] = array("RaceId"=>$RaceId,"RaceName"=>$RaceInfo['RaceName'],"RaceGroupList"=>array());
+                        if(count($RaceInfo['comment']['SelectedRaceGroup'])>0)
+                        {
+                            foreach($RaceInfo['comment']['SelectedRaceGroup'] as $RaceGroupId => $RaceGroupInfo)
+                            {
+                                if($RaceGroupInfo['Selected']>0)
+                                {
+                                    $RaceStageList[$RaceStageId]['RaceList'][$RaceId]['RaceGroupList'][$RaceGroupId] = array("RaceGroupId"=>$RaceGroupId,"RaceGroupName"=>$RaceGroupList[$RaceGroupId]['RaceGroupName'],"RankingType"=>isset($OldRaceList[$RaceId][$RaceGroupId])?$OldRaceList[$RaceId][$RaceGroupId]["RankingType"]:"","selected"=>isset($OldRaceList[$RaceId][$RaceGroupId])?1:0);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            unset($RaceStageList[$RaceStageId]['RaceList'][$RaceId]);
+                        }
+                    }
+                }
+                else
+                {
+                    //获取比赛列表
+                    $RaceList  =  $this->oRace->getRaceList(array("RaceStageId"=>$RaceStageId),"RaceId,RaceGroupId,RaceName,comment");
+                    foreach($RaceList as $RaceId => $RaceInfo)
+                    {
+                        if(!isset($RaceStageList[$RaceStageId]['RaceGroupList'][$RaceInfo['RaceGroupId']]))
+                        {
+                            $RaceStageList[$RaceStageId]['RaceGroupList'][$RaceInfo['RaceGroupId']] = array("RaceGroupId"=>$RaceInfo['RaceGroupId'],"RaceGroupName"=>$RaceGroupList[$RaceInfo['RaceGroupId']]['RaceGroupName']);
+                        }
+                        $RaceStageList[$RaceStageId]['RaceGroupList'][$RaceInfo['RaceGroupId']]['RaceList'][$RaceId] = array("RaceId"=>$RaceId,"RaceName"=>$RaceInfo['RaceName'],"RankingType"=>isset($OldRaceList[$RaceId][$RaceInfo['RaceGroupId']])?$OldRaceList[$RaceId][$RaceInfo['RaceGroupId']]:"","selected"=>isset($OldRaceList[$RaceId][$RaceInfo['RaceGroupId']])?1:0);
+                    }
+                }
+            }
+            //获取排名计算方式
+            $RankingTypeList = $oRanking->getRankingType();
+            $RankingTypeList[""] = "无";
+            //渲染模板
+            include $this->tpl('Xrace_Race_RankingRaceList');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //更新排名信息
+    public function rankingRaceListModifyAction()
+    {
+        //获取页面参数
+        $bind=$this->request->from('RankingId','RaceList');
+        $oRanking = new Xrace_Ranking();
+        $update = $oRanking->updateRaceListByRanking($bind['RankingId'],$bind['RaceList']);
+        $response = array('errno' => 0);
+        echo json_encode($response);
+        return true;
+    }
+    //更新总排名的用户数据
+    public function updateRaceUserListByRankingAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceCatalogModify");
+        if($PermissionCheck['return'])
+        {
+            $oRanking = new Xrace_Ranking();
+            //赛事ID
+            $RankingId = trim($this->request->RankingId);
+            $update = $oRanking->updateRaceUserListByRanking($RankingId);
+            //返回原有页面
+            $this->response->goBack();
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+
+    //总排名对应的成绩单
+    public function getRaceUserListByRankingAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceCatalogModify");
+        if($PermissionCheck['return'])
+        {
+            $oRanking = new Xrace_Ranking();
+            //赛事ID
+            $RankingId = trim($this->request->RankingId);
+            $RaceUserList = $oRanking->getRaceInfoByRanking($RankingId);
+            $RaceList = array();$RaceGroupList = array();
+            //print_R($RaceUserList['RaceUserList']);
+            foreach($RaceUserList['RaceUserList']['UserList'] as $key => $UserInfo)
+            {
+                foreach($UserInfo['RaceList'] as $key2 => $Race)
+                {
+                    if(!isset($RaceList[$UserInfo['RaceId']]))
+                    {
+                        $RaceList[$Race['RaceId']] = $this->oRace->getRace($Race['RaceId'],"RaceId,RaceName");
+                    }
+                    if(!isset($RaceGroupList[$UserGroupInfo['RaceGroupId']]))
+                    {
+                        $RaceGroupList[$Race['RaceGroupId']] = $this->oRace->getRaceGroup($Race['RaceGroupId'],"RaceGroupId,RaceGroupName");
+                    }
+                }
+            }
+            //渲染模板
+            include $this->tpl('Xrace_Race_ResultListRanking');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
 }

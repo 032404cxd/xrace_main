@@ -98,7 +98,14 @@
 		</th></tr>
 	<tr class="hover"><th align="center" class="rowtip">Mylaps数据库</th><th align="center" class="rowtip"><input name="MylapsDB" type="text" class="span2" id="MylapsDB" value = "mylaps" size="50" /></th></tr>
 	<tr class="hover"><th align="center" class="rowtip">Mylaps表前缀</th><th align="center" class="rowtip"><input name="MylapsPrefix" type="text" class="span2" id="MylapsPrefix" size="50" /></th></tr>
-<tr class="hover"><th align="center" class="rowtip">人数/价格对应<p>(人数;单价|人数:单价)</th><th align="center" class="rowtip"><input name="PriceList" type="text" class="span2" id="PriceList" size="50" /></th></tr>
+	<tr class="hover"><th align="center" class="rowtip">每分钟处理次数</th><th align="center" class="rowtip">
+			<select name="ProcessRate" size="1" class="span2">
+                {tpl:loop $PrecessRateList $PrecessRate}
+				<option value="{tpl:$PrecessRate/}">{tpl:$PrecessRate/}次</option>
+                {/tpl:loop}
+			</select>
+		</th></tr>
+	<tr class="hover"><th align="center" class="rowtip">人数/价格对应<p>(人数;单价|人数:单价)</th><th align="center" class="rowtip"><input name="PriceList" type="text" class="span2" id="PriceList" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">个人报名</th><th align="center" class="rowtip"><input type="radio" name="SingleUser" id="SingleUser" value="1" checked>接受<input type="radio" name="SingleUser" id="SingleUser"  value="0" >不接受 人数上限:<input name="SingleUserLimit" type="text" class="span1" id="SingleUserLimit" value = "0" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">团队报名</th><th align="center" class="rowtip"><input type="radio" name="TeamUser" id="TeamUser" value="1" checked>接受<input type="radio" name="TeamUser" id="TeamUser" value="0" >不接受 数量上限:<input name="TeamLimit" type="text" class="span1" id="TeamLimit" value = "0" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">团队人数限制</th><th align="center" class="rowtip">最少:<input name="TeamUserMin" type="text" class="span1" id="TeamUserMin" value = "6" size="50" />最高:<input name="TeamUserMax" type="text" class="span1" id="TeamUserMax" value = "9" size="50" /></th></tr>

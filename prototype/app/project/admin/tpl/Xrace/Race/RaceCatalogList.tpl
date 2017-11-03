@@ -37,7 +37,7 @@ function RaceCatalogDisclaimerModify(mid){
     <td align="center">{tpl:$RaceCatalogInfo.RaceCatalogId/}</td>
     <td align="center">{tpl:$RaceCatalogInfo.RaceCatalogName/}</td>
     <td align="center">{tpl:if($RaceCatalogInfo.comment.RaceCatalogIcon_root=="")}未定义{tpl:else}<img src="{tpl:$RootUrl/}{tpl:$RaceCatalogInfo.comment.RaceCatalogIcon_root/}" width='150' height='130'/>{/tpl:if}</td>    </td>
-    <td align="center"><a  href="javascript:;" onclick="RaceCatalogDelete('{tpl:$RaceCatalogInfo.RaceCatalogId/}','{tpl:$RaceCatalogInfo.RaceCatalogName/}')">删除</a> |  <a href="javascript:;" onclick="RaceCatalogModify('{tpl:$RaceCatalogInfo.RaceCatalogId/}');">修改</a> |  <a href="javascript:;" onclick="RaceCatalogDisclaimerModify('{tpl:$RaceCatalogInfo.RaceCatalogId/}');">免责声明</a></td>
+    <td align="center">{tpl:$RaceCatalogInfo.RankingListUrl/} | <a  href="javascript:;" onclick="RaceCatalogDelete('{tpl:$RaceCatalogInfo.RaceCatalogId/}','{tpl:$RaceCatalogInfo.RaceCatalogName/}')">删除</a> |  <a href="javascript:;" onclick="RaceCatalogModify('{tpl:$RaceCatalogInfo.RaceCatalogId/}');">修改</a> |  <a href="javascript:;" onclick="RaceCatalogDisclaimerModify('{tpl:$RaceCatalogInfo.RaceCatalogId/}');">免责声明</a></td>
   </tr>
 {/tpl:loop}
 </table>

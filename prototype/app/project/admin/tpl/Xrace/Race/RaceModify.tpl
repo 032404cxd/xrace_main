@@ -91,7 +91,14 @@
 		</th></tr>
 	<tr class="hover"><th align="center" class="rowtip">Mylaps数据库</th><th align="center" class="rowtip"><input name="MylapsDB" type="text" class="span2" id="MylapsDB" value = "{tpl:$RaceInfo.RouteInfo.MylapsDB/}" size="50" /></th></tr>
 	<tr class="hover"><th align="center" class="rowtip">Mylaps表前缀</th><th align="center" class="rowtip"><input name="MylapsPrefix" type="text" class="span2" id="MylapsPrefix" value = "{tpl:$RaceInfo.RouteInfo.MylapsPrefix/}" size="50" /></th></tr>
-<tr class="hover"><th align="center" class="rowtip">人数/价格对应<p>(人数;单价|人数:单价)</th><th align="center" class="rowtip"><input name="PriceList" type="text" class="span2" id="PriceList" value = "{tpl:$RaceInfo.PriceList/}" size="50" /></th></tr>
+	<tr class="hover"><th align="center" class="rowtip">每分钟处理次数</th><th align="center" class="rowtip">
+			<select name="ProcessRate" size="1" class="span2">
+                {tpl:loop $PrecessRateList $PrecessRate}
+				<option value="{tpl:$PrecessRate/}" {tpl:if($PrecessRate==$RaceInfo.comment.PrecessRate)}selected="selected"{/tpl:if}>{tpl:$PrecessRate/}次</option>
+                {/tpl:loop}
+			</select>
+		</th></tr>
+	<tr class="hover"><th align="center" class="rowtip">人数/价格对应<p>(人数;单价|人数:单价)</th><th align="center" class="rowtip"><input name="PriceList" type="text" class="span2" id="PriceList" value = "{tpl:$RaceInfo.PriceList/}" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">个人报名</th><th align="center" class="rowtip">
 		<input type="radio" name="SingleUser" id="SingleUser" value="1" {tpl:if($RaceInfo.SingleUser=="1")}checked{/tpl:if}>接受
 		<input type="radio" name="SingleUser" id="SingleUser" value="0" {tpl:if($RaceInfo.SingleUser=="0")}checked{/tpl:if}>不接受 人数上限:<input name="SingleUserLimit" type="text" class="span1" id="SingleUserLimit" value = "{tpl:$RaceInfo.comment.SingleUserLimit/}" size="50" /></th></tr>

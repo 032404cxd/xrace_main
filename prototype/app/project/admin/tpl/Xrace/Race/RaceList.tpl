@@ -43,7 +43,6 @@
     UpdateUserCreditByRaceBox= divBox.confirmBox({content:'确定根据 '+ rname +' 比赛结果进行积分累加?',ok:function(){location.href = '{tpl:$this.sign/}&ac=update.credit.by.race.result&RaceId=' + rid;}});
   }
 </script>
-<form action="{tpl:$this.sign/}&ac=race.update" name="form" id="form" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
   <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupId/}" />
   <fieldset><legend>{tpl:$RaceStageInfo.RaceStageName/}{tpl:if(isset($RaceGroupInfo.RaceGroupName))}-{tpl:$RaceGroupInfo.RaceGroupName/}{/tpl:if} 比赛列表 <a href="{tpl:$this.sign/}">返回</a></legend>
@@ -92,5 +91,4 @@
   {/tpl:if}
 </table>
 </fieldset>
-</form>
 {tpl:tpl contentFooter/}

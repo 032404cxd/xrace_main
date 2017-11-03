@@ -26,18 +26,22 @@ class Cli_MylapsController extends Base_Controller_Action{
 		}
 		else
 		{
-			$RaceList = $this->oRace->getRaceList(array("inRun"=>1,"ToProcess"=>1),"RaceId,ToProcess");
+			$RaceList = $this->oRace->getRaceList(array("inRun"=>1,"ToProcess"=>1),"RaceId,ToProcess,comment");
 			foreach($RaceList as $RaceId => $RaceInfo)
 			{
-                $Text = date("Y-m-d H:i:s",time()).":Start To Process RaceId:".$RaceId."\n";
-                $filePath = __APP_ROOT_DIR__."log/Timing/";
-                $fileName = date("Y-m-d",time()).".log";
-                //写入日志文件
-                Base_Common::appendLog($filePath,$fileName,$Text);
-			    $this->oMylaps->genMylapsTimingInfo($RaceId,$RaceInfo['ToProcess'],0);
+			    //数据解包
+			    $ProcessRate = isset($RaceInfo['comment']['ProcessRate'])?$RaceInfo['comment']['ProcessRate']:1;
+			    for($i=1;$i<=$ProcessRate;$i++)
+                {
+                    $Text = date("Y-m-d H:i:s",time()).":Start To Process RaceId:".$RaceId."\n";
+                    $filePath = __APP_ROOT_DIR__."log/Timing/";
+                    $fileName = date("Y-m-d",time()).".log";
+                    //写入日志文件
+                    Base_Common::appendLog($filePath,$fileName,$Text);
+                    $this->oMylaps->genMylapsTimingInfo($RaceId,$i==1?($RaceInfo['ToProcess']):0,0);
+                }
 			}
 		}
-
-		//php.exe d:\xamppserver\htdocs\xrace_main\prototype\app\project\api\html\cli.php "ctl=mylaps&ac=timing&RaceId=25"
+		//php.exe d:\xamppserver\htdocs\xrace_main\prototype\app\project\api\html\cli.php "ctl=mylaps&ac=timing&RaceId=146"
     }
 }

@@ -1429,4 +1429,55 @@ class XraceConfigController extends AbstractController
             $Last = $MessageArr['Text'];
         }
     }
+    /*
+ * 更新处理指定排名情况的比赛数据
+*/
+    public function updateRaceUserListByRankingAction()
+    {
+        //排名ID
+        $RankingId = abs(intval($this->request->Ranking));
+
+        $oRanking = new Xrace_Ranking();
+        //赛事ID
+        $RankingId = trim($this->request->RankingId);
+        //获取排名信息
+        $RankingInfo = $oRanking->getRanking($RankingId);
+        //检测主键存在,否则值为空
+        if (isset($RankingInfo['RankingId']))
+        {
+            echo "hre";
+            $RaceUserList = $oRanking->updateRaceInfoByRanking($RankingId);
+        }
+        else
+        {
+            //全部置为空
+            $result = array("return" => 0, "comment" => "请指定一个有效的排名ID");
+        }
+        echo json_encode($result);
+    }
+    /*
+* 更新处理指定排名情况的比赛数据
+*/
+    public function getRaceUserListByRankingAction()
+    {
+        //排名ID
+        $RankingId = abs(intval($this->request->Ranking));
+        $oRanking = new Xrace_Ranking();
+        //赛事ID
+        $RankingId = trim($this->request->RankingId);
+        //获取排名信息
+        $RankingInfo = $oRanking->getRanking($RankingId);
+        //检测主键存在,否则值为空
+        if (isset($RankingInfo['RankingId']))
+        {
+            $RaceUserList = $oRanking->getRaceInfoByRankingByFile($RankingId);
+            $result = array("return" => isset($UserRaceInfo['RaceInfo']) ? 1 : 0, "RaceUserList" => $RaceUserList);
+        }
+        else
+        {
+            //全部置为空
+            $result = array("return" => 0, "comment" => "请指定一个有效的排名ID");
+        }
+        echo json_encode($result);
+    }
 }

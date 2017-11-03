@@ -190,9 +190,17 @@ $table['config_aid_code_type']['num'] = 1;
 $table['times']['db'] = 'mylaps';
 $table['times']['num'] = 1;
 
-//用户参加队伍列表
+//待排序的计时记录母表
 $table['times_sorted']['db'] = 'mylaps';
 $table['times_sorted']['num'] = 1;
+
+//排名列表
+$table['config_total_ranking']['db'] = 'xrace_config';
+$table['config_total_ranking']['num'] = 1;
+
+//排名对应的比赛列表
+$table['config_ranking_race']['db'] = 'xrace_config';
+$table['config_ranking_race']['num'] = 1;
 
 
 return $table;

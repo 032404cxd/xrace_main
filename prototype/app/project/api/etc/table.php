@@ -210,4 +210,12 @@ $table['AppliedRaceList']['num'] = 1;
 $table['UserRaceList']['db'] = 'xrace_race';
 $table['UserRaceList']['num'] = 1;
 
+//排名列表
+$table['config_total_ranking']['db'] = 'xrace_config';
+$table['config_total_ranking']['num'] = 1;
+
+//排名对应的比赛列表
+$table['config_ranking_race']['db'] = 'xrace_config';
+$table['config_ranking_race']['num'] = 1;
+
 return $table;

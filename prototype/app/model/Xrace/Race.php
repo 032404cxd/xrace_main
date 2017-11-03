@@ -16,6 +16,7 @@ class Xrace_Race extends Base_Widget
 	protected $table_timing = 'config_timing_point';
 	protected $table_combination = 'config_race_combination';
 	protected $maxRaceDetail = 5;
+    protected $maxProcessRate = 5;
 
 	protected $raceStructure = array('race'=>'比赛-分组','group'=>'分组-比赛');
 	protected $raceTimingType = array('mylaps'=>'myLaps芯片计时');
@@ -25,9 +26,13 @@ class Xrace_Race extends Base_Widget
     protected $applySourceList = array(1=>"线上",2=>"线下");
     protected $applySepcialDiscount = array(0=>"无","single_max"=>"单人最高票价");
     protected $resultType = array("Team"=>"团队成绩","Individual"=>"个人成绩");
-	public function getRaceStructure()
+    public function getRaceStructure()
+    {
+        return $this->raceStructure;
+    }
+	public function getMaxProcessRate()
 	{
-		return $this->raceStructure;
+		return $this->maxProcessRate;
 	}
 	public function getTimingType()
 	{
@@ -1248,11 +1253,12 @@ class Xrace_Race extends Base_Widget
                                                         }
                                                     }
                                                 }
+                                                $t['SportsTypeId'] = $SportsTypeInfo['SportsTypeId'];
 												//第一次通过不需要下标
 												$t['TName'].= ($j==0)?"":"*".($j+1);
 												$t['inTime'] = 0;
 												//每个分段内距离相互累加 如果距离为正数
-                                                $t['ToPrevious'] = intval($t['ToPrevious']);
+                                                $t['ToPrevious'] = intval($TimingPoint['ToPrevious']);
                                                 //计算分段距离
                                                 $SectionDistance += ($TimingPoint['ToPrevious']>=0?$TimingPoint['ToPrevious']:0);
                                                 //计算总距离
