@@ -1054,8 +1054,33 @@ class XraceConfigController extends AbstractController
                     //重新获取比赛详情
                     $UserRaceInfo = $this->oRace->getUserRaceInfo($RaceId, $RaceUserId);
                 }
+                $oRanking = new Xrace_Ranking();
+                $RankingList = $oRanking->getRankingByRace($RaceId,$UserRaceInfo['Total']['RaceGroupId']);
+                if(count($RankingList))
+                {
+                    foreach($RankingList as $key => $RankingInfo)
+                    {
+                        $RankingDetail = $oRanking->getRaceInfoByRankingByFile($RankingInfo["RankingId"]);
+                        foreach($RankingDetail["UserList"] as $key2 => $UserInfo)
+                        {
+                            if($UserInfo['RaceUserId']!=$RaceUserId)
+                            {
+                                unset($RankingDetail["UserList"][$key2]);
+                            }
+                            else
+                            {
+                                $RankingDetail["UserList"][$key2]['Total']['Rank'] = $key2+1;
+                            }
+                        }
+                        if(count($RankingDetail["UserList"]))
+                        {
+                            $UserRankingList[$RankingInfo["RankingId"]] = $RankingDetail;
+                        }
+                    }
+                }
+                //print_R($UserRankingList);
                 $UserRaceInfo['ApplyInfo']['RaceStatus'] = $this->oRace->getUserRaceStatus($UserRaceInfo);
-                $result = array("return" => isset($UserRaceInfo['ApplyInfo']) ? 1 : 0, "UserRaceInfo" => $UserRaceInfo);
+                $result = array("return" => isset($UserRaceInfo['ApplyInfo']) ? 1 : 0, "UserRaceInfo" => $UserRaceInfo,"UserRankingList" => count($UserRankingList)?$UserRankingList:array());
             }
             else
             {
@@ -1445,7 +1470,6 @@ class XraceConfigController extends AbstractController
         //检测主键存在,否则值为空
         if (isset($RankingInfo['RankingId']))
         {
-            echo "hre";
             $RaceUserList = $oRanking->updateRaceInfoByRanking($RankingId);
         }
         else

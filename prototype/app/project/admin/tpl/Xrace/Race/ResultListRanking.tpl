@@ -4,10 +4,10 @@
   <fieldset><legend>{tpl:$RaceStageInfo.RaceStageName/}{tpl:if(isset($RaceGroupInfo.RaceGroupName))}-{tpl:$RaceGroupInfo.RaceGroupName/}{/tpl:if} 比赛列表 <a href="{tpl:$this.sign/}">返回</a></legend>
 <table width="99%" align="center" class="table table-bordered table-striped">
   <tr>
-    <th align="center" class="rowtip">选手</th>
+    <th align="center" class="rowtip">总排名</th>
     <th align="center" class="rowtip">总时间</th>
     <th align="center" class="rowtip">总积分</th>
-    <th align="center" class="rowtip">总排名</th>
+    <th align="center" class="rowtip">选手</th>
     <th align="center" class="rowtip">详细</th>
   </tr>
   {tpl:loop $RaceUserList.RaceUserList.UserList $Rid $UserInfo}

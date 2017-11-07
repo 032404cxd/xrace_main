@@ -14,7 +14,7 @@
 
   {tpl:loop $RaceStageList $RaceStageId $RaceStageInfo}
   <tr>
-    <th align="center" class="rowtip" >{tpl:$RaceStageInfo.RaceStageName/}<br>{tpl:$RaceStageInfo.RaceStructureName/}><br>{tpl:$RaceStageInfo.StageStartDate/}<br>~<br>{tpl:$RaceStageInfo.StageEndDate/}</th>
+    <th align="center" class="rowtip" >{tpl:$RaceStageInfo.RaceStageName/}<br>{tpl:$RaceStageInfo.RaceStructureName/}<br>{tpl:$RaceStageInfo.StageStartDate/}<br>~<br>{tpl:$RaceStageInfo.StageEndDate/}</th>
     <th align="center" class="rowtip" > <table width="99%" align="center" class="table table-bordered table-striped">
 
       {tpl:if($RaceStageInfo.comment.RaceStructure=="race")}

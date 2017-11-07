@@ -55,6 +55,14 @@ function RaceStageIconDelete(sid,name,logo_id){
 		<input type="radio" name="Display" id="Display" value="1" {tpl:if($RaceStageInfo.Display=="1")}checked{/tpl:if}>是
 		<input type="radio" name="Display" id="Display" value="0" {tpl:if($RaceStageInfo.Display=="0")}checked{/tpl:if}>否</th>
 </tr>
+<tr class="hover"><th align="center" class="rowtip">比赛类型</th><th align="center" class="rowtip">
+		<select name="RaceTypeId" size="1" class="span2">
+			<option value="0" {tpl:if(0==$RaceStageInfo.comment.RaceTypeId)}selected="selected"{/tpl:if}>全部</option>
+            {tpl:loop $RaceTypeList $RaceTypeInfo}
+			<option value="{tpl:$RaceTypeInfo.RaceTypeId/}" {tpl:if($RaceTypeInfo.RaceTypeId==$RaceStageInfo.comment.RaceTypeId)}selected="selected"{/tpl:if}>{tpl:$RaceTypeInfo.RaceTypeName/}</option>
+			{/tpl:loop}
+		</select>
+	</th></tr>
 <tr class="hover"><td>赛事结构</td>
 	<td align="left">	<select name="RaceStructure"  id="RaceStructure" size="1">
 			{tpl:loop $RaceStructureList $RaceStructure $RaceStructureName}

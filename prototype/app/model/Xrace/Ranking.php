@@ -53,6 +53,8 @@ class Xrace_Ranking extends Base_Widget
     public function deleteRankingRace($RankingId,$RaceId,$RaceGroupId)
     {
         $RankingId = intval($RankingId);
+        $RaceGroupId = intval($RaceGroupId);
+        $RaceId = intval($RaceId);
         $table_to_process = Base_Widget::getDbTable($this->table_race);
         return $this->db->delete($table_to_process, '`RankingId` = ? and `RaceId` = ? and `RaceGroupId` = ?', array($RankingId,$RaceId,$RaceGroupId));
     }
@@ -84,6 +86,14 @@ class Xrace_Ranking extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		return $this->db->selectRow($table_to_process, $fields, '`RankingId` = ?', $RankingId);
 	}
+    //获取比赛可能关联的排名数据
+    public function getRankingByRace($RaceId,$RaceGroupId, $fields = '*')
+    {
+        $RaceGroupId = intval($RaceGroupId);
+        $RaceId = intval($RaceId);
+        $table_to_process = Base_Widget::getDbTable($this->table_race);
+        return $this->db->select($table_to_process, $fields, '`RaceId` = ? and `RaceGroupId` = ?', array($RaceId,$RaceGroupId));
+    }
     //获取排名对应的比赛列表
     public function getRankingRaceList($params,$fields = "*")
     {
@@ -243,6 +253,7 @@ class Xrace_Ranking extends Base_Widget
                     $RaceUserInfo['Total']['RankingType'] = $RaceList[$Detail['RaceId']][$RaceUserInfo['Total']['RaceGroupId']]['RankingType'];
                     $RaceUserInfo['Total']['RaceId'] = $Detail['RaceId'];
                     $UserList[$RaceUserId]['RaceDetail'][$key] = $RaceUserInfo['Total'];
+                    $UserList[$RaceUserId]["RaceUserId"] = $RaceUserInfo['Total']['RaceUserId'];
                     $UserList[$RaceUserId]["Name"] = $RaceUserInfo['Total']['Name'];
                     if($RaceUserInfo['Total']['Finished']==1)
                     {

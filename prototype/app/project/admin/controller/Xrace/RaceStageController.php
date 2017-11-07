@@ -252,6 +252,8 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageInsert");
 		if($PermissionCheck['return'])
 		{
+            //获取比赛类型列表
+            $RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
             //特殊折扣列表
             $ApplySepcialDiscount  = $this->oRace->getApplySepcialDiscount();
 			//加载富文本编辑器
@@ -281,7 +283,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('Location','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','Display','SpecialDiscount','ApplyLimit','CreditRate','CreditStack');
+		$bind=$this->request->from('Location','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','Display','SpecialDiscount','ApplyLimit','CreditRate','CreditStack','RaceTypeId');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -348,6 +350,10 @@ class Xrace_RaceStageController extends AbstractController
             $bind['comment']['CreditStack'] = abs(intval($bind['CreditStack']));
             //删除原有数据
             unset($bind['CreditStack']);
+            //比赛类型
+            $bind['comment']['RaceTypeId'] = abs(intval($bind['RaceTypeId']));
+            //删除原有数据
+            unset($bind['RaceTypeId']);
 			//数据压缩
 			$bind['comment'] = json_encode($bind['comment']);
 			//图片数据压缩
@@ -366,6 +372,8 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceStageModify");
 		if($PermissionCheck['return'])
 		{
+            //获取比赛类型列表
+            $RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
             //特殊折扣列表
 		    $ApplySepcialDiscount  = $this->oRace->getApplySepcialDiscount();
 			//比赛-分组的层级规则
@@ -428,7 +436,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceStageUpdateAction()
 	{
 		//获取 页面参数
-		$bind = $this->request->from('Location','RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','SpecialDiscount','Display','ApplyLimit','CreditRate','CreditStack','SearchKeyWord');
+		$bind = $this->request->from('Location','RaceStageId','RaceStageName','RaceCatalogId','StageStartDate','StageEndDate','RaceStageComment','RaceStructure','ApplyStartTime','ApplyEndTime','PriceList','PriceDiscount','SpecialDiscount','Display','ApplyLimit','CreditRate','CreditStack','SearchKeyWord','RaceTypeId');
 		//获取已经选定的分组列表
 		$SelectedRaceGroup = $this->request->from('SelectedRaceGroup');
 		//赛事列表
@@ -505,6 +513,10 @@ class Xrace_RaceStageController extends AbstractController
             $bind['comment']['CreditStack'] = abs(intval($bind['CreditStack']));
             //删除原有数据
             unset($bind['CreditStack']);
+            //比赛类型
+            $bind['comment']['RaceTypeId'] = abs(intval($bind['RaceTypeId']));
+            //删除原有数据
+            unset($bind['RaceTypeId']);
             //更新搜索关键字相关
             $oSearch = new Xrace_Search();
             $bind['comment']['SearchKeyWord'] = $oSearch->processKeywordText(trim($bind['SearchKeyWord']));

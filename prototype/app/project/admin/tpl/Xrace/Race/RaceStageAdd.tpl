@@ -42,6 +42,14 @@
 		<input type="radio" name="Display" id="Display" value="1" >是
 		<input type="radio" name="Display" id="Display" value="0" checked>否</th>
 </tr>
+	<tr class="hover"><th align="center" class="rowtip">比赛类型</th><th align="center" class="rowtip">
+			<select name="RaceTypeId" size="1" class="span2">
+				<option value="0" >全部</option>
+                {tpl:loop $RaceTypeList $RaceTypeInfo}
+				<option value="{tpl:$RaceTypeInfo.RaceTypeId/}" >{tpl:$RaceTypeInfo.RaceTypeName/}</option>
+                {/tpl:loop}
+			</select>
+		</th></tr>
 <tr class="hover"><td>赛事结构</td>
 	<td align="left">	<select name="RaceStructure"  id="RaceStructure" size="1">
 			{tpl:loop $RaceStructureList $RaceStructure $RaceStructureName}
