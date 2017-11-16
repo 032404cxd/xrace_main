@@ -56,8 +56,7 @@
 </table>
     {tpl:$page_content/}
     <script type="text/javascript">
-        $(function(){
-            $('#ChipId').focus();
-        });
+        document.getElementById('ChipId').focus();
     </script>
-{tpl:tpl contentFooter/}
+
+    {tpl:tpl contentFooter/}

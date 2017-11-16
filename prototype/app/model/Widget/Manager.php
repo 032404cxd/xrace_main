@@ -649,6 +649,10 @@ class Widget_Manager extends Base_Widget
     //新增单个赛事分站
     public function insertDataPermission($group_id,$RaceCatalogId)
     {
+        if($group_id == 0)
+        {
+            $group_id = $this->data_groups;
+        }
         $bind = array("group_id"=>abs(intval($group_id)),"RaceCatalogId"=>abs(intval($RaceCatalogId)));
         $table_to_process = Base_Widget::getDbTable($this->table_data_permission);
         return $this->db->insert($table_to_process, $bind);

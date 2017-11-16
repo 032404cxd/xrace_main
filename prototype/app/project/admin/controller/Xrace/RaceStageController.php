@@ -5053,6 +5053,74 @@ class Xrace_RaceStageController extends AbstractController
             include $this->tpl('403');
         }
     }
+    //套餐添加填写页面
+    public function raceStageDataAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            //分站ID
+            $RaceStageId = intval($this->request->RaceStageId);
+            $RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,"RaceStageId,RaceStageName");
+            $DataList = $this->oRace->getRaceStageDataByUrl($RaceStageId);
+            include('Third/fusion/Includes/FusionCharts_Gen.php');
 
-
+            $FC4 = new FusionCharts("Pie2d",'100%','400');
+            $FC4->setSWFPath( '../Charts/');
+            $strParam="caption='比赛人数统计';baseFontSize=12;numberPrefix=;numberSuffix=人次;decimalPrecision=0;showValues=1;formatNumberScale=0;rotateNames=0;showAlternateHGridColor=1;alternateHGridAlpha=5;alternateHGridColor='CC3300';hoverCapSepChar=，";
+            $FC4->setChartParams($strParam);
+            $FC4->addDataset("人数统计");
+            foreach($DataList['Data']['DataList']['RaceList'] as $RaceId => $RaceInfo)
+            {
+                $FC4->addChartData($RaceInfo['Data']['RaceUser'],"name=".$RaceInfo['RaceName']);
+            }
+            # Create Multiseries ColumnD chart object using FusionCharts PHP Class
+            $FC = new FusionCharts("MSLine",'100%','400');
+            # Set the relative path of the swf file
+            $FC->setSWFPath( '../Charts/');
+            $Step=1;
+            # Store chart attributes in a variable
+            $strParam="caption='用户身份类型统计';xAxisName='比赛';baseFontSize=12;numberPrefix=;numberSuffix=次;decimalPrecision=0;showValues=0;formatNumberScale=0;labelStep=".$Step.";rotateNames=1;yAxisMinValue=0;yAxisMaxValue=100;numDivLines=9;showAlternateHGridColor=1;alternateHGridAlpha=5;alternateHGridColor='CC3300';hoverCapSepChar=，";
+            foreach($DataList['Data']['DataList']['RaceList'] as $RaceId => $RaceInfo)
+            {
+                $FC->addCategory($RaceInfo['RaceName']);
+            }
+            $FC->addDataset("到场比例");
+            foreach($DataList['Data']['DataList']['RaceList'] as $RaceId => $RaceInfo)
+            {
+                $RaceRate = sprintf("%3.2f",$RaceInfo['Data']['RacedUser']/$RaceInfo['Data']['RaceUser']*100);
+                $FC->addChartData($RaceRate);
+                $DataList['Data']['DataList']['RaceList'][$RaceId]['Data']['RaceRate'] = $RaceRate."%";
+            }
+            $FC->addDataset("完赛比例");
+            foreach($DataList['Data']['DataList']['RaceList'] as $RaceId => $RaceInfo)
+            {
+                $FinishRate = sprintf("%3.2f",$RaceInfo['Data']['FinishedUser']/$RaceInfo['Data']['RacedUser']*100);
+                $FC->addChartData($FinishRate);
+                $DataList['Data']['DataList']['RaceList'][$RaceId]['Data']['FinishRate'] = $FinishRate."%";
+            }
+            foreach($DataList['Data']['DataList']['RaceList'] as $RaceId => $RaceInfo)
+            {
+                foreach($RaceInfo['RaceGroupList'] as $RaceGroupId => $RaceGroupInfo)
+                {
+                    $RaceRate = sprintf("%3.2f",$RaceGroupInfo['Data']['RacedUser']/$RaceGroupInfo['Data']['RaceUser']*100);
+                    $DataList['Data']['DataList']['RaceList'][$RaceId]['RaceGroupList'][$RaceGroupId]['Data']['RaceRate'] = $RaceRate."%";
+                    $FinishRate = sprintf("%3.2f",$RaceGroupInfo['Data']['FinishedUser']/$RaceGroupInfo['Data']['RacedUser']*100);
+                    $DataList['Data']['DataList']['RaceList'][$RaceId]['RaceGroupList'][$RaceGroupId]['Data']['FinishRate'] = $FinishRate."%";
+                }
+            }
+            $RaceRate = sprintf("%3.2f",$DataList['Data']['DataList']['Total']['RacedUser']/$DataList['Data']['DataList']['Total']['RaceUser']*100);
+            $DataList['Data']['DataList']['Total']['RaceRate'] = $RaceRate."%";
+            $FinishRate = sprintf("%3.2f",$DataList['Data']['DataList']['Total']['FinishedUser']/$DataList['Data']['DataList']['Total']['RacedUser']*100);
+            $DataList['Data']['DataList']['Total']['FinishRate'] = $FinishRate."%";
+            //渲染模板
+            include $this->tpl('Xrace_Race_RaceStageData');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
 }

@@ -208,11 +208,13 @@ class Xrace_Ranking extends Base_Widget
                 $RaceUserList = $oUser->getRaceUserList(array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId));
                 foreach($RaceUserList as $key => $UserInfo)
                 {
+                    $RaceUserInfo = $oUser->getRaceUser($UserInfo['RaceUserId'],"Name,RaceUserId");
                     if($UserInfo['RaceGroupId']==$RaceGroupId)
                     {
                         if($i==1)
                         {
                             $UserList[$UserInfo['RaceUserId']]['RaceList']= array();
+                            $UserList[$UserInfo['RaceUserId']]["RaceUserInfo"]=$RaceUserInfo;
                             $UserList[$UserInfo['RaceUserId']]['RaceList'][] = array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId);
                         }
 
@@ -232,7 +234,6 @@ class Xrace_Ranking extends Base_Widget
                 $i++;
             }
         }
-        print_R($UserList);
         foreach($UserList as $RaceUserId => $RaceInfo)
         {
             if(count($RaceInfo['RaceList'])!=count($RaceList))
@@ -253,8 +254,8 @@ class Xrace_Ranking extends Base_Widget
                     $RaceUserInfo['Total']['RankingType'] = $RaceList[$Detail['RaceId']][$RaceUserInfo['Total']['RaceGroupId']]['RankingType'];
                     $RaceUserInfo['Total']['RaceId'] = $Detail['RaceId'];
                     $UserList[$RaceUserId]['RaceDetail'][$key] = $RaceUserInfo['Total'];
-                    $UserList[$RaceUserId]["RaceUserId"] = $RaceUserInfo['Total']['RaceUserId'];
-                    $UserList[$RaceUserId]["Name"] = $RaceUserInfo['Total']['Name'];
+                    $UserList[$RaceUserId]["RaceUserId"] = $RaceInfo['RaceUserInfo']['RaceUserId'];
+                    $UserList[$RaceUserId]["Name"] = $RaceInfo['RaceUserInfo']['Name'];
                     if($RaceUserInfo['Total']['Finished']==1)
                     {
                         if($RaceList[$RaceId][$Detail['RaceGroupId']]['RankingType'] == "gunshot")
@@ -265,23 +266,41 @@ class Xrace_Ranking extends Base_Widget
                         {
                             $UserList[$RaceUserId]['Total']['TotalTime'] += $RaceUserInfo['Total']['TotalNetTime'];
                         }
-                        elseif($RaceList[$RaceId][$Detail['RaceGroupId']]['RankingType'] == "credit")
-                        {
-                            $UserList[$RaceUserId]['Total']['TotalCredit'] += $RaceUserInfo['Total']['Credit'];
-                        }
+                        //elseif($RaceList[$RaceId][$Detail['RaceGroupId']]['RankingType'] == "credit")
                         $t1[$RaceUserId] = $UserList[$RaceUserId]['Total']['TotalTime'];
-                        $t2[$RaceUserId] = intval($UserList[$RaceUserId]['Total']['TotalCredit']);
+
                     }
                     else
                     {
-                        $UserList[$RaceUserId]['Total']['RaceStatus'] = 0;
-                        $t1[$RaceUserId] = 0;
+                        $RaceInfo = $oRace->getRace($Detail['RaceId'],"RaceId,comment");
+                        $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+                        if(time()<strtotime($RaceInfo['comment']['SelectedRaceGroup'][$Detail['RaceGroupId']]['StartTime']))
+                        {
+                            echo "比赛尚未开始<br>";
+                        }
+                        else
+                        {
+                            $UserList[$RaceUserId]['Total']['RaceStatus'] = 0;
+                            $t1[$RaceUserId] = 0;
+                        }
+                        //print_R($RaceInfo['comment']['SelectedRaceGroup'][$Detail['RaceGroupId']]);
                     }
+                    $UserList[$RaceUserId]['Total']['TotalCredit'] += $RaceUserInfo['Total']['Credit'];
+                    $t2[$RaceUserId] = intval($UserList[$RaceUserId]['Total']['TotalCredit']);
                     $t0[$RaceUserId] = $UserList[$RaceUserId]['Total']['RaceStatus'];
                 }
             }
         }
-        array_multisort($t0,SORT_DESC,$t1,SORT_ASC,$t1,SORT_DESC, $UserList);
+        if($RaceList[$RaceId][$Detail['RaceGroupId']]['RankingType'] == "credit")
+        {
+            array_multisort($t0,SORT_DESC,$t2,SORT_DESC,$t1,SORT_ASC, $UserList);
+        }
+        else
+        {
+            array_multisort($t0,SORT_DESC,$t1,SORT_ASC,$t2,SORT_DESC, $UserList);
+        }
+
+
         $filePath = __APP_ROOT_DIR__."Ranking"."/".$RankingId."/";
         $fileName = "Ranking.php";
         //生成配置文件

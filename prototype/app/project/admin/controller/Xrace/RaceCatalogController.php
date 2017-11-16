@@ -104,9 +104,9 @@ class Xrace_RaceCatalogController extends AbstractController
 			$bind['comment'] = json_encode($bind['comment']);
 			//添加赛事记录
 			$res = $this->oRace->insertRaceCatalog($bind);
-			if($res)
+            if($res)
             {
-                $flag = $this->manager->insertDataPermission($this->data_groups,$res);
+                $flag = $this->manager->insertDataPermission(0,$res);
             }
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
 		}
@@ -493,7 +493,6 @@ class Xrace_RaceCatalogController extends AbstractController
             $RankingId = trim($this->request->RankingId);
             $RaceUserList = $oRanking->getRaceInfoByRanking($RankingId);
             $RaceList = array();$RaceGroupList = array();
-            //print_R($RaceUserList['RaceUserList']);
             foreach($RaceUserList['RaceUserList']['UserList'] as $key => $UserInfo)
             {
                 foreach($UserInfo['RaceList'] as $key2 => $Race)

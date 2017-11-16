@@ -1078,7 +1078,6 @@ class XraceConfigController extends AbstractController
                         }
                     }
                 }
-                //print_R($UserRankingList);
                 $UserRaceInfo['ApplyInfo']['RaceStatus'] = $this->oRace->getUserRaceStatus($UserRaceInfo);
                 $result = array("return" => isset($UserRaceInfo['ApplyInfo']) ? 1 : 0, "UserRaceInfo" => $UserRaceInfo,"UserRankingList" => count($UserRankingList)?$UserRankingList:array());
             }
@@ -1504,4 +1503,28 @@ class XraceConfigController extends AbstractController
         }
         echo json_encode($result);
     }
+    /*
+    *更新指定分站的统计数据
+    */
+    public function updateStageDataAction()
+    {
+        //排名ID
+        $RaceStageId = abs(intval($this->request->RaceStageId));
+        $Data = $this->oRace->updateRaceStageData($RaceStageId);
+        echo json_encode($result);
+    }
+    /*
+    *获得指定分站的统计数据
+    */
+    public function getStageDataAction()
+    {
+        //排名ID
+        $RaceStageId = abs(intval($this->request->RaceStageId));
+        $Data = $this->oRace->getRaceStageData($RaceStageId);
+        //全部置为空
+        $result = array("return" => 1, "Data" => $Data);
+        echo json_encode($result);
+    }
+
+
 }

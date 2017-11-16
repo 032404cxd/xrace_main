@@ -2070,4 +2070,91 @@ class Xrace_Race extends Base_Widget
             return 0;
         }
     }
+    //更新某个分站的数据统计
+    public function updateRaceStageData($RaceStageId)
+    {
+        $oUser = new Xrace_UserInfo();
+        //获取比赛列表
+        $RaceList = $this->getRaceList(array("RaceStageId"=>$RaceStageId));
+        $RaceGroupList = array();
+        $DataList['Total'] = array("RaceUser"=>0,"ChipedUser"=>0,"RacedUser"=>0,"FinishedUser"=>0);
+
+        //循环比赛列表
+        foreach($RaceList as $RaceId => $RaceInfo)
+        {
+            $Data['RaceUser'] = 0;$Data['ChipedUser'] = 0;$Data['RacedUser'] = 0;$Data['FinishedUser'] = 0;
+            //初始化数据
+            $DataList['RaceList'][$RaceId] = array("RaceName"=>$RaceInfo['RaceName'],"RaceId"=>$RaceId,"RaceGroupList" => array(),"Data"=>$Data);
+            //循环选定的分组列表
+            foreach($RaceInfo['comment']['SelectedRaceGroup'] as $RaceGroupId => $GroupInfo)
+            {
+                //如果在分组列表中没有
+                if(!isset($RaceGroupList[$RaceGroupId]))
+                {
+                    //获取分组信息
+                    $RaceGroupInfo = $this->getRaceGroup($RaceGroupId,"RaceGroupId,RaceGroupName");
+                }
+                $RaceUser = $oUser->getRaceUserCount(array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId));
+                //获取报名人数
+                $Data['RaceUser'] = $RaceUser;
+                $DataList['Total']['RaceUser'] += $RaceUser;
+
+                $DataList['RaceList'][$RaceId]['Data']['RaceUser'] += $RaceUser;
+                //获取芯片发放人数
+                $ChipedUser = $oUser->getRaceUserCount(array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"Chip"=>1));
+                $Data['ChipedUser'] = $ChipedUser;
+                $DataList['Total']['ChipedUser'] += $ChipedUser;
+                $DataList['RaceList'][$RaceId]['Data']['ChipedUser'] += $ChipedUser;
+
+                $Data['RacedUser'] = 0;$Data['FinishedUser'] = 0;
+                $DataList['RaceList'][$RaceId]['RaceGroupList'][$RaceGroupId] = array("RaceGroupId"=>$RaceGroupId,"RaceGroupName"=>$RaceGroupInfo["RaceGroupName"],"Data"=>$Data);
+            }
+            $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."_Data/";
+            $fileName = "Total.php";
+            //载入预生成的配置文件
+            $file = Base_Common::loadConfig($filePath,$fileName);
+            //如果有计时点数据
+            if(count($file['Point'])>0)
+            {
+                //分组匹配参加了比赛的选手
+                foreach($file['Point'][1]['UserList'] as $rank => $RaceUserInfo)
+                {
+                    $DataList['Total']['RacedUser']++;
+                    $DataList['RaceList'][$RaceId]['Data']['RacedUser'] ++;
+                    $DataList['RaceList'][$RaceId]['RaceGroupList'][$RaceUserInfo['RaceGroupId']]['Data']['RacedUser'] ++;
+                }
+                //分组匹配参加了比赛的选手
+                foreach($file['Total'] as $rank => $RaceUserInfo)
+                {
+                    //如果已经完赛
+                    if($RaceUserInfo['Finished'] == 1)
+                    {
+                        $DataList['RaceList'][$RaceId]['Data']['FinishedUser'] ++;
+                        $DataList['Total']['FinishedUser']++;
+                        $DataList['RaceList'][$RaceId]['RaceGroupList'][$RaceUserInfo['RaceGroupId']]['Data']['FinishedUser'] ++;
+                    }
+                }
+            }
+        }
+        $filePath = __APP_ROOT_DIR__."Data"."/".$RaceStageId."/";
+        $fileName = "Data.php";
+        //生成配置文件
+        Base_Common::rebuildConfig($filePath,$fileName,array("DataList"=>$DataList),"Data");
+        return true;
+    }
+    //获得某个分站的数据统计
+    public function getRaceStageData($RaceStageId)
+    {
+        $filePath = __APP_ROOT_DIR__."Data"."/".$RaceStageId."/";
+        $fileName = "Data.php";
+        //载入预生成的配置文件
+        return Base_Common::loadConfig($filePath,$fileName);
+    }
+    //获取某场比赛的成绩列表
+    public function getRaceStageDataByUrl($RaceStageId)
+    {
+        $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.stage.data',array('RaceStageId'=>$RaceStageId));
+        $return = Base_Common::do_post($url);
+        return json_decode($return,true);
+    }
 }
