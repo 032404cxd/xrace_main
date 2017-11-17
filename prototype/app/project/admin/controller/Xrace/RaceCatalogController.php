@@ -468,8 +468,9 @@ class Xrace_RaceCatalogController extends AbstractController
         if($PermissionCheck['return'])
         {
             $oRanking = new Xrace_Ranking();
-            //赛事ID
+            //排名ID
             $RankingId = trim($this->request->RankingId);
+            //更新总排名数据
             $update = $oRanking->updateRaceUserListByRanking($RankingId);
             //返回原有页面
             $this->response->goBack();
@@ -489,20 +490,26 @@ class Xrace_RaceCatalogController extends AbstractController
         if($PermissionCheck['return'])
         {
             $oRanking = new Xrace_Ranking();
-            //赛事ID
+            //排名ID
             $RankingId = trim($this->request->RankingId);
+            //获取排名数据
             $RaceUserList = $oRanking->getRaceInfoByRanking($RankingId);
+            //初始化空的比赛和分组列表
             $RaceList = array();$RaceGroupList = array();
+            //循环用户数据
             foreach($RaceUserList['RaceUserList']['UserList'] as $key => $UserInfo)
             {
+                //循环比赛列表
                 foreach($UserInfo['RaceList'] as $key2 => $Race)
                 {
                     if(!isset($RaceList[$UserInfo['RaceId']]))
                     {
+                        //获取比赛数据
                         $RaceList[$Race['RaceId']] = $this->oRace->getRace($Race['RaceId'],"RaceId,RaceName");
                     }
                     if(!isset($RaceGroupList[$UserGroupInfo['RaceGroupId']]))
                     {
+                        //获取分组数据
                         $RaceGroupList[$Race['RaceGroupId']] = $this->oRace->getRaceGroup($Race['RaceGroupId'],"RaceGroupId,RaceGroupName");
                     }
                 }

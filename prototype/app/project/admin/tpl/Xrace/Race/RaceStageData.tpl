@@ -1,10 +1,10 @@
 {tpl:tpl contentHeader/}
 <script type="text/javascript">
-
+    function UpdateStageData(sid, sname){
+        updateDataBox = divBox.confirmBox({content:'是否更新 ' + sname + '的成绩单?',ok:function(){location.href = '{tpl:$this.sign/}&ac=update.stage.data&RaceStageId=' + sid;}});
+    }
 </script>
-<input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
-<input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupId/}" />
-<fieldset><legend>{tpl:$RaceStageInfo.RaceStageName/} <a href="{tpl:$this.sign/}">返回</a></legend>
+<fieldset><legend>{tpl:$RaceStageInfo.RaceStageName/} <a href="{tpl:$this.sign/}">返回</a> | <a href="javascript:;" onclick="UpdateStageData('{tpl:$RaceStageInfo.RaceStageId/}','{tpl:$RaceStageInfo.RaceStageName/}')"> 数据更新</a></legend>
     <?php
       $FC4->renderChart();
         $FC->renderChart();

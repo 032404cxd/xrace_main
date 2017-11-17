@@ -38,6 +38,12 @@ class Xrace_SportsController extends AbstractController
 		{
 			//获取运动类型列表
 			$SportTypeList = $this->oSports->getAllSportsTypeList();
+			//循环运动类型列表
+			foreach($SportTypeList as $key => $SportsTypeInfo)
+            {
+                //数据解包
+                $SportTypeList[$key]['comment'] = json_decode($SportsTypeInfo['comment'],true);
+            }
 			//渲染模版
 			include $this->tpl('Xrace_Sports_SportsTypeList');
 		}
@@ -70,7 +76,7 @@ class Xrace_SportsController extends AbstractController
 	public function sportsTypeInsertAction()
 	{
 		//检查权限
-		$bind=$this->request->from('SportsTypeName','SpeedDisplayType');
+		$bind=$this->request->from('SportsTypeName','SpeedDisplayType','HorizonSign');
 		//运动类型名称不能为空
 		if(trim($bind['SportsTypeName'])=="")
 		{
@@ -78,7 +84,12 @@ class Xrace_SportsController extends AbstractController
 		}
 		else
 		{
-			//添加运动类型
+            //保存地平线对应的类型标识
+            $bind['comment']['HorizonSign'] = $bind['HorizonSign'];
+            unset($bind['HorizonSign']);
+            //数据打包
+            $bind['comment'] = json_encode($bind['comment']);
+		    //添加运动类型
 			$res = $this->oSports->insertSportsType($bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);
 		}
@@ -97,6 +108,8 @@ class Xrace_SportsController extends AbstractController
 			$SportsTypeId = intval($this->request->SportsTypeId);
 			//获取运动类型信息
 			$SportsTypeInfo = $this->oSports->getSportsType($SportsTypeId,'*');
+			//数据解包
+			$SportsTypeInfo['comment'] = json_decode($SportsTypeInfo['comment'],true);
 			//获取速度显示单位
             $SpeedDisplayTypeList = $this->oSports->getSpeedDisplayList();
             //渲染模版
@@ -112,8 +125,8 @@ class Xrace_SportsController extends AbstractController
 	//更新运动类型信息
 	public function sportsTypeUpdateAction()
 	{
-		//接收页面参数
-		$bind=$this->request->from('SportsTypeId','SportsTypeName','SpeedDisplayType');
+	    //接收页面参数
+		$bind=$this->request->from('SportsTypeId','SportsTypeName','SpeedDisplayType','HorizonSign');
         //运动类型名称不能为空
 		if(trim($bind['SportsTypeName'])=="")
 		{
@@ -121,6 +134,11 @@ class Xrace_SportsController extends AbstractController
 		}
 		else
 		{
+            //保存地平线对应的类型标识
+            $bind['comment']['HorizonSign'] = $bind['HorizonSign'];
+            unset($bind['HorizonSign']);
+            //数据打包
+            $bind['comment'] = json_encode($bind['comment']);
 			//修改运动类型
 			$res = $this->oSports->updateSportsType($bind['SportsTypeId'],$bind);
 			$response = $res ? array('errno' => 0) : array('errno' => 9);

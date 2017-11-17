@@ -2150,10 +2150,18 @@ class Xrace_Race extends Base_Widget
         //载入预生成的配置文件
         return Base_Common::loadConfig($filePath,$fileName);
     }
-    //获取某场比赛的成绩列表
+    //获取某个分站的数据列表
     public function getRaceStageDataByUrl($RaceStageId)
     {
         $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.stage.data',array('RaceStageId'=>$RaceStageId));
+        $return = Base_Common::do_post($url);
+        return json_decode($return,true);
+    }
+    //更新某个分站的数据列表
+    public function updateRaceStageDataByUrl($RaceStageId)
+    {
+        $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','update.stage.data',array('RaceStageId'=>$RaceStageId));
+        echo $url."<br>";
         $return = Base_Common::do_post($url);
         return json_decode($return,true);
     }

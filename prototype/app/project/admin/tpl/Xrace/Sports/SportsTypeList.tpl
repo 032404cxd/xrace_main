@@ -2,7 +2,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$('#add_app').click(function(){
-		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=sports.type.add', {title:'添加运动类型',width:400,height:200});
+		addAppBox = divBox.showBox('{tpl:$this.sign/}&ac=sports.type.add', {title:'添加运动类型',width:400,height:250});
 	});
 });
 
@@ -11,7 +11,7 @@ function sportsTypeDelete(p_id, p_name){
 }
 
 function sportsTypeModify(mid){
-	modifySportsTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=sports.type.modify&SportsTypeId=' + mid, {title:'修改运动类型',width:400,height:200});
+	modifySportsTypeBox = divBox.showBox('{tpl:$this.sign/}&ac=sports.type.modify&SportsTypeId=' + mid, {title:'修改运动类型',width:400,height:250});
 }
 
 function sportsTypeParamsModify(mid){
@@ -30,7 +30,9 @@ function sportsTypeParamsModify(mid){
     <th align="center" class="rowtip">运动类型ID</th>
     <th align="center" class="rowtip">运动类型名称</th>
     <th align="center" class="rowtip">速度显示类型</th>
-    <th align="center" class="rowtip">操作</th>
+    <th align="center" class="rowtip">地平线对应标识</th>
+
+      <th align="center" class="rowtip">操作</th>
   </tr>
 
 {tpl:loop $SportTypeList $SportsTypeInfo}
@@ -38,7 +40,9 @@ function sportsTypeParamsModify(mid){
     <td align="center">{tpl:$SportsTypeInfo.SportsTypeId/}</td>
     <td align="center">{tpl:$SportsTypeInfo.SportsTypeName/}</td>
     <td align="center">{tpl:if($SportsTypeInfo.SpeedDisplayType=="0")}不显示{tpl:else}{tpl:$SportsTypeInfo.SpeedDisplayType/}{/tpl:if}</td>
-    <td align="center"><a  href="javascript:;" onclick="sportsTypeDelete('{tpl:$SportsTypeInfo.SportsTypeId/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">删除</a> |  <a href="javascript:;" onclick="sportsTypeModify('{tpl:$SportsTypeInfo.SportsTypeId/}');">修改</a></td>
+    <td align="center">{tpl:$SportsTypeInfo.comment.HorizonSign/}</td>
+
+      <td align="center"><a  href="javascript:;" onclick="sportsTypeDelete('{tpl:$SportsTypeInfo.SportsTypeId/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">删除</a> |  <a href="javascript:;" onclick="sportsTypeModify('{tpl:$SportsTypeInfo.SportsTypeId/}');">修改</a></td>
   </tr>
 {/tpl:loop}
 </table>

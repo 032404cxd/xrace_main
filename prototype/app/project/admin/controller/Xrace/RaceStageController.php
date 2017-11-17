@@ -5123,4 +5123,23 @@ class Xrace_RaceStageController extends AbstractController
             include $this->tpl('403');
         }
     }
+    //更新分站的统计数据
+    public function updateStageDataAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            //分站ID
+            $RaceStageId = intval($this->request->RaceStageId);
+            $update = $this->oRace->updateRaceStageDataByUrl($RaceStageId);
+            //返回原有页面
+            $this->response->goBack();
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
 }

@@ -16,6 +16,9 @@
 	</select>
 </td>
 </tr>
+<td>地平线对应标识</td>
+<td align="left"><input name="HorizonSign" type="text" class="span2" id="HorizonSign" value="" size="50" /></td>
+</tr>
 	<tr class="noborder"><td></td>
 <td><button type="submit" id="app_add_submit">提交</button></td>
 </tr>
