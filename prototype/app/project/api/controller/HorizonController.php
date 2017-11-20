@@ -45,6 +45,16 @@ class HorizonController extends AbstractController
         $AthleteList = $this->oHorizon->getAthleteList($RaceStageId);
         echo json_encode($AthleteList);
     }
+    /**
+     *获取某个分站的计时点列表
+     */
+    public function getTimingPointListAction()
+    {
+        //格式化分站ID,默认为0
+        $RaceStageId = isset($this->request->RaceStageId) ? abs(intval($this->request->RaceStageId)) : 0;
+        $TimingPointList = $this->oHorizon->getTimingPointList($RaceStageId);
+        echo json_encode($TimingPointList);
+    }
 
 
 }

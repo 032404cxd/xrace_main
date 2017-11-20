@@ -54,7 +54,12 @@
     <th align="center" class="rowtip">{tpl:$UserInfo.ApplySourceName/}</th>
     {tpl:if(count($RaceStageInfo.comment.RaceStructure=='race'))}
     <th align="center" class="rowtip">{tpl:$UserInfo.RaceName/}</th>
-    <th align="center" class="rowtip">{tpl:$UserInfo.RaceGroupName/}</th>
+    <th align="center" class="rowtip">
+        <select name="UserRaceList[{tpl:$Aid/}][RaceGroupId]" id="UserRaceList[{tpl:$Aid/}][RaceGroupId]" class="span2" size="1">
+            {tpl:loop $UserInfo.RaceGroupList $G $GInfo}
+            <option value="{tpl:$G/}" {tpl:if($G==$UserInfo.RaceGroupId)}selected="selected"{/tpl:if}>{tpl:$GInfo.RaceGroupName/}</option>
+            {/tpl:loop}
+    </th>
     {tpl:else}
     <th align="center" class="rowtip">{tpl:$UserInfo.RaceGroupName/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.RaceName/}</th>

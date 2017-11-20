@@ -23,12 +23,12 @@
     <th align="center" class="rowtip"><input type="text" class="span2" name="Round" id="Round" value="{tpl:$TimingInfo.Round/}" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">海拔上升(米)</th>
-    <th align="center" class="rowtip"><input type="text" class="span2" name="AltAsc" id="AltAsc" value="{tpl:$TimingInfo.AltAsc/}" /></th>
+    <th align="center" class="rowtip">百度地图经度</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="BaiduMapX" id="BaiduMapX" value="{tpl:$TimingInfo.BaiduMapX/}" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">海拔下降(米)</th>
-    <th align="center" class="rowtip"><input type="text" class="span2" name="AltDec" id="AltDec" value="{tpl:$TimingInfo.AltDec/}" /></th>
+    <th align="center" class="rowtip">百度地图纬度</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="BaiduMapY" id="BaiduMapY" value="{tpl:$TimingInfo.BaiduMapY/}" /></th>
   </tr>
   <tr>
     <th align="center" class="rowtip">等待时间(秒)</th>

@@ -126,7 +126,7 @@ class Xrace_UserController extends AbstractController
             //获取用户列表时需要获得记录总数
             $params['getCount'] = 1;
             //获取用户列表
-            $UserList = $this->oUserInfo->getUserList($params);
+            $UserList = $this->oUserInfo->getRaceUserList($params);
             //导出EXCEL链接
             $export_var = "<a href =".(Base_Common::getUrl('','xrace/user','user.list.download',$params))."><导出表格></a>";
             //翻页参数
@@ -1414,7 +1414,7 @@ class Xrace_UserController extends AbstractController
     public function userRaceListAction()
     {
         //检查权限
-        $PermissionCheck = $this->manager->checkMenuPermission("UserRaceList");
+        $PermissionCheck = $this->manager->checkMenuPermission(0);
         if($PermissionCheck['return'])
         {
             $oAction = new Xrace_Action();

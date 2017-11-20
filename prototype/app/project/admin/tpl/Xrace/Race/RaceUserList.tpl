@@ -45,7 +45,16 @@
     <input type="hidden" name="UserList[{tpl:$Aid/}][ApplyId]" id="UserList[{tpl:$UserInfo.UserId/}][ApplyId]" value="{tpl:$UserInfo.ApplyId/}" />
     <th align="center" class="rowtip"><a href="javascript:;" onclick="RaceResultList('{tpl:$RaceInfo.RaceId/}','{tpl:$UserInfo.RaceUserId/}','{tpl:$RaceInfo.RaceName/}')">{tpl:$UserInfo.Name/}</a></th>
     <th align="center" class="rowtip">{tpl:$UserInfo.ApplySourceName/}</th>
-    <th align="center" class="rowtip">{tpl:$UserInfo.RaceGroupName/} {tpl:if($UserInfo.RaceGroupId>0)}<a href="javascript:void(0);" onclick="UserRaceDeleteByGroup('{tpl:$RaceInfo.RaceId/}','{tpl:$UserInfo.RaceGroupId/}','{tpl:$UserInfo.RaceGroupName/}')">退赛</a>{/tpl:if}</th>
+    <th align="center" class="rowtip">
+        {tpl:if(count($RaceInfo.comment.SelectedRaceGroup)>0)}
+      <select name="UserList[{tpl:$Aid/}][RaceGroupId]" class="span2" size="1">
+        {tpl:loop $RaceInfo.comment.SelectedRaceGroup $G $GInfo}
+        <option value="{tpl:$G/}" {tpl:if($G==$UserInfo.RaceGroupId)}selected="selected"{/tpl:if}>{tpl:$GInfo.RaceGroupInfo.RaceGroupName/}</option>
+          {/tpl:loop}
+        {tpl:else}
+        {tpl:$UserInfo.RaceGroupName/}
+        {/tpl:if}
+        {tpl:if($UserInfo.RaceGroupId>0)}<a href="javascript:void(0);" onclick="UserRaceDeleteByGroup('{tpl:$RaceInfo.RaceId/}','{tpl:$UserInfo.RaceGroupId/}','{tpl:$UserInfo.RaceGroupName/}')">退赛</a>{/tpl:if}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.TeamName/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.ApplyTime/}</th>
     <th align="center" class="rowtip"><input type="text" class="span1" name="UserList[{tpl:$Aid/}][BIB]" id="UserList[{tpl:$UserInfo.UserId/}][BIB]" value="{tpl:$UserInfo.BIB/}" />{tpl:if($UserInfo.TBD>0)}{tpl:if($UserInfo.TBD==1)}待确认{tpl:else}其他{/tpl:if}{/tpl:if}</th>

@@ -71,7 +71,6 @@ class Xrace_Horizon extends Base_Widget
         $oRace = new Xrace_Race();
         $oUser = new Xrace_UserInfo();
         $oTeam = new Xrace_Team();
-
         //获取分站信息
         $RaceStageInfo = $oRace->getRaceStage($RaceStageId);
         //如果找到
@@ -168,5 +167,78 @@ class Xrace_Horizon extends Base_Widget
             return false;
         }
 
+    }
+    //获取单个分站的计时点配置信息
+    public function getTimingPointList($RaceStageId)
+    {
+        $oRace = new Xrace_Race();
+        $oSports = new Xrace_Sports();
+        $RaceStageId = intval($RaceStageId);
+        //获取分站信息
+        $RaceStageInfo = $oRace->getRaceStage($RaceStageId);
+        //如果找到
+        if(isset($RaceStageInfo["RaceStageId"]))
+        {
+            $ReturnArr = array("raceId"=>$RaceStageId,"raceName"=>$RaceStageInfo['RaceStageName'],"timingPoints"=>array());
+            //获取比赛列表
+            $RaceList = $oRace->getRaceList(array("RaceStageId"=>$RaceStageId));
+            //初始化空的运动类型列表
+            $SportsTypeList = array();
+            //循环比赛列表
+            foreach($RaceList as $RaceId => $RaceInfo)
+            {
+                $i = 1;
+                //循环计时分段列表
+                foreach($RaceInfo['comment']['DetailList'] as $key => $Sports)
+                {
+                    //如果在运动类型列表中没有
+                    if(!isset($SportsTypeList[$Sports['SportsTypeId']]))
+                    {
+                        //获取运动信息
+                        $SportsTypeInfo = $oSports->getSportsType($Sports['SportsTypeId'],"*");
+                        //数据解包
+                        $SportsTypeInfo['comment'] = json_decode($SportsTypeInfo['comment'],true);
+                        $SportsTypeList[$Sports['SportsTypeId']] = $SportsTypeInfo;
+                    }
+                    //获取计时点详情信息
+                    $TimingInfo = $oRace->getTimingDetail($Sports['TimingId']);
+                    //如果计时点数据获取成功
+                    if(isset($TimingInfo['TimingId']))
+                    {
+                        //数据解包
+                        $TimingInfo['comment'] = json_decode($TimingInfo['comment'],true);
+                        //如果解包后有计时点数据
+                        if(count($TimingInfo['comment']))
+                        {
+                            //循环计时点数据
+                            foreach ($TimingInfo['comment'] as $TimingPoint)
+                            {
+                                for($j = 0;$j<$TimingPoint['Round'];$j++)
+                                {
+                                    //第一次通过不需要下标
+                                    $tName = $TimingPoint['TName'].(($j==0)?"":"*".($j+1));
+                                    $TimingPointInfo = array(
+                                        "distance" => $TimingPoint['ToPrevious']/1000,
+                                        "gameName" => $SportsTypeList[$Sports['SportsTypeId']]['comment']['HorizonSign'],
+                                        "displayName" => $tName,
+                                        "raceCategoryName" => $RaceInfo["RaceName"],
+                                        "name" => $tName,
+                                        "latitude" => $TimingPoint['BaiduMapX'],
+                                        "longitude" => $TimingPoint['BaiduMapY'],
+                                        "seqNo" => $i++
+                                    );
+                                }
+                                $ReturnArr["timingPoints"][] = $TimingPointInfo;
+                            }
+                        }
+                    }
+                }
+            }
+            return $ReturnArr;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

@@ -2161,7 +2161,6 @@ class Xrace_Race extends Base_Widget
     public function updateRaceStageDataByUrl($RaceStageId)
     {
         $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','update.stage.data',array('RaceStageId'=>$RaceStageId));
-        echo $url."<br>";
         $return = Base_Common::do_post($url);
         return json_decode($return,true);
     }

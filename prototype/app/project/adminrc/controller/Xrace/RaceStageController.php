@@ -1396,7 +1396,7 @@ class Xrace_RaceStageController extends AbstractController
 					if(isset($SportTypeList[$RaceSportsInfo['SportsTypeId']]))
 					{
 					    //初始化统计信息
-						$RaceInfo['comment']['DetailList'][$Key]['Total'] = array('Distence'=>0,'ChipCount'=>0,'AltAsc'=>0,'AltDec'=>0);
+						$RaceInfo['comment']['DetailList'][$Key]['Total'] = array('Distence'=>0,'ChipCount'=>0,'BaiduMapX'=>0,'BaiduMapY'=>0);
 						//获取运动类型名称
 						$RaceInfo['comment']['DetailList'][$Key]['SportsTypeName'] = $SportTypeList[$RaceSportsInfo['SportsTypeId']]['SportsTypeName'];
 						//如果有配置计时点ID 则获取计时点信息
@@ -1413,9 +1413,9 @@ class Xrace_RaceStageController extends AbstractController
 							//累加计时点数量
 							$RaceInfo['comment']['DetailList'][$Key]['Total']['ChipCount'] += $tinfo['Round'];
 							//累加海拔上升
-							$RaceInfo['comment']['DetailList'][$Key]['Total']['AltAsc'] += $tinfo['AltAsc']*	$tinfo['Round'];
+							$RaceInfo['comment']['DetailList'][$Key]['Total']['BaiduMapX'] += $tinfo['BaiduMapX']*	$tinfo['Round'];
 							//累加海拔下降
-							$RaceInfo['comment']['DetailList'][$Key]['Total']['AltDec'] += $tinfo['AltDec']*	$tinfo['Round'];
+							$RaceInfo['comment']['DetailList'][$Key]['Total']['BaiduMapY'] += $tinfo['BaiduMapY']*	$tinfo['Round'];
                             //如果包含积分配置
                             if(count($tinfo['CreditList']))
                             {
@@ -1667,7 +1667,7 @@ class Xrace_RaceStageController extends AbstractController
 			//需要添加的运动类型置于哪个位置之后，默认为开头
 			$After = isset($this->request->After)?intval($this->request->After):-1;
 			//获取 页面参数
-			$bind = $this->request->from('TName','ToPrevious','AltAsc','AltDec','Round','ChipId','TolaranceTime');
+			$bind = $this->request->from('TName','ToPrevious','BaiduMapX','BaiduMapY','Round','ChipId','TolaranceTime');
 			//添加计时点
 			$AddTimingPoint = $this->oRace->addTimingPoint($RaceId,$SportsTypeId,$After,$bind);
 			$response = $AddTimingPoint ? array('errno' => 0) : array('errno' => $AddTimingPoint);
@@ -1789,7 +1789,7 @@ class Xrace_RaceStageController extends AbstractController
 			//计时点ID
 			$TimingId = isset($this->request->TimingId)?intval($this->request->TimingId):0;
 			//获取 页面参数
-			$bind = $this->request->from('TName','ToPrevious','AltAsc','AltDec','Round','ChipId','TolaranceTime');
+			$bind = $this->request->from('TName','ToPrevious','BaiduMapX','BaiduMapY','Round','ChipId','TolaranceTime');
 			//更新计时点
 			$UpdateTimingPoint = $this->oRace->updateTimingPoint($RaceId,$SportsTypeId,$TimingId,$bind);
 			$response = $UpdateTimingPoint ? array('errno' => 0) : array('errno' => 9);

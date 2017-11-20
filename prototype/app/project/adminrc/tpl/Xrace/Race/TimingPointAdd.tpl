@@ -33,11 +33,11 @@
   </tr>
   <tr>
     <th align="center" class="rowtip">海拔上升(米)</th>
-    <th align="center" class="rowtip"><input type="text" class="span2" name="AltAsc" id="AltAsc" value="0" /></th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="BaiduMapX" id="BaiduMapX" value="0" /></th>
   </tr>
   <tr>
     <th align="center" class="rowtip">海拔下降(米)</th>
-    <th align="center" class="rowtip"><input type="text" class="span2" name="AltDec" id="AltDec" value="0" /></th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="BaiduMapY" id="BaiduMapY" value="0" /></th>
   </tr>
   <tr>
     <th align="center" class="rowtip">等待时间(秒)</th>

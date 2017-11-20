@@ -1280,7 +1280,7 @@ class Xrace_UserInfo extends Base_Widget
         //获取需要用到的表名
         $table_to_process = Base_Widget::getDbTable($this->table_race);
         //获得分站ID
-        $whereStage = isset($params['RaceStageId'])?" RaceStageId = '".$params['RaceStageId']."' ":"";
+        $whereStage = (isset($params['RaceStageId']) && intval($params['RaceStageId']))?" RaceStageId = '".$params['RaceStageId']."' ":"";
         //获得比赛ID
         $whereRace = isset($params['RaceId']) && intval($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
         //排除比赛ID
@@ -1290,7 +1290,7 @@ class Xrace_UserInfo extends Base_Widget
         //获得组别ID
         $whereGroup = (isset($params['RaceGroupId']) && intval($params['RaceGroupId'])  && $params['RaceGroupId']!=0)?" RaceGroupId = '".$params['RaceGroupId']."' ":"";
         //获得赛事ID
-        $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
+        $whereCatalog = (isset($params['RaceCatalogId']) && intval($params['RaceCatalogId']))?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
         //获得赛事ID
         $whereCheckIn = (isset($params['CheckInStatus']) && $params['CheckInStatus']>0) ?" CheckInStatus = '".$params['CheckInStatus']."' ":"";
         //根据选手报名状态
@@ -1321,7 +1321,7 @@ class Xrace_UserInfo extends Base_Widget
         //获取需要用到的表名
         $table_to_process = Base_Widget::getDbTable($this->table_race);
         //获得分站ID
-        $whereStage = isset($params['RaceStageId'])?" RaceStageId = '".$params['RaceStageId']."' ":"";
+        $whereStage = (isset($params['RaceStageId']) && intval($params['RaceStageId']))?" RaceStageId = '".$params['RaceStageId']."' ":"";
         //获得比赛ID
         $whereRace = isset($params['RaceId']) && intval($params['RaceId'])?" RaceId = '".$params['RaceId']."' ":"";
         //排除比赛ID
@@ -1331,7 +1331,7 @@ class Xrace_UserInfo extends Base_Widget
         //获得组别ID
         $whereGroup = (isset($params['RaceGroupId']) && intval($params['RaceGroupId'])  && $params['RaceGroupId']!=0)?" RaceGroupId = '".$params['RaceGroupId']."' ":"";
         //获得赛事ID
-        $whereCatalog = isset($params['RaceCatalogId'])?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
+        $whereCatalog = (isset($params['RaceCatalogId']) && intval($params['RaceCatalogId']))?" RaceCatalogId = '".$params['RaceCatalogId']."' ":"";
         //获得赛事ID
         $whereCheckIn = (isset($params['CheckInStatus']) && $params['CheckInStatus']>0) ?" CheckInStatus = '".$params['CheckInStatus']."' ":"";
         //根据选手报名状态
@@ -1582,7 +1582,7 @@ class Xrace_UserInfo extends Base_Widget
             }
         }
         $RaceUserList['RaceStatus'] = $this->getRaceUserStatusCountList($params);
-        $RaceUserList['LogCount'] = $this->getRaceUserLogCount($params);
+        $RaceUserList['LogCount'] = $this->getRaceUserCount($params);
         return $RaceUserList;
     }
     public function makeToken($UserId,$IP,$LoginSource)

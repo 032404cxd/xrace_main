@@ -534,10 +534,6 @@ class XraceConfigController extends AbstractController
                     $RaceList[$RaceId]['RaceStatus'] = $this->oRace->getRaceTimeStatus($RaceInfo);
                     //初始化比赛里程
                     $RaceList[$RaceId]['Distence'] = 0;
-                    //初始化比赛海拔提升
-                    $RaceList[$RaceId]['AltAsc'] = 0;
-                    //初始化比赛海拔下降
-                    $RaceList[$RaceId]['AltDec'] = 0;
                     //获取比赛分类信息
                     $RaceTypeInfo = $RaceInfo['RaceTypeId'] ? $this->oRace->getRaceType($RaceInfo['RaceTypeId'], '*') : array();
                     //如果获取到比赛类型信息
@@ -568,10 +564,6 @@ class XraceConfigController extends AbstractController
                                 $RaceList[$RaceId]['comment']['DetailList'][$detailId]['SportsTypeName'] = $SportsTypeList[$detailInfo['SportsTypeId']]['SportsTypeName'];
                                 //初始化运动分段的长度
                                 $RaceList[$RaceId]['comment']['DetailList'][$detailId]['Distence'] = 0;
-                                //初始化运动分段的海拔上升
-                                $RaceList[$RaceId]['comment']['DetailList'][$detailId]['AltAsc'] = 0;
-                                //初始化运动分段的海拔下降
-                                $RaceList[$RaceId]['comment']['DetailList'][$detailId]['AltDec'] = 0;
                                 //获取计时点信息
                                 $TimingInfo = isset($detailInfo['TimingId']) ? $this->oRace->getTimingDetail($detailInfo['TimingId']) : array();
                                 //如果获取到计时点信息
@@ -586,14 +578,6 @@ class XraceConfigController extends AbstractController
                                         $RaceList[$RaceId]['comment']['DetailList'][$detailId]['Distence'] += $tInfo['ToNext'] * $tInfo['Round'];
                                         //累加里程到比赛
                                         $RaceList[$RaceId]['Distence'] += $tInfo['ToNext'] * $tInfo['Round'];
-                                        //累加海拔上升到运动分段
-                                        $RaceList[$RaceId]['comment']['DetailList'][$detailId]['AltAsc'] += $tInfo['AltAsc'] * $tInfo['Round'];
-                                        //累加海拔上升到比赛
-                                        $RaceList[$RaceId]['AltAsc'] += $tInfo['AltAsc'] * $tInfo['Round'];
-                                        //累加海拔下降到运动分段
-                                        $RaceList[$RaceId]['comment']['DetailList'][$detailId]['AltDec'] += $tInfo['AltDec'] * $tInfo['Round'];
-                                        //累加海拔下降到比赛
-                                        $RaceList[$RaceId]['AltDec'] += $tInfo['AltDec'] * $tInfo['Round'];
                                     }
                                 }
                             }
@@ -642,10 +626,6 @@ class XraceConfigController extends AbstractController
                 $RaceList[$RaceId]['RaceStatus'] = $this->oRace->getRaceTimeStatus($RaceInfo);
                 //初始化比赛里程
                 $RaceList[$RaceId]['Distence'] = 0;
-                //初始化比赛海拔提升
-                $RaceList[$RaceId]['AltAsc'] = 0;
-                //初始化比赛海拔下降
-                $RaceList[$RaceId]['AltDec'] = 0;
                 //获取比赛分类信息
                 $RaceTypeInfo = $RaceInfo['RaceTypeId'] ? $this->oRace->getRaceType($RaceInfo['RaceTypeId'], '*') : array();
                 //如果获取到比赛类型信息
@@ -675,10 +655,6 @@ class XraceConfigController extends AbstractController
                             $RaceList[$RaceId]['comment']['DetailList'][$detailId]['SportsTypeName'] = $SportsTypeList[$detailInfo['SportsTypeId']]['SportsTypeName'];
                             //初始化运动分段的长度
                             $RaceList[$RaceId]['comment']['DetailList'][$detailId]['Distence'] = 0;
-                            //初始化运动分段的海拔上升
-                            $RaceList[$RaceId]['comment']['DetailList'][$detailId]['AltAsc'] = 0;
-                            //初始化运动分段的海拔下降
-                            $RaceList[$RaceId]['comment']['DetailList'][$detailId]['AltDec'] = 0;
                             //获取计时点信息
                             $TimingInfo = isset($detailInfo['TimingId']) ? $this->oRace->getTimingDetail($detailInfo['TimingId']) : array();
                             //如果获取到计时点信息
@@ -693,14 +669,6 @@ class XraceConfigController extends AbstractController
                                     $RaceList[$RaceId]['comment']['DetailList'][$detailId]['Distence'] += $tInfo['ToNext'] * $tInfo['Round'];
                                     //累加里程到比赛
                                     $RaceList[$RaceId]['Distence'] += $tInfo['ToNext'] * $tInfo['Round'];
-                                    //累加海拔上升到运动分段
-                                    $RaceList[$RaceId]['comment']['DetailList'][$detailId]['AltAsc'] += $tInfo['AltAsc'] * $tInfo['Round'];
-                                    //累加海拔上升到比赛
-                                    $RaceList[$RaceId]['AltAsc'] += $tInfo['AltAsc'] * $tInfo['Round'];
-                                    //累加海拔下降到运动分段
-                                    $RaceList[$RaceId]['comment']['DetailList'][$detailId]['AltDec'] += $tInfo['AltDec'] * $tInfo['Round'];
-                                    //累加海拔下降到比赛
-                                    $RaceList[$RaceId]['AltDec'] += $tInfo['AltDec'] * $tInfo['Round'];
                                 }
                             }
                         }
@@ -768,10 +736,6 @@ class XraceConfigController extends AbstractController
                 $RaceInfo['RaceStatus'] = $this->oRace->getRaceTimeStatus($RaceInfo);
                 //初始化比赛里程
                 $RaceInfo['Distence'] = 0;
-                //初始化比赛海拔提升
-                $RaceInfo['AltAsc'] = 0;
-                //初始化比赛海拔下降
-                $RaceInfo['AltDec'] = 0;
                 //获取比赛分类信息
                 $RaceTypeInfo = $RaceInfo['RaceTypeId'] ? $this->oRace->getRaceType($RaceInfo['RaceTypeId'], '*') : array();
                 //如果获取到比赛类型信息
@@ -804,10 +768,6 @@ class XraceConfigController extends AbstractController
                             $RaceInfo['comment']['DetailList'][$detailId]['SportsTypeName'] = $SportsTypeList[$detailInfo['SportsTypeId']]['SportsTypeName'];
                             //初始化运动分段的长度
                             $RaceInfo['comment']['DetailList'][$detailId]['Distence'] = 0;
-                            //初始化运动分段的海拔上升
-                            $RaceInfo['comment']['DetailList'][$detailId]['AltAsc'] = 0;
-                            //初始化运动分段的海拔下降
-                            $RaceInfo['comment']['DetailList'][$detailId]['AltDec'] = 0;
                             //获取计时点信息
                             $TimingInfo = isset($detailInfo['TimingId']) ? $this->oRace->getTimingDetail($detailInfo['TimingId']) : array();
                             //如果获取到计时点信息
@@ -820,14 +780,6 @@ class XraceConfigController extends AbstractController
                                     $RaceInfo['comment']['DetailList'][$detailId]['Distence'] += $tInfo['ToNext'] * $tInfo['Round'];
                                     //累加里程到比赛
                                     $RaceInfo['Distence'] += $tInfo['ToNext'] * $tInfo['Round'];
-                                    //累加海拔上升到运动分段
-                                    $RaceInfo['comment']['DetailList'][$detailId]['AltAsc'] += $tInfo['AltAsc'] * $tInfo['Round'];
-                                    //累加海拔上升到比赛
-                                    $RaceInfo['AltAsc'] += $tInfo['AltAsc'] * $tInfo['Round'];
-                                    //累加海拔下降到运动分段
-                                    $RaceInfo['comment']['DetailList'][$detailId]['AltDec'] += $tInfo['AltDec'] * $tInfo['Round'];
-                                    //累加海拔下降到比赛
-                                    $RaceInfo['AltDec'] += $tInfo['AltDec'] * $tInfo['Round'];
                                 }
                             }
                         } else {

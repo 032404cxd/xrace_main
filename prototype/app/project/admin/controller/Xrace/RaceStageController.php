@@ -1483,7 +1483,7 @@ class Xrace_RaceStageController extends AbstractController
 					if(isset($SportTypeList[$RaceSportsInfo['SportsTypeId']]))
 					{
 					    //初始化统计信息
-						$RaceInfo['comment']['DetailList'][$Key]['Total'] = array('Distence'=>0,'ChipCount'=>0,'AltAsc'=>0,'AltDec'=>0);
+						$RaceInfo['comment']['DetailList'][$Key]['Total'] = array('Distence'=>0,'ChipCount'=>0);
 						//获取运动类型名称
 						$RaceInfo['comment']['DetailList'][$Key]['SportsTypeName'] = $SportTypeList[$RaceSportsInfo['SportsTypeId']]['SportsTypeName'];
 						//如果有配置计时点ID 则获取计时点信息
@@ -1499,10 +1499,6 @@ class Xrace_RaceStageController extends AbstractController
 							$RaceInfo['comment']['DetailList'][$Key]['Total']['Distence'] += (($tinfo['ToPrevious']>0)?($tinfo['ToPrevious']):0)*	$tinfo['Round'];
 							//累加计时点数量
 							$RaceInfo['comment']['DetailList'][$Key]['Total']['ChipCount'] += $tinfo['Round'];
-							//累加海拔上升
-							$RaceInfo['comment']['DetailList'][$Key]['Total']['AltAsc'] += $tinfo['AltAsc']*	$tinfo['Round'];
-							//累加海拔下降
-							$RaceInfo['comment']['DetailList'][$Key]['Total']['AltDec'] += $tinfo['AltDec']*	$tinfo['Round'];
                             //如果包含积分配置
                             if(count($tinfo['CreditList']))
                             {
@@ -1754,7 +1750,7 @@ class Xrace_RaceStageController extends AbstractController
 			//需要添加的运动类型置于哪个位置之后，默认为开头
 			$After = isset($this->request->After)?intval($this->request->After):-1;
 			//获取 页面参数
-			$bind = $this->request->from('TName','ToPrevious','AltAsc','AltDec','Round','ChipId','TolaranceTime');
+			$bind = $this->request->from('TName','ToPrevious','BaiduMapX','BaiduMapY','Round','ChipId','TolaranceTime');
 			//添加计时点
 			$AddTimingPoint = $this->oRace->addTimingPoint($RaceId,$SportsTypeId,$After,$bind);
 			$response = $AddTimingPoint ? array('errno' => 0) : array('errno' => $AddTimingPoint);
@@ -1876,7 +1872,7 @@ class Xrace_RaceStageController extends AbstractController
 			//计时点ID
 			$TimingId = isset($this->request->TimingId)?intval($this->request->TimingId):0;
 			//获取 页面参数
-			$bind = $this->request->from('TName','ToPrevious','AltAsc','AltDec','Round','ChipId','TolaranceTime');
+			$bind = $this->request->from('TName','ToPrevious','BaiduMapX','BaiduMapY','Round','ChipId','TolaranceTime');
 			//更新计时点
 			$UpdateTimingPoint = $this->oRace->updateTimingPoint($RaceId,$SportsTypeId,$TimingId,$bind);
 			$response = $UpdateTimingPoint ? array('errno' => 0) : array('errno' => 9);
@@ -2190,7 +2186,11 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
 			//格式化分组ID
 			$RaceGroupId = (in_array($RaceGroupId,array(0,$RaceInfo['RaceGroupId'])) || in_array($RaceGroupId,$RaceInfo['comment']['SelectedRaceGroup']))?$RaceGroupId:0;
-            $DownloadUrl = "<a href='" . Base_Common::getUrl('', 'xrace/race.stage', 'race.user.list', array('RaceId' => $RaceId, 'RaceGroupId' => $RaceGroupId,'Download'=>1,'RaceStatus'=>$RaceStatus)) . "'> 下载</a>";
+            foreach($RaceInfo['comment']['SelectedRaceGroup'] as $G => $GInfo)
+            {
+                $RaceInfo['comment']['SelectedRaceGroup'][$G]["RaceGroupInfo"] = $this->oRace->getRaceGroup($G,"RaceGroupId,RaceGroupName");
+            }
+			$DownloadUrl = "<a href='" . Base_Common::getUrl('', 'xrace/race.stage', 'race.user.list', array('RaceId' => $RaceId, 'RaceGroupId' => $RaceGroupId,'Download'=>1,'RaceStatus'=>$RaceStatus)) . "'> 下载</a>";
 			//生成查询条件
 			$params = array('RaceId'=>$RaceInfo['RaceId']);
 			$oUser = new Xrace_UserInfo();
@@ -2255,6 +2255,8 @@ class Xrace_RaceStageController extends AbstractController
 				$bind['BIB'] = trim($UserInfo['BIB']);
 				//计时芯片ID
 				$bind['ChipId'] = trim($UserInfo['ChipId']);
+                //计时芯片ID
+                $bind['RaceGroupId'] = intval($UserInfo['RaceGroupId']);
 				//数据打包
 				$bind['comment'] = json_encode($bind['comment']);
 				//更新报名记录
@@ -3819,8 +3821,15 @@ class Xrace_RaceStageController extends AbstractController
             $RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
             //获取比赛列表
             $RaceList = $this->oRace->getRaceList(array("RaceStageId"=>$RaceStageInfo['RaceStageId']),"RaceId,RaceName,comment");
+
             foreach($UserRaceList as $key => $ApplyInfo)
             {
+                //循环已经选中的分组列表
+                foreach($RaceList[$ApplyInfo['RaceId']]['comment']['SelectedRaceGroup'] as $GroupId => $GroupInfo)
+                {
+                    //依次获取分组信息
+                    $UserRaceList[$key]["RaceGroupList"][$GroupId] = $this->oRace->getRaceGroup($GroupId, "RaceGroupId,RaceGroupName");
+                }
                 $UserRaceList[$key]["ApplySourceName"] = $ApplySourceList[$ApplyInfo['ApplySource']];
                 $UserRaceList[$key]["RaceGroupName"] = $RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupName'];
                 $UserRaceList[$key]["RaceName"] = $RaceList[$ApplyInfo['RaceId']]['RaceName'];
@@ -3863,6 +3872,8 @@ class Xrace_RaceStageController extends AbstractController
                 $bind['BIB'] = trim($UserRaceInfo['BIB']);
                 //计时芯片ID
                 $bind['ChipId'] = trim($UserRaceInfo['ChipId']);
+                //分组Id
+                $bind['RaceGroupId'] = intval($UserRaceInfo['RaceGroupId']);
                 //更新报名记录
                 $oUser->updateRaceUserApply($UserRaceInfo['ApplyId'],$bind);
             }
