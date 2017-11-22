@@ -2255,7 +2255,7 @@ class Xrace_RaceStageController extends AbstractController
 				$bind['BIB'] = trim($UserInfo['BIB']);
 				//计时芯片ID
 				$bind['ChipId'] = trim($UserInfo['ChipId']);
-                //计时芯片ID
+                //分组ID
                 $bind['RaceGroupId'] = intval($UserInfo['RaceGroupId']);
 				//数据打包
 				$bind['comment'] = json_encode($bind['comment']);
@@ -3821,7 +3821,6 @@ class Xrace_RaceStageController extends AbstractController
             $RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],'RaceGroupId,RaceGroupName');
             //获取比赛列表
             $RaceList = $this->oRace->getRaceList(array("RaceStageId"=>$RaceStageInfo['RaceStageId']),"RaceId,RaceName,comment");
-
             foreach($UserRaceList as $key => $ApplyInfo)
             {
                 //循环已经选中的分组列表
@@ -5146,6 +5145,70 @@ class Xrace_RaceStageController extends AbstractController
             $update = $this->oRace->updateRaceStageDataByUrl($RaceStageId);
             //返回原有页面
             $this->response->goBack();
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //报名记录转换提交页面
+    public function raceTransferSubmitAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            $oUser = new Xrace_UserInfo();
+            //报名记录ID
+            $ApplyId = intval($this->request->ApplyId);
+            //获取报名记录
+            $ApplyInfo = $oUser->getRaceApplyUserInfo($ApplyId);
+            //获取比赛列表
+            $RaceList = $this->oRace->getRaceList(array("RaceStageId"=>$ApplyInfo['RaceStageId']),"RaceId,RaceName,comment");
+            $RaceGroupList = array();
+            //循环已经选中的分组列表
+            foreach($RaceList[$ApplyInfo['RaceId']]['comment']['SelectedRaceGroup'] as $GroupId => $GroupInfo)
+            {
+                //依次获取分组信息
+                $RaceGroupList[$GroupId] = $this->oRace->getRaceGroup($GroupId, "RaceGroupId,RaceGroupName");
+            }
+            //渲染模板
+            include $this->tpl('Xrace_Race_RaceTransfer');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //报名记录转换
+    public function raceTransferAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            $oUser = new Xrace_UserInfo();
+            //报名记录ID
+            $ApplyId = intval($this->request->ApplyId);
+            //获取报名记录
+            $ApplyInfo = $oUser->getRaceApplyUserInfo($ApplyId);
+            //复制到待更新数据
+            $bind = $ApplyInfo;
+            //BIB
+            $bind['BIB'] = trim($this->request->BIB);
+            //计时芯片ID
+            $bind['ChipId'] = trim($this->request->ChipId);
+            //分组ID
+            $bind['RaceGroupId'] = intval($this->request->RaceGroupId);
+            //比赛ID
+            $bind['RaceId'] = intval($this->request->RaceId);
+            //更新报名记录
+            $res = $oUser->updateRaceUserApply($ApplyId,$bind);
+            $response = $res ? array('errno' => 0) : array('errno' => 9);
+            echo json_encode($response);
+            return true;
         }
         else
         {

@@ -24,6 +24,9 @@
   function UserRaceDelete(uname,aid){
     deleteUserRaceBox = divBox.confirmBox({content:'确定将退出比赛?',ok:function(){location.href = '{tpl:$this.sign/}&ac=user.race.delete&ApplyId=' + aid;}});
   }
+  function RaceTransfer(aid){
+      raceTrnasferBox = divBox.showBox('{tpl:$this.sign/}&ac=race.transfer.submit&ApplyId=' + aid, {title:'比赛转换',width:800,height:200});
+  }
 </script>
 <form action="{tpl:$this.sign/}&ac=user.race.list.update" name="user_race_list_update_form" id="user_race_list_update_form" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
@@ -50,12 +53,13 @@
   </tr>
   {tpl:loop $UserRaceList $Aid $UserInfo}
   <tr>
-    <input type="hidden" name="UserRaceList[{tpl:$Aid/}][ApplyId]" id="UserRaceList[{tpl:$UserInfo.UserId/}][ApplyId]" value="{tpl:$UserInfo.ApplyId/}" />
+    <input type="hidden" name="UserRaceList[{tpl:$UserInfo.ApplyId/}][ApplyId]" id="UserRaceList[{tpl:$UserInfo.ApplyId/}][ApplyId]" value="{tpl:$UserInfo.ApplyId/}" />
     <th align="center" class="rowtip">{tpl:$UserInfo.ApplySourceName/}</th>
     {tpl:if(count($RaceStageInfo.comment.RaceStructure=='race'))}
-    <th align="center" class="rowtip">{tpl:$UserInfo.RaceName/}</th>
+    <th align="center" class="rowtip">{tpl:$UserInfo.RaceName/} | <a href="javascript:;" onclick="RaceTransfer('{tpl:$UserInfo.ApplyId/}');">转换比赛</a>
+    </th>
     <th align="center" class="rowtip">
-        <select name="UserRaceList[{tpl:$Aid/}][RaceGroupId]" id="UserRaceList[{tpl:$Aid/}][RaceGroupId]" class="span2" size="1">
+        <select name="UserRaceList[{tpl:$UserInfo.ApplyId/}][RaceGroupId]" id="UserRaceList[{tpl:$UserInfo.ApplyId/}][RaceGroupId]" class="span2" size="1">
             {tpl:loop $UserInfo.RaceGroupList $G $GInfo}
             <option value="{tpl:$G/}" {tpl:if($G==$UserInfo.RaceGroupId)}selected="selected"{/tpl:if}>{tpl:$GInfo.RaceGroupName/}</option>
             {/tpl:loop}
@@ -66,8 +70,8 @@
     {/tpl:if}
     <th align="center" class="rowtip">{tpl:$UserInfo.TeamName/}</th>
     <th align="center" class="rowtip">{tpl:$UserInfo.ApplyTime/}</th>
-    <th align="center" class="rowtip td-edit"><span class="text">{tpl:$UserInfo.BIB/}</span><input type="text" class="span1 hidden1" name="UserRaceList[{tpl:$Aid/}][BIB]" id="UserRaceList[{tpl:$UserInfo.UserId/}][BIB]" value="{tpl:$UserInfo.BIB/}" /> <a href="#" class="btn-edit">编辑</a></th>
-    <th align="center" class="rowtip"><input type="text" class="span2 chip-txt" name="UserRaceList[{tpl:$Aid/}][ChipId]" id="UserRaceList[{tpl:$UserInfo.UserId/}][ChipId]" value="{tpl:$UserInfo.ChipId/}" /></th>
+    <th align="center" class="rowtip td-edit"><span class="text">{tpl:$UserInfo.BIB/}</span><input type="text" class="span1 hidden1" name="UserRaceList[{tpl:$UserInfo.ApplyId/}][BIB]" id="UserRaceList[{tpl:$UserInfo.UserId/}][BIB]" value="{tpl:$UserInfo.BIB/}" /> <a href="#" class="btn-edit">编辑</a></th>
+    <th align="center" class="rowtip"><input type="text" class="span2 chip-txt" name="UserRaceList[{tpl:$UserInfo.ApplyId/}][ChipId]" id="UserRaceList[{tpl:$UserInfo.UserId/}][ChipId]" value="{tpl:$UserInfo.ChipId/}" /></th>
   </tr>
   {/tpl:loop}
 
