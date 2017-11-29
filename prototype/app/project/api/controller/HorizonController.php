@@ -31,8 +31,8 @@ class HorizonController extends AbstractController
     public function getRaceInfoAction()
     {
         //格式化分站ID,默认为0
-        $RaceStageId = isset($this->request->RaceStageId) ? abs(intval($this->request->RaceStageId)) : 0;
-        $RaceInfo = $this->oHorizon->getRaceStageInfo($RaceStageId);
+        $raceName = trim(urldecode($this->request->raceName));
+        $RaceInfo = $this->oHorizon->getRaceStageInfo($raceName);
         echo json_encode($RaceInfo);
     }
     /**
@@ -41,8 +41,8 @@ class HorizonController extends AbstractController
     public function getAthleteListAction()
     {
         //格式化分站ID,默认为0
-        $RaceStageId = isset($this->request->RaceStageId) ? abs(intval($this->request->RaceStageId)) : 0;
-        $AthleteList = $this->oHorizon->getAthleteList($RaceStageId);
+        $raceName = trim(urldecode($this->request->raceName));
+        $AthleteList = $this->oHorizon->getAthleteList($raceName);
         echo json_encode($AthleteList);
     }
     /**
@@ -51,9 +51,21 @@ class HorizonController extends AbstractController
     public function getTimingPointListAction()
     {
         //格式化分站ID,默认为0
-        $RaceStageId = isset($this->request->RaceStageId) ? abs(intval($this->request->RaceStageId)) : 0;
-        $TimingPointList = $this->oHorizon->getTimingPointList($RaceStageId);
+        $raceName = trim(urldecode($this->request->raceName));
+        $TimingPointList = $this->oHorizon->getTimingPointList($raceName);
         echo json_encode($TimingPointList);
+    }
+    /**
+     *获取某个分站的计时点列表
+     */
+    public function uploadTimingAction()
+    {
+        //格式化分站ID,默认为0
+        $RaceStageId = isset($this->request->RaceStageId) ? abs(intval($this->request->RaceStageId)) : 0;
+        $RaceId = isset($this->request->RaceId) ? abs(intval($this->request->RaceId)) : 0;
+        echo "here";
+        $upload = $this->oHorizon->uploadTiming($RaceId);
+        //echo json_encode($TimingPointList);
     }
 
 

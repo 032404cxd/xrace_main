@@ -1309,7 +1309,7 @@ class Xrace_UserInfo extends Base_Widget
         $where = Base_common::getSqlWhere($whereCondition);
         //分页参数
         $limit  = isset($params['Page'])&&$params['Page']?" limit ".($params['Page']-1)*$params['PageSize'].",".$params['PageSize']." ":"";
-        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by ChipId,BIB,RaceGroupId,TeamId,ApplyId ".$limit;
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by BIB,ChipId,RaceGroupId,TeamId,ApplyId ".$limit;
         $return = $this->db->getAll($sql);
         return $return;
     }

@@ -297,6 +297,13 @@ class Xrace_Race extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table_stage);
 		return $this->db->selectRow($table_to_process, $fields, '`RaceStageId` = ?', $RaceStageId);
 	}
+    //根据名字获取单个赛事分站信息
+    public function getRaceStageByName($RaceStageName,$fields = '*')
+    {
+        $RaceStageName = trim($RaceStageName);
+        $table_to_process = Base_Widget::getDbTable($this->table_stage);
+        return $this->db->selectRow($table_to_process, $fields, '`RaceStageName` = ?', array($RaceStageName));
+    }
 	//更新单个赛事分站
 	public function updateRaceStage($RaceStageId, array $bind)
 	{

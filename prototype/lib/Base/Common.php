@@ -1022,7 +1022,26 @@ EOF;
 		curl_close($ch);
 		return $ret;
 	}
-	//获取本机IP
+    //进行POST和json进行请求
+    function http_post_json($url, $jsonStr)
+    {
+        echo $url.'\n';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonStr);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json; charset=utf-8',
+                'Content-Length: ' . strlen($jsonStr)
+            )
+        );
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        return array($httpCode, $response);
+    }
+
+    //获取本机IP
     function getLocalIP() 
     {
         $preg = "/\A((([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\Z/";
@@ -1221,11 +1240,11 @@ EOF;
     {
         if($SpeedDisplayType=="km/h")
         {
-            return (($Time>0)?(sprintf("%0.4f",$Distance*3600/1000/$Time)):0)."km/h";
+            return (($Time>0)?(sprintf("%0.2f",$Distance*3600/1000/$Time)):0)."km/h";
         }
         elseif($SpeedDisplayType=="mile/h")
         {
-            return (($Time>0)?(sprintf("%0.4f",$Distance*3600/1000/1.60934/$Time)):0)."mile/h";
+            return (($Time>0)?(sprintf("%0.2f",$Distance*3600/1000/1.60934/$Time)):0)."mile/h";
         }
         elseif($SpeedDisplayType=="time/100m")
         {

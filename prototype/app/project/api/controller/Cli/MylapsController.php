@@ -44,4 +44,13 @@ class Cli_MylapsController extends Base_Controller_Action{
 		}
 		//php.exe d:\xamppserver\htdocs\xrace_main\prototype\app\project\api\html\cli.php "ctl=mylaps&ac=timing&RaceId=146"
     }
+
+    public function uploadTimingAction()
+    {
+        $oHorizon = new Xrace_Horizon();
+        $RaceId = $this->request->RaceId;
+        $syncTime = time();
+        $oHorizon->uploadTiming($RaceId,$syncTime);
+        //php.exe d:\xamppserver\htdocs\xrace_main\prototype\app\project\api\html\cli.php "ctl=mylaps&ac=upload.timing&RaceId=162
+    }
 }

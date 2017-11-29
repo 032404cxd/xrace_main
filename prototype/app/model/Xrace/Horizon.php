@@ -11,16 +11,21 @@ class Xrace_Horizon extends Base_Widget
     //声明所用到的表
 	protected $table_race = 'config_race';
 
+	protected $partnerId = "XR001";
+
+	protected $transCount = 10;
+
     //获取单个分站的比赛配置信息
-    public function getRaceStageInfo($RaceStageId)
+    public function getRaceStageInfo($RaceStageName)
     {
         $oRace = new Xrace_Race();
         //获取分站信息
-        $RaceStageInfo = $oRace->getRaceStage($RaceStageId);
+        $RaceStageInfo = $oRace->getRaceStageByName($RaceStageName);
         //如果找到
         if(isset($RaceStageInfo["RaceStageId"]))
         {
             $ReturnArr = array();
+            $ReturnArr["id"] = $RaceStageInfo["RaceStageId"];
             $ReturnArr["startDate"] = $RaceStageInfo["StageStartDate"];
             $ReturnArr["endDate"] = $RaceStageInfo["StageEndDate"];
             $ReturnArr["name"] = $RaceStageInfo["RaceStageName"];
@@ -34,12 +39,12 @@ class Xrace_Horizon extends Base_Widget
                 //初始化空的分组列表
                 $RaceGroupList = array();
                 //获取比赛列表
-                $RaceList = $oRace->getRaceList(array("RaceStageId"=>$RaceStageId));
+                $RaceList = $oRace->getRaceList(array("RaceStageId"=>$RaceStageInfo['RaceStageId']));
                 //循环比赛列表
                 foreach($RaceList as $RaceId => $RaceInfo)
                 {
                     //数据解包
-                    $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo']);
+                    $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
                     foreach($RaceInfo['comment']["SelectedRaceGroup"] as $RaceGroupId => $GroupInfo)
                     {
                         if (!isset($RaceGroupList[$RaceGroupId]))
@@ -50,7 +55,7 @@ class Xrace_Horizon extends Base_Widget
                             "id" => $RaceId."_".$RaceGroupId,
                             "name" => $RaceGroupList[$RaceGroupId]["RaceGroupName"],
                             "raceCategoryName" => $RaceInfo["RaceName"],
-                            "raceCategoryUnitType" => $RaceInfo['comment']['RaceResult'] == "Individual" ? "INDIVIDUAL" : "TEAM",
+                            "raceCategoryUnitType" => $RaceInfo['comment']['ResultType'] == "Individual" ? "INDIVIDUAL" : "TEAM",
                             "startDate"=>date("Y-m-d", strtotime($GroupInfo["StartTime"])),
                             "startTime"=>date("H:i:s", strtotime($GroupInfo["StartTime"])),
                         );
@@ -66,13 +71,13 @@ class Xrace_Horizon extends Base_Widget
         }
     }
     //获取单个分站的比赛配置信息
-    public function getAthleteList($RaceStageId)
+    public function getAthleteList($RaceStageName)
     {
         $oRace = new Xrace_Race();
         $oUser = new Xrace_UserInfo();
         $oTeam = new Xrace_Team();
         //获取分站信息
-        $RaceStageInfo = $oRace->getRaceStage($RaceStageId);
+        $RaceStageInfo = $oRace->getRaceStageByName($RaceStageName);
         //如果找到
         if(isset($RaceStageInfo["RaceStageId"]))
         {
@@ -87,7 +92,7 @@ class Xrace_Horizon extends Base_Widget
                 //初始化空的分组列表
                 $RaceGroupList = array();
                 //获取比赛列表
-                $RaceList = $oRace->getRaceList(array("RaceStageId"=>$RaceStageId));
+                $RaceList = $oRace->getRaceList(array("RaceStageId"=>$RaceStageInfo["RaceStageId"]));
                 $SexList = $oUser->getSexList();
                 $TeamList = array();
                 $TeamArr = array();
@@ -96,7 +101,7 @@ class Xrace_Horizon extends Base_Widget
                 {
                     //数据解包
                     $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo']);
-                    $RaceUserList = $oUser->getRaceUserList(array("RaceStageId"=>$RaceStageId,"RaceId"=>$RaceId));
+                    $RaceUserList = $oUser->getRaceUserList(array("RaceStageId"=>$RaceStageInfo["RaceStageId"],"RaceId"=>$RaceId));
                     foreach($RaceUserList as $key => $ApplyInfo)
                     {
                         if (!isset($RaceGroupList[$ApplyInfo["RaceGroupId"]]))
@@ -156,7 +161,7 @@ class Xrace_Horizon extends Base_Widget
                 }
             }
             $ReturnArr = array(
-                "raceId"=>$RaceStageId,
+                "raceId"=>$RaceStageInfo["RaceStageId"],
                 "raceName"=>$RaceStageInfo['RaceStageName'],
                 "athletes"=>$AthleteArr
             );
@@ -169,19 +174,18 @@ class Xrace_Horizon extends Base_Widget
 
     }
     //获取单个分站的计时点配置信息
-    public function getTimingPointList($RaceStageId)
+    public function getTimingPointList($RaceStageName)
     {
         $oRace = new Xrace_Race();
         $oSports = new Xrace_Sports();
-        $RaceStageId = intval($RaceStageId);
         //获取分站信息
-        $RaceStageInfo = $oRace->getRaceStage($RaceStageId);
+        $RaceStageInfo = $oRace->getRaceStageByName($RaceStageName);
         //如果找到
         if(isset($RaceStageInfo["RaceStageId"]))
         {
-            $ReturnArr = array("raceId"=>$RaceStageId,"raceName"=>$RaceStageInfo['RaceStageName'],"timingPoints"=>array());
+            $ReturnArr = array("raceId"=>$RaceStageInfo["RaceStageId"],"raceName"=>$RaceStageInfo['RaceStageName'],"timingPoints"=>array());
             //获取比赛列表
-            $RaceList = $oRace->getRaceList(array("RaceStageId"=>$RaceStageId));
+            $RaceList = $oRace->getRaceList(array("RaceStageId"=>$RaceStageInfo["RaceStageId"]));
             //初始化空的运动类型列表
             $SportsTypeList = array();
             //循环比赛列表
@@ -241,4 +245,122 @@ class Xrace_Horizon extends Base_Widget
             return false;
         }
     }
+    public function uploadTiming($RaceId,$syncTime)
+    {
+        $oRace = new Xrace_Race();
+        //获取比赛信息
+        $RaceInfo = $oRace->getRace($RaceId,"RaceId,RaceName,RaceStageId,RouteInfo");
+        $RaceInfo["RouteInfo"] = json_decode($RaceInfo["RouteInfo"],true);
+        //获取选手名单
+        $RaceUserList = $oRace->getRaceUserListByFile($RaceId);
+        $UserList = array();
+        //循环选手名单
+        foreach($RaceUserList["RaceUserList"] as $key => $UserInfo)
+        {
+            //将选手按照分组存放
+            $UserList[$UserInfo['RaceGroupId']][$UserInfo['RaceUserId']] = 1;
+        }
+        //初始化结果数组
+        $returnArr = array(
+            "partnerId" => $this->partnerId,
+            "raceId"=> $RaceInfo['RaceStageId'],
+            "syncTimestamp" => $syncTime,
+            "matchId" =>"",
+            "athleteTimings" => array()
+        );
+        //循环分组列表
+        foreach($UserList as $RaceGroupId => $GroupUserList)
+        {
+            $returnArr["matchId"] = $RaceId."_".$RaceGroupId;
+            $this->uploadTimingBegin($returnArr["matchId"],$returnArr["raceId"],$syncTime);
+            $arr = array();
+            //循环分组下的选手列表
+            foreach($GroupUserList as $RaceUserId => $value)
+            {
+                //获取选手的比赛记录
+                $UserRaceInfo = $oRace->getUserRaceInfo($RaceId,$RaceUserId);
+                //如果起点有记录
+                if($UserRaceInfo["Point"][1]["inTime"] > 0)
+                {
+                    $TimingArr = array(
+                        "startNum" => $UserRaceInfo['RaceUserInfo']['BIB'],
+                        "startTime" => date("h:m:s",$UserRaceInfo["Point"][1]["inTime"]),
+                        "timingPointTimings" => array()
+                    );
+                    //循环计时点
+                    foreach($UserRaceInfo["Point"] as $P => $pInfo)
+                    {
+                        if($RaceInfo["RouteInfo"]["FinalResultType"]=="gunshot")
+                        {
+                            $TotalTime = $pInfo["TotalTime"];
+                        }
+                        elseif($RaceInfo["RouteInfo"]["FinalResultType"]=="net")
+                        {
+                            $TotalTime = $pInfo["TotalNetTime"];
+                        }
+                        $arr[] = array(
+                            "arrivalTime" => date("h:m:s",$pInfo["inTime"]),
+                            "costTime" => Base_common::parthTimeLag($pInfo["PointTime"]),
+                            "overallCostTime" => Base_common::parthTimeLag($TotalTime),
+                            "overallRank" => $pInfo["GroupRank"],
+                            "tpName" => $pInfo["TName"],
+                            "tpSeqNo" => $P,
+                        );
+                    }
+                    $TimingArr["timingPointTimings"] = $arr;
+                }
+                $returnArr["athleteTimings"][] = $TimingArr;
+                if(count($returnArr["athleteTimings"])>=$this->transCount)
+                {
+                    echo "transfer!/n";
+                    print_r($this->uploadTimingBatch($returnArr));
+
+                    $Text = json_encode($returnArr)."\n";
+                    $filePath = __APP_ROOT_DIR__."log/Horizon/";
+                    $fileName = date("Y-m-d",time()).".log";
+                    //写入日志文件
+                    Base_Common::appendLog($filePath,$fileName,$Text);
+                    $returnArr["athleteTimings"] = array();
+                }
+            }
+            if(count( $returnArr["athleteTimings"]))
+            {
+                echo 'transfer!/n';
+                print_r($this->uploadTimingBatch($returnArr));
+                $Text = json_encode($returnArr)."\n";
+                $filePath = __APP_ROOT_DIR__."log/Horizon/";
+                $fileName = date("Y-m-d",time()).".log";
+                //写入日志文件
+                Base_Common::appendLog($filePath,$fileName,$Text);
+                $returnArr["athleteTimings"] = array();
+            }
+            $this->uploadTimingEnd($returnArr["matchId"],$returnArr["raceId"],$syncTime);
+        }
+    }
+    public function uploadTimingBatch($data)
+    {
+        $url = $this->ApiUrl.'/liveIntegration/timing/sync/live/batch';
+        print_r(Base_Common::http_post_json($url,json_encode($data)));
+
+    }
+    public function uploadTimingBegin($matchId,$raceId,$syncTimestamp)
+    {
+        $returnArr = array("matchId"=>$matchId,
+            "partnerId"=>$this->partnerId,
+            "raceId"=>$raceId,
+            "syncTimestamp"=>$syncTimestamp);
+        $url = $this->ApiUrl.'/liveIntegration/timing/sync/begin';
+        print_r(Base_Common::http_post_json($url,json_encode($returnArr)));
+
+    }
+    public function uploadTimingEnd($matchId,$raceId,$syncTimestamp)
+    {
+        $returnArr = array("matchId"=>$matchId,
+            "partnerId"=>$this->partnerId,
+            "raceId"=>$raceId,
+            "syncTimestamp"=>$syncTimestamp);
+        $url = $this->ApiUrl.'/liveIntegration/timing/sync/end';
+        print_r(Base_Common::http_post_json($url,json_encode($returnArr)));
+    }
+
 }

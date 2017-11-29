@@ -3072,13 +3072,22 @@ class Xrace_RaceStageController extends AbstractController
                         if($RaceInfo['RouteInfo']['RaceTimingResultType']=="gunshot")
                         {
                             $t["Time"] = Base_Common::parthTimeLag($UserRaceInfo['UserRaceInfo']['Point'][count($UserRaceInfo['UserRaceInfo']['Point'])]['TotalTime']);
-                            $t["TimeLag"] = ($UserInfo['CurrentPosition']==$RaceResultList['UserRaceInfo']['Total'][0]['CurrentPosition'])?(Base_Common::parthTimeLag($UserInfo['TotalTime'] - $RaceResultList['UserRaceInfo']['Total'][0]['TotalTime'])):"";
+                            if(!isset($FirstTime))
+                            {
+                                $FirstTime = $UserRaceInfo['UserRaceInfo']['Point'][count($UserRaceInfo['UserRaceInfo']['Point'])]['TotalTime'];
+                                $FirstPosition = $UserInfo['CurrentPosition'];
+                            }
+                            $t["TimeLag"] = ($UserInfo['CurrentPosition']==$FirstPosition)?(Base_Common::parthTimeLag($UserInfo['TotalTime'] - $FirstTime)):"n/a";
                         }
                         else
                         {
                             $t["Time"] = Base_Common::parthTimeLag($UserRaceInfo['UserRaceInfo']['Point'][count($UserRaceInfo['UserRaceInfo']['Point'])]['TotalNetTime']);
-                            $t["TimeLag"] = ($UserInfo['CurrentPosition']==$RaceResultList['UserRaceInfo']['Total'][0]['CurrentPosition'])?(Base_Common::parthTimeLag($UserInfo['TotalNetTime'] - $RaceResultList['UserRaceInfo']['Total'][0]['TotalNetTime'])):"";
-
+                            if(!isset($FirstTime))
+                            {
+                                $FirstTime = $UserRaceInfo['UserRaceInfo']['Point'][count($UserRaceInfo['UserRaceInfo']['Point'])]['TotalNetTime'];
+                                $FirstPosition = $UserInfo['CurrentPosition'];
+                            }
+                            $t["TimeLag"] = ($UserInfo['CurrentPosition']==$FirstPosition)?(Base_Common::parthTimeLag($UserInfo['TotalNetTime'] - $FirstTime)):"n/a";
                         }
                         $t["Rank"] = $UserInfo['Rank'];
                         $t["GroupRank"] = $UserInfo['GroupRank'];
