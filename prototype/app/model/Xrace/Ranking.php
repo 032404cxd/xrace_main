@@ -266,6 +266,7 @@ class Xrace_Ranking extends Base_Widget
                 }
                 else
                 {
+                    $UserList[$RaceUserId]["Total"]['RaceCount'] = count($RaceInfo['RaceList']);
                     $UserList[$RaceUserId]["Total"]["RaceStatus"] = 1;
                     $UserList[$RaceUserId]["Total"]["TotalTime"] = 0;
                     foreach($RaceInfo['RaceList'] as $key => $Detail)
@@ -278,11 +279,11 @@ class Xrace_Ranking extends Base_Widget
                         $RaceUserInfo['Total']['RaceId'] = $Detail['RaceId'];
                         if(isset($RaceUserInfo['Total']['Finished']))
                         {
-                            $UserList[$RaceUserId]['RaceDetail'][$key] = $RaceUserInfo['Total'];
+                            $UserList[$RaceUserId]['RaceDetail'][$Detail["RaceStageId"]]["RaceList"][$key] = $RaceUserInfo['Total'];
                         }
                         else
                         {
-                            $UserList[$RaceUserId]['RaceDetail'][$key] = array("Finished"=>0,"RaceStatus"=>1,"RaceId"=>$Detail["RaceId"],"RaceGroupId"=>$Detail['RaceGroupId'],"RankingType"=>$RaceList[$Detail['RaceId']][$Detail['RaceGroupId']]['RankingType']);
+                            $UserList[$RaceUserId]['RaceDetail'][$Detail["RaceStageId"]]["RaceList"][$key] = array("Finished"=>0,"RaceStatus"=>1,"RaceId"=>$Detail["RaceId"],"RaceGroupId"=>$Detail['RaceGroupId'],"RankingType"=>$RaceList[$Detail['RaceId']][$Detail['RaceGroupId']]['RankingType']);
                         }
                         if($RaceUserInfo['Total']['Finished']==1)
                         {
@@ -298,7 +299,7 @@ class Xrace_Ranking extends Base_Widget
                         }
                         else
                         {
-                            $UserList[$RaceUserId]['RaceDetail'][$key]["RaceStatusName"] = $RaceStatusList[$UserList[$RaceUserId]['RaceDetail'][$key]['RaceStatus']];
+                            $UserList[$RaceUserId]['RaceDetail'][$Detail["RaceStageId"]]["RaceList"][$key]["RaceStatusName"] = $RaceStatusList[$UserList[$RaceUserId]['RaceDetail'][$Detail["RaceStageId"]]["RaceList"][$key]['RaceStatus']];
                             $RaceInfo = $oRace->getRace($Detail['RaceId'],"RaceId,comment");
                             $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
                             if(time()<strtotime($RaceInfo['comment']['SelectedRaceGroup'][$Detail['RaceGroupId']]['StartTime']))

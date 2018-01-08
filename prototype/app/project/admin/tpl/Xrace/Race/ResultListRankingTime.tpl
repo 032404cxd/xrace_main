@@ -11,10 +11,16 @@
   </tr>
   {tpl:loop $RaceUserList.RaceUserList.UserList $Rid $UserInfo}
   <tr>
-    <th align="center" class="rowtip" rowspan="{tpl:$UserInfo.RaceDetail func="(count(@@))"/}">{tpl:$Rid func="1+(@@)"/}</th>
-    <th align="center" class="rowtip" rowspan="{tpl:$UserInfo.RaceDetail func="(count(@@))"/}"width="10%">{tpl:$UserInfo.RaceUserInfo.Name/}</th>
-    <th align="center" class="rowtip" rowspan="{tpl:$UserInfo.RaceDetail func="(count(@@))"/}">{tpl:$UserInfo.Total.TotalTime func="Base_Common::parthTimeLag(@@)"/}</th>
-          {tpl:loop $UserInfo.RaceDetail $id $RaceDetail}
+    <th align="center" class="rowtip" rowspan=" {tpl:$UserInfo.Total.RaceCount/} ">{tpl:$Rid func="1+(@@)"/}</th>
+    <th align="center" class="rowtip" rowspan=" {tpl:$UserInfo.Total.RaceCount/} " width="10%">{tpl:$UserInfo.RaceUserInfo.Name/}</th>
+    <th align="center" class="rowtip" rowspan=" {tpl:$UserInfo.Total.RaceCount/} ">{tpl:$UserInfo.Total.TotalTime func="Base_Common::parthTimeLag(@@)"/}</th>
+      {tpl:loop $UserInfo.RaceDetail $Sid $RaceStageInfo}
+      <th align="center" class="rowtip" rowspan="{tpl:$RaceStageInfo.RaceList func="(count(@@))"/}">
+          {tpl:loop $RaceStageList $RaceStageId $RaceStage}
+          {tpl:if($RaceStageId == $Sid)}{tpl:$RaceStage.RaceStageName/}  {/tpl:if}
+          {/tpl:loop}
+      </th>
+      {tpl:loop $RaceStageInfo.RaceList $id $RaceDetail}
           <th align="center" class="rowtip">
               {tpl:loop $RaceList $RaceId $RaceInfo}
               {tpl:if($RaceId == $RaceDetail.RaceId)}{tpl:$RaceInfo.RaceName/}  {/tpl:if}
@@ -37,6 +43,7 @@
               {/tpl:if}
         </tr>
           {/tpl:loop}
+{/tpl:loop}
     </th>
   </tr>
   {/tpl:loop}

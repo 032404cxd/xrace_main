@@ -13,7 +13,7 @@
   <tr>
     <th align="center" class="rowtip" rowspan=" {tpl:$UserInfo.Total.RaceCount/} ">{tpl:$Rid func="1+(@@)"/}</th>
     <th align="center" class="rowtip" width="10%" rowspan="{tpl:$UserInfo.Total.RaceCount/}">{tpl:$UserInfo.RaceUserInfo.Name/}</th>
-    <th align="center" class="rowtip"rowspan="{tpl:$UserInfo.Total.RaceCount/}">{tpl:$UserInfo.Total.TotalCredit/}</th>
+    <th align="center" class="rowtip" rowspan="{tpl:$UserInfo.Total.RaceCount/}">{tpl:$UserInfo.Total.TotalCredit/}</th>
       {tpl:loop $UserInfo.RaceDetail $Sid $RaceStageInfo}
           <th align="center" class="rowtip" rowspan="{tpl:$RaceStageInfo.RaceList func="(count(@@))"/}">
               {tpl:loop $RaceStageList $RaceStageId $RaceStage}
@@ -21,7 +21,6 @@
               {/tpl:loop}
           </th>
       {tpl:loop $RaceStageInfo.RaceList $id $RaceDetail}
-
             <th align="center" class="rowtip">
               {tpl:loop $RaceList $RaceId $RaceInfo}
               {tpl:if($RaceId == $RaceDetail.RaceId)}{tpl:$RaceInfo.RaceName/}  {/tpl:if}
