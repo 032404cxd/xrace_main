@@ -290,28 +290,35 @@ class Xrace_Horizon extends Base_Widget
                     //循环计时点
                     foreach($UserRaceInfo["Point"] as $P => $pInfo)
                     {
-                        if($RaceInfo["RouteInfo"]["FinalResultType"]=="gunshot")
-                        {
-                            $TotalTime = $pInfo["TotalTime"];
-                        }
-                        elseif($RaceInfo["RouteInfo"]["FinalResultType"]=="net")
-                        {
-                            $TotalTime = $pInfo["TotalNetTime"];
-                        }
-                        $arr[] = array(
-                            "arrivalTime" => date("h:m:s",$pInfo["inTime"]),
-                            "costTime" => Base_common::parthTimeLag($pInfo["PointTime"]),
-                            "overallCostTime" => Base_common::parthTimeLag($TotalTime),
-                            "overallRank" => $pInfo["GroupRank"],
-                            "tpName" => $pInfo["TName"],
-                            "tpSeqNo" => $P,
-                        );
+                       if($pInfo["inTime"] != "0")
+                       {
+                           if($RaceInfo["RouteInfo"]["FinalResultType"]=="gunshot")
+                           {
+                               $TotalTime = $pInfo["TotalTime"];
+                           }
+                           elseif($RaceInfo["RouteInfo"]["FinalResultType"]=="net")
+                           {
+                               $TotalTime = $pInfo["TotalNetTime"];
+                           }
+                           $arr[] = array(
+                               "arrivalTime" => date("h:m:s",$pInfo["inTime"]),
+                               "costTime" => Base_common::parthTimeLag($pInfo["PointTime"]),
+                               "overallCostTime" => Base_common::parthTimeLag($TotalTime),
+                               "overallRank" => $pInfo["GroupRank"],
+                               "tpName" => $pInfo["TName"],
+                               "tpSeqNo" => $P,
+                           );
+                           echo $returnArr["matchId"]."-".$UserRaceInfo['RaceUserInfo']['BIB']."-".$P."-".$pInfo["inTime"]."-".date("h:m:s",$pInfo["inTime"])."\n";
+                       }
+
                     }
                     $TimingArr["timingPointTimings"] = $arr;
                 }
                 $returnArr["athleteTimings"][] = $TimingArr;
-                if(count($returnArr["athleteTimings"])>=$this->transCount)
+                //if(count($returnArr["athleteTimings"])>=$this->transCount)
+                if(count($returnArr["athleteTimings"])>=1)
                 {
+                    echo "count:".count($returnArr["athleteTimings"])."/n";
                     echo "transfer!/n";
                     print_r($this->uploadTimingBatch($returnArr));
 
@@ -339,6 +346,7 @@ class Xrace_Horizon extends Base_Widget
     }
     public function uploadTimingBatch($data)
     {
+        print_R($data);sleep(3);
         $url = $this->ApiUrl.'/liveIntegration/timing/sync/live/batch';
         print_r(Base_Common::http_post_json($url,json_encode($data)));
 

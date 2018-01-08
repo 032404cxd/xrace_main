@@ -1411,13 +1411,11 @@ class XraceConfigController extends AbstractController
     public function updateRaceUserListByRankingAction()
     {
         //排名ID
-        $RankingId = abs(intval($this->request->Ranking));
-
         $oRanking = new Xrace_Ranking();
         //赛事ID
-        $RankingId = trim($this->request->RankingId);
+        $RankingId = intval($this->request->RankingId);
         //获取排名信息
-        $RankingInfo = $oRanking->getRanking($RankingId);
+        $RankingInfo = $oRanking->getRanking($RankingId,"RankingId");
         //检测主键存在,否则值为空
         if (isset($RankingInfo['RankingId']))
         {

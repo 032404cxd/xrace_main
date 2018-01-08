@@ -175,7 +175,6 @@ class Xrace_Mylaps extends Base_Widget
         //初始化计时点成绩计算的方式（发枪时刻/第一次经过起始点/积分）
         $FinalResultType = isset($RaceInfo['RouteInfo']['FinalResultType'])?$RaceInfo['RouteInfo']['FinalResultType']:"gunshot";
         echo "final:".$FinalResultType."<br>";
-        print_R($RaceInfo['RouteInfo']);
 		echo "计时点计算:".$oRace->getRaceTimingResultType($ResultType)."\n<br>";
         echo "总成绩计算:".$oRace->getFinalResultType($FinalResultType)."\n<br>";
 		//获取选手和车队名单
@@ -219,18 +218,13 @@ class Xrace_Mylaps extends Base_Widget
 			    $LastId = $TimingInfo['Id'];
 				//mylaps系统中生成的时间一直比当前时间晚8小时，修正
 				$TimingInfo['ChipTime'] = strtotime($TimingInfo['ChipTime']) - 8 * 3600;
-				//调试信息
-				$ChipTime = $TimingInfo['ChipTime'] + substr($TimingInfo['MilliSecs'], -3) / 1000;
 				//对于毫秒数据进行四舍五入
 				$miliSec = substr($TimingInfo['MilliSecs'], -3) / 1000;
 				//计算实际的时间
 				$TimingInfo['ChipTime'] = $miliSec>=0.5?($TimingInfo['ChipTime']-1):$TimingInfo['ChipTime'];
 				//时间进行累加
-				$ChipTime = $TimingInfo['ChipTime']+$miliSec;
-				//格式化成过线时间
-                $inTime = sprintf("%0.2f", $ChipTime);
                 $inTime = sprintf("%0.2f", $TimingInfo['time'])-8*3600;
-
+                $ChipTime = $inTime;
                 //如果时间在比赛的开始时间和结束时间之内
                 $RaceStartTime = $TimeList[$UserList[$TimingInfo['Chip']]['RaceGroupId']]['RaceStartTime'];
                 $RaceEndTime = $TimeList[$UserList[$TimingInfo['Chip']]['RaceGroupId']]['RaceEndTime'];
@@ -254,14 +248,14 @@ class Xrace_Mylaps extends Base_Widget
                 //比赛前数据
                 if ($ChipTime < $RaceStartTime)
                 {
-                    echo $num."-".$TimingInfo['Location']."-".($ChipTime)."-".date("Y-m-d H:i:s", $TimingInfo['ChipTime']).".".(substr($miliSec,2))."赛前数据跳过<br>\n";
+                    echo $num."-".$TimingInfo['Location']."-".($ChipTime)."-".date("Y-m-d H:i:s", $TimingInfo['time']).".".(substr($miliSec,2))."赛前数据跳过<br>\n";
                 }
                 else
                 {
                     //比赛中数据 超时判断
                     if ($ChipTime <= $RaceEndTime)
                     {
-                        echo $num."-".$TimingInfo['Location']."-".($ChipTime)."-".date("Y-m-d H:i:s", $TimingInfo['ChipTime']).".".(substr($miliSec,2))."<br>\n";
+                        echo $num."-".$TimingInfo['Location']."-".($ChipTime)."-".date("Y-m-d H:i:s", $TimingInfo['time']).".".(substr($miliSec,2))."<br>\n";
                         //获取选手的比赛信息（计时）
                         $UserRaceInfo = $oRace->getUserRaceTimingOriginalInfo($RaceId, $UserList[$TimingInfo['Chip']]['RaceUserId'],$Cache);
                         //如果没有标记当前位置（第一个点）

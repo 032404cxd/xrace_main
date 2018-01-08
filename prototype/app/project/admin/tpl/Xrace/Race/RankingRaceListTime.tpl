@@ -23,10 +23,10 @@
           <td align="center" class="rowtip" rowspan = {tpl:$RaceInfo.RaceGroupList func="count(@@)" /}>{tpl:$RaceInfo.RaceName/}</td>
               {tpl:loop $RaceInfo.RaceGroupList $RaceGroupId $RaceGroupInfo}
           <td align="center" class="rowtip" /}>{tpl:$RaceGroupInfo.RaceGroupName/}</td>
-          <td align="center" class="rowtip" /}><input type="checkbox" name="RaceList[{tpl:$RaceId/}][{tpl:$RaceGroupId/}][selected]" value="1" {tpl:if($RaceGroupInfo.selected == 1)}checked{/tpl:if} /></td>
+          <td align="center" class="rowtip" /}><input type="checkbox" name="RaceList[{tpl:$RaceId/}][{tpl:$RaceGroupId/}][selected]" value="1" {tpl:if($RaceGroupInfo.selected >0)}checked{/tpl:if} /></td>
             <td align="center" class="rowtip" /}>
             <select name="RaceList[{tpl:$RaceId/}][{tpl:$RaceGroupId/}][RankingType]" class="span2" size="1">
-                {tpl:loop $RankingTypeList $RankingType $RankingTypeName}
+                {tpl:loop $RankingTypeList.time $RankingType $RankingTypeName}
                 <option value="{tpl:$RankingType/}" {tpl:if($RaceGroupInfo.RankingType==$RankingType)}selected="selected"{/tpl:if}>{tpl:$RankingTypeName/}</option>
                 {/tpl:loop}
                 </td>
@@ -40,10 +40,10 @@
           <td align="center" class="rowtip" rowspan = {tpl:$RaceGroupInfo.RaceList func="count(@@)"  /}>{tpl:$RaceGroupInfo.RaceGroupName/}</td>
             {tpl:loop $RaceGroupInfo.RaceList $RaceId $RaceInfo}
           <td align="center" class="rowtip" /}>{tpl:$RaceInfo.RaceName/}</td>
-          <td align="center" class="rowtip" /}><input type="checkbox" name="RaceList[{tpl:$RaceId/}][{tpl:$RaceGroupId/}][selected]" value="1" {tpl:if($RaceInfo.selected == 1)}checked{/tpl:if} /></td>
+          <td align="center" class="rowtip" /}><input type="checkbox" name="RaceList[{tpl:$RaceId/}][{tpl:$RaceGroupId/}][selected]" value="1" {tpl:if($RaceInfo.selected >0)}checked{/tpl:if} /></td>
             <td align="center" class="rowtip" /}>
             <select name="RaceList[{tpl:$RaceId/}][{tpl:$RaceGroupId/}][RankingType]" class="span2" size="1">
-                {tpl:loop $RankingTypeList $RankingType $RankingTypeName}
+                {tpl:loop $RankingTypeList.time $RankingType $RankingTypeName}
                 <option value="{tpl:$RankingType/}" {tpl:if($RaceInfo.RankingType==$RankingType)}selected="selected"{/tpl:if}>{tpl:$RankingTypeName/}</option>
                 {/tpl:loop}
                 </td>

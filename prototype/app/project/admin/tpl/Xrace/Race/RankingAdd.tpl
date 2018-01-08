@@ -7,6 +7,14 @@
 <td>排名名称</td>
 <td align="left"><input name="RankingName" type="text" class="span4" id="RankingName" value="" size="50" /></td>
 </tr>
+	<td>排名方式</td>
+	<td align="left">
+		<select name="RankingType" class="span2" size="1">
+            {tpl:loop $RankingTypeList $RankingType $RankingTypeName}
+			<option value="{tpl:$RankingType/}" >{tpl:$RankingTypeName/}</option>
+            {/tpl:loop}
+	</td></tr>
+
 
 	<tr class="hover"><td colspan = 2>排名介绍</td></tr>
 	<tr class="hover"><td colspan = 2><textarea name="RankingComment" id="comment" class="span5" rows="4"></textarea></td>

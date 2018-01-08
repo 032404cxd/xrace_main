@@ -24,6 +24,8 @@
     <th align="center" class="rowtip">排名ID</th>
     <th align="center" class="rowtip">名称</th>
     <th align="center" class="rowtip">说明</th>
+    <th align="center" class="rowtip">排名方式</th>
+
     <th align="center" class="rowtip">操作</th>
   </tr>
   {tpl:loop $RankingList $Rid $RankingInfo}
@@ -31,6 +33,7 @@
     <th align="center" class="rowtip" width="10%">{tpl:$RankingInfo.RankingId/}</th>
     <th align="center" class="rowtip">{tpl:$RankingInfo.RankingName/}</th>
     <th align="center" class="rowtip">{tpl:$RankingInfo.RankingComment/}</th>
+    <th align="center" class="rowtip">{tpl:$RankingInfo.RankingTypeName/}</th>
     <th align="center" class="rowtip">{tpl:$RankingInfo.RankingRaceListUrl/} | <a href="javascript:;" onclick="RankingModify('{tpl:$RankingInfo.RankingId/}','{tpl:$RankingInfo.RankingName/}')">修改</a> | <a  href="javascript:;" onclick="RankingDelete('{tpl:$RankingInfo.RankingId/}','{tpl:$RankingInfo.RankingName/}')">删除</a> | <a href="javascript:;" onclick="UpdateUserListByRanking('{tpl:$RankingInfo.RankingId/}','{tpl:$RankingInfo.RankingName/}')"> 成绩更新</a> | <a href="javascript:;" onclick="ResultList('{tpl:$RankingInfo.RankingId/}','{tpl:$RankingInfo.RankingName/}')">成绩单</a></th>
     </th>
   </tr>

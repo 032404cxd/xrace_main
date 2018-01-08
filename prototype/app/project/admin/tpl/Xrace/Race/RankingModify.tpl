@@ -3,14 +3,20 @@
 <form id="ranking_update_form" name="ranking_update_form" action="{tpl:$this.sign/}&ac=ranking.update" method="post">
 <input type="hidden" name="RankingId" value="{tpl:$RankingInfo.RankingId/}" />
 	<input type="hidden" name="RaceCatalogId" id="RaceCatalogId" value="{tpl:$RankingInfo.RaceCatalogId/}" />
-<table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
+<tr width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">
 	<tr class="hover"><td>排名ID</td>
 		<td align="left">{tpl:$RankingInfo.RankingId/}</td>
 	</tr>
 <td>排名名称</td>
-<td align="left"><input name="RankingName" type="text" class="span4" id="RankingName" value="{tpl:$RankingInfo.RankingName/}" size="50" /></td>
-</tr>
+	<td align="left"><input name="RankingName" type="text" class="span4" id="RankingName" value="{tpl:$RankingInfo.RankingName/}" size="50" /></td></tr>
+	<td>排名方式</td>
+	<td align="left">
+		<select name="RankingType" class="span2" size="1">
+        {tpl:loop $RankingTypeList $RankingType $RankingTypeName}
+		<option value="{tpl:$RankingType/}" {tpl:if($RankingInfo.RankingType==$RankingType)}selected="selected"{/tpl:if}>{tpl:$RankingTypeName/}</option>
+        {/tpl:loop}
+	</td></tr>
 
 	<tr class="hover"><td colspan = 2>排名介绍</td></tr>
 	<tr class="hover"><td colspan = 2><textarea name="RankingComment" id="comment" class="span5" rows="4">{tpl:$RankingInfo.RankingComment/}</textarea></td>

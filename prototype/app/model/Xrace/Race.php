@@ -50,6 +50,7 @@ class Xrace_Race extends Base_Widget
     {
         return $this->applySepcialDiscount;
     }
+
 	public function getRaceTimingResultType($RaceResultType)
 	{
 		//获取预定义数组

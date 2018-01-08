@@ -3067,7 +3067,7 @@ class Xrace_RaceStageController extends AbstractController
                         foreach($RaceResultList['UserRaceInfo']['Sports'] as $sid => $SportsInfo)
                         {
                             $point = $SportsInfo['TimingPointList'][count($SportsInfo['TimingPointList'])-1];
-                            $t[$point."_Speed"] = $UserRaceInfo['UserRaceInfo']['Point'][$point]['PointSpeed'];
+                            $t[$point."_Speed"] = $UserRaceInfo['UserRaceInfo']['Point'][$point]['SportsSpeed'];
                         }
                         if($RaceInfo['RouteInfo']['RaceTimingResultType']=="gunshot")
                         {

@@ -235,7 +235,7 @@ class Xrace_RaceCatalogController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-    //批量DNS
+    //排名列表
     public function rankingListAction()
     {
         //检查权限
@@ -244,7 +244,7 @@ class Xrace_RaceCatalogController extends AbstractController
         {
             $oRanking = new Xrace_Ranking();
             //获取排名计算方式
-            $RankingTypeList = $oRanking->getRankingType();
+            $RankingTypeList = $oRanking->getTotalRankingType();
             //赛事ID
             $RaceCatalogId = intval($this->request->RaceCatalogId);
             //获取赛事信息
@@ -274,6 +274,8 @@ class Xrace_RaceCatalogController extends AbstractController
         if($PermissionCheck['return'])
         {
             $oRanking = new Xrace_Ranking();
+            //获取排名计算方式
+            $RankingTypeList = $oRanking->getTotalRankingType();
             //赛事ID
             $RankingId = trim($this->request->RankingId);
             //获取排名信息
@@ -297,6 +299,8 @@ class Xrace_RaceCatalogController extends AbstractController
             $oRanking = new Xrace_Ranking();
             //赛事ID
             $RaceCatalogId = trim($this->request->RaceCatalogId);
+            //获取排名计算方式
+            $RankingTypeList = $oRanking->getTotalRankingType();
             //渲染模板
             include $this->tpl('Xrace_Race_RankingAdd');
         }
@@ -310,7 +314,7 @@ class Xrace_RaceCatalogController extends AbstractController
     public function rankingInsertAction()
     {
         //获取页面参数
-        $bind=$this->request->from('RankingName','RaceCatalogId','RankingComment');
+        $bind=$this->request->from('RankingName','RaceCatalogId','RankingComment',"RankingType");
         //赛事名称不能为空
         if(trim($bind['RankingName'])=="")
         {
@@ -330,7 +334,7 @@ class Xrace_RaceCatalogController extends AbstractController
     public function rankingUpdateAction()
     {
         //获取页面参数
-        $bind=$this->request->from('RankingName','RankingId','RankingComment');
+        $bind=$this->request->from('RankingName','RankingId','RankingComment',"RankingType");
         //赛事名称不能为空
         if(trim($bind['RankingName'])=="")
         {
@@ -413,7 +417,14 @@ class Xrace_RaceCatalogController extends AbstractController
                             {
                                 if($RaceGroupInfo['Selected']>0)
                                 {
-                                    $RaceStageList[$RaceStageId]['RaceList'][$RaceId]['RaceGroupList'][$RaceGroupId] = array("RaceGroupId"=>$RaceGroupId,"RaceGroupName"=>$RaceGroupList[$RaceGroupId]['RaceGroupName'],"RankingType"=>isset($OldRaceList[$RaceId][$RaceGroupId])?$OldRaceList[$RaceId][$RaceGroupId]["RankingType"]:"","selected"=>isset($OldRaceList[$RaceId][$RaceGroupId])?1:0);
+                                    if($RankingInfo["RankingType"]=="credit")
+                                    {
+                                        $RaceStageList[$RaceStageId]['RaceList'][$RaceId]['RaceGroupList'][$RaceGroupId] = array("RaceGroupId"=>$RaceGroupId,"RaceGroupName"=>$RaceGroupList[$RaceGroupId]['RaceGroupName'],"RankingType"=>isset($OldRaceList[$RaceId][$RaceGroupId])?$OldRaceList[$RaceId][$RaceGroupId]["RankingType"]:"","selected"=>isset($OldRaceList[$RaceId][$RaceGroupId])?$OldRaceList[$RaceId][$RaceGroupId]["RankingTypeId"]:0);
+                                    }
+                                    elseif($RankingInfo["RankingType"]=="time")
+                                    {
+                                        $RaceStageList[$RaceStageId]['RaceList'][$RaceId]['RaceGroupList'][$RaceGroupId] = array("RaceGroupId"=>$RaceGroupId,"RaceGroupName"=>$RaceGroupList[$RaceGroupId]['RaceGroupName'],"RankingType"=>isset($OldRaceList[$RaceId][$RaceGroupId])?$OldRaceList[$RaceId][$RaceGroupId]["RankingType"]:"","selected"=>isset($OldRaceList[$RaceId][$RaceGroupId])?1:0);
+                                    }
                                 }
                             }
                         }
@@ -437,11 +448,19 @@ class Xrace_RaceCatalogController extends AbstractController
                     }
                 }
             }
-            //获取排名计算方式
-            $RankingTypeList = $oRanking->getRankingType();
-            $RankingTypeList[""] = "无";
+            if($RankingInfo["RankingType"]=="credit")
+            {
+                $oCredit = new Xrace_Credit();
+                $CreditList = $oCredit->getCreditList($RankingInfo['RaceCatalogId']);
+            }
+            elseif($RankingInfo["RankingType"]=="time")
+            {
+                //获取排名计算方式
+                $RankingTypeList = $oRanking->getRankingType();
+                $RankingTypeList["time"][""] = "无";
+            }
             //渲染模板
-            include $this->tpl('Xrace_Race_RankingRaceList');
+            include $this->tpl('Xrace_Race_RankingRaceList'.$RankingInfo['RankingType']);
         }
         else
         {
@@ -492,10 +511,12 @@ class Xrace_RaceCatalogController extends AbstractController
             $oRanking = new Xrace_Ranking();
             //排名ID
             $RankingId = trim($this->request->RankingId);
+            //获取赛事信息
+            $RankingInfo = $oRanking->getRanking($RankingId,"RankingType,RankingId");
             //获取排名数据
             $RaceUserList = $oRanking->getRaceInfoByRanking($RankingId);
             //初始化空的比赛和分组列表
-            $RaceList = array();$RaceGroupList = array();
+            $RaceList = array();$RaceGroupList = array();$RaceStageList = array();
             //循环用户数据
             foreach($RaceUserList['RaceUserList']['UserList'] as $key => $UserInfo)
             {
@@ -512,10 +533,23 @@ class Xrace_RaceCatalogController extends AbstractController
                         //获取分组数据
                         $RaceGroupList[$Race['RaceGroupId']] = $this->oRace->getRaceGroup($Race['RaceGroupId'],"RaceGroupId,RaceGroupName");
                     }
+                    if(!isset($RaceStageList[$Race['RaceStageId']]))
+                    {
+                        //获取分组数据
+                        $RaceStageList[$Race['RaceStageId']] = $this->oRace->getRaceStage($Race['RaceStageId'],"RaceStageId,RaceStageName");
+                    }
                 }
             }
+            if($RankingInfo['RankingType']=="time")
+            {
+                $module = "ResultListRankingTime";
+            }
+            elseif($RankingInfo['RankingType']=="credit")
+            {
+                $module = "ResultListRankingCredit";
+            }
             //渲染模板
-            include $this->tpl('Xrace_Race_ResultListRanking');
+            include $this->tpl('Xrace_Race_'.$module);
         }
         else
         {
