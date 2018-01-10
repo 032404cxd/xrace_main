@@ -362,7 +362,7 @@ class XraceConfigController extends AbstractController
                             }
                             else
                             {
-                                unset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]);
+                                //unset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]);
                             }
                         }
                         else
@@ -533,7 +533,7 @@ class XraceConfigController extends AbstractController
                     //获取当前比赛的时间状态信息
                     $RaceList[$RaceId]['RaceStatus'] = $this->oRace->getRaceTimeStatus($RaceInfo);
                     //初始化比赛里程
-                    $RaceList[$RaceId]['Distence'] = 0;
+                    $RaceList[$RaceId]['Distance'] = 0;
                     //获取比赛分类信息
                     $RaceTypeInfo = $RaceInfo['RaceTypeId'] ? $this->oRace->getRaceType($RaceInfo['RaceTypeId'], '*') : array();
                     //如果获取到比赛类型信息
@@ -563,7 +563,7 @@ class XraceConfigController extends AbstractController
                                 //获取运动类型名称
                                 $RaceList[$RaceId]['comment']['DetailList'][$detailId]['SportsTypeName'] = $SportsTypeList[$detailInfo['SportsTypeId']]['SportsTypeName'];
                                 //初始化运动分段的长度
-                                $RaceList[$RaceId]['comment']['DetailList'][$detailId]['Distence'] = 0;
+                                $RaceList[$RaceId]['comment']['DetailList'][$detailId]['Distance'] = 0;
                                 //获取计时点信息
                                 $TimingInfo = isset($detailInfo['TimingId']) ? $this->oRace->getTimingDetail($detailInfo['TimingId']) : array();
                                 //如果获取到计时点信息
@@ -575,9 +575,9 @@ class XraceConfigController extends AbstractController
                                     foreach ($TimingInfo['comment'] as $tid => $tInfo)
                                     {
                                         //累加里程到运动分段
-                                        $RaceList[$RaceId]['comment']['DetailList'][$detailId]['Distence'] += $tInfo['ToNext'] * $tInfo['Round'];
+                                        $RaceList[$RaceId]['comment']['DetailList'][$detailId]['Distance'] += $tInfo['ToPrevious'] * $tInfo['Round'];
                                         //累加里程到比赛
-                                        $RaceList[$RaceId]['Distence'] += $tInfo['ToNext'] * $tInfo['Round'];
+                                        $RaceList[$RaceId]['Distance'] += $tInfo['ToPrevious'] * $tInfo['Round'];
                                     }
                                 }
                             }
@@ -625,7 +625,7 @@ class XraceConfigController extends AbstractController
                 //获取当前比赛的时间状态信息
                 $RaceList[$RaceId]['RaceStatus'] = $this->oRace->getRaceTimeStatus($RaceInfo);
                 //初始化比赛里程
-                $RaceList[$RaceId]['Distence'] = 0;
+                $RaceList[$RaceId]['Distance'] = 0;
                 //获取比赛分类信息
                 $RaceTypeInfo = $RaceInfo['RaceTypeId'] ? $this->oRace->getRaceType($RaceInfo['RaceTypeId'], '*') : array();
                 //如果获取到比赛类型信息
@@ -654,7 +654,7 @@ class XraceConfigController extends AbstractController
                             //获取运动类型名称
                             $RaceList[$RaceId]['comment']['DetailList'][$detailId]['SportsTypeName'] = $SportsTypeList[$detailInfo['SportsTypeId']]['SportsTypeName'];
                             //初始化运动分段的长度
-                            $RaceList[$RaceId]['comment']['DetailList'][$detailId]['Distence'] = 0;
+                            $RaceList[$RaceId]['comment']['DetailList'][$detailId]['Distance'] = 0;
                             //获取计时点信息
                             $TimingInfo = isset($detailInfo['TimingId']) ? $this->oRace->getTimingDetail($detailInfo['TimingId']) : array();
                             //如果获取到计时点信息
@@ -666,9 +666,9 @@ class XraceConfigController extends AbstractController
                                 foreach ($TimingInfo['comment'] as $tid => $tInfo)
                                 {
                                     //累加里程到运动分段
-                                    $RaceList[$RaceId]['comment']['DetailList'][$detailId]['Distence'] += $tInfo['ToNext'] * $tInfo['Round'];
+                                    $RaceList[$RaceId]['comment']['DetailList'][$detailId]['Distance'] += $tInfo['ToPrevious'] * $tInfo['Round'];
                                     //累加里程到比赛
-                                    $RaceList[$RaceId]['Distence'] += $tInfo['ToNext'] * $tInfo['Round'];
+                                    $RaceList[$RaceId]['Distance'] += $tInfo['ToPrevious'] * $tInfo['Round'];
                                 }
                             }
                         }
@@ -735,7 +735,7 @@ class XraceConfigController extends AbstractController
                 //获取当前比赛的时间状态信息
                 $RaceInfo['RaceStatus'] = $this->oRace->getRaceTimeStatus($RaceInfo);
                 //初始化比赛里程
-                $RaceInfo['Distence'] = 0;
+                $RaceInfo['Distance'] = 0;
                 //获取比赛分类信息
                 $RaceTypeInfo = $RaceInfo['RaceTypeId'] ? $this->oRace->getRaceType($RaceInfo['RaceTypeId'], '*') : array();
                 //如果获取到比赛类型信息
@@ -767,7 +767,7 @@ class XraceConfigController extends AbstractController
                             //获取运动类型名称
                             $RaceInfo['comment']['DetailList'][$detailId]['SportsTypeName'] = $SportsTypeList[$detailInfo['SportsTypeId']]['SportsTypeName'];
                             //初始化运动分段的长度
-                            $RaceInfo['comment']['DetailList'][$detailId]['Distence'] = 0;
+                            $RaceInfo['comment']['DetailList'][$detailId]['Distance'] = 0;
                             //获取计时点信息
                             $TimingInfo = isset($detailInfo['TimingId']) ? $this->oRace->getTimingDetail($detailInfo['TimingId']) : array();
                             //如果获取到计时点信息
@@ -777,9 +777,9 @@ class XraceConfigController extends AbstractController
                                 //循环计时点信息
                                 foreach ($TimingInfo['comment'] as $tid => $tInfo) {
                                     //累加里程到运动分段
-                                    $RaceInfo['comment']['DetailList'][$detailId]['Distence'] += $tInfo['ToNext'] * $tInfo['Round'];
+                                    $RaceInfo['comment']['DetailList'][$detailId]['Distance'] += $tInfo['ToPrevious'] * $tInfo['Round'];
                                     //累加里程到比赛
-                                    $RaceInfo['Distence'] += $tInfo['ToNext'] * $tInfo['Round'];
+                                    $RaceInfo['Distance'] += $tInfo['ToPrevious'] * $tInfo['Round'];
                                 }
                             }
                         } else {
@@ -828,7 +828,7 @@ class XraceConfigController extends AbstractController
                             //如果查到就保留
                             if(isset($RaceGroupList[$k]) && $v['Selected'])
                             {
-                                $RaceGroupInfo = $RaceGroupList[$k];
+                                $RaceGroupInfo = array_merge($RaceGroupList[$k],$v);
                                 //默认当前组别可选
                                 $RaceGroupInfo['checkable'] = true;
                                 //数据解包
