@@ -19,7 +19,7 @@ class Xrace_Race extends Base_Widget
     protected $maxProcessRate = 5;
 
 	protected $raceStructure = array('race'=>'比赛-分组','group'=>'分组-比赛');
-	protected $raceTimingType = array('mylaps'=>'myLaps芯片计时');
+	protected $raceTimingType = array('mylaps'=>'myLaps芯片计时','wechat'=>'微信扫码打卡计时','none'=>'不计时');
 	protected $raceTimingResultType = array('gunshot'=>'发枪时间','net'=>'净时间');
     protected $finalResultType = array('gunshot'=>'发枪时间','net'=>'净时间','credit'=>'积分');
 	protected $raceLicenseType = array('manager'=>'管理员审核','birthday'=>'生日','sex'=>'性别','age'=>"年龄");
@@ -379,18 +379,19 @@ class Xrace_Race extends Base_Widget
 	//获取赛事分站和赛事组别获取比赛列表
 	public function getRaceList($params,$fields = '*')
 	{
-		$table_to_process = Base_Widget::getDbTable($this->table_race);
+	    $table_to_process = Base_Widget::getDbTable($this->table_race);
 		//初始化查询条件
 		$whereGroup = (isset($params['RaceGroupId']) && ($params['RaceGroupId'] >0))?(" RaceGroupId = ".$params['RaceGroupId']):"";
 		$whereStage = (isset($params['RaceStageId']) && ($params['RaceStageId'] >0))?(" RaceStageId = ".$params['RaceStageId']):"";
 		//$whereEndTime = (isset($params['RaceEndTime']) && ($params['RaceEndTime'] >0))?(" unix_timestamp(EndTime) <= ".$params['RaceEndTime']):"";
         $whereIn = (isset($params['inRun']) && ($params['inRun']==1))?("((EndTime >= '".date("Y-m-d H:i:s",time()-300)."') and (StartTime <= '".date("Y-m-d H:i:s",time()+300). "'))"):"";
         $whereToProcess = (isset($params['ToProcess']) && ($params['ToProcess']==1))?" or (ToProcess = '1')":"";
-        $whereCondition = array($whereGroup,$whereStage,$whereIn,$whereToProcess);
-		//生成条件列
+        $whereTimingType = (isset($params['TimingType']) && ($params['TimingType']!=""))?(" TimingType = '".$params['TimingType'])."'":"";
+        $whereCondition = array($whereGroup,$whereStage,$whereIn,$whereToProcess,$whereTimingType);
+        //生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceId asc";
-		$return = $this->db->getAll($sql);
+        $return = $this->db->getAll($sql);
 		$RaceList = array();
 		foreach($return as $key => $value)
 		{
@@ -1270,7 +1271,7 @@ class Xrace_Race extends Base_Widget
                                                 //计算分段距离
                                                 $SectionDistance += ($TimingPoint['ToPrevious']>=0?$TimingPoint['ToPrevious']:0);
                                                 //计算总距离
-                                                $RaceInfo['TotalDistance'] += ($TimingPoint['ToPrevious']>=0?$TimingPoint['ToPrevious']:0);
+                                                $RaceInfo['Total'] += ($TimingPoint['ToPrevious']>=0?$TimingPoint['ToPrevious']:0);
                                                 $t['CurrentDistance'] = $SectionDistance;
                                                 $t['TotalDistance'] = $RaceInfo['TotalDistance'];
                                                 $t['SpeedDisplayType'] = $SportsTypeInfo['SpeedDisplayType'];

@@ -1050,11 +1050,11 @@ class Xrace_RaceStageController extends AbstractController
 				$bind['RouteInfo']['MylapsTolaranceTime'] = abs(intval($bind['MylapsTolaranceTime']));
 				unset($bind['MylapsTolaranceTime']);
 				//成绩计算数据源
-				$bind['RouteInfo']['RaceTimingType'] = trim($bind['RaceTimingType']);
+                $bind['TimingType'] = trim($bind['RaceTimingType']);
 				unset($bind['RaceTimingType']);
 				//成绩计算方式
-				$bind['RouteInfo']['RaceTimingResultType'] = trim($bind['RaceTimingResultType']);
-				unset($bind['RaceTimingResultType']);
+                $bind['RouteInfo']['RaceTimingResultType'] = trim($bind['RaceTimingResultType']);
+                unset($bind['RaceTimingResultType']);
                 //成绩计算方式
                 $bind['RouteInfo']['FinalResultType'] = trim($bind['FinalResultType']);
                 unset($bind['FinalResultType']);
@@ -1255,7 +1255,7 @@ class Xrace_RaceStageController extends AbstractController
 				$bind['RouteInfo']['MylapsTolaranceTime'] = abs(intval($bind['MylapsTolaranceTime']));
 				unset($bind['MylapsTolaranceTime']);
 				//成绩计算数据源
-				$bind['RouteInfo']['RaceTimingType'] = trim($bind['RaceTimingType']);
+				$bind['TimingType'] = trim($bind['RaceTimingType']);
 				unset($bind['RaceTimingType']);
 				//成绩计算方式
 				$bind['RouteInfo']['RaceTimingResultType'] = trim($bind['RaceTimingResultType']);

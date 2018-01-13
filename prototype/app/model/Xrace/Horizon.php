@@ -53,7 +53,7 @@ class Xrace_Horizon extends Base_Widget
                         }
                         $RaceArr[] = array("hasDepartureTP" => $RaceInfo['comment']["NoStart"] == 0 ? "T" : "F",
                             "id" => $RaceId."_".$RaceGroupId,
-                            "name" => $RaceGroupList[$RaceGroupId]["RaceGroupName"],
+                            "name" => $RaceInfo["RaceName"]."-".$RaceGroupList[$RaceGroupId]["RaceGroupName"],
                             "raceCategoryName" => $RaceInfo["RaceName"],
                             "raceCategoryUnitType" => $RaceInfo['comment']['ResultType'] == "Individual" ? "INDIVIDUAL" : "TEAM",
                             "startDate"=>date("Y-m-d", strtotime($GroupInfo["StartTime"])),
@@ -123,7 +123,7 @@ class Xrace_Horizon extends Base_Widget
                             $AthleteArr[] = array("gender"=>$SexList[$RaceUserInfo["Sex"]],
                                 "name"=>$RaceUserInfo["Name"],
                                 "id"=>$RaceUserInfo['RaceUserId'],
-                                "matchName"=>$RaceGroupList[$ApplyInfo["RaceGroupId"]]["RaceGroupName"],
+                                "matchName"=>$RaceInfo["RaceName"]."-".$RaceGroupList[$ApplyInfo["RaceGroupId"]]["RaceGroupName"],
                                 "startNum"=>$ApplyInfo["BIB"],
                                 "mobile"=>$RaceUserInfo['ContactMobile'],
                                 "club"=>$ApplyInfo['TeamId']>0?$TeamList[$ApplyInfo['TeamId']]["TeamName"]:"");
@@ -284,7 +284,7 @@ class Xrace_Horizon extends Base_Widget
                 {
                     $TimingArr = array(
                         "startNum" => $UserRaceInfo['RaceUserInfo']['BIB'],
-                        "startTime" => date("h:m:s",$UserRaceInfo["Point"][1]["inTime"]),
+                        "startTime" => date("h:i:s",$UserRaceInfo["Point"][1]["inTime"]),
                         "timingPointTimings" => array()
                     );
                     //循环计时点
@@ -301,14 +301,14 @@ class Xrace_Horizon extends Base_Widget
                                $TotalTime = $pInfo["TotalNetTime"];
                            }
                            $arr[] = array(
-                               "arrivalTime" => date("h:m:s",$pInfo["inTime"]),
+                               "arrivalTime" => date("h:i:s",intval($pInfo["inTime"])),
                                "costTime" => Base_common::parthTimeLag($pInfo["PointTime"]),
                                "overallCostTime" => Base_common::parthTimeLag($TotalTime),
                                "overallRank" => $pInfo["GroupRank"],
                                "tpName" => $pInfo["TName"],
                                "tpSeqNo" => $P,
                            );
-                           echo $returnArr["matchId"]."-".$UserRaceInfo['RaceUserInfo']['BIB']."-".$P."-".$pInfo["inTime"]."-".date("h:m:s",$pInfo["inTime"])."\n";
+                           echo $returnArr["matchId"]."-".$UserRaceInfo['RaceUserInfo']['BIB']."-".$P."-".$pInfo["inTime"]."-".date("h:i:s",intval($pInfo["inTime"]))."\n";
                        }
 
                     }
@@ -346,8 +346,7 @@ class Xrace_Horizon extends Base_Widget
     }
     public function uploadTimingBatch($data)
     {
-        print_R($data);sleep(3);
-        $url = $this->ApiUrl.'/liveIntegration/timing/sync/live/batch';
+        //print_R($data);sleep(3);        $url = $this->ApiUrl.'/liveIntegration/timing/sync/live/batch';
         print_r(Base_Common::http_post_json($url,json_encode($data)));
 
     }

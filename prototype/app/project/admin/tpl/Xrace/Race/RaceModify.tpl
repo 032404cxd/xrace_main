@@ -62,7 +62,7 @@
 	<tr class="hover"><th align="center" class="rowtip">计时数据方式</th><th align="center" class="rowtip">
 			<select name="RaceTimingType" size="1" class="span2">
 				{tpl:loop $RaceTimingTypeList $RaceTimingType $RaceTimingTypeName}
-				<option value="{tpl:$RaceTimingType/}" {tpl:if($RaceTimingType==$RaceInfo.RouteInfo.RaceTimingType)}selected="selected"{/tpl:if} >{tpl:$RaceTimingTypeName/}</option>
+				<option value="{tpl:$RaceTimingType/}" {tpl:if($RaceTimingType==$RaceInfo.TimingType)}selected="selected"{/tpl:if} >{tpl:$RaceTimingTypeName/}</option>
 				{/tpl:loop}
 			</select>
 		</th></tr>
