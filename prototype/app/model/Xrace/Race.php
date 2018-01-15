@@ -621,9 +621,15 @@ class Xrace_Race extends Base_Widget
 					//如果需要被更新的计时点数据存在
 					if(isset($SportsTypeInfo['TimingDetailList']['comment'][$TimingId]))
 					{
-						$bind['CreditList'] = $SportsTypeInfo['TimingDetailList']['comment'][$TimingId]['CreditList'];
-					    //替换内容
-						$SportsTypeInfo['TimingDetailList']['comment'][$TimingId] = $bind;
+					    $bind['CreditList'] = $SportsTypeInfo['TimingDetailList']['comment'][$TimingId]['CreditList'];
+					    foreach($bind as $key => $value)
+                        {
+                            if($value!="")
+                            {
+                                //替换内容
+                                $SportsTypeInfo['TimingDetailList']['comment'][$TimingId][$key] = $bind[$key];
+                            }
+                        }
 						//重新打包计时点数据
 						$updateBind = array('comment' => json_encode($SportsTypeInfo['TimingDetailList']['comment']));
 						//更新计时点数据

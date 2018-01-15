@@ -1669,20 +1669,6 @@ class Xrace_RaceStageController extends AbstractController
 			$RaceStageInfo = $this->oRace->getRaceStage($RaceStageId,'*');
 			//解包压缩数组
 			$RaceStageInfo ['comment'] = json_decode($RaceStageInfo['comment'],true);
-			//如果当前分站未配置了当前分组
-			//if(!isset($RaceStageInfo['comment']['SelectedRaceGroup'][$RaceGroupId]))
-			{
-				//跳转到分站列表页面
-			//	$this->response->redirect($this->sign);
-			}
-			//获取赛事分组信息
-			//$RaceGroupInfo = $this->oRace->getRaceGroup($RaceGroupId,'*');
-			//如果赛事分组尚未配置
-			//if(!$RaceGroupInfo['RaceGroupId'])
-			{
-				//跳转到分站列表页面
-			//	$this->response->redirect($this->sign);
-			}
 			//获取比赛信息
 			$RaceInfo = $this->oRace->getRace($RaceId);
 			//如果有获取到比赛信息 并且 赛事分站ID和赛事分组ID相符//if(isset($RaceInfo['RaceId']) && ($RaceStageId == $RaceInfo['RaceStageId']) && ($RaceGroupId == $RaceInfo['RaceGroupId']))
@@ -1869,7 +1855,7 @@ class Xrace_RaceStageController extends AbstractController
 			//计时点ID
 			$TimingId = isset($this->request->TimingId)?intval($this->request->TimingId):0;
 			//获取 页面参数
-			$bind = $this->request->from('TName','ToPrevious','BaiduMapX','BaiduMapY','tX','TencentY','Round','ChipId','TolaranceTime');
+			$bind = $this->request->from('TName','ToPrevious','BaiduMapX','BaiduMapY','TencentX','TencentY','Round','ChipId','TolaranceTime');
 			//更新计时点
 			$UpdateTimingPoint = $this->oRace->updateTimingPoint($RaceId,$SportsTypeId,$TimingId,$bind);
 			$response = $UpdateTimingPoint ? array('errno' => 0) : array('errno' => 9);

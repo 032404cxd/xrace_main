@@ -1458,23 +1458,42 @@ class XraceConfigController extends AbstractController
     */
     public function updateStageDataAction()
     {
-        //排名ID
+        //分站ID
         $RaceStageId = abs(intval($this->request->RaceStageId));
         $Data = $this->oRace->updateRaceStageData($RaceStageId);
-        echo json_encode($result);
     }
     /*
     *获得指定分站的统计数据
     */
     public function getStageDataAction()
     {
-        //排名ID
+        //分站ID
         $RaceStageId = abs(intval($this->request->RaceStageId));
         $Data = $this->oRace->getRaceStageData($RaceStageId);
         //全部置为空
         $result = array("return" => 1, "Data" => $Data);
         echo json_encode($result);
     }
+    /*
+    *获得指定分站的统计数据
+    */
+    public function updateTimingPointAction()
+    {
+        //比赛ID
+        $RaceId = abs(intval($this->request->RaceId));
+        //运动类型ID
+        $SportsTypeId = intval($this->request->SportsTypeId);
+        //计时点ID
+        $TimingId = isset($this->request->TimingId)?intval($this->request->TimingId):0;
+        //获取 页面参数
+        $bind = $this->request->from('TName','TencentX','TencentY');
+        //更新计时点
+        $UpdateTimingPoint = $this->oRace->updateTimingPoint($RaceId,$SportsTypeId,$TimingId,$bind);
+        //全部置为空
+        $result = array("return" => $UpdateTimingPoint?1:0);
+        echo json_encode($result);
+    }
+
 
 
 }
