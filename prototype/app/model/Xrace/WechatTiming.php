@@ -10,13 +10,11 @@ class Xrace_WechatTiming extends Base_Widget
 	//声明所用到的表
 	protected $table = 'wechat_times';
     //新增单个计时记录
-    public function insertTiming(array $bind)
+    public function insertTiming($table,array $bind)
     {
-        $table_to_process = Base_Widget::getDbTable($this->table);
-        echo $table_to_process;
-        return $this->db->insert($table_to_process, $bind);
+        return $this->db->insert($table, $bind);
     }
-    //
+    //新增一条计时记录
     public function insertTimingLog(array $Timing)
     {
         $oRace = new Xrace_Race();
@@ -52,9 +50,14 @@ class Xrace_WechatTiming extends Base_Widget
                         return false;
                     }
                 }
+                //数据解包
+                $RaceInfo["RouteInfo"] = json_decode($RaceInfo["RouteInfo"],true);
+                //检测计时记录表是否存在
+                $table_timing = $this->db->createTable($this->table,$RaceInfo["RouteInfo"]["TimePrefix"]);
+                //初始化计时记录
                 $TimingLog = array("time"=>$Timing["Time"],"Location"=>$Timing["Location"],"RaceUserId"=>$UserInfo['RaceUserId']?$UserInfo['RaceUserId']:$RaceUserId,"comment"=>json_encode(array("Position"=>array("X"=>$Timing["TencentX"],"Y"=>$Timing["TencentY"]))));
-                print_r($TimingLog);
-                $Id = $this->insertTiming($TimingLog);
+                //加入计时记录
+                $Id = $this->insertTiming($table_timing,$TimingLog);
                 echo "Id:".$Id;
             }
             else

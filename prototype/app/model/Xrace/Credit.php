@@ -148,7 +148,6 @@ class Xrace_Credit extends Base_Widget
     }
     public function Credit($CreditInfo,$params,$UserId,$Status = 1)
     {
-        var_dump($params);
         //检查是否已经领取上限
         $Check = $this->checkCreditFrequency($UserId,$CreditInfo,$params);
         if(!$Check)
