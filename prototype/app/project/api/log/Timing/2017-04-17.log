@@ -1,0 +1,30 @@
+RaceId:144
+Sql:SELECT * FROM mylaps.tri_times_sorted where 1 and  Chip in ('FF84300','FK94070','FT01571','GC09803','GG22167','GV12411','HG31685','HK10428','HK82182','KG87634')  and  Id >0  and  ChipTime >'2017-04-12 22:19:00'  and  ChipTime <='2017-04-13 00:10:00'  order by Id asc limit 0,1000
+RecordCount:90
+TotalCount:90
+2017-04-17 13:05:12~~2017-04-17 13:05:13
+TotalCost:00:00.8599
+RaceId:144
+Sql:SELECT * FROM mylaps.tri_times_sorted where 1 and  Chip in ('FF84300','FK94070','FT01571','GC09803','GG22167','GV12411','HG31685','HK10428','HK82182','KG87634')  and  Id >0  and  ChipTime >'2017-04-12 22:19:00'  and  ChipTime <='2017-04-13 00:10:00'  order by Id asc limit 0,1000
+RecordCount:90
+TotalCount:90
+2017-04-17 13:09:27~~2017-04-17 13:09:28
+TotalCost:00:00.8919
+RaceId:144
+Sql:SELECT * FROM mylaps.tri_times_sorted where 1 and  Chip in ('FF84300','FK94070','FT01571','GC09803','GG22167','GV12411','HG31685','HK10428','HK82182','KG87634')  and  Id >0  and  ChipTime >'2017-04-12 22:19:00'  and  ChipTime <='2017-04-13 00:10:00'  order by Id asc limit 0,1000
+RecordCount:90
+TotalCount:90
+2017-04-17 13:11:54~~2017-04-17 13:11:55
+TotalCost:00:00.9258
+RaceId:144
+Sql:SELECT * FROM mylaps.tri_times_sorted where 1 and  Chip in ('FF84300','FK94070','FT01571','GC09803','GG22167','GV12411','HG31685','HK10428','HK82182','KG87634')  and  Id >0  and  ChipTime >'2017-04-12 22:19:00'  and  ChipTime <='2017-04-13 00:10:00'  order by Id asc limit 0,1000
+RecordCount:90
+TotalCount:90
+2017-04-17 13:12:15~~2017-04-17 13:12:16
+TotalCost:00:00.8743
+RaceId:144
+Sql:SELECT * FROM mylaps.tri_times_sorted where 1 and  Chip in ('FF84300','FK94070','FT01571','GC09803','GG22167','GV12411','HG31685','HK10428','HK82182','KG87634')  and  Id >0  and  ChipTime >'2017-04-12 22:19:00'  and  ChipTime <='2017-04-13 00:10:00'  order by Id asc limit 0,1000
+RecordCount:90
+TotalCount:90
+2017-04-17 13:14:06~~2017-04-17 13:14:07
+TotalCost:00:00.8547

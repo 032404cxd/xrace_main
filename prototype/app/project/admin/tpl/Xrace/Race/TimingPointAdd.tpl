@@ -40,6 +40,14 @@
     <th align="center" class="rowtip"><input type="text" class="span2" name="BaiduMapY" id="BaiduMapY" value="0" /></th>
   </tr>
   <tr>
+    <th align="center" class="rowtip">腾讯地图经度</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="TencentX" id="TencentX" value="0" /></th>
+  </tr>
+  <tr>
+    <th align="center" class="rowtip">腾讯地图纬度</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="TencentY" id="TencentY" value="0" /></th>
+  </tr>
+  <tr>
     <th align="center" class="rowtip">等待时间(秒)</th>
     <th align="center" class="rowtip"><input type="text" class="span2" name="TolaranceTime" id="TolaranceTime" value="60" /></th>
   </tr>

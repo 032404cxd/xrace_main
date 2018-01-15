@@ -117,7 +117,7 @@ class Xrace_Mylaps extends Base_Widget
         //从文件载入计时信息
         $UserRaceTimingInfo = $oRace->GetRaceTimingOriginalInfo($RaceId,0);
         //检查记录变动情况，数量变动或者强制更新，则重建排序后的数据
-        $RecordCheck = $this->checkTimingRecord($RaceInfo['RouteInfo']['MylapsPrefix'],$Force);
+        $RecordCheck = $this->checkTimingRecord($RaceInfo['RouteInfo']['TimePrefix'],$Force);
         //如果检查失败
         if($RecordCheck['return']==false)
         {
@@ -127,7 +127,7 @@ class Xrace_Mylaps extends Base_Widget
         if($UserRaceTimingInfo['LastId'] >0)
         {
             //检查记录顺序情况
-            $RecordSequenceCheck = $this->checkTimingRecordSqeuence($RaceInfo['RouteInfo']['MylapsPrefix'],$UserRaceTimingInfo['LastId'],$UserRaceTimingInfo['LastTime'],$RecordCheck['rebuild']==1?0:1);
+            $RecordSequenceCheck = $this->checkTimingRecordSqeuence($RaceInfo['RouteInfo']['TimePrefix'],$UserRaceTimingInfo['LastId'],$UserRaceTimingInfo['LastTime'],$RecordCheck['rebuild']==1?0:1);
             //顺序错误导致重建
             if($RecordSequenceCheck['restart'] == 1)
             {
@@ -169,7 +169,7 @@ class Xrace_Mylaps extends Base_Widget
 		$RaceEndTime = strtotime($RaceInfo['EndTime']);echo "RaceEndTime:".$RaceEndTime;
 
 		//初始化单个计时点的最大等待时间（超过这个时间才认为是新的一次进入）
-		$RaceInfo['RouteInfo']['MylapsTolaranceTime'] = isset($RaceInfo['RouteInfo']['MylapsTolaranceTime'])?$RaceInfo['RouteInfo']['MylapsTolaranceTime']:30;
+		$RaceInfo['RouteInfo']['TolaranceTime'] = isset($RaceInfo['RouteInfo']['TolaranceTime'])?$RaceInfo['RouteInfo']['TolaranceTime']:30;
 		//初始化计时点成绩计算的方式（发枪时刻/第一次经过起始点）
 		$ResultType = ((isset($RaceInfo['RouteInfo']['RaceTimingResultType']) && ($RaceInfo['RouteInfo']['RaceTimingResultType']=="gunshot"))||!isset($RaceInfo['RouteInfo']['RaceTimingResultType']))?"gunshot":"net";
         //初始化计时点成绩计算的方式（发枪时刻/第一次经过起始点/积分）
@@ -208,7 +208,7 @@ class Xrace_Mylaps extends Base_Widget
 		while ($Count == $pageSize)
 		{
 		    //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
-			$params = array('sorted'=>1,'StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),'prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"-1");
+			$params = array('sorted'=>1,'StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"-1");
 			//获取计时数据
 			$TimingList = $this->getTimingData($params);
 			//依次循环计时数据
@@ -772,7 +772,7 @@ class Xrace_Mylaps extends Base_Widget
                                     //计算本条计时信息和当前点过线时间的时间差
                                     $timeLag = sprintf("%0.2f", ($CurrentPointInfo['inTime'] - $ChipTime));
                                     //如果时间差小于配置的容忍时间（短时间内多次过线）
-                                    $CurrentPointInfo['TolaranceTime'] = isset($CurrentPointInfo['TolaranceTime'])?$CurrentPointInfo['TolaranceTime']:$RaceInfo['RouteInfo']['MylapsTolaranceTime'];
+                                    $CurrentPointInfo['TolaranceTime'] = isset($CurrentPointInfo['TolaranceTime'])?$CurrentPointInfo['TolaranceTime']:$RaceInfo['RouteInfo']['TolaranceTime'];
                                     if (abs($timeLag) <= $CurrentPointInfo['TolaranceTime'])
                                     {
                                         echo $CurrentPointInfo['TolaranceTime']." Second TimeOut Pass\n";

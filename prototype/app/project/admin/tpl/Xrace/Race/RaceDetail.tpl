@@ -4,10 +4,10 @@
     SportsTypeAddBox = divBox.showBox('{tpl:$this.sign/}&ac=race.sports.type.add&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&RaceId=' + rid + '&After=' + after, {title:'添加运动分段',width:350,height:250});
   }
   function TimingPointAdd(rid,tid,after,sname){
-    TimingPointAddBox = divBox.showBox('{tpl:$this.sign/}&ac=timing.point.add&RaceId=' + rid +  '&SportsTypeId=' + tid + '&After=' + after, {title:'添加'+sname+'计时点',width:400,height:600});
+    TimingPointAddBox = divBox.showBox('{tpl:$this.sign/}&ac=timing.point.add&RaceId=' + rid +  '&SportsTypeId=' + tid + '&After=' + after, {title:'添加'+sname+'计时点',width:400,height:650});
   }
   function TimingPointModify(rid,tid,pid,tname){
-    TimingPointModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=timing.point.modify&RaceId=' + rid +  '&SportsTypeId=' + tid + '&TimingId=' + pid, {title:'修改计时点-'+tname,width:400,height:500});
+    TimingPointModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=timing.point.modify&RaceId=' + rid +  '&SportsTypeId=' + tid + '&TimingId=' + pid, {title:'修改计时点-'+tname,width:400,height:600});
   }
   function TimingPointDelete(rid,tid,pid,tname){
     deleteTimingPointBox= divBox.confirmBox({content:'是否删除 ' + tname + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=timing.point.delete&RaceId=' + rid +  '&SportsTypeId=' + tid + '&TimingId=' + pid;}});

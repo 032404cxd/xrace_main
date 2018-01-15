@@ -1,0 +1,168 @@
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >0  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >70  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >84  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >114  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:3
+TotalCount:33
+2017-07-23 10:12:23~~2017-07-23 10:12:25
+TotalCost:00:02.4111
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >0  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >70  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >84  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >114  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:3
+TotalCount:33
+2017-07-23 10:14:15~~2017-07-23 10:14:18
+TotalCost:00:03.5452
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >0  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >70  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >84  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >114  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:3
+TotalCount:33
+2017-07-23 10:16:06~~2017-07-23 10:16:09
+TotalCost:00:03.1703
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >0  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >70  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >84  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >114  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:3
+TotalCount:33
+2017-07-23 10:16:14~~2017-07-23 10:16:15
+TotalCost:00:01.4772
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >0  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >70  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >84  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >114  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:3
+TotalCount:33
+2017-07-23 10:17:30~~2017-07-23 10:17:32
+TotalCost:00:01.7898
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >0  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >70  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >84  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >114  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:3
+TotalCount:33
+2017-07-23 10:17:49~~2017-07-23 10:17:51
+TotalCost:00:02.7110
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >0  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >70  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >84  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >114  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:3
+TotalCount:33
+2017-07-23 10:18:57~~2017-07-23 10:19:01
+TotalCost:00:04.1136
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >0  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >70  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >84  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >114  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:3
+TotalCount:33
+2017-07-23 10:19:21~~2017-07-23 10:19:23
+TotalCost:00:01.7292
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >0  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >70  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >84  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >114  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:3
+TotalCount:33
+2017-07-23 10:20:07~~2017-07-23 10:20:10
+TotalCost:00:02.2360
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >0  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >70  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >84  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >114  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:3
+TotalCount:33
+2017-07-23 10:20:13~~2017-07-23 10:20:16
+TotalCost:00:02.7761
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >0  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >70  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >84  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >114  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:3
+TotalCount:33
+2017-07-23 10:22:30~~2017-07-23 10:22:32
+TotalCost:00:02.0912
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('GK26410','KX88173')  and  Id >0  and  ChipTime >'2017-07-22 17:35:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('GK26410','KX88173')  and  Id >49  and  ChipTime >'2017-07-22 17:35:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('GK26410','KX88173')  and  Id >88  and  ChipTime >'2017-07-22 17:35:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:2
+TotalCount:22
+2017-07-23 10:24:05~~2017-07-23 10:24:07
+TotalCost:00:01.7901
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('GK26410','KX88173')  and  Id >0  and  ChipTime >'2017-07-22 17:35:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('GK26410','KX88173')  and  Id >49  and  ChipTime >'2017-07-22 17:35:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('GK26410','KX88173')  and  Id >88  and  ChipTime >'2017-07-22 17:35:00'  and  ChipTime <='2017-07-22 19:00:00'  order by Id asc limit 0,10
+RecordCount:2
+TotalCount:22
+2017-07-23 10:26:08~~2017-07-23 10:26:10
+TotalCost:00:02.0097
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('KP66964','HZ50378')  and  Id >0  and  ChipTime >'2017-07-22 17:31:00'  and  ChipTime <='2017-07-22 19:10:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('KP66964','HZ50378')  and  Id >85  and  ChipTime >'2017-07-22 17:31:00'  and  ChipTime <='2017-07-22 19:10:00'  order by Id asc limit 0,10
+RecordCount:7
+TotalCount:17
+2017-07-23 10:28:39~~2017-07-23 10:28:41
+TotalCost:00:01.5037
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >0  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >70  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >84  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >114  and  ChipTime >'2017-07-22 17:32:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:3
+TotalCount:33
+2017-07-23 10:46:44~~2017-07-23 10:46:46
+TotalCost:00:01.9551
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >0  and  ChipTime >'2017-07-22 17:31:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >70  and  ChipTime >'2017-07-22 17:31:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >84  and  ChipTime >'2017-07-22 17:31:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:10
+Sql:SELECT * FROM mylaps.20170722ay_times_sorted where 1 and  Chip in ('HX72077','LF82251','SF92741','HG68397')  and  Id >114  and  ChipTime >'2017-07-22 17:31:00'  and  ChipTime <='2017-07-31 19:00:00'  order by Id asc limit 0,10
+RecordCount:3
+TotalCount:33
+2017-07-23 10:56:30~~2017-07-23 10:56:31
+TotalCost:00:01.9430

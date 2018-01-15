@@ -31,6 +31,14 @@
     <th align="center" class="rowtip"><input type="text" class="span2" name="BaiduMapY" id="BaiduMapY" value="{tpl:$TimingInfo.BaiduMapY/}" /></th>
   </tr>
   <tr>
+    <th align="center" class="rowtip">腾讯地图经度</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="TencentX" id="TencentX" value="{tpl:$TimingInfo.TencentX/}" /></th>
+  </tr>
+  <tr>
+    <th align="center" class="rowtip">腾讯地图纬度</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="TencentY" id="TencentY" value="{tpl:$TimingInfo.TencentY/}" /></th>
+  </tr>
+  <tr>
     <th align="center" class="rowtip">等待时间(秒)</th>
     <th align="center" class="rowtip"><input type="text" class="span2" name="TolaranceTime" id="TolaranceTime" value="{tpl:$TimingInfo.TolaranceTime/}" /></th>
   </tr>

@@ -13,7 +13,7 @@ class Xrace_Horizon extends Base_Widget
 
 	protected $partnerId = "XR001";
 
-	protected $transCount = 10;
+	protected $transCount = 1;
 
     //获取单个分站的比赛配置信息
     public function getRaceStageInfo($RaceStageName)
@@ -287,6 +287,7 @@ class Xrace_Horizon extends Base_Widget
                         "startTime" => date("h:i:s",$UserRaceInfo["Point"][1]["inTime"]),
                         "timingPointTimings" => array()
                     );
+                    $arr = array();
                     //循环计时点
                     foreach($UserRaceInfo["Point"] as $P => $pInfo)
                     {
@@ -346,7 +347,8 @@ class Xrace_Horizon extends Base_Widget
     }
     public function uploadTimingBatch($data)
     {
-        //print_R($data);sleep(3);        $url = $this->ApiUrl.'/liveIntegration/timing/sync/live/batch';
+        print_R($data);sleep(1);
+        $url = $this->ApiUrl.'/liveIntegration/timing/sync/live/batch';
         print_r(Base_Common::http_post_json($url,json_encode($data)));
 
     }

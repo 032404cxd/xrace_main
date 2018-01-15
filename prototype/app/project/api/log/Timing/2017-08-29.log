@@ -1,0 +1,6 @@
+2017-08-29 20:44:01:Start To Process
+Sql:SELECT * FROM mylaps.2016fx_times_sorted where 1 and  Chip in (0)  and  ChipTime >'2016-09-17 18:20:03'  and  ChipTime <='2016-09-17 20:00:00'  order by Id asc limit 0,1000
+RecordCount:0
+TotalCount:0
+2017-08-29 20:44:01~~2017-08-29 20:44:01
+TotalCost:00:00.0973

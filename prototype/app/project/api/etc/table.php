@@ -158,13 +158,17 @@ $table['race_team']['num'] = 1;
 $table['user_team']['db'] = 'xrace';
 $table['user_team']['num'] = 1;
 
-//用户参加队伍列表
+//订单记录表
 $table['hs_order']['db'] = 'xrace_bm';
 $table['hs_order']['num'] = 1;
 
-//用户参加队伍列表
+//mylaps计时数据入口表
 $table['times']['db'] = 'mylaps';
 $table['times']['num'] = 1;
+
+//微信打卡计时数据入口表
+$table['wechat_times']['db'] = 'wechat_timing';
+$table['wechat_times']['num'] = 1;
 
 //用户参加队伍列表
 $table['times_sorted']['db'] = 'mylaps';

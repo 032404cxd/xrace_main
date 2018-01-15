@@ -39,6 +39,14 @@ $db['mylaps'][0] = array(
 	'database' => 'mylaps',
 );
 
+$db['wechat_timing'][0] = array(
+    'host' => HOST_LOCAL,
+    'user' => USER_LOCAL,
+    'password' => PASSWORD_LOCAL,
+    'port' => PORT_LOCAL,
+    'database' => 'wechat_timing',
+);
+
 $db['xrace_user'][0] = array(
 	'host' => HOST_LOCAL,
 	'user' => USER_LOCAL,

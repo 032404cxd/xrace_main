@@ -939,7 +939,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsDB','MylapsPrefix','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm','CreditList','FinalResultType','ProcessRate');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','TimeDB','TimePrefix','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm','CreditList','FinalResultType','ProcessRate');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -1038,17 +1038,14 @@ class Xrace_RaceStageController extends AbstractController
                 $bind['comment']['ResultNeedConfirm'] = $bind['ResultNeedConfirm'];
                 unset($bind['ResultNeedConfirm']);
                 //保存mylaps计时数据库名
-                $bind['RouteInfo']['MylapsDB'] = $bind['MylapsDB'];
-                unset($bind['MylapsDB']);
+                $bind['RouteInfo']['TimeDB'] = $bind['TimeDB'];
+                unset($bind['TimeDB']);
 				//保存mylaps计时数据表的前缀
-				$bind['RouteInfo']['MylapsPrefix'] = $bind['MylapsPrefix'];
-				unset($bind['MylapsPrefix']);
-				//保存百度地图信息
-				$bind['RouteInfo']['BaiDuMapID'] = $bind['BaiDuMapID'];
-				unset($bind['BaiDuMapID']);
+				$bind['RouteInfo']['TimePrefix'] = $bind['TimePrefix'];
+				unset($bind['TimePrefix']);
 				//保存单个计时点的忍耐时间（在该时间范围内的将被忽略）
-				$bind['RouteInfo']['MylapsTolaranceTime'] = abs(intval($bind['MylapsTolaranceTime']));
-				unset($bind['MylapsTolaranceTime']);
+				$bind['RouteInfo']['TolaranceTime'] = abs(intval($bind['TolaranceTime']));
+				unset($bind['TolaranceTime']);
 				//成绩计算数据源
                 $bind['TimingType'] = trim($bind['RaceTimingType']);
 				unset($bind['RaceTimingType']);
@@ -1134,7 +1131,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','MylapsDB','MylapsPrefix','RaceTimingType','RaceTimingResultType','FinalResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm','CreditList','ProcessRate');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','TimeDB','TimePrefix','RaceTimingType','RaceTimingResultType','FinalResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm','CreditList','ProcessRate');
         //转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -1246,14 +1243,14 @@ class Xrace_RaceStageController extends AbstractController
                 $bind['comment']['ResultNeedConfirm'] = $bind['ResultNeedConfirm'];
                 unset($bind['ResultNeedConfirm']);
                 //保存mylaps计时数据库名
-                $bind['RouteInfo']['MylapsDB'] = $bind['MylapsDB'];
-                unset($bind['MylapsDB']);
+                $bind['RouteInfo']['TimeDB'] = $bind['TimeDB'];
+                unset($bind['TimeDB']);
 				//保存mylaps计时数据表的前缀
-				$bind['RouteInfo']['MylapsPrefix'] = $bind['MylapsPrefix'];
-				unset($bind['MylapsPrefix']);
+				$bind['RouteInfo']['TimePrefix'] = $bind['TimePrefix'];
+				unset($bind['TimePrefix']);
 				//保存单个计时点的忍耐时间（在该时间范围内的将被忽略）
-				$bind['RouteInfo']['MylapsTolaranceTime'] = abs(intval($bind['MylapsTolaranceTime']));
-				unset($bind['MylapsTolaranceTime']);
+				$bind['RouteInfo']['TolaranceTime'] = abs(intval($bind['TolaranceTime']));
+				unset($bind['TolaranceTime']);
 				//成绩计算数据源
 				$bind['TimingType'] = trim($bind['RaceTimingType']);
 				unset($bind['RaceTimingType']);
@@ -1496,7 +1493,7 @@ class Xrace_RaceStageController extends AbstractController
 						foreach($RaceInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'] as $tid => $tinfo)
 						{
 							//累加里程,如果距离为正数
-							$RaceInfo['comment']['DetailList'][$Key]['Total']['Distence'] += (($tinfo['ToPrevious']>0)?($tinfo['ToPrevious']):0)*	$tinfo['Round'];
+							$RaceInfo['comment']['DetailList'][$Key]['Total']['Distence'] += (($tinfo['git diff ap']>0)?($tinfo['ToPrevious']):0)*	$tinfo['Round'];
 							//累加计时点数量
 							$RaceInfo['comment']['DetailList'][$Key]['Total']['ChipCount'] += $tinfo['Round'];
                             //如果包含积分配置
@@ -1750,7 +1747,7 @@ class Xrace_RaceStageController extends AbstractController
 			//需要添加的运动类型置于哪个位置之后，默认为开头
 			$After = isset($this->request->After)?intval($this->request->After):-1;
 			//获取 页面参数
-			$bind = $this->request->from('TName','ToPrevious','BaiduMapX','BaiduMapY','Round','ChipId','TolaranceTime');
+			$bind = $this->request->from('TName','ToPrevious','BaiduMapX','BaiduMapY','TencentX','TencentY','Round','ChipId','TolaranceTime');
 			//添加计时点
 			$AddTimingPoint = $this->oRace->addTimingPoint($RaceId,$SportsTypeId,$After,$bind);
 			$response = $AddTimingPoint ? array('errno' => 0) : array('errno' => $AddTimingPoint);
@@ -1872,7 +1869,7 @@ class Xrace_RaceStageController extends AbstractController
 			//计时点ID
 			$TimingId = isset($this->request->TimingId)?intval($this->request->TimingId):0;
 			//获取 页面参数
-			$bind = $this->request->from('TName','ToPrevious','BaiduMapX','BaiduMapY','Round','ChipId','TolaranceTime');
+			$bind = $this->request->from('TName','ToPrevious','BaiduMapX','BaiduMapY','tX','TencentY','Round','ChipId','TolaranceTime');
 			//更新计时点
 			$UpdateTimingPoint = $this->oRace->updateTimingPoint($RaceId,$SportsTypeId,$TimingId,$bind);
 			$response = $UpdateTimingPoint ? array('errno' => 0) : array('errno' => 9);
@@ -3932,77 +3929,6 @@ class Xrace_RaceStageController extends AbstractController
             include $this->tpl('403');
         }
     }
-    //批量下载Mylaps用的用户名单
-    public function mylpasListDownloadAction()
-    {
-        //检查权限
-        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
-        if($PermissionCheck['return'])
-        {
-            //分站ID
-            $RaceStageId = intval($this->request->RaceStageId);
-            //生成查询条件
-            $params = array('RaceStageId'=>$RaceStageId);
-            $oUser = new Xrace_User();
-            $oTeam = new Xrace_Team();
-            //获取选手名单
-            $RaceUserList = $oUser->getRaceUserList($params);
-            $filename = 'xxx.txt';
-            header("Content-Type: application/octet-stream");
-            header('Content-Disposition: attachment; filename="' . $filename . '"');
-            foreach ($RaceUserList as $key => $ApplyInfo)
-            {
-                $t = array();
-                $t['BIB'] = $ApplyInfo['BIB'];
-                if(!isset($UserList[$ApplyInfo['UserId']]))
-                {
-                    $UserInfo = $oUser->getUserInfo($ApplyInfo['UserId'],"UserId,name,sex");
-                }
-                else
-                {
-                    $UserInfo = $UserList[$ApplyInfo['UserId']];
-                }
-                if(!isset($RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupId']))
-                {
-                    $RaceGroupInfo = $this->oRace->getRaceGroup($ApplyInfo['RaceGroupId'],'RaceGroupId,RaceGroupName');
-                }
-                else
-                {
-                    $RaceGroupInfo = $RaceGroupList[$ApplyInfo['RaceGroupId']];
-                }
-                if(!isset($RaceList[$ApplyInfo['RaceId']]['RaceId']))
-                {
-                    $RaceInfo = $this->oRace->getRace($ApplyInfo['RaceId'],'RaceId,RaceName');
-                }
-                else
-                {
-                    $RaceInfo = $RaceList[$ApplyInfo['RaceId']];
-                }
-                if(!isset($TeamList[$ApplyInfo['TeamId']]['TeamId']))
-                {
-                    $TeamInfo = $oTeam->getTeamInfo($ApplyInfo['TeamId'],'TeamId,name');
-                }
-                else
-                {
-                    $TeamInfo = $TeamList[$ApplyInfo['TeamId']];
-                }
-                $t['Name'] = $UserInfo['name'];
-                $t['sex'] = $UserInfo['sex'];
-                $t['RaceGroupName'] = $RaceGroupInfo['RaceGroupName'];
-                $t['RaceName'] = $RaceInfo['RaceName'];
-                $t['ChipId'] = $ApplyInfo['ChipId'];
-                $t['TeamName'] = $TeamInfo['name'];
-                echo implode(",",$t)."\r\n";
-            }
-            $response = array('errno' => 0);
-            echo json_encode($response);
-        }
-        else
-        {
-            $home = $this->sign;
-            include $this->tpl('403');
-        }
-    }
     //根据比赛记录更新选手的积分记录
     public function updateCreditByRaceResultAction()
     {
@@ -4898,7 +4824,7 @@ class Xrace_RaceStageController extends AbstractController
                 $params = array(
                     'StartTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['StartTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),
                     'EndTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['EndTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),
-                    'prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'], 'pageSize'=>$PageSize,'Page'=>$Page, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"-1",
+                    'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'], 'pageSize'=>$PageSize,'Page'=>$Page, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"-1",
                     'sorted'=>1,'revert'=>1,'getCount'=>1);
                 //获取计时数据
                 $TimingList = $oMylaps->getTimingData($params);
@@ -4973,7 +4899,7 @@ class Xrace_RaceStageController extends AbstractController
                 $params = array(
                     'StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),
                     'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),
-                    'prefix'=>$RaceInfo['RouteInfo']['MylapsPrefix'],  'pageSize'=>$PageSize,'Page'=>$Page,
+                    'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'],  'pageSize'=>$PageSize,'Page'=>$Page,
                     'ChipList'=>count($ChipList) ? implode(",",$ChipList):"-1",
                     'sorted'=>1,'revert'=>1,'getCount'=>1);
                 //获取计时数据
