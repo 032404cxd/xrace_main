@@ -1431,5 +1431,4 @@ EOF;
         $calculatedDistance = $earthRadius * $stepTwo;
         return round($calculatedDistance);
     }
-
 }

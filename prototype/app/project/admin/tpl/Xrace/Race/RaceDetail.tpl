@@ -25,6 +25,9 @@
     deleteSportsTypeBox= divBox.confirmBox({content:'是否删除 ' + c_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=timing.point.credit.delete&RaceId=' + rid + '&SportsTypeId=' + tid + '&TimingId=' + pid + '&CreditId=' + cid;}});
 
   }
+  function WechatTimingQr(rid,location,title){
+      WechatTimingQRBox = divBox.showBox('{tpl:$this.sign/}&ac=wechat.timing.qr&RaceId=' + rid + '&Location=' + location, {title:title,width:430,height:430});
+  }
 </script>
 
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
@@ -67,7 +70,8 @@
           <td><a href="javascript:;" onclick="TimingPointModify('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$TimingInfo.TName/}')">修改</a> |
             <a href="javascript:;" onclick="TimingPointDelete('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$TimingInfo.TName/}')">删除</a> |
             <a href="javascript:;" onclick="TimingPointAdd('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">添加</a> |
-            <a href="javascript:;" onclick="CreditAdd('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}')">积分</a>
+            <a href="javascript:;" onclick="CreditAdd('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}')">积分</a> | <a href="javascript:;" onclick="WechatTimingQr('{tpl:$RaceId/}','{tpl:$TimingInfo.ChipId/}','{tpl:$TimingInfo.TName/}')">二维码</a>
+
           </td>
         </tr>
         {tpl:if(count($TimingInfo.CreditList))}

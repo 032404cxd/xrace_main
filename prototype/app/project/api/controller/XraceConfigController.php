@@ -1493,7 +1493,67 @@ class XraceConfigController extends AbstractController
         $result = array("return" => $UpdateTimingPoint?1:0);
         echo json_encode($result);
     }
-
-
-
+    /*
+ * 获得单个比赛信息
+ */
+    public function getTimingPointInfoAction()
+    {
+        //格式化比赛ID,默认为0
+        $RaceId = isset($this->request->RaceId) ? abs(intval($this->request->RaceId)) : 0;
+        //比赛ID必须大于0
+        if ($RaceId)
+        {
+            //获取比赛信息
+            $RaceInfo = $this->oRace->getRace($RaceId);
+            //检测主键存在,否则值为空
+            if (isset($RaceInfo['RaceId']))
+            {
+                //解包数组
+                $RaceInfo['comment'] = json_decode($RaceInfo['comment'], true);
+                //如果有配置运动分段
+                if (isset($RaceInfo['comment']['DetailList']))
+                {
+                    $TimingPointInfo = $RaceInfo['comment']['DetailList'];
+                    //获取运动类型类表
+                    $SportsTypeList = $this->oSports->getAllSportsTypeList("SportsTypeId,SportsTypeName");
+                    //循环运动分段
+                    foreach ($RaceInfo['comment']['DetailList'] as $detailId => $detailInfo)
+                    {
+                        //如果有配置过该运动分段
+                        if (isset($SportsTypeList[$detailInfo['SportsTypeId']]))
+                        {
+                            $TimingPointInfo[$detailId]["SportsTypeName"] = $SportsTypeList[$detailInfo['SportsTypeId']]["SportsTypeName"];
+                            //获取计时点信息
+                            $TimingInfo = isset($detailInfo['TimingId']) ? $this->oRace->getTimingDetail($detailInfo['TimingId']) : array();
+                            //如果获取到计时点信息
+                            if (isset($TimingInfo['TimingId']))
+                            {
+                                //数据解包
+                                $TimingInfo['comment'] = isset($TimingInfo['comment']) ? json_decode($TimingInfo['comment'], true) : array();
+                                $TimingPointInfo[$detailId]["TimingInfo"] = $TimingInfo;
+                            }
+                        }
+                        else
+                        {
+                            unset($RaceInfo['comment']['DetailList'][$detailId]);
+                        }
+                    }
+                }
+                else
+                {
+                    //初始化为空数组
+                    $TimingPointInfo = array();
+                }
+                //结果数组
+                $result = array("return" => 1, "TimingPointInfo" => $TimingPointInfo);
+            } else {
+                //全部置为空
+                $result = array("return" => 0, "RaceInfo" => array(), "comment" => "请指定一个有效的比赛ID");
+            }
+        } else {
+            //全部置为空
+            $result = array("return" => 0, "RaceInfo" => array(), "comment" => "请指定一个有效的比赛ID");
+        }
+        echo json_encode($result);
+    }
 }

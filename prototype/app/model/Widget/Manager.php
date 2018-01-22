@@ -137,7 +137,7 @@ class Widget_Manager extends Base_Widget
             'reg_time' => empty($bind['reg_time']) ? Base_Registry::get('timestamp') : $bind['reg_time'],
         	'reset_password' => empty($bind['reset_password']) ? 0 : 1,
         	// selena add 3013/4/8
-        	'machine_show_list' => empty($bind['machine_show_list']) ? 0 : $bind['machine_show_list'],
+        	'openid' => empty($bind['openid']) ? "" : $bind['openid'],
         );
 
         $updateStruct = array();

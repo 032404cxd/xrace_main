@@ -58,7 +58,8 @@ class Xrace_WechatTiming extends Base_Widget
                 $TimingLog = array("time"=>$Timing["Time"],"Location"=>$Timing["Location"],"RaceUserId"=>$UserInfo['RaceUserId']?$UserInfo['RaceUserId']:$RaceUserId,"comment"=>json_encode(array("Position"=>array("X"=>$Timing["TencentX"],"Y"=>$Timing["TencentY"]))));
                 //加入计时记录
                 $Id = $this->insertTiming($table_timing,$TimingLog);
-                echo "Id:".$Id;
+                return $Id;
+                //echo "Id:".$Id;
             }
             else
             {

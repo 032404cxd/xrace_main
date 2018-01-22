@@ -5137,4 +5137,14 @@ class Xrace_RaceStageController extends AbstractController
             include $this->tpl('403');
         }
     }
+    public function wechatTimingQrAction()
+    {
+        include('Third/phpqrcode/phpqrcode.php');
+        //比赛ID
+        $RaceId = intval($this->request->RaceId);
+        //计时点标识
+        $Location = trim($this->request->trim);
+        $url = urlencode('http://register.xrace.cn/chip/operation/location/timing?RaceId='.$RaceId.'&Location='.$Location);
+        include $this->tpl('Xrace_Race_QR');
+    }
 }

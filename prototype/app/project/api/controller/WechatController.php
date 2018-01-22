@@ -30,7 +30,6 @@ class WechatController extends AbstractController
      */
     public function insertTimingAction()
     {
-        echo "here";
         //比赛ID
         $Timing['RaceId'] = abs(intval($this->request->RaceId));
         //微信openID
@@ -40,9 +39,21 @@ class WechatController extends AbstractController
         //时间
         $Timing['Time'] = abs(intval($this->request->Time));
         //如果时间非法或与当前时差超过60秒，则以当前时间为准
-        $Timing['Time'] = $Timing['Time']>0 || (abs($Timing['Time']-time())>=60)?$Timing['Time']:time();
+        $Timing['Time'] = $Timing['Time'] > 0 || (abs($Timing['Time'] - time()) >= 60) ? $Timing['Time'] : time();
         $Timing['TencentX'] = trim(urldecode($this->request->TencentX));
         $Timing['TencentY'] = trim(urldecode($this->request->TencentY));
-        $this->oWechatTiming->insertTimingLog($Timing);
+        //插入记录
+        $LogId = $this->oWechatTiming->insertTimingLog($Timing);
+        if ($LogId)
+        {
+            //全部置为空
+            $result = array("return" => 1, "comment" => "打卡成功");
+        }
+        else
+        {
+            //全部置为空
+            $result = array("return" => 0, "comment" => "打卡失败");
+        }
+        echo json_encode($result);
     }
 }

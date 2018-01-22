@@ -14,6 +14,11 @@ function managerModify(mid){
 function promptDelete(p_id, p_name){
 	deleteAppBox = divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=delete&id=' + p_id;}});
 }
+
+function openIdBind(mid,title){
+    openIdBindBox = divBox.showBox('{tpl:$this.sign/}&ac=openid.bind.qr&id=' + mid, {title:title,width:430,height:430});
+}
+
 </script>
 
 <fieldset><legend>操作</legend>
@@ -68,13 +73,13 @@ function promptDelete(p_id, p_name){
 <td>{tpl:$row.reg_time/}</td>
 
 <td>
-<a href="javascript:;" onclick="managerModify({tpl:$row.id/});">修改</a>|
+<a href="javascript:;" onclick="managerModify({tpl:$row.id/});">修改</a> |
 
 <?php if($this->manager->name != $row['name']): ?>
-<a  href="javascript:;" onclick="promptDelete('{tpl:$row.id/}','{tpl:$row.name/}')">删除</a>|
+<a  href="javascript:;" onclick="promptDelete('{tpl:$row.id/}','{tpl:$row.name/}')">删除</a> |
 <?php endif; ?>
 
-<a href="javascript:;" onclick="pwdReset('{tpl:$row.id/}','{tpl:$row.name/}');">重置密码</a>
+<a href="javascript:;" onclick="pwdReset('{tpl:$row.id/}','{tpl:$row.name/}');">重置密码</a> | {tpl:if ($row.openid=="") } <a href="javascript:;" onclick="openIdBind('{tpl:$row.id/}','微信绑定')">微信绑定</a>{tpl:else}<a href="javascript:;" onclick="openIdBind('{tpl:$row.id/}','微信解绑')">微信解绑</a>{/tpl:if}
 </td>
 </tr>
 {/tpl:loop}
