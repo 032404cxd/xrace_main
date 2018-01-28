@@ -34,7 +34,6 @@ class Xrace_RaceCatalogController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
-            echo Base_Common::getDistance(31.30504417419336,121.3969955444336,31.204599380493164,121.37989807128906);
 		    $DataPermissionListWhere = $this->manager->getDataPermissionByGroupWhere();
 			//当前站点根域名
 			$RootUrl = "http://".$_SERVER['HTTP_HOST'];

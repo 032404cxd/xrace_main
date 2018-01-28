@@ -221,7 +221,13 @@ class Widget_Manager extends Base_Widget
     {
         $sql = "SELECT $fields FROM {$this->table} WHERE `name` = ?";
         $row = $this->db->getRow($sql, $name);
+        return $row;
+    }
 
+    public function getRowByOpenId($openid, $fields = '*')
+    {
+        $sql = "SELECT $fields FROM {$this->table} WHERE `openid` = ?";
+        $row = $this->db->getRow($sql, $openid);
         return $row;
     }
 

@@ -5143,7 +5143,7 @@ class Xrace_RaceStageController extends AbstractController
         //比赛ID
         $RaceId = intval($this->request->RaceId);
         //计时点标识
-        $Location = trim($this->request->trim);
+        $Location = trim($this->request->Location);
         $url = urlencode('http://register.xrace.cn/chip/operation/location/timing?RaceId='.$RaceId.'&Location='.$Location);
         include $this->tpl('Xrace_Race_QR');
     }

@@ -44,15 +44,43 @@ class WechatController extends AbstractController
         $Timing['TencentY'] = trim(urldecode($this->request->TencentY));
         //插入记录
         $LogId = $this->oWechatTiming->insertTimingLog($Timing);
-        if ($LogId)
+        if ($LogId > 0)
         {
             //全部置为空
             $result = array("return" => 1, "comment" => "打卡成功");
         }
         else
         {
-            //全部置为空
-            $result = array("return" => 0, "comment" => "打卡失败");
+            if($LogId == -1)
+            {
+                //全部置为空
+                $result = array("return" => 0, "comment" => "用户信息有误");
+            }
+            elseif($LogId == -2)
+            {
+                //全部置为空
+                $result = array("return" => 0, "comment" => "用户未找到");
+            }
+            elseif($LogId == -3)
+            {
+                //全部置为空
+                $result = array("return" => 0, "comment" => "比赛未找到");
+            }
+            elseif($LogId == -4)
+            {
+                //全部置为空
+                $result = array("return" => 0, "comment" => "好像没报名哦");
+            }
+            elseif($LogId == -5)
+            {
+                //全部置为空
+                $result = array("return" => 0, "comment" => "计时点好像不存在哦");
+            }
+            elseif($LogId == -6)
+            {
+                //全部置为空
+                $result = array("return" => 0, "comment" => "离开打卡点的距离有点远哦");
+            }
         }
         echo json_encode($result);
     }
