@@ -48,7 +48,6 @@ else
     //返回错误
     $result = array("return" => 0, "comment" =>"签名验证不通过，联系管理员");
 }
-
 echo json_encode($result);
 
 

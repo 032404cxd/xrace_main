@@ -4758,6 +4758,8 @@ class Xrace_RaceStageController extends AbstractController
             $RaceId = intval($this->request->RaceId);
             //芯片ID
             $ChipId = trim(urldecode($this->request->ChipId));
+            //用户
+            $RaceUserId = intval($this->request->RaceUserId);
             //页码
             $Page= intval($this->request->Page)?intval($this->request->Page):1;
             //分页大小
@@ -4766,6 +4768,7 @@ class Xrace_RaceStageController extends AbstractController
             $Download = intval($this->request->Download);
             //获取比赛信息
             $RaceInfo = $this->oRace->getRace($RaceId);
+            //print_R($RaceInfo);
             //数据解包
             $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
             //解包路径相关的信息
@@ -4787,33 +4790,66 @@ class Xrace_RaceStageController extends AbstractController
                 //获取选手名单
                 $params = array('RaceId'=>$RaceInfo['RaceId'],"RaceGroupId"=>$RaceGroupId);
                 $RaceUserList = $oUser->getRaceUserListByRace($params);
-                //初始化空的芯片列表
-                $ChipList = array();
-                $UserUrlList = array();
-                $UserUrlList[""] = "<a href='" . Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"ChipId"=>"")) . "'>全部</a> ";
-                //循环报名记录
-                foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
+                if($RaceInfo["TimingType"] == "mylaps")
                 {
-                    //如果有配置芯片数据和BIB
-                    if (trim($ApplyInfo['ChipId']) && trim($ApplyInfo['BIB']))
+                    //初始化空的芯片列表
+                    $ChipList = array();
+                    $UserUrlList = array();
+                    $UserUrlList[""] = "<a href='" . Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"ChipId"=>"")) . "'>全部</a> ";
+                    //循环报名记录
+                    foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
                     {
-                        //拼接字符串加入到芯片列表
-                        $ChipList[] = "'" . $ApplyInfo['ChipId'] . "'";
-                        //分别保存用户的ID,姓名和BIB
-                        $UserList[$ApplyInfo['ChipId']] = $ApplyInfo;
-                        $UserUrlList[$ApplyInfo['ChipId']] = $ChipId==$ApplyInfo['ChipId']?$ApplyInfo['Name']." ":"<a href='" . Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"ChipId"=>urldecode($ApplyInfo['ChipId']))) . "'> ".$ApplyInfo['Name']."</a> ";
+                        //如果有配置芯片数据和BIB
+                        if (trim($ApplyInfo['ChipId']) && trim($ApplyInfo['BIB']))
+                        {
+                            //拼接字符串加入到芯片列表
+                            $ChipList[$ApplyInfo['ChipId']] = "'" . $ApplyInfo['ChipId'] . "'";
+                            //分别保存用户的ID,姓名和BIB
+                            $UserList[$ApplyInfo['ChipId']] = $ApplyInfo;
+                            $UserUrlList[$ApplyInfo['ChipId']] = $ChipId==$ApplyInfo['ChipId']?$ApplyInfo['Name']." ":"<a href='" . Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"ChipId"=>urldecode($ApplyInfo['ChipId']))) . "'> ".$ApplyInfo['Name']."</a> ";
+                        }
                     }
+                    $ChipList = isset($UserList[$ChipId])?array("'" . $ChipId . "'"):$ChipList;
+                    //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
+                    $params = array(
+                        'StartTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['StartTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),
+                        'EndTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['EndTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),
+                        'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'], 'pageSize'=>$PageSize,'Page'=>$Page, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"-1",
+                        'sorted'=>1,'revert'=>1,'getCount'=>1);
+                    $oMylaps = new Xrace_Mylaps();
+                    //获取计时数据
+                    $TimingList = $oMylaps->getTimingData($params);
                 }
-                $ChipList = isset($UserList[$ChipId])?array("'" . $ChipId . "'"):$ChipList;
-                $oMylaps = new Xrace_Mylaps();
-                //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
-                $params = array(
-                    'StartTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['StartTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),
-                    'EndTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['EndTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),
-                    'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'], 'pageSize'=>$PageSize,'Page'=>$Page, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"-1",
-                    'sorted'=>1,'revert'=>1,'getCount'=>1);
-                //获取计时数据
-                $TimingList = $oMylaps->getTimingData($params);
+                else
+                {
+                    //初始化空的芯片列表
+                    $UserList= array();
+                    $UserUrlList = array();
+                    $UserUrlList[""] = "<a href='" . Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"RaceUserId"=>0)) . "'>全部</a> ";
+                    //循环报名记录
+                    foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
+                    {
+                        //如果有配置芯片数据和BIB
+                        if (trim($ApplyInfo['BIB']))
+                        {
+                            //拼接字符串加入到芯片列表
+                            $UserList[$ApplyInfo['RaceUserId']] = "'" . $ApplyInfo['RaceUserId'] . "'";
+                            //分别保存用户的ID,姓名和BIB
+                            $UserList[$ApplyInfo['RaceUserId']] = $ApplyInfo;
+                            $UserUrlList[$ApplyInfo['RaceUserId']] = $RaceUserId==$ApplyInfo['RaceUserId']?$ApplyInfo['Name']." ":"<a href='" . Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"RaceUserId"=>$ApplyInfo['RaceUserId'])) . "'> ".$ApplyInfo['Name']."</a> ";
+                        }
+                    }
+                    $UserList = isset($UserList[$RaceUserId])?array("'" . $RaceUserId . "'"):$UserList;
+                    //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
+                    $params = array(
+                        'StartTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['StartTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),
+                        'EndTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['EndTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),
+                        'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'], 'pageSize'=>$PageSize,'Page'=>$Page, 'UserList'=>count($UserList) ? implode(",",$UserList):"-1",
+                        'sorted'=>1,'revert'=>1,'getCount'=>1);
+                    $oWechatTiming = new Xrace_WechatTiming();
+                    //获取计时数据
+                    $TimingList = $oWechatTiming->getTimingData($params);
+                }
                 foreach($TimingList['Record'] as $RecordId => $Record)
                 {
                     $TimingList['Record'][$RecordId]['time'] = date("Y-m-d H:i:s",sprintf("%0.3f", $Record['time'])-8*3600).strstr($Record['time'], '.');

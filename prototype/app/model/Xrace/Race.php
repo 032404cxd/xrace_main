@@ -94,6 +94,7 @@ class Xrace_Race extends Base_Widget
 	public function getRaceCatalogList($Display = 0,$fields = "*",$Cache = 0,$wherePermission = "")
 	{
         $oMemCache = new Base_Cache_Memcache("xrace");
+        $Cache = 0;
         //如果需要获取缓存
         if($Cache == 1)
         {
@@ -142,7 +143,7 @@ class Xrace_Race extends Base_Widget
         if(count($RaceCatalogList))
         {
             //写入缓存
-            $oMemCache -> set('RaceCatalogList',json_encode($RaceCatalogList),3600);
+            //$oMemCache -> set('RaceCatalogList',json_encode($RaceCatalogList),3600);
         }
 		return $RaceCatalogList;
 	}
@@ -1777,6 +1778,14 @@ class Xrace_Race extends Base_Widget
     public function getUserRaceInfo($RaceId,$RaceUserId)
     {
         $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."_Data/"."UserList"."/";
+        $fileName = $RaceUserId.".php";
+        //载入预生成的配置文件
+        return Base_Common::loadConfig($filePath,$fileName);
+    }
+    //根据用户ID和比赛ID获取用户该场比赛的详情
+    public function getUserRaceInfoByFile($RaceId,$RaceUserId)
+    {
+        $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/"."UserList"."/";
         $fileName = $RaceUserId.".php";
         //载入预生成的配置文件
         return Base_Common::loadConfig($filePath,$fileName);

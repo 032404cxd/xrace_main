@@ -22,13 +22,6 @@ $db['xrace_config'][0] = array(
 	'port' => PORT_LOCAL,
 	'database' => 'xrace_config',
 );
-$db['_config'][0] = array(
-	'host' => HOST_LOCAL,
-	'user' => USER_LOCAL,
-	'password' => PASSWORD_LOCAL,
-	'port' => PORT_LOCAL,
-	'database' => 'test_config',
-);
 
 $db['xrace_bm'][0] = array(
 	'host' => HOST_LOCAL,
@@ -51,6 +44,13 @@ $db['mylaps'][0] = array(
     'password' => PASSWORD_LOCAL,
     'port' => PORT_LOCAL,
     'database' => 'mylaps',
+);
+$db['mylapstest'][0] = array(
+    'host' => HOST_LOCAL,
+    'user' => USER_LOCAL,
+    'password' => PASSWORD_LOCAL,
+    'port' => PORT_LOCAL,
+    'database' => 'mylapstest',
 );
 return $db;
 ?>

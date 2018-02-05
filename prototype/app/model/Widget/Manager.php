@@ -671,9 +671,17 @@ class Widget_Manager extends Base_Widget
         $table_to_process = Base_Widget::getDbTable($this->table_data_permission);
         return $this->db->delete($table_to_process, '`group_id` = ? and `RaceCatalogId` = ?', array($group_id,$RaceCatalogId));
     }
-    public function getDataPermissionByGroupWhere()
+    public function getDataPermissionByGroupWhere($data_groups = "")
     {
-        $PermissionList = $this->getDataPermissionByGroup($this->data_groups,"RaceCatalogId");
+        if($data_groups == "")
+        {
+            $PermissionList = $this->getDataPermissionByGroup($this->data_groups,"RaceCatalogId");
+
+        }
+        else
+        {
+            $PermissionList = $this->getDataPermissionByGroup($data_groups,"RaceCatalogId");
+        }
         if(count($PermissionList>=1))
         {
             $t = "";
@@ -681,7 +689,14 @@ class Widget_Manager extends Base_Widget
             {
                 $t[$RaceCatalogInfo['RaceCatalogId']] = $RaceCatalogInfo['RaceCatalogId'];
             }
-            return " RaceCatalogId in (".implode(',',$t).")";
+            if($t == "")
+            {
+                return " RaceCatalogId in (0)";
+            }
+            else
+            {
+                return " RaceCatalogId in (".implode(',',$t).")";
+            }
         }
         else
         {

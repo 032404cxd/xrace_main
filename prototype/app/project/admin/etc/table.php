@@ -190,9 +190,13 @@ $table['config_aid_code_type']['num'] = 1;
 $table['times']['db'] = 'mylaps';
 $table['times']['num'] = 1;
 
-//待排序的计时记录母表
+//待排序的mylaps计时记录母表
 $table['times_sorted']['db'] = 'mylaps';
 $table['times_sorted']['num'] = 1;
+
+//待排序的微信打卡计时记录母表
+$table['wechat_times']['db'] = 'mylapstest';
+$table['wechat_times']['num'] = 1;
 
 //排名列表
 $table['config_total_ranking']['db'] = 'xrace_config';

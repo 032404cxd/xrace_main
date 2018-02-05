@@ -38,7 +38,6 @@ class Xrace_Mylaps extends Base_Widget
                 $whereChipList = " Chip in (".$params['ChipList'].") ";
             }
         }
-
         $whereStart = isset($params['LastId'])?" Id >".$params['LastId']." ":"";
         $whereStartTime = isset($params['StartTime'])?" ChipTime >'".$params['StartTime']."' ":"";
         $whereEndTime = isset($params['EndTime'])?" ChipTime <='".$params['EndTime']."' ":"";
@@ -48,7 +47,6 @@ class Xrace_Mylaps extends Base_Widget
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
         $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by Id ".($params['revert']==1?"desc":"asc").$Limit;
-        echo $sql."<br>";
         $return = $this->db->getAll($sql);
         if($params['getCount']==1)
         {
@@ -67,7 +65,7 @@ class Xrace_Mylaps extends Base_Widget
         $fields = Base_common::getSqlFields($fields);
         //获取需要用到的表名
         $table_to_process = Base_Widget::getDbTable($this->table);
-        if($params['sorted']==1)
+        if($params['sorted']!=1)
         {
             $table_to_process = str_replace($this->table,$params['prefix'].$this->table,$table_to_process);
         }
