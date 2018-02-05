@@ -169,8 +169,8 @@ class Xrace_WechatTiming extends Base_Widget
         }
 
         $whereStart = isset($params['LastId'])?" Id >".$params['LastId']." ":"";
-        $whereStartTime = isset($params['StartTime'])?" ChipTime >'".$params['StartTime']."' ":"";
-        $whereEndTime = isset($params['EndTime'])?" ChipTime <='".$params['EndTime']."' ":"";
+        $whereStartTime = isset($params['StartTime'])?" time >".strtotime($params['StartTime'])." ":"";
+        $whereEndTime = isset($params['EndTime'])?" time <=".strtotime($params['EndTime'])." ":"";
         $Limit = " limit 0,".$params['pageSize'];
         //所有查询条件置入数组
         $whereCondition = array($whereUser,$whereUserList,$whereStart,$whereStartTime,$whereEndTime);

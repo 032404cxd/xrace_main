@@ -21,6 +21,7 @@
       <table width="99%" align="center" class="table table-bordered table-striped">
     <th align="center" class="rowtip" >芯片</th>
     <th align="center" class="rowtip" >选手</th>
+    <th align="center" class="rowtip" >时间</th>
     <th align="center" class="rowtip" >位置</th>
   </tr>
 

@@ -4819,6 +4819,11 @@ class Xrace_RaceStageController extends AbstractController
                     $oMylaps = new Xrace_Mylaps();
                     //获取计时数据
                     $TimingList = $oMylaps->getTimingData($params);
+                    foreach($TimingList['Record'] as $RecordId => $Record)
+                    {
+                        $TimingList['Record'][$RecordId]['time'] = date("Y-m-d H:i:s",sprintf("%0.3f", $Record['time'])-8*3600).strstr($Record['time'], '.');
+                        $TimingList['Record'][$RecordId]['Name'] = $UserList[$Record['Chip']]['Name'];
+                    }
                 }
                 else
                 {
@@ -4849,11 +4854,11 @@ class Xrace_RaceStageController extends AbstractController
                     $oWechatTiming = new Xrace_WechatTiming();
                     //获取计时数据
                     $TimingList = $oWechatTiming->getTimingData($params);
-                }
-                foreach($TimingList['Record'] as $RecordId => $Record)
-                {
-                    $TimingList['Record'][$RecordId]['time'] = date("Y-m-d H:i:s",sprintf("%0.3f", $Record['time'])-8*3600).strstr($Record['time'], '.');
-                    $TimingList['Record'][$RecordId]['Name'] = $UserList[$Record['Chip']]['Name'];
+                    foreach($TimingList['Record'] as $RecordId => $Record)
+                    {
+                        $TimingList['Record'][$RecordId]['time'] = date("Y-m-d H:i:s",sprintf("%0.3f", $Record['time'])-8*3600).strstr($Record['time'], '.');
+                        $TimingList['Record'][$RecordId]['Name'] = $UserList[$Record['RaceUserId']]['Name'];
+                    }
                 }
                 $page_url = Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"Page"=>$Page,"PageSize"=>$PageSize,"ChipId"=>urldecode($ChipId)))."&Page=~page~";
                 $page_content =  base_common::multi($TimingList['RecordCount'], $page_url, $Page, $PageSize, 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');
@@ -4934,8 +4939,17 @@ class Xrace_RaceStageController extends AbstractController
                 $page_url = Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"Page"=>$Page,"PageSize"=>$PageSize,"ChipId"=>urldecode($ChipId)))."&Page=~page~";
                 $page_content =  base_common::multi($TimingList['RecordCount'], $page_url, $Page, $PageSize, 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');
             }
-            //渲染模板
-            include $this->tpl('Xrace_Race_TimingDetail');
+            if($RaceInfo["TimingType"] == "mylaps")
+            {
+                //渲染模板
+                include $this->tpl('Xrace_Race_TimingDetailMylaps');
+            }
+            else
+            {
+                //渲染模板
+                include $this->tpl('Xrace_Race_TimingDetailWechat');
+            }
+
         }
         else
         {
