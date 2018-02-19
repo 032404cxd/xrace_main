@@ -392,6 +392,8 @@ class Xrace_Race extends Base_Widget
         //生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceId asc";
+        echo $sql."<br>";
+        //die();
         $return = $this->db->getAll($sql);
 		$RaceList = array();
 		foreach($return as $key => $value)

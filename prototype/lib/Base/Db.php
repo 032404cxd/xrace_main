@@ -779,6 +779,7 @@ class Base_Db
     {
         $table_to_check = Base_Widget::getDbTable($table_to_copy);
         $table_to_process = $table_name;
+        echo "TabelToProcess:".$table_to_process."<br>";
         $exist = $this->checkTableExist($table_to_process);
         if($exist>0)
         {
@@ -790,6 +791,8 @@ class Base_Db
             $row = $this->getRow($sql);
             $sql = $row['Create Table'];
             $sql = str_replace('`' . $table_to_copy . '`', 'IF NOT EXISTS ' . $table_to_process, $sql);
+            echo "/n/n";
+            echo $sql."<br>";
             $create = $this->query($sql);
             if($create)
             {

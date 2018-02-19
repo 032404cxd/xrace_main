@@ -32,6 +32,10 @@ class WechatController extends AbstractController
     {
         //比赛ID
         $Timing['RaceId'] = abs(intval($this->request->RaceId));
+        //用户ID
+        $Timing['RaceUserId'] = abs(intval($this->request->RaceUserId));
+        //管理员ID
+        $Timing['ManagerId'] = abs(intval($this->request->ManagerId));
         //微信openID
         $Timing['OpenId'] = trim(urldecode($this->request->OpenId));
         //计时点标识
@@ -43,43 +47,48 @@ class WechatController extends AbstractController
         $Timing['TencentX'] = trim(urldecode($this->request->TencentX));
         $Timing['TencentY'] = trim(urldecode($this->request->TencentY));
         //插入记录
-        $LogId = $this->oWechatTiming->insertTimingLog($Timing);
-        if ($LogId > 0)
+        $InsertLog = $this->oWechatTiming->insertTimingLog($Timing);
+        if ($InsertLog['return'] > 0)
         {
             //全部置为空
-            $result = array("return" => 1, "comment" => "打卡成功");
+            $result = array("return" => 1, "comment" => "打卡成功,距离目标点".$InsertLog['Distance']."米","NextPoint"=>$InsertLog["NextPoint"]);
         }
         else
         {
-            if($LogId == -1)
+            if($InsertLog['return'] == -1)
             {
                 //全部置为空
                 $result = array("return" => 0, "comment" => "用户信息有误");
             }
-            elseif($LogId == -2)
+            elseif($InsertLog['return'] == -2)
             {
                 //全部置为空
                 $result = array("return" => 0, "comment" => "用户未找到");
             }
-            elseif($LogId == -3)
+            elseif($InsertLog['return'] == -3)
             {
                 //全部置为空
                 $result = array("return" => 0, "comment" => "比赛未找到");
             }
-            elseif($LogId == -4)
+            elseif($InsertLog['return'] == -4)
             {
                 //全部置为空
                 $result = array("return" => 0, "comment" => "好像没报名哦");
             }
-            elseif($LogId == -5)
+            elseif($InsertLog['return'] == -5)
             {
                 //全部置为空
-                $result = array("return" => 0, "comment" => "计时点好像不存在哦");
+                $result = array("return" => 0, "comment" => $Timing['Location']."计时点好像不存在哦");
             }
-            elseif($LogId == -6)
+            elseif($InsertLog['return'] == -6)
             {
                 //全部置为空
-                $result = array("return" => 0, "comment" => "离开打卡点的距离有点远哦");
+                $result = array("return" => 0, "comment" => "离开打卡点的距离有点远哦，足足".$InsertLog['Distance']."米哦");
+            }
+            elseif($InsertLog['return'] == -7)
+            {
+                //全部置为空
+                $result = array("return" => 1, "comment" => "不需要重复打卡了哦");
             }
         }
         echo json_encode($result);

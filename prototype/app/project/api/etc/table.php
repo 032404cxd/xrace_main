@@ -170,7 +170,7 @@ $table['times']['num'] = 1;
 $table['wechat_times']['db'] = 'mylapstest';
 $table['wechat_times']['num'] = 1;
 
-//用户参加队伍列表
+//mylaps打卡计时数据入口表
 $table['times_sorted']['db'] = 'mylaps';
 $table['times_sorted']['num'] = 1;
 
