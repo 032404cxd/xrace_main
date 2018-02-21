@@ -392,7 +392,7 @@ class Xrace_Race extends Base_Widget
         //生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceId asc";
-        echo $sql."<br>";
+        //echo $sql."<br>";
         //die();
         $return = $this->db->getAll($sql);
 		$RaceList = array();
@@ -1280,7 +1280,7 @@ class Xrace_Race extends Base_Widget
                                                 //计算分段距离
                                                 $SectionDistance += ($TimingPoint['ToPrevious']>=0?$TimingPoint['ToPrevious']:0);
                                                 //计算总距离
-                                                $RaceInfo['Total'] += ($TimingPoint['ToPrevious']>=0?$TimingPoint['ToPrevious']:0);
+                                                $RaceInfo['TotalDistance'] += ($TimingPoint['ToPrevious']>=0?$TimingPoint['ToPrevious']:0);
                                                 $t['CurrentDistance'] = $SectionDistance;
                                                 $t['TotalDistance'] = $RaceInfo['TotalDistance'];
                                                 $t['SpeedDisplayType'] = $SportsTypeInfo['SpeedDisplayType'];

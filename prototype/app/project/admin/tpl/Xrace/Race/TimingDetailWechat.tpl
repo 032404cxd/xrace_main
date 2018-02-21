@@ -22,6 +22,7 @@
     <th align="center" class="rowtip" >选手</th>
     <th align="center" class="rowtip" >时间</th>
     <th align="center" class="rowtip" >位置</th>
+    <th align="center" class="rowtip" >打卡方式</th>
   </tr>
 
       {tpl:loop $TimingList.Record $id $RecordInfo}
@@ -30,6 +31,8 @@
           <th align="center" class="rowtip">{tpl:$RecordInfo.Name/}</th>
           <th align="center" class="rowtip">{tpl:$RecordInfo.time/}</th>
             <th align="center" class="rowtip">{tpl:$RecordInfo.Location/}</th>
+          <th align="center" class="rowtip">{tpl:$RecordInfo.ScanSource/}</th>
+
 
         </tr>
       {/tpl:loop}

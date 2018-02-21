@@ -4840,7 +4840,7 @@ class Xrace_RaceStageController extends AbstractController
                             //拼接字符串加入到芯片列表
                             $UserList[$ApplyInfo['RaceUserId']] = "'" . $ApplyInfo['RaceUserId'] . "'";
                             //分别保存用户的ID,姓名和BIB
-                            $UserList[$ApplyInfo['RaceUserId']] = $ApplyInfo;
+                            $RaceUserList[$ApplyInfo['RaceUserId']] = $ApplyInfo;
                             $UserUrlList[$ApplyInfo['RaceUserId']] = $RaceUserId==$ApplyInfo['RaceUserId']?$ApplyInfo['Name']." ":"<a href='" . Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"RaceUserId"=>$ApplyInfo['RaceUserId'])) . "'> ".$ApplyInfo['Name']."</a> ";
                         }
                     }
@@ -4854,10 +4854,30 @@ class Xrace_RaceStageController extends AbstractController
                     $oWechatTiming = new Xrace_WechatTiming();
                     //获取计时数据
                     $TimingList = $oWechatTiming->getTimingData($params);
+                    $ManagerList = array();
                     foreach($TimingList['Record'] as $RecordId => $Record)
                     {
-                        $TimingList['Record'][$RecordId]['time'] = date("Y-m-d H:i:s",sprintf("%0.3f", $Record['time'])-8*3600).strstr($Record['time'], '.');
-                        $TimingList['Record'][$RecordId]['Name'] = $UserList[$Record['RaceUserId']]['Name'];
+                        $TimingList['Record'][$RecordId]['time'] = date("Y-m-d H:i:s",sprintf("%0.3f", $Record['time'])).strstr($Record['time'], '.');
+                        $TimingList['Record'][$RecordId]['Name'] = $RaceUserList[$Record['RaceUserId']]['Name'];
+                        //数据解包
+                        $Record["comment"] = json_decode($Record["comment"],true);
+                        if(intval($Record["comment"]["ManagerId"]) == 0)
+                        {
+                            $TimingList['Record'][$RecordId]["ScanSource"] = "选手自主扫描";
+                        }
+                        else
+                        {
+                            if(!isset($ManagerList[$Record["comment"]["ManagerId"]]))
+                            {
+                                $ManagerInfo = $this->manager->get($Record["comment"]["ManagerId"]);
+                                $ManagerList[$Record["comment"]["ManagerId"]] = $ManagerInfo;
+                            }
+                            else
+                            {
+                                $ManagerInfo = $ManagerList[$Record["comment"]["ManagerId"]];
+                            }
+                            $TimingList['Record'][$RecordId]["ScanSource"] = "管理员：".$ManagerInfo["name"];
+                        }
                     }
                 }
                 $page_url = Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"RaceGroupId"=>$RaceGroupId,"Page"=>$Page,"PageSize"=>$PageSize,"ChipId"=>urldecode($ChipId)))."&Page=~page~";
@@ -4931,6 +4951,7 @@ class Xrace_RaceStageController extends AbstractController
                     'sorted'=>1,'revert'=>1,'getCount'=>1);
                 //获取计时数据
                 $TimingList = $oMylaps->getTimingData($params);
+                $ManagerList = array();
                 foreach($TimingList['Record'] as $RecordId => $Record)
                 {
                     $TimingList['Record'][$RecordId]['time'] = date("Y-m-d H:i:s",sprintf("%0.3f", $Record['time'])-8*3600).strstr($Record['time'], '.');

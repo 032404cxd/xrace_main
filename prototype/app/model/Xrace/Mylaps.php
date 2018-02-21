@@ -79,7 +79,6 @@ class Xrace_Mylaps extends Base_Widget
         $whereStart = isset($params['LastId'])?" Id >".$params['LastId']." ":"";
         $whereStartTime = isset($params['StartTime'])?" ChipTime >'".$params['StartTime']."' ":"";
         $whereEndTime = isset($params['EndTime'])?" ChipTime <='".$params['EndTime']."' ":"";
-        $Limit = " limit 0,".$params['pageSize'];
         //所有查询条件置入数组
         $whereCondition = array($whereChip,$whereChipList,$whereStart,$whereStartTime,$whereEndTime);
         //生成条件列

@@ -46,6 +46,7 @@ class WechatController extends AbstractController
         $Timing['Time'] = $Timing['Time'] > 0 || (abs($Timing['Time'] - time()) >= 60) ? $Timing['Time'] : time();
         $Timing['TencentX'] = trim(urldecode($this->request->TencentX));
         $Timing['TencentY'] = trim(urldecode($this->request->TencentY));
+
         //插入记录
         $InsertLog = $this->oWechatTiming->insertTimingLog($Timing);
         if ($InsertLog['return'] > 0)

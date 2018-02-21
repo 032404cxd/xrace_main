@@ -81,7 +81,7 @@ class Xrace_WechatTiming extends Base_Widget
             foreach($RaceUserList['RaceUserList'] as $key => $RaceApplyLog)
             {
                 //如果找到
-                if($RaceApplyLog["RaceUserId"] == $UserInfo['RaceUserId'])
+                if($RaceApplyLog["RaceUserId"] == $RaceUserId)
                 {
                     $found = 1;
                     break;
@@ -130,10 +130,12 @@ class Xrace_WechatTiming extends Base_Widget
                     return array("return"=>-5);
                 }
                 $Distance =  Base_Common::getDistance($Timing["TencentX"],$Timing["TencentY"],$PointInfo["TencentX"],$PointInfo["TencentY"]);
+                /*
                 if($Distance >= 100)
                 {
                     return array("return"=>-6,"Distance"=>$Distance);
                 }
+                */
             }
 
             if($found == 1 && $Pointound == 1)
@@ -180,22 +182,20 @@ class Xrace_WechatTiming extends Base_Widget
         else
         {
             $table_to_process = str_replace($this->table,$params['prefix']."_".$this->table,$table_to_process);
-
         }
-        //获得芯片ID
+        //获得用户ID
         $whereUser = isset($params['RaceUser'])?" RaceUserId = '".$params['RaceUser']."' ":"";
-        if(isset($params['RaceUserList']))
+        if(isset($params['UserList']))
         {
-            if($params['RaceUserList'] == "-1")
+            if($params['UserList'] == "-1")
             {
                 $whereUserList = "0";
             }
             else
             {
-                $whereUserList = " RaceUserId in (".$params['RaceUserList'].") ";
+                $whereUserList = " RaceUserId in (".$params['UserList'].") ";
             }
         }
-
         $whereStart = isset($params['LastId'])?" Id >".$params['LastId']." ":"";
         $whereStartTime = isset($params['StartTime'])?" time >".strtotime($params['StartTime'])." ":"";
         $whereEndTime = isset($params['EndTime'])?" time <=".strtotime($params['EndTime'])." ":"";
@@ -205,7 +205,6 @@ class Xrace_WechatTiming extends Base_Widget
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
         $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by Id ".($params['revert']==1?"desc":"asc").$Limit;
-        echo $sql."<br>/n";
         $return = $this->db->getAll($sql);
         if($params['getCount']==1)
         {
@@ -216,6 +215,45 @@ class Xrace_WechatTiming extends Base_Widget
         {
             return array("Record"=>$return,"sql"=>$sql);
         }
+    }
+    public function getTimingDataCount($params,$sorted=1)
+    {
+        $fields = array("RecordCount"=>"count(1)");
+        //生成查询列
+        $fields = Base_common::getSqlFields($fields);
+        //获取需要用到的表名
+        $table_to_process = Base_Widget::getDbTable($this->table);
+        if($params['sorted']!=1)
+        {
+            $table_to_process = str_replace($this->table,$params['prefix'].$this->table,$table_to_process);
+        }
+        else
+        {
+            $table_to_process = str_replace($this->table,$params['prefix']."_".$this->table,$table_to_process);
+        }
+        //获得用户ID
+        $whereUser = isset($params['RaceUser'])?" RaceUserId = '".$params['RaceUser']."' ":"";
+        if(isset($params['UserList']))
+        {
+            if($params['UserList'] == "-1")
+            {
+                $whereUserList = "0";
+            }
+            else
+            {
+                $whereUserList = " RaceUserId in (".$params['UserList'].") ";
+            }
+        }
+        $whereStart = isset($params['LastId'])?" Id >".$params['LastId']." ":"";
+        $whereStartTime = isset($params['StartTime'])?" time >".strtotime($params['StartTime'])." ":"";
+        $whereEndTime = isset($params['EndTime'])?" time <=".strtotime($params['EndTime'])." ":"";
+        //所有查询条件置入数组
+        $whereCondition = array($whereUser,$whereUserList,$whereStart,$whereStartTime,$whereEndTime);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
+        $return = $this->db->getOne($sql);
+        return array("RecordCount"=>$return);
     }
     //根据比赛ID生成该场比赛的MYLAPS计时数据
     public function genTimingInfo($RaceId,$Force = 0,$Cache = 0)
@@ -246,8 +284,8 @@ class Xrace_WechatTiming extends Base_Widget
         //从文件载入计时信息
         $UserRaceTimingInfo = $oRace->GetRaceTimingOriginalInfo($RaceId,0);
         //检查记录变动情况，数量变动或者强制更新，则重建排序后的数据
-        echo "\n\n";
-        echo "Prefix:".$RaceInfo['RouteInfo']['TimePrefix']."\n\n";
+        //echo "\n\n";
+        //echo "Prefix:".$RaceInfo['RouteInfo']['TimePrefix']."\n\n";
         $RecordCheck = $this->checkTimingRecord($RaceInfo['RouteInfo']['TimePrefix'],$Force);
         //die();
         //如果检查失败
@@ -324,13 +362,13 @@ class Xrace_WechatTiming extends Base_Widget
             if (trim($ApplyInfo['ChipId']) && trim($ApplyInfo['BIB']))
             {
                 //拼接字符串加入到芯片列表
-                $UserList[$ApplyInfo['RaceUserId']] = "'" . $ApplyInfo['RaceUserId'] . "'";
+                $UserIdList[$ApplyInfo['RaceUserId']] = "'" . $ApplyInfo['RaceUserId'] . "'";
                 //分别保存用户的ID,姓名和BIB
                 $UserList[$ApplyInfo['RaceUserId']] = $ApplyInfo;
             }
         }
         echo "比赛时间：".$RaceInfo['StartTime'].".".sprintf("%03d",isset($RaceInfo['comment']['RaceStartMicro'])?$RaceInfo['comment']['RaceStartMicro']:0)."~".$RaceInfo['EndTime']."<br>\n";
-        echo "选手列表：".implode(",",$UserList)."\n";
+        echo "选手列表：".implode(",",$UserIdList)."\n";
         //获取文件最后的
         $LastId = $UserRaceTimingInfo['LastId'];
         //单页记录数量
@@ -342,7 +380,7 @@ class Xrace_WechatTiming extends Base_Widget
         while ($Count == $pageSize)
         {
             //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
-            $params = array('sorted'=>1,'StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'UserList'=>count($UserList) ? implode(",",$UserList):"-1");
+            $params = array('sorted'=>1,'StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'UserList'=>count($UserIdList) ? implode(",",$UserIdList):"-1");
             //获取计时数据
             $TimingList = $this->getTimingData($params);
             //依次循环计时数据
@@ -350,14 +388,8 @@ class Xrace_WechatTiming extends Base_Widget
             {
                 //最后获取到的记录ID
                 $LastId = $TimingInfo['Id'];
-                //mylaps系统中生成的时间一直比当前时间晚8小时，修正
-                $TimingInfo['ChipTime'] = strtotime($TimingInfo['ChipTime']) - 8 * 3600;
-                //对于毫秒数据进行四舍五入
-                $miliSec = substr($TimingInfo['MilliSecs'], -3) / 1000;
-                //计算实际的时间
-                $TimingInfo['ChipTime'] = $miliSec>=0.5?($TimingInfo['ChipTime']-1):$TimingInfo['ChipTime'];
                 //时间进行累加
-                $inTime = sprintf("%0.2f", $TimingInfo['time'])-8*3600;
+                $inTime = sprintf("%0.2f", $TimingInfo['time']);
                 $ChipTime = $inTime;
                 //如果时间在比赛的开始时间和结束时间之内
                 $RaceStartTime = $TimeList[$UserList[$TimingInfo['RaceUserId']]['RaceGroupId']]['RaceStartTime'];
@@ -386,11 +418,10 @@ class Xrace_WechatTiming extends Base_Widget
                 }
                 else
                 {
-                    echo $ChipTime."-".$RaceEndTime."\n\n";
                     //比赛中数据 超时判断
                     if ($ChipTime <= $RaceEndTime)
                     {
-                        echo $num."-".$TimingInfo['Location']."-".($ChipTime)."-".date("Y-m-d H:i:s", $TimingInfo['time']).".".(substr($miliSec,2))."<br>\n";
+                        echo $num."-".$TimingInfo['Location']."-".($ChipTime)."-".date("Y-m-d H:i:s", $TimingInfo['time'])."<br>\n";
                         //获取选手的比赛信息（计时）
                         $UserRaceInfo = $oRace->getUserRaceTimingOriginalInfo($RaceId, $UserList[$TimingInfo['RaceUserId']]['RaceUserId'],$Cache);
                         //如果没有标记当前位置（第一个点）
@@ -1031,13 +1062,13 @@ class Xrace_WechatTiming extends Base_Widget
                                     //如果未找到，则新增
                                     if ($found == 0)
                                     {
-                                        $UserRaceInfoList['Total'][count($UserRaceInfoList['Total'])] = array("RaceStatus"=>$UserRaceStatusInfo['RaceStatus'],"CurrentPosition" => $UserRaceInfo['CurrentPoint'],"Finished"=>(($UserRaceStatusInfo['RaceStatus']==0)&&($UserRaceInfo['CurrentPoint']==count($UserRaceInfoList['Point'])))?1:0, "CurrentPositionName" => $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['TName'],"TotalTime" => $TotalTime,"TotalNetTime" => $TotalNetTime, "Name" => $UserList[$TimingInfo['RaceUserId']]['Name'],"TeamName"=>$UserList[$TimingInfo['RaceUserId']]['TeamName'], "BIB" => $UserList[$TimingInfo['RaceUserId']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'RaceUserId' => $UserList[$TimingInfo['RaceUserId']]['RaceUserId'],'TeamName'=>$UserList[$TimingInfo['RaceUserId']]['TeamName'],'TeamId'=>$UserList[$TimingInfo['RaceUserId']]['TeamId'],'RaceGroupId'=>$UserList[$TimingInfo['RaceUserId']]['RaceGroupId']);
+                                        $UserRaceInfoList['Total'][count($UserRaceInfoList['Total'])] = array("RaceStatus"=>$UserRaceStatusInfo['RaceStatus'],"CurrentPosition" => $UserRaceInfo['CurrentPoint'],"Finished"=>(($UserRaceStatusInfo['RaceStatus']==0)&&($UserRaceInfo['CurrentPoint']==count($UserRaceInfoList['Point'])))?1:0, "CurrentPositionName" => $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['TName'],"TotalTime" => $TotalTime,"TotalNetTime" => $TotalNetTime, "Name" => $UserList[$TimingInfo['RaceUserId']]['Name'],"TeamName"=>$UserList[$TimingInfo['RaceUserId']]['TeamName'], "BIB" => $UserList[$TimingInfo['RaceUserId']]['BIB'], "inTime" => sprintf("%0.2f",$ChipTime), 'RaceUserId' => $UserList[$TimingInfo['RaceUserId']]['RaceUserId'],'TeamName'=>$UserList[$TimingInfo['RaceUserId']]['TeamName'],'TeamId'=>$UserList[$TimingInfo['RaceUserId']]['TeamId'],'RaceGroupId'=>$UserList[$TimingInfo['RaceUserId']]['RaceGroupId']);
                                     }
                                 }
                                 //新建排名数据
                                 else
                                 {
-                                    $UserRaceInfoList['Total'][0] = array("RaceStatus"=>$UserRaceStatusInfo['RaceStatus'],"CurrentPosition" => $UserRaceInfo['CurrentPoint'], "Finished"=>$UserRaceInfo['CurrentPoint']==count($UserRaceInfoList['Point'])?1:0,"CurrentPositionName" => $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['TName'],"TotalTime" => $TotalTime,"TotalNetTime" => $TotalNetTime, "Name" => $UserList[$TimingInfo['RaceUserId']]['Name'],"TeamName"=>$UserList[$TimingInfo['RaceUserId']]['TeamName'], "BIB" => $UserList[$TimingInfo['RaceUserId']]['BIB'], "inTime" => $TimingInfo['ChipTime'] + $miliSec, 'RaceUserId' => $UserList[$TimingInfo['RaceUserId']]['RaceUserId'],'TeamName'=>$UserList[$TimingInfo['RaceUserId']]['TeamName'],'TeamId'=>$UserList[$TimingInfo['RaceUserId']]['TeamId'],'RaceGroupId'=>$UserList[$TimingInfo['RaceUserId']]['RaceGroupId']);
+                                    $UserRaceInfoList['Total'][0] = array("RaceStatus"=>$UserRaceStatusInfo['RaceStatus'],"CurrentPosition" => $UserRaceInfo['CurrentPoint'], "Finished"=>$UserRaceInfo['CurrentPoint']==count($UserRaceInfoList['Point'])?1:0,"CurrentPositionName" => $UserRaceInfoList['Point'][$UserRaceInfo['CurrentPoint']]['TName'],"TotalTime" => $TotalTime,"TotalNetTime" => $TotalNetTime, "Name" => $UserList[$TimingInfo['RaceUserId']]['Name'],"TeamName"=>$UserList[$TimingInfo['RaceUserId']]['TeamName'], "BIB" => $UserList[$TimingInfo['RaceUserId']]['BIB'], "inTime" => sprintf("%0.2f",$ChipTime), 'RaceUserId' => $UserList[$TimingInfo['RaceUserId']]['RaceUserId'],'TeamName'=>$UserList[$TimingInfo['RaceUserId']]['TeamName'],'TeamId'=>$UserList[$TimingInfo['RaceUserId']]['TeamId'],'RaceGroupId'=>$UserList[$TimingInfo['RaceUserId']]['RaceGroupId']);
                                 }
                                 $t0 = array();
                                 $t1 = array();
@@ -1091,12 +1122,13 @@ class Xrace_WechatTiming extends Base_Widget
                     }
                     else
                     {
-                        echo $num."-".$TimingInfo['Location']."-".($ChipTime)."-".date("Y-m-d H:i:s", $TimingInfo['time']).".".(substr($miliSec,2))."超时跳过<br>\n";
+                        echo $num."-".$TimingInfo['Location']."-".($ChipTime)."-".date("Y-m-d H:i:s", $TimingInfo['time'])."超时跳过<br>\n";
                     }
                 }
 
             }
             $Count = count($TimingList['Record']);
+            $Text = "";
             $Text.= "Sql:".$TimingList['sql']."\n";
             $Text.= "RecordCount:".$Count."\n";
             $TotalCount+=$Count;
