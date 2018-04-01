@@ -195,7 +195,7 @@ $table['times_sorted']['db'] = 'mylaps';
 $table['times_sorted']['num'] = 1;
 
 //待排序的微信打卡计时记录母表
-$table['wechat_times']['db'] = 'mylapstest';
+$table['wechat_times']['db'] = 'qcode';
 $table['wechat_times']['num'] = 1;
 
 //排名列表

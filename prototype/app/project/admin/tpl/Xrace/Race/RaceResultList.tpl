@@ -33,7 +33,7 @@
     {tpl:loop $SInfo.TimingPointList $id $Tid}
     {tpl:loop $RaceResultList.UserRaceInfo.Point $Pid $PointInfo}
     {tpl:if($Tid==$Pid)}
-    <th align="center" class="rowtip">{tpl:$PointInfo.TName/}<br>{tpl:$PointInfo.ChipId/}<p>{tpl:$PointInfo.CurrentDistance/}米<p>{tpl:$PointInfo.TotalDistance/}米<p>{tpl:$PointInfo.UserList func="count(@@)"/}人通过</th>
+    <th align="center" class="rowtip">{tpl:$PointInfo.TName/}<br>{tpl:$PointInfo.ChipId/}<p>{tpl:$PointInfo.CurrentDistance/}米<p>{tpl:if($PointInfo.ToPrevious>=0)}{tpl:$PointInfo.TotalDistance/}{tpl:else}不计时{/tpl:if}<p>{tpl:$PointInfo.UserList func="count(@@)"/}人通过</th>
     {tpl:if(count($PointInfo.UserList)>=1)}
     {tpl:loop $PointInfo.UserList $id $RaceUserInfo}
     {tpl:if((isset($UserInfo.RaceUserId) && ($UserInfo.RaceUserId==$RaceUserInfo.RaceUserId)) || !isset($UserInfo.RaceUserId))}

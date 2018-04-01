@@ -42,7 +42,7 @@ class Xrace_RaceStageController extends AbstractController
 		if($PermissionCheck['return'])
 		{
 			$DataPermissionListWhere = $this->manager->getDataPermissionByGroupWhere();
-		    //获取站点根域名
+			//获取站点根域名
 			$RootUrl = "http://".$_SERVER['HTTP_HOST'];
 			//赛事ID
 			$RaceCatalogId = isset($this->request->RaceCatalogId)?intval($this->request->RaceCatalogId):0;
@@ -2200,6 +2200,7 @@ class Xrace_RaceStageController extends AbstractController
                         $t['TeamName'] = $ApplyInfo['TeamName'];
                         $t['BIB'] = $ApplyInfo['BIB'];
                         $t['ChipId'] = $ApplyInfo['ChipId'];
+                        $t['Code'] = 'http://register.xrace.cn/chip/operation/u/s/'.$ApplyInfo['RaceId']."/".$ApplyInfo['RaceUserId'];
                         $oExcel->addRows(array($t));
                 }
                 $oExcel->closeSheet()->close();
@@ -2723,7 +2724,6 @@ class Xrace_RaceStageController extends AbstractController
                 {
                     $RaceGroupId = intval($this->request->RaceGroupId)?intval($this->request->RaceGroupId):key($RaceInfo['comment']['SelectedRaceGroup']);
                 }
-
                 //获取成绩列表
                 $RaceResultList = $this->oRace->getRaceResult($RaceId,$RaceGroupId);
                 //下载链接

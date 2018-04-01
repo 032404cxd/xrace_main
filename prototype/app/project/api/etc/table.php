@@ -167,7 +167,7 @@ $table['times']['db'] = 'mylaps';
 $table['times']['num'] = 1;
 
 //微信打卡计时数据入口表
-$table['wechat_times']['db'] = 'mylapstest';
+$table['wechat_times']['db'] = 'qcode';
 $table['wechat_times']['num'] = 1;
 
 //mylaps打卡计时数据入口表

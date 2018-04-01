@@ -15,8 +15,8 @@ function promptDelete(p_id, p_name){
 	deleteAppBox = divBox.confirmBox({content:'是否删除 ' + p_name + '?',ok:function(){location.href = '{tpl:$this.sign/}&ac=delete&id=' + p_id;}});
 }
 
-function openIdBind(mid,title){
-    openIdBindBox = divBox.showBox('{tpl:$this.sign/}&ac=openid.bind.qr&id=' + mid, {title:title,width:430,height:430});
+function openIdBind(mid,title,name){
+    openIdBindBox = divBox.showBox('{tpl:$this.sign/}&ac=openid.bind.qr&id=' + mid, {title:title+':'+name,width:430,height:430});
 }
 
 </script>
@@ -79,7 +79,7 @@ function openIdBind(mid,title){
 <a  href="javascript:;" onclick="promptDelete('{tpl:$row.id/}','{tpl:$row.name/}')">删除</a> |
 <?php endif; ?>
 
-<a href="javascript:;" onclick="pwdReset('{tpl:$row.id/}','{tpl:$row.name/}');">重置密码</a> | {tpl:if ($row.openid=="") } <a href="javascript:;" onclick="openIdBind('{tpl:$row.id/}','微信绑定')">微信绑定</a>{tpl:else}<a href="javascript:;" onclick="openIdBind('{tpl:$row.id/}','微信解绑')">微信解绑</a>{/tpl:if}
+<a href="javascript:;" onclick="pwdReset('{tpl:$row.id/}','{tpl:$row.name/}');">重置密码</a> | {tpl:if ($row.openid=="") } <a href="javascript:;" onclick="openIdBind('{tpl:$row.id/}','微信绑定','{tpl:$row.name/}')">微信绑定</a>{tpl:else}<a href="javascript:;" onclick="openIdBind('{tpl:$row.id/}','微信解绑','{tpl:$row.name/}')">微信解绑</a>{/tpl:if}
 </td>
 </tr>
 {/tpl:loop}

@@ -511,8 +511,20 @@ class Xrace_UserInfo extends Base_Widget
     {
         //生成查询列
         $fields = Base_common::getSqlFields($fields);
-        //获取需要用到的表名
-        $table_to_process = Base_Widget::getDbTable($this->table);
+        if($params["UserType"]=="RaceUser")
+        {
+            //获取需要用到的表名
+            $table_to_process = Base_Widget::getDbTable($this->table_race_user);
+            $order = " ORDER BY RaceUserId desc";
+
+        }
+        else
+        {
+            //获取需要用到的表名
+            $table_to_process = Base_Widget::getDbTable($this->table);
+            $order = " ORDER BY UserId desc";
+
+        }
         //性别判断
         $whereSex = isset($this->sex[$params['Sex']])?" Sex = '".$params['Sex']."' ":"";
         //实名认证判断
@@ -535,7 +547,6 @@ class Xrace_UserInfo extends Base_Widget
             $UserCount = 0;
         }
         $limit  = isset($params['Page'])&&$params['Page']?" limit ".($params['Page']-1)*$params['PageSize'].",".$params['PageSize']." ":"";
-        $order = " ORDER BY RegTime desc";
         $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." ".$order." ".$limit;
         $return = $this->db->getAll($sql);
         $UserList = array('UserList'=>array(),'UserCount'=>$UserCount);
@@ -543,7 +554,17 @@ class Xrace_UserInfo extends Base_Widget
         {
             foreach($return as $key => $value)
             {
-                $UserList['UserList'][$value['UserId']] = $value;
+
+                if($params["UserType"]=="RaceUser")
+                {
+                    $UserList['UserList'][$value['RaceUserId']] = $value;
+
+                }
+                else
+                {
+                    $UserList['UserList'][$value['UserId']] = $value;
+
+                }
             }
         }
         else
@@ -560,10 +581,20 @@ class Xrace_UserInfo extends Base_Widget
      */
     public function getUserCount($params)
     {
-        //生成查询列
-        $fields = Base_common::getSqlFields(array("UserCount"=>"count(UserId)"));
-        //获取需要用到的表名
-        $table_to_process = Base_Widget::getDbTable($this->table);
+        if($params['UserType']=="RaceUser")
+        {
+            //获取需要用到的表名
+            $table_to_process = Base_Widget::getDbTable($this->table_race_user);
+            //生成查询列
+            $fields = Base_common::getSqlFields(array("UserCount"=>"count(RaceUserId)"));
+        }
+        else
+        {
+            //获取需要用到的表名
+            $table_to_process = Base_Widget::getDbTable($this->table);
+            //生成查询列
+            $fields = Base_common::getSqlFields(array("UserCount"=>"count(UserId)"));
+        }
         //性别判断
         $whereSex = isset($this->sex[$params['Sex']])?" Sex = '".$params['Sex']."' ":"";
         //实名认证判断
@@ -576,7 +607,6 @@ class Xrace_UserInfo extends Base_Widget
         $whereCondition = array($whereSex,$whereName,$whereNickName,$whereAuth);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
-
         $sql = "SELECT $fields FROM $table_to_process where 1 ".$where;
         return $this->db->getOne($sql);
     }

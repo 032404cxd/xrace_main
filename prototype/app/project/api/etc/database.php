@@ -85,5 +85,12 @@ $db['xrace_race'][0] = array(
     'port' => PORT_LOCAL,
     'database' => 'xrace_race',
 );
+$db['qcode'][0] = array(
+    'host' => HOST_LOCAL,
+    'user' => USER_LOCAL,
+    'password' => PASSWORD_LOCAL,
+    'port' => PORT_LOCAL,
+    'database' => 'qcode',
+);
 return $db;
 ?>

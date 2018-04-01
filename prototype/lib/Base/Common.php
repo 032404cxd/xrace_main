@@ -133,7 +133,7 @@ class Base_Common
 	 * @param $e
 	 * @return void
 	 */
-	public static function exceptionHandle(Exception $e)
+	public static function exceptionHandle($e)
 	{
 		@ob_end_clean();
 		ob_start();

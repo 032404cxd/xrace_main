@@ -7,8 +7,8 @@
 
 class Xrace_WechatTiming extends Base_Widget
 {
-	//声明所用到的表
-	protected $table = 'wechat_times';
+    //声明所用到的表
+    protected $table = 'wechat_times';
     protected $table_sorted = 'wechat_times_sorted';
     //新增单个计时记录
     public function insertTiming($table,array $bind)
@@ -96,6 +96,38 @@ class Xrace_WechatTiming extends Base_Widget
             {
                 //获取计时记录
                 $UserRaceInfo = $oRace->getUserRaceInfoByFile($RaceInfo["RaceId"],$RaceUserId);
+                $RaceGroupId = $UserRaceInfo["RaceUesrInfo"]["RaceGroupId"];
+                //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
+                $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+                $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
+
+                $params = array(
+                    'StartTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['StartTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),
+                    'EndTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['EndTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),
+                    'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'], 'RaceUser'=>$RaceUserId,'sorted'=>1,'pageSize'=>10000,'Page'=>1);
+
+                //获取计时数据
+                $TimingList = $this->getTimingData($params);
+                //循环计时点
+                foreach($UserRaceInfo["Point"] as $Point => $PointInfo)
+                {
+                    $UserRaceInfo["Point"][$Point]["inTime"] = 0;
+                    foreach($PointInfo as $key => $value)
+                    {
+                        if(!in_array($key,array ("inTime","TName","TencentX","TencentY","ChipId")))
+                        {
+                            unset($UserRaceInfo["Point"][$Point][$key]);
+                        }
+                    }
+                    foreach($TimingList["Record"] as $Location => $TimingLog)
+                    {
+                        if($PointInfo["ChipId"] == $TimingLog["Location"])
+                        {
+                            $UserRaceInfo["Point"][$Point]["inTime"] = $TimingLog["time"];
+                            break;
+                        }
+                    }
+                }
                 $Pointound = 0;
                 //循环计时点
                 foreach($UserRaceInfo["Point"] as $Point => $PointInfo)
@@ -111,12 +143,12 @@ class Xrace_WechatTiming extends Base_Widget
                                 $NextPoint = $UserRaceInfo["Point"][$Point+1];
                                 $NextPointInfo = array("TName"=>$NextPoint["TName"],"TencentX"=>$NextPoint["TencentX"],"TencentY"=>$NextPoint["TencentY"],"ToPrevious"=>$NextPoint["ToPrevious"]);
                                 //无需重复打卡
-                                return array("return"=>-7,"NextPoint"=>$NextPointInfo);
+                                return array("return"=>-7,"NextPoint"=>$NextPointInfo,"TimingLog"=>$UserRaceInfo["Point"]);
                             }
                             else
                             {
                                 //无需重复打卡
-                                return array("return"=>-7);
+                                return array("return"=>-7,"TimingLog"=>$UserRaceInfo["Point"]);
                             }
                         }
                         else
@@ -130,18 +162,20 @@ class Xrace_WechatTiming extends Base_Widget
                     return array("return"=>-5);
                 }
                 $Distance =  Base_Common::getDistance($Timing["TencentX"],$Timing["TencentY"],$PointInfo["TencentX"],$PointInfo["TencentY"]);
+
                 /*
                 if($Distance >= 100)
                 {
                     return array("return"=>-6,"Distance"=>$Distance);
                 }
                 */
+
             }
 
             if($found == 1 && $Pointound == 1)
             {
                 //数据解包
-                $RaceInfo["RouteInfo"] = json_decode($RaceInfo["RouteInfo"],true);
+                //$RaceInfo["RouteInfo"] = json_decode($RaceInfo["RouteInfo"],true);
                 //获取需要用到的表名
                 $table_to_process = Base_Widget::getDbTable($this->table);
                 $table_to_process = str_replace($this->table,$RaceInfo["RouteInfo"]["TimePrefix"]."_".$this->table,$table_to_process);
@@ -158,10 +192,9 @@ class Xrace_WechatTiming extends Base_Widget
                 $Id = $this->insertTiming($table_timing,$TimingLog);
                 $NextPoint = $UserRaceInfo["Point"][$Point+1];
                 $NextPointInfo = array("TName"=>$NextPoint["TName"],"TencentX"=>$NextPoint["TencentX"],"TencentY"=>$NextPoint["TencentY"],"ToPrevious"=>$NextPoint["ToPrevious"]);
-                return array("return"=>1,"Distance"=>$Distance,"NextPoint"=>$NextPointInfo);
+                $UserRaceInfo["Point"][$Point]["inTime"] = $Timing["Time"];
+                return array("return"=>1,"Distance"=>$Distance,"NextPoint"=>$NextPointInfo,"TimingLog"=>$UserRaceInfo["Point"]);
             }
-
-
         }
         else
         {
@@ -169,6 +202,7 @@ class Xrace_WechatTiming extends Base_Widget
             return array("return"=>-3);
         }
     }
+    //获取打卡成绩
     public function getTimingData($params,$fields=array("*"))
     {
         //生成查询列
@@ -1364,6 +1398,128 @@ class Xrace_WechatTiming extends Base_Widget
         {
             //返回失败
             return array('return'=>true);
+        }
+    }
+    //新增一条计时记录
+    public function getTiming(array $Timing)
+    {
+        $oRace = new Xrace_Race();
+        //获取比赛信息
+        $RaceInfo = $oRace->getRace($Timing['RaceId']);
+        //如果获取到比赛信息
+        if(isset($RaceInfo['RaceId']))
+        {
+            //获取成绩总表
+            $UserRaceInfo = $oRace->GetUserRaceTimingInfo($RaceInfo['RaceId']);
+            //如果未获取到
+            if(empty($UserRaceInfo))
+            {
+                //重建计时数据
+                $oRace->genRaceLogToText($RaceInfo['RaceId']);
+            }
+            $oUser = new Xrace_UserInfo();
+
+            //获取比赛用户信息
+            $RaceUserInfo = $oUser->getRaceUser($Timing["RaceUserId"],"RaceUserId,Name");
+            //如果找到
+            if(isset($RaceUserInfo['RaceUserId']))
+            {
+                $RaceUserId = $RaceUserInfo['RaceUserId'];
+            }
+            else
+            {
+                //返回错误
+                return array("return"=>-2);
+            }
+
+            //获取报名记录
+            $RaceUserList = $oRace->getRaceUserListByFile($RaceInfo["RaceId"]);
+            //初始化标识
+            $found = 0;
+            //循环报名记录
+            foreach($RaceUserList['RaceUserList'] as $key => $RaceApplyLog)
+            {
+                //如果找到
+                if($RaceApplyLog["RaceUserId"] == $RaceUserId)
+                {
+                    $found = 1;
+                    break;
+                }
+            }
+            //如果最终没找到
+            if($found == 0)
+            {
+                return array("return"=>-4);
+            }
+            else
+            {
+                //获取计时记录
+                $UserRaceInfo = $oRace->getUserRaceInfoByFile($RaceInfo["RaceId"],$RaceUserId);
+                $RaceGroupId = $UserRaceInfo["RaceUserInfo"]["RaceGroupId"];
+                //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
+                $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
+                $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
+
+                $params = array(
+                    'StartTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['StartTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),
+                    'EndTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['EndTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),
+                    'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'], 'RaceUser'=>$RaceUserId,'sorted'=>1,'pageSize'=>10000,'Page'=>1);
+
+                //获取计时数据
+                $TimingList = $this->getTimingData($params);
+                //循环计时点
+                foreach($UserRaceInfo["Point"] as $Point => $PointInfo)
+                {
+                    $UserRaceInfo["Point"][$Point]["inTime"] = 0;
+                    foreach($PointInfo as $key => $value)
+                    {
+                        if(!in_array($key,array ("inTime","TName","TencentX","TencentY","ChipId")))
+                        {
+                            unset($UserRaceInfo["Point"][$Point][$key]);
+                        }
+                    }
+                    $t = 1;
+                    $UserRaceInfo["RaceUserInfo"]["Finished"] = 0;
+                    foreach($TimingList["Record"] as $Location => $TimingLog)
+                    {
+                        if($PointInfo["ChipId"] == $TimingLog["Location"])
+                        {
+                            $UserRaceInfo["Point"][$Point]["inTime"] = $TimingLog["time"];
+                            $t = $t * $TimingLog["time"];
+                            if($TimingLog["time"]>0)
+                            {
+                                $LastInTime = $TimingLog["time"];
+                                //if(count($UserRaceInfo["Point"][$Point])==$Point)
+                                if($t > 0)
+                                {
+                                    $UserRaceInfo["RaceUserInfo"]["Finished"] = 1;
+                                }
+                                else
+                                {
+                                    $UserRaceInfo["RaceUserInfo"]["Finished"] = 0;
+                                }
+                            }
+                            else
+                            {
+                                //$UserRaceInfo["RaceUserInfo"]["Finished"] = 0;
+                                break;
+                            }
+
+                        }
+                    }
+                }
+                $StartTime = strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['StartTime'])+8*3600;
+                $UserRaceInfo["RaceUserInfo"]["TotalTime"] = $LastInTime - $StartTime-16*3600;
+                $UserRaceInfo["RaceUserInfo"]["RaceName"] = $UserRaceInfo["RaceInfo"]["RaceName"];
+                $UserRaceInfo["RaceUserInfo"]["RaceStageId"] = $RaceInfo["RaceStageId"];
+
+                return array("return"=>1,"RaceUserInfo"=>$UserRaceInfo["RaceUserInfo"],"TimingLog"=>$UserRaceInfo["Point"]);
+            }
+        }
+        else
+        {
+            //返回错误
+            return array("return"=>-3);
         }
     }
 }

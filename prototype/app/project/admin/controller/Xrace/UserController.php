@@ -125,12 +125,14 @@ class Xrace_UserController extends AbstractController
             $params['PageSize'] = 20;
             //获取用户列表时需要获得记录总数
             $params['getCount'] = 1;
+            $params['UserType'] = "RaceUser";
             //获取用户列表
-            $UserList = $this->oUserInfo->getRaceUserList($params);
+            $UserList = $this->oUserInfo->getUserList($params);
+            //print_R($UserList);
             //导出EXCEL链接
             $export_var = "<a href =".(Base_Common::getUrl('','xrace/user','user.list.download',$params))."><导出表格></a>";
             //翻页参数
-            $page_url = Base_Common::getUrl('','xrace/user','index',$params)."&Page=~page~";
+            $page_url = Base_Common::getUrl('','xrace/user','race.user.list',$params)."&Page=~page~";
             $page_content =  base_common::multi($UserList['UserCount'], $page_url, $params['Page'], $params['PageSize'], 10, $maxpage = 100, $prevWord = '上一页', $nextWord = '下一页');
             foreach($UserList['UserList'] as $UserId => $UserInfo)
             {
@@ -163,7 +165,7 @@ class Xrace_UserController extends AbstractController
                 $UserList['UserList'][$UserId]['Team'] = "<a href='".Base_Common::getUrl('','xrace/user','user.team.list',array('UserId'=>$UserId)) ."'>队伍</a>";
             }
             //模板渲染
-            include $this->tpl('Xrace_User_UserList');
+            include $this->tpl('Xrace_User_RaceUserList');
         }
         else
         {

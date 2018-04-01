@@ -1318,6 +1318,7 @@ class Xrace_Race extends Base_Widget
                     //如果获取到选手名单
 					if(count($RaceUserList))
 					{
+					    $RaceGroupList = array();
 					    //循环选手列表
 						foreach($RaceUserList as $ApplyId => $ApplyInfo)
 						{
@@ -1334,8 +1335,12 @@ class Xrace_Race extends Base_Widget
 								{
 									$TeamInfo = array('TeamName'=>"个人");
 								}
+                                if(!isset($RaceGroupList[$ApplyInfo['RaceGroupId']]))
+                                {
+                                    $RaceGroupList[$ApplyInfo['RaceGroupId']] = $this->getRaceGroup($ApplyInfo['RaceGroupId'],"RaceGroupId,RaceGroupName");
+                                }
 								//存储用户信息
-								$TimingPointList['RaceUserInfo'] = array('CreateUserId'=>$RaceUserInfo['CreateUserId'],'Name'=>$RaceUserInfo['Name'],'RaceUserId' => $RaceUserInfo['RaceUserId'],'RaceGroupId'=>$ApplyInfo['RaceGroupId'],'TeamId'=> $ApplyInfo['TeamId'],'TeamName'=>$TeamInfo['TeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
+								$TimingPointList['RaceUserInfo'] = array('CreateUserId'=>$RaceUserInfo['CreateUserId'],'Name'=>$RaceUserInfo['Name'],'RaceUserId' => $RaceUserInfo['RaceUserId'],'RaceGroupName'=>$RaceGroupList[$ApplyInfo['RaceGroupId']]['RaceGroupName'],'RaceGroupId'=>$ApplyInfo['RaceGroupId'],'TeamId'=> $ApplyInfo['TeamId'],'TeamName'=>$TeamInfo['TeamName'],'BIB'=>$ApplyInfo['BIB'],'ChipId'=>$ApplyInfo['ChipId'],'ApplyComment'=>json_decode($ApplyInfo['comment'],true));
                                 //保存用户姓名到总表
                                 $RaceUserList[$ApplyId]['TeamName'] = $TeamInfo['TeamName'];
                                 //数据解包
@@ -1552,8 +1557,7 @@ class Xrace_Race extends Base_Widget
         {
             $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.user.race.info',array('Force'=>1,'RaceId'=>$RaceId));
         }
-        //echo $url;
-        $return = Base_Common::do_post($url);
+        $return = Base_Common::do_post($url,"",120);
 		return json_decode($return,true);
 	}
 	//添加单个套餐

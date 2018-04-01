@@ -676,7 +676,6 @@ class Widget_Manager extends Base_Widget
         if($data_groups == "")
         {
             $PermissionList = $this->getDataPermissionByGroup($this->data_groups,"RaceCatalogId");
-
         }
         else
         {
@@ -684,7 +683,7 @@ class Widget_Manager extends Base_Widget
         }
         if(count($PermissionList>=1))
         {
-            $t = "";
+            $t = array();
             foreach($PermissionList as $key => $RaceCatalogInfo)
             {
                 $t[$RaceCatalogInfo['RaceCatalogId']] = $RaceCatalogInfo['RaceCatalogId'];
