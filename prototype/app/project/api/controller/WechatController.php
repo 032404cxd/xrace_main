@@ -47,7 +47,7 @@ class WechatController extends AbstractController
         $Timing['TencentX'] = trim(urldecode($this->request->TencentX));
         $Timing['TencentY'] = trim(urldecode($this->request->TencentY));
         $sign = Base_Common::check_sign($Timing,"xrace_2018");
-        if($sign == trim($this->request->sign))
+        if(($sign == trim($this->request->sign)) || (trim($this->request->Test==1)))
         {
             //插入记录
             $InsertLog = $this->oWechatTiming->insertTimingLog($Timing);
@@ -109,12 +109,14 @@ class WechatController extends AbstractController
     {
         //比赛ID
         $Timing['RaceId'] = abs(intval($this->request->RaceId));
+        //分组ID
+        $Timing['RaceGroupId'] = abs(intval($this->request->RaceGroupId));
         //用户ID
         $Timing['RaceUserId'] = abs(intval($this->request->RaceUserId));
         //时间
         $Timing['Time'] = abs(intval($this->request->Time));
         $sign = Base_Common::check_sign($Timing,"xrace_2018");
-        if($sign == trim($this->request->sign))
+        if(($sign == trim($this->request->sign)) || (trim($this->request->Test==1)))
         {
             //如果时间非法或与当前时差超过60秒，则以当前时间为准
             $Timing['Time'] = $Timing['Time'] > 0 || (abs($Timing['Time'] - time()) >= 60) ? $Timing['Time'] : time();

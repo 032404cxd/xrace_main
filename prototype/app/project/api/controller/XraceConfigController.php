@@ -1072,7 +1072,13 @@ class XraceConfigController extends AbstractController
                         die();
                     }
                 }
+
                 $result = array("return" => isset($UserRaceInfo['RaceInfo']) ? 1 : 0, "UserRaceInfo" => $UserRaceInfo);
+                $SegmentInfo = $this->oRace->getUserRaceSegmentInfo($RaceId);
+                if(is_array($SegmentInfo))
+                {
+                    $result["Segment"] = $SegmentInfo;
+                }
             }
         }
         else

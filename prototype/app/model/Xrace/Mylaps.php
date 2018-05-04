@@ -959,7 +959,8 @@ class Xrace_Mylaps extends Base_Widget
 
 			}
 			$Count = count($TimingList['Record']);
-            $Text.= "Sql:".$TimingList['sql']."\n";
+            $Text = "";
+			$Text.= "Sql:".$TimingList['sql']."\n";
             $Text.= "RecordCount:".$Count."\n";
 			$TotalCount+=$Count;
 		}
@@ -1132,7 +1133,47 @@ class Xrace_Mylaps extends Base_Widget
         $GenEnd = microtime(true);
         $UserRaceTimingInfo['ProcessingTime'] = Base_Common::parthTimeLag($GenEnd-$GenStart);
         $oRace->TimgingDataSave($RaceInfo['RaceId'],$UserRaceTimingInfo,0);
-
+        //获取赛段列表
+        $SegmentList = $oRace->getSegmentListByFile($RaceInfo['RaceId']);
+        $t1 = array();$t2 = array();$t3 = array();
+        //循环赛段列表
+        foreach($SegmentList['SegmentList'] as $SegmentId => $SegmentInfo)
+        {
+            //如果起始点存在
+            if(isset($UserRaceTimingInfo["Point"][$SegmentInfo["StartId"]]))
+            {
+                for($i = $SegmentInfo["StartId"];$i<=$SegmentInfo["EndId"];$i++)
+                {
+                    foreach($UserRaceTimingInfo["Point"][$i]["UserList"] as $key => $UserInfo)
+                    {
+                        if($i == $SegmentInfo["StartId"])
+                        {
+                            $SegmentList['SegmentList'][$SegmentId]['Time'][$UserInfo["RaceGroupId"]]['UserList'][$UserInfo["RaceUserId"]] = array("Name"=>$UserInfo["Name"],"BIB"=>$UserInfo["BIB"],"TeamName"=>$UserInfo["TeamName"],"inTime"=>$UserInfo["inTime"],"SegmentTime"=>0,"CurrentPosition" => $i);
+                            $t3[$UserInfo["RaceGroupId"]][$UserInfo["RaceUserId"]] = $UserInfo["inTime"];
+                            $t1[$UserInfo["RaceGroupId"]][$UserInfo["RaceUserId"]] = $i;
+                            $t2[$UserInfo["RaceGroupId"]][$UserInfo["RaceUserId"]] = 0;
+                        }
+                        else
+                        {
+                            if(isset($SegmentList['SegmentList'][$SegmentId]['Time'][$UserInfo["RaceGroupId"]]['UserList'][$UserInfo["RaceUserId"]]))
+                            {
+                                $SegmentTime = $UserInfo["inTime"]- $SegmentList['SegmentList'][$SegmentId]['Time'][$UserInfo["RaceGroupId"]]['UserList'][$UserInfo["RaceUserId"]]["inTime"];
+                                $SegmentList['SegmentList'][$SegmentId]['Time'][$UserInfo["RaceGroupId"]]['UserList'][$UserInfo["RaceUserId"]]["CurrentPosition"] = $i;
+                                $SegmentList['SegmentList'][$SegmentId]['Time'][$UserInfo["RaceGroupId"]]['UserList'][$UserInfo["RaceUserId"]]["SegmentTime"] = $SegmentTime;
+                                $t1[$UserInfo["RaceGroupId"]][$UserInfo["RaceUserId"]]=$i;
+                                $t2[$UserInfo["RaceGroupId"]][$UserInfo["RaceUserId"]]=$SegmentTime;
+                            }
+                        }
+                    }
+                }
+            }
+            foreach($SegmentList['SegmentList'][$SegmentId]['Time']['UserList'] as $G => $GInfo)
+            {
+                array_multisort( $t1[$G], SORT_DESC, $t2[$G], SORT_ASC,$t3[$G], SORT_ASC,$SegmentList['SegmentList'][$SegmentId]['Time']['UserList'][$G]);
+            }
+        }
+        //数据保存
+        $oRace->SegmentListSave($RaceInfo['RaceId'],$SegmentList);
 
 
 		$Text.= "TotalCount:".$TotalCount."\n";

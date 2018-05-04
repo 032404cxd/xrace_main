@@ -15,6 +15,7 @@ class Xrace_Race extends Base_Widget
 	protected $table_stage = 'config_race_stage';
 	protected $table_timing = 'config_timing_point';
 	protected $table_combination = 'config_race_combination';
+    protected $table_segment = 'config_race_segment';
 	protected $maxRaceDetail = 5;
     protected $maxProcessRate = 5;
 
@@ -1364,6 +1365,19 @@ class Xrace_Race extends Base_Widget
 						}
                         //保存用户列表到本地文件
                         $this->RaceUserListSave($RaceId,array("RaceUserList"=>$RaceUserList));
+                        //赛段部分
+						{
+						    $SegmentList = $this->getsegmentlist(array("RaceId"=>$RaceId));
+                            if(count($SegmentList)>0)
+                            {
+                                foreach($SegmentList as $SegmentId => $SegmentInfo)
+                                {
+                                    $SegmentList[$SegmentId]["Time"] = array();
+                                }
+                                //保存配置文件
+                                $this->SegmentListSave($RaceInfo['RaceId'],array("SegmentList"=>$SegmentList));
+                            }
+                        }
 					}
 					else
 					{
@@ -1773,6 +1787,22 @@ class Xrace_Race extends Base_Widget
             Base_Common::rebuildConfig($filePath,$fileName,$UserList,"UserList");
     }
     //保存比赛的用户列表
+    public function SegmentListSave($RaceId,$SegmentList)
+    {
+        $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
+        $fileName = "Segment.php";
+        //生成配置文件
+        Base_Common::rebuildConfig($filePath,$fileName,$SegmentList,"Segment");
+    }
+    //保存比赛的用户列表
+    public function getSegmentListByFile($RaceId)
+    {
+        $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
+        $fileName = "Segment.php";
+        //载入预生成的配置文件
+        return Base_Common::loadConfig($filePath,$fileName);
+    }
+    //保存比赛的用户列表
     public function getRaceUserListByFile($RaceId)
     {
         $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
@@ -1785,6 +1815,14 @@ class Xrace_Race extends Base_Widget
     {
         $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."_Data/"."UserList"."/";
         $fileName = $RaceUserId.".php";
+        //载入预生成的配置文件
+        return Base_Common::loadConfig($filePath,$fileName);
+    }
+    //根据用户ID和比赛ID获取用户该场比赛的详情
+    public function getUserRaceSegmentInfo($RaceId)
+    {
+        $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."_Data/";
+        $fileName = "Segment.php";
         //载入预生成的配置文件
         return Base_Common::loadConfig($filePath,$fileName);
     }
@@ -2193,5 +2231,49 @@ class Xrace_Race extends Base_Widget
         $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','update.stage.data',array('RaceStageId'=>$RaceStageId));
         $return = Base_Common::do_post($url);
         return json_decode($return,true);
+    }
+    //添加单个赛段
+    public function insertSegement(array $bind)
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_segment);
+        return $this->db->insert($table_to_process, $bind);
+    }
+    //获取单个比赛信息
+    public function getSegment($SegmentId,$fields = '*')
+    {
+        $SegmentId = intval($SegmentId);
+        $table_to_process = Base_Widget::getDbTable($this->table_segment);
+        return $this->db->selectRow($table_to_process, $fields, '`SegmentId` = ?', $SegmentId);
+    }
+    //更新单个赛段信息
+    public function updateSegment($SegmentId, array $bind)
+    {
+        $SegmentId = intval($SegmentId);
+        $table_to_process = Base_Widget::getDbTable($this->table_segment);
+        return $this->db->update($table_to_process, $bind, '`SegmentId` = ?', $SegmentId);
+    }
+    //获取比赛分段
+    public function getSegmentList($params,$fields = '*')
+    {
+        $table_to_process = Base_Widget::getDbTable($this->table_segment);
+        //初始化查询条件
+        $whereRace = (isset($params['RaceId']) && ($params['RaceId'] >0))?(" RaceId = ".$params['RaceId']):"";
+        $whereStage = (isset($params['RaceStageId']) && ($params['RaceStageId'] >0))?(" RaceStageId = ".$params['RaceStageId']):"";
+
+        $whereCondition = array($whereRace,$whereStage);
+        //生成条件列
+        $where = Base_common::getSqlWhere($whereCondition);
+        $sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceId asc";
+        $return = $this->db->getAll($sql);
+        $RaceSegmentList = array();
+        foreach($return as $key => $value)
+        {
+            $RaceSegmentList[$value['SegmentId']] = $value;
+            if(isset($RaceSegmentList[$value['SegmentId']]['comment']))
+            {
+                $RaceSegmentList[$value['SegmentId']]['comment'] = json_decode($RaceSegmentList[$value['SegmentId']]['comment'],true);
+            }
+        }
+        return $RaceSegmentList;
     }
 }

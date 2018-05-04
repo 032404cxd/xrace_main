@@ -1,5 +1,11 @@
 {tpl:tpl contentHeader/}
 <script type="text/javascript">
+    function SegmentAdd(rid){
+        SegmentAddBox = divBox.showBox('{tpl:$this.sign/}&ac=race.segment.add&RaceId=' + rid, {title:'添加赛段',width:350,height:350});
+    }
+    function SegmentModify(sid,sname){
+        SegmentModifyBox = divBox.showBox('{tpl:$this.sign/}&ac=race.segment.modify&SegmentId=' + sid, {title:'修改赛段-'+sname,width:350,height:350});
+    }
   function SportsTypeAdd(sid,gid,rid,after){
     SportsTypeAddBox = divBox.showBox('{tpl:$this.sign/}&ac=race.sports.type.add&RaceGroupId=' + gid + '&RaceStageId=' + sid + '&RaceId=' + rid + '&After=' + after, {title:'添加运动分段',width:350,height:250});
   }
@@ -36,6 +42,45 @@
 <table width="99%" align="center" class="table table-bordered table-striped">
   {tpl:if(count($RaceInfo.comment.DetailList))}
   <tr>
+    <th align="center" class="rowtip">      <a href="javascript:;" onclick="SegmentAdd('{tpl:$RaceId/}')">添加赛段</a>
+    </th>
+  </tr>
+  <tr>
+    <th colspan = 10>
+
+    {tpl:if(count($RaceSegmentList)>0)}
+    <table width="99%" align="center" class="table table-bordered table-striped">
+      <tr>
+        <td>名称</td>
+        <td>范围</td>
+        <td>计时方式</td>
+        <td>是否需要完赛</td>
+        <td>操作</td>
+      </tr>
+
+        {tpl:loop $RaceSegmentList $SegmentId $SegmentInfo}
+      <tr>
+        <td>{tpl:$SegmentInfo.SegmentName/}</td>
+        <td>计时点从：{tpl:$SegmentInfo.StartId/} 到 {tpl:$SegmentInfo.EndId/}</td>
+        <td>
+            {tpl:loop $RaceTimingResultTypeList $RaceTimingResultType $RaceTimingResultTypeName}
+            {tpl:if($RaceTimingResultType == $SegmentInfo.ResultType)}           {tpl:$RaceTimingResultTypeName/}            {/tpl:if}
+            {/tpl:loop}
+        </td>
+        <td>
+            {tpl:if(1 == $SegmentInfo.comment.NeedFinish)} 是 {tpl:else} 否 {/tpl:if}
+        </td>
+        <td>
+          <a href="javascript:;" onclick="SegmentModify('{tpl:$SegmentId/}','{tpl:$SegmentInfo.SegmentName/}')">修改</a> | <a href="javascript:;" onclick="SegmentDelete('{tpl:$SegmentInfo.SegmentName/}','{tpl:$SegmentId/}')">删除</a>
+        </td>
+      </tr>
+        {/tpl:loop}
+    </table>
+      {/tpl:if}
+    </th>
+  </tr>
+
+  <tr>
     <th align="center" class="rowtip"><a href="javascript:;" onclick="SportsTypeAdd('{tpl:$RaceStageId/}','{tpl:$RaceGroupId/}','{tpl:$RaceId/}','-1')">在头部添加</a>
     </th>
   </tr>
@@ -52,7 +97,7 @@
     <th align="center" class="rowtip">
       <table width="99%" align="center"  class="table table-bordered table-striped">
         <tr>
-          <td>总距离：{tpl:$SportsTypeInfo.Total.Distence/}米</td>
+          <td>总距离：{tpl:$SportsTypeInfo.Total.Distance/}米</td>
           <td>计时点：{tpl:$SportsTypeInfo.Total.ChipCount/}个</td>
         </tr>
       </table>
@@ -66,7 +111,7 @@
       <table width="99%" align="center"  class="table table-bordered table-striped">
         {tpl:loop $SportsTypeInfo.TimingDetailList.comment $Tid $TimingInfo}
         <tr>
-          <td>┠&nbsp;&nbsp;{tpl:$TimingInfo.TName/}</td><td>计时点序列号：{tpl:$TimingInfo.ChipId/}</td>{tpl:if($TimingInfo.ToPrevious>=0)}<td>距离上一点：{tpl:$TimingInfo.ToPrevious/}米</td>{tpl:else}<td>不计时</td>{/tpl:if}<td>圈数: {tpl:$TimingInfo.Round/} 次</td><!--<td>海拔上升:{tpl:$TimingInfo.BaiduMapX/}米</td><td>海拔下降:{tpl:$TimingInfo.BaiduMapY/}米</td>--><td>等待时间:{tpl:$TimingInfo.TolaranceTime/}秒</td>
+          <td>┠&nbsp;&nbsp;{tpl:$TimingInfo.key/}</td><td>{tpl:$TimingInfo.TName/}</td><td>计时点序列号：{tpl:$TimingInfo.ChipId/}</td>{tpl:if($TimingInfo.ToPrevious>=0)}<td>距离上一点：{tpl:$TimingInfo.ToPrevious/}米</td>{tpl:else}<td>不计时</td>{/tpl:if}<td>圈数: {tpl:$TimingInfo.Round/} 次</td><!--<td>海拔上升:{tpl:$TimingInfo.BaiduMapX/}米</td><td>海拔下降:{tpl:$TimingInfo.BaiduMapY/}米</td>--><td>等待时间:{tpl:$TimingInfo.TolaranceTime/}秒</td>
           <td><a href="javascript:;" onclick="TimingPointModify('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$TimingInfo.TName/}')">修改</a> |
             <a href="javascript:;" onclick="TimingPointDelete('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$TimingInfo.TName/}')">删除</a> |
             <a href="javascript:;" onclick="TimingPointAdd('{tpl:$RaceId/}','{tpl:$SportsTypeId/}','{tpl:$Tid/}','{tpl:$SportsTypeInfo.SportsTypeName/}')">添加</a> |

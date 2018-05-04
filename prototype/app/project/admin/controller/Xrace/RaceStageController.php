@@ -762,7 +762,7 @@ class Xrace_RaceStageController extends AbstractController
 			//获取计时数据方式
 			$RaceTimingTypeList = $this->oRace->getTimingType();
 			//获取计时成绩计算方式
-			$RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType();
+			$RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType("");
             //获取终点成绩计算方式
             $FinalResultTypeList = $this->oRace->getFinalResultType();
 			//报名时间调用分站的报名时间
@@ -837,9 +837,9 @@ class Xrace_RaceStageController extends AbstractController
 				//获取计时数据方式
 				$RaceTimingTypeList = $this->oRace->getTimingType();
 				//获取计时成绩计算方式
-				$RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType();
+				$RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType("");
                 //获取终点成绩计算方式
-                $FinalResultTypeList = $this->oRace->getFinalResultType();
+                $FinalResultTypeList = $this->oRace->getFinalResultType("");
 				//数据解包
                 $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
                 //解包数组
@@ -1480,7 +1480,7 @@ class Xrace_RaceStageController extends AbstractController
 					if(isset($SportTypeList[$RaceSportsInfo['SportsTypeId']]))
 					{
 					    //初始化统计信息
-						$RaceInfo['comment']['DetailList'][$Key]['Total'] = array('Distence'=>0,'ChipCount'=>0);
+						$RaceInfo['comment']['DetailList'][$Key]['Total'] = array('Distance'=>0,'ChipCount'=>0);
 						//获取运动类型名称
 						$RaceInfo['comment']['DetailList'][$Key]['SportsTypeName'] = $SportTypeList[$RaceSportsInfo['SportsTypeId']]['SportsTypeName'];
 						//如果有配置计时点ID 则获取计时点信息
@@ -1489,11 +1489,21 @@ class Xrace_RaceStageController extends AbstractController
 						$RaceInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'] = isset($RaceInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'])?json_decode($RaceInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'],true):array();
 						//计时点排序
 						ksort($RaceInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment']);
+						$i = 0;
 						//循环计时点列表
 						foreach($RaceInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'] as $tid => $tinfo)
 						{
-							//累加里程,如果距离为正数
-							$RaceInfo['comment']['DetailList'][$Key]['Total']['Distence'] += (($tinfo['git diff ap']>0)?($tinfo['ToPrevious']):0)*	$tinfo['Round'];
+                            if($tinfo['Round']==1)
+                            {
+                                $RaceInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'][$tid]['key'] = sprintf("% 8s",$i + 1);
+                            }
+                            else
+                            {
+                                $RaceInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'][$tid]['key'] = sprintf("% 8s",(($i + 1)."~".($i + $tinfo['Round'])));
+                            }
+                            $i+=$tinfo['Round'];
+						    //累加里程,如果距离为正数
+							$RaceInfo['comment']['DetailList'][$Key]['Total']['Distance'] += (($tinfo['ToPrevious']>0)?($tinfo['ToPrevious']):0)*	$tinfo['Round'];
 							//累加计时点数量
 							$RaceInfo['comment']['DetailList'][$Key]['Total']['ChipCount'] += $tinfo['Round'];
                             //如果包含积分配置
@@ -1523,7 +1533,14 @@ class Xrace_RaceStageController extends AbstractController
 						unset($RaceInfo['comment']['DetailList'][$Key]);
 					}
 				}
-				//渲染模板
+				//如果已经配置计时点
+				if(count($RaceInfo['comment']['DetailList']))
+                {
+                    $RaceSegmentList = $this->oRace->getSegmentList(array("RaceId"=>$RaceId));
+                    //获取计时成绩计算方式
+                    $RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType("");
+                }
+                //渲染模板
 				include $this->tpl('Xrace_Race_RaceDetail');
 			}
 		}
@@ -1599,7 +1616,7 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//添加比赛提交页面
+	//添加动类型提交页面
 	public function raceSportsTypeAddAction()
 	{
 		//检查权限
@@ -1650,7 +1667,7 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//添加分站-分组的运动类型分段提交页面
+	//删除动类型提交
 	public function raceSportsTypeDeleteAction()
 	{
 		//检查权限
@@ -1715,7 +1732,7 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//更新任务信息
+	//添加比赛计时点
 	public function timingPointInsertAction()
 	{
 		//检查权限
@@ -1798,7 +1815,7 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
-	//添加计时点数据提交页面
+	//修改计时点数据提交页面
 	public function timingPointModifyAction()
 	{
 		//检查权限
@@ -4847,7 +4864,7 @@ class Xrace_RaceStageController extends AbstractController
                     $UserList = isset($UserList[$RaceUserId])?array("'" . $RaceUserId . "'"):$UserList;
                     //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
                     $params = array(
-                        'StartTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['StartTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),
+                        'StartTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['StartTime'])+0*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+0*3600),
                         'EndTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['EndTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),
                         'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'], 'pageSize'=>$PageSize,'Page'=>$Page, 'UserList'=>count($UserList) ? implode(",",$UserList):"-1",
                         'sorted'=>1,'revert'=>1,'getCount'=>1);
@@ -5217,5 +5234,115 @@ class Xrace_RaceStageController extends AbstractController
         $Location = trim($this->request->Location);
         $url = urlencode('http://register.xrace.cn/chip/operation/location/timing?RaceId='.$RaceId.'&Location='.$Location);
         include $this->tpl('Xrace_Race_QR');
+    }
+    //计时点赛段提交页面
+    public function raceSegmentAddAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //获取计时成绩计算方式
+            $RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType("");
+            //渲染模板
+            include $this->tpl('Xrace_Race_SegmentAdd');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //添加比赛分段
+    public function raceSegmentInsertAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("TimingPointModify");
+        if($PermissionCheck['return'])
+        {
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //获取比赛信息
+            $RaceInfo = $this->oRace->getRace($RaceId);
+            //如果有获取到比赛信息
+            if(isset($RaceInfo['RaceId']))
+            {
+                //获取 页面参数
+                $bind = $this->request->from('RaceId','StartId','EndId','SegmentName','ResultType','NeedFinish');
+                $bind['comment'] = array("NeedFinish"=>$bind["NeedFinish"]);
+                $bind['comment'] = json_encode($bind['comment']);
+                unset($bind['NeedFinish']);
+                //新增赛段
+                $res = $this->oRace->insertSegement($bind);
+                $response = $res ? array('errno' => 0) : array('errno' => 9);
+            }
+            echo json_encode($response);
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //修改比赛分段提交页面
+    public function raceSegmentModifyAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("TimingPointModify");
+        if($PermissionCheck['return'])
+        {
+            //赛段ID
+            $SegmentId = intval($this->request->SegmentId);
+            //获取赛段信息
+            $SegmentInfo = $this->oRace->getSegment($SegmentId);
+            //如果有获取到比赛信息
+            if(isset($SegmentInfo['SegmentId']))
+            {
+                //数组解压
+                $SegmentInfo["comment"] = json_decode($SegmentInfo["comment"],true);
+                //获取计时成绩计算方式
+                $RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType("");
+            }
+            //渲染模板
+            include $this->tpl('Xrace_Race_SegmentModify');
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //添加比赛分段
+    public function raceSegmentUpdateAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("TimingPointModify");
+        if($PermissionCheck['return'])
+        {
+            //比赛ID
+            $SegmentId = intval($this->request->SegmentId);
+            //获取比赛信息
+            $SegmentInfo = $this->oRace->getSegment($SegmentId);
+            //如果有获取到比赛信息
+            if(isset($SegmentInfo['SegmentId']))
+            {
+                //获取 页面参数
+                $bind = $this->request->from('StartId','EndId','SegmentName','ResultType','NeedFinish');
+                $bind['comment'] = array("NeedFinish"=>$bind["NeedFinish"]);
+                $bind['comment'] = json_encode($bind['comment']);
+                unset($bind['NeedFinish']);
+                //更新赛段
+                $res = $this->oRace->updateSegment($SegmentId,$bind);
+                $response = $res ? array('errno' => 0) : array('errno' => 9);
+            }
+            echo json_encode($response);
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
     }
 }

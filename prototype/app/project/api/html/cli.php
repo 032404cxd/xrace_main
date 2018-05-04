@@ -12,7 +12,7 @@
  * /usr/local/php/bin/php /www/wee/cli.php "ctl=test&ac=go"
  */
 
-error_reporting(个i他0);
+error_reporting(0);
 /**
  * 仅cli模式下运行
  */

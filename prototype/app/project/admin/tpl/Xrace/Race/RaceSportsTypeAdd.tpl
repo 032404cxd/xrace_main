@@ -40,9 +40,6 @@
       success:function(jsonResponse) {
         if (jsonResponse.errno) {
           var errors = [];
-          errors[1] = '当前组别尚未配置';
-          errors[2] = '分组数据错误';
-          errors[3] = '请选择一个有效的运动类型，请修正后再次提交';
           errors[9] = '入库失败，请修正后再次提交';
           divBox.alertBox(errors[jsonResponse.errno],function(){});
         } else {

@@ -206,5 +206,10 @@ $table['config_total_ranking']['num'] = 1;
 $table['config_ranking_race']['db'] = 'xrace_config';
 $table['config_ranking_race']['num'] = 1;
 
+#计时点赛段
+$table['config_race_segment']['db'] = 'xrace_config';
+$table['config_race_segment']['num'] = 1;
+
+
 
 return $table;
