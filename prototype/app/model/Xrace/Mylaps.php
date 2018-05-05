@@ -1155,6 +1155,19 @@ class Xrace_Mylaps extends Base_Widget
                         }
                         else
                         {
+                            if($SegmentInfo['comment']['NeedFinish'] == 1)
+                            {
+                                foreach($UserRaceTimingInfo["Total"] as $k => $U)
+                                {
+                                    if(in_array($U['RaceStatus'],array(1,2)))
+                                    {
+                                        unset($SegmentList['SegmentList'][$SegmentId]['Time'][$U["RaceGroupId"]]['UserList'][$U["RaceUserId"]]);
+                                        unset($t1[$U["RaceGroupId"]][$U["RaceUserId"]]);
+                                        unset($t2[$U["RaceGroupId"]][$U["RaceUserId"]]);
+                                        unset($t3[$U["RaceGroupId"]][$U["RaceUserId"]]);
+                                    }
+                                }
+                            }
                             if(isset($SegmentList['SegmentList'][$SegmentId]['Time'][$UserInfo["RaceGroupId"]]['UserList'][$UserInfo["RaceUserId"]]))
                             {
                                 $SegmentTime = $UserInfo["inTime"]- $SegmentList['SegmentList'][$SegmentId]['Time'][$UserInfo["RaceGroupId"]]['UserList'][$UserInfo["RaceUserId"]]["inTime"];
@@ -1167,9 +1180,9 @@ class Xrace_Mylaps extends Base_Widget
                     }
                 }
             }
-            foreach($SegmentList['SegmentList'][$SegmentId]['Time']['UserList'] as $G => $GInfo)
+            foreach($SegmentList['SegmentList'][$SegmentId]['Time'] as $G => $GInfo)
             {
-                array_multisort( $t1[$G], SORT_DESC, $t2[$G], SORT_ASC,$t3[$G], SORT_ASC,$SegmentList['SegmentList'][$SegmentId]['Time']['UserList'][$G]);
+                array_multisort( $t1[$G], SORT_DESC, $t2[$G], SORT_ASC,$t3[$G], SORT_ASC,$SegmentList['SegmentList'][$SegmentId]['Time'][$G]['UserList']);
             }
         }
         //数据保存
