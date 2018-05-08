@@ -1473,6 +1473,8 @@ class Xrace_RaceStageController extends AbstractController
 				$this->oSports = new Xrace_Sports();
 				//获取运动类型列表
 				$SportTypeList = $this->oSports->getAllSportsTypeList();
+                $i = 0;
+
 				//循环运动类型列表
                 foreach($RaceInfo['comment']['DetailList'] as $Key => $RaceSportsInfo)
 				{
@@ -1489,7 +1491,6 @@ class Xrace_RaceStageController extends AbstractController
 						$RaceInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'] = isset($RaceInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'])?json_decode($RaceInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'],true):array();
 						//计时点排序
 						ksort($RaceInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment']);
-						$i = 0;
 						//循环计时点列表
 						foreach($RaceInfo['comment']['DetailList'][$Key]['TimingDetailList']['comment'] as $tid => $tinfo)
 						{
