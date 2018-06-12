@@ -126,11 +126,11 @@ class Xrace_RaceCatalogController extends AbstractController
 			//获取赛事信息
 			$RaceCatalogInfo = $this->oRace->getRaceCatalog($RaceCatalogId,'*',0);
 			//加载富文本编辑器
-			include('Third/ckeditor/ckeditor.php');
-			$editor =  new CKEditor();
-			$editor->BasePath = '/js/ckeditor/';
-			$editor->config['height'] = 150;
-			$editor->config['width'] =600;
+			//include('Third/ckeditor/ckeditor.php');
+			//$editor =  new CKEditor();
+			//$editor->BasePath = '/js/ckeditor/';
+			//$editor->config['height'] = 150;
+			//$editor->config['width'] =600;
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceCatalogModify');
 		}
