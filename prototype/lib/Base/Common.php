@@ -863,7 +863,7 @@ EOF;
 		{
 			$Text['Second'] = sprintf("%02d",intval($T[0])%60);
 		}
-		return implode(":",$Text).(isset($T[1])?".".substr($T[1],0,2):"");
+		return implode(":",$Text).(isset($T[1])?".".substr($T[1],0,3):"");
 	}
     function parthTime($Time)
     {
@@ -892,7 +892,7 @@ EOF;
         {
             $Text['Second'] = sprintf("%02d",intval($T[0])%60);
         }
-        return date("Y-m-d H:i:s",$T[0]).".".substr($T[1],0,2);
+        return date("Y-m-d H:i:s",$T[0]).".".substr($T[1],0,3);
     }
 	function cutstr($str,$len,$replace = '...')
 	{
