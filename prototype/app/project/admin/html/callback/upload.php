@@ -30,12 +30,14 @@ uploadfile();
 function uploadfile()
 {
 	global $config;
+	/*
 	//判断是否是非法调用
 	if(empty($_GET['CKEditorFuncNum']))
 		mkhtml(1,"","错误的功能调用请求");
 	$fn=$_GET['CKEditorFuncNum'];
 	if(!in_array($_GET['type'],$config['type']))
 		mkhtml(1,"","错误的文件调用请求");
+	*/
 	$type=$_GET['type'];
 	if(is_uploaded_file($_FILES['upload']['tmp_name']))
 	{
@@ -54,7 +56,9 @@ function uploadfile()
 
 		if(move_uploaded_file($_FILES['upload']['tmp_name'],$file_host))
 		{
-			mkhtml($fn,$config['site_url'].$file_abso,$config['message']);
+			$return = array("uploaded"=>1,"url"=>$config['site_url'].$file_abso);
+			echo json_encode($return);
+		    //mkhtml($fn,$config['site_url'].$file_abso,$config['message']);
 		}
 		else
 		{

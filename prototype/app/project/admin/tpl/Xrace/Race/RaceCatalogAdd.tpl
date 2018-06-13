@@ -1,5 +1,8 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
+
+<script src="js/ckeditor5/ckeditor.js"></script>
+
 <form id="race_catalog_add_form" name="race_catalog_add_form" action="{tpl:$this.sign/}&ac=race.catalog.insert" method="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover">
@@ -14,7 +17,9 @@
 			<input type="radio" name="Display" id="Display" value="0" checked>否</th>
 	</tr>
 	<tr class="hover"><td colspan = 2>赛事介绍</td></tr>
-	<tr class="hover"><td colspan = 2><?php echo $editor->editor("RaceCatalogComment",""); ?></td>
+	<tr class="hover"><td colspan = 2>
+			<textarea name="RaceCatalogComment" id="RaceCatalogComment" ></textarea>
+		</td>
 	</tr>
 
 
@@ -43,5 +48,20 @@ $('#race_catalog_add_submit').click(function(){
 	};
 	$('#race_catalog_add_form').ajaxForm(options);
 });
+</script>
+<script>
+    ClassicEditor
+        .create( document.querySelector( '#RaceCatalogComment' ),
+            {
+                config: { height: '300px', width: '552px' },
+                ckfinder: {
+                    uploadUrl: '/callback/upload.php?type=img',
+                }
+            }
+        )
+        .catch( error => {
+        console.error( error );
+    } );
+
 </script>
 {tpl:tpl contentFooter/}

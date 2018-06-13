@@ -1,7 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
 
-<!--<script src="https://cdn.ckeditor.com/ckeditor5/10.0.1/classic/ckeditor.js"></script>-->
 <script src="js/ckeditor5/ckeditor.js"></script>
 
 
@@ -24,7 +23,7 @@
 	</tr>
 	<tr class="hover"><td colspan = 2>赛事介绍</td></tr>
 	<tr class="hover"><td colspan = 2>
-	<textarea name="RaceCatalogComment" id="RaceCatalogComment" rows="100" cols="20">{tpl:$RaceCatalogInfo.RaceCatalogComment/}</textarea>
+	<textarea name="RaceCatalogComment" id="RaceCatalogComment" >{tpl:$RaceCatalogInfo.RaceCatalogComment/}</textarea>
 		</td>
 	</tr>
 <tr class="noborder"><td></td>
@@ -56,9 +55,17 @@ $('#race_catalog_update_submit').click(function(){
 </script>
 <script>
     ClassicEditor
-        .create( document.querySelector( '#RaceCatalogComment' ) )
+        .create( document.querySelector( '#RaceCatalogComment' ),
+			{
+    			config: { height: '300px', width: '552px' },
+				ckfinder: {
+                    uploadUrl: '/callback/upload.php?type=img',
+                }
+			}
+    )
         .catch( error => {
         console.error( error );
     } );
+
 </script>
 {tpl:tpl contentFooter/}

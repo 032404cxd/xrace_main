@@ -26,7 +26,7 @@ class Xrace_Race extends Base_Widget
 	protected $raceLicenseType = array('manager'=>'管理员审核','birthday'=>'生日','sex'=>'性别','age'=>"年龄");
     protected $applySourceList = array(1=>"线上",2=>"线下");
     protected $applySepcialDiscount = array(0=>"无","single_max"=>"单人最高票价");
-    protected $resultType = array("Team"=>"团队成绩","Individual"=>"个人成绩");
+    protected $resultType = array("Individual"=>"个人成绩","Team"=>"团队成绩");
     public function getRaceStructure()
     {
         return $this->raceStructure;
