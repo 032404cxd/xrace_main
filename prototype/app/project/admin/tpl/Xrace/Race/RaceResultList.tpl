@@ -87,29 +87,66 @@
     <th  align="center" class="rowtip" colspan="2">{tpl:$TInfo.TotalCredit/}</th>
   </tr>
   {/tpl:loop}
-  <tr><th  align="center" class="rowtip" colspan="6">团队排名（每队第 {tpl:$RaceInfo.comment.TeamResultRank/} 人）</th></tr>
-  <tr><th  align="center" class="rowtip">名次</th>
-    <th  align="center" class="rowtip" colspan="2">团队（选手）</th>
-    <th  align="center" class="rowtip" colspan="2">总时间</th>
-    <th  align="center" class="rowtip" colspan="2">总净时间</th>
-    <th  align="center" class="rowtip" colspan="2">总时间差</th>
-    <th  align="center" class="rowtip" colspan="2">总净时间差</th>
-    <th  align="center" class="rowtip" colspan="2">积分</th>
-    <th  align="center" class="rowtip" colspan="2">积分差</th>
-  </tr>
+        {tpl:if($RaceInfo.comment.TeamResultRankType == "Top")}
+        <tr><th  align="center" class="rowtip" colspan="6">团队排名（每队第 {tpl:$RaceInfo.comment.TeamResultRank/} 人）</th></tr>
+        <tr><th  align="center" class="rowtip">名次</th>
+          <th  align="center" class="rowtip" colspan="2">团队</th>
+          <th  align="center" class="rowtip" >总时间</th>
+          <th  align="center" class="rowtip" >总净时间</th>
+          <th  align="center" class="rowtip" >总时间差</th>
+          <th  align="center" class="rowtip" >总净时间差</th>
+          <th  align="center" class="rowtip" >总积分呢</th>
+          <th  align="center" class="rowtip" >总积分差</th>
+        </tr>
+        {tpl:else}
+        <tr><th  align="center" class="rowtip" colspan="6">团队排名（每队前 {tpl:$RaceInfo.comment.TeamResultRank/} 人）</th></tr>
+        <tr><th  align="center" class="rowtip">名次</th>
+          <th  align="center" class="rowtip" colspan="2">团队</th>
+          <th  align="center" class="rowtip" >总时间</th>
+          <th  align="center" class="rowtip" >总净时间</th>
+          <th  align="center" class="rowtip" >总时间差</th>
+          <th  align="center" class="rowtip" >总净时间差</th>
+          <th  align="center" class="rowtip" >选手</th>
+          <th  align="center" class="rowtip" >总时间</th>
+          <th  align="center" class="rowtip" >总净时间</th>
+        </tr>
+        {/tpl:if}
   {tpl:loop $RaceResultList.UserRaceInfo.Team $Gid $GroupInfo}
         {tpl:if($RaceGroupId == $Gid)}
+        {tpl:if($RaceInfo.comment.TeamResultRankType == "Top")}
+
         {tpl:loop $GroupInfo $Tid $TeamInfo}
         <tr>
-    <th  align="center" class="rowtip">{tpl:$Tid func="@@+1"/}</th>
+    <th  align="center" class="rowtip" >{tpl:$Tid func="@@+1"/}</th>
     <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TeamName/}({tpl:$TeamInfo.Name/})</th>
-    <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}</th>
-    <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}</th>
-    <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TimeLag func="Base_Common::parthTimeLag(@@)"/}</th>
-    <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.NetTimeLag func="Base_Common::parthTimeLag(@@)"/}</th>
-          <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.TotalCredit/}</th>
-          <th  align="center" class="rowtip" colspan="2">{tpl:$TeamInfo.CreditLag/}</th>
+    <th  align="center" class="rowtip" >{tpl:$TeamInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}</th>
+    <th  align="center" class="rowtip" >{tpl:$TeamInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}</th>
+    <th  align="center" class="rowtip" >{tpl:$TeamInfo.TimeLag func="Base_Common::parthTimeLag(@@)"/}</th>
+    <th  align="center" class="rowtip" >{tpl:$TeamInfo.NetTimeLag func="Base_Common::parthTimeLag(@@)"/}</th>
+          <th  align="center" class="rowtip" >{tpl:$TeamInfo.TotalCredit func="intval(@@)"/}</th>
+          <th  align="center" class="rowtip" >{tpl:$TeamInfo.CreditLag func="intval(@@)"/}</th>
+        </tr>
       {/tpl:loop}
+
+          {tpl:else}
+
+        {tpl:loop $GroupInfo $Tid $TeamInfo}
+        <tr>
+          <th  align="center" class="rowtip" rowspan = {tpl:$TeamInfo.UserList func="count(@@)"/}>{tpl:$Tid func="@@+1"/}</th>
+          <th  align="center" class="rowtip" colspan="2" rowspan = {tpl:$TeamInfo.UserList func="count(@@)"/}>{tpl:$TeamInfo.TeamName/}</th>
+          <th  align="center" class="rowtip"  rowspan = {tpl:$TeamInfo.UserList func="count(@@)"/}>{tpl:$TeamInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}</th>
+          <th  align="center" class="rowtip"  rowspan = {tpl:$TeamInfo.UserList func="count(@@)"/}>{tpl:$TeamInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}</th>
+          <th  align="center" class="rowtip"  rowspan = {tpl:$TeamInfo.UserList func="count(@@)"/}>{tpl:$TeamInfo.TimeLag func="Base_Common::parthTimeLag(@@)"/}</th>
+          <th  align="center" class="rowtip"  rowspan = {tpl:$TeamInfo.UserList func="count(@@)"/}>{tpl:$TeamInfo.NetTimeLag func="Base_Common::parthTimeLag(@@)"/}</th>
+          {tpl:loop $TeamInfo.UserList $UserId $UserInfo}
+          <th  align="center" class="rowtip" >{tpl:$UserInfo.Name/}</th>
+          <th  align="center" class="rowtip" >{tpl:$UserInfo.TotalTime func="Base_Common::parthTimeLag(@@)"/}</th>
+          <th  align="center" class="rowtip" >{tpl:$UserInfo.TotalNetTime func="Base_Common::parthTimeLag(@@)"/}</th>
+        </tr>
+        {/tpl:loop}
+      {/tpl:loop}
+
+          {/tpl:if}
           {/tpl:if}
   {/tpl:loop}
 </table>

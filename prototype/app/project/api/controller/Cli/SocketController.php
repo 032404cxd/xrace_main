@@ -14,58 +14,178 @@ class Cli_SocketController extends Base_Controller_Action
         //$this->oSocketClient = new Xrace_Connect_SocketClient();
         //$this->oSocketQueue = new Config_SocketQueue();
 	}
-	
-	function socketServerAction()
-	{
+
+    function socketServerAction()
+    {
+        //比赛ID
+        $RaceId = intval($this->request->RaceId);
         $oMylaps = new Xrace_Mylaps();
+        $oRace = new Xrace_Race();
+        $Type = intval($this->request->type);
+        echo "type:".$Type."\n";
+        sleep(3);
+        $RaceInfo = $oRace->getRaceInfoByUrl($RaceId);
+        $RaceUserList = $oRace->getRaceUserListByUrl($RaceId);
+        $ChipList = array();
+        foreach($RaceUserList["RaceUserList"] as $key => $UserInfo)
+        {
+            if($UserInfo["ChipId"]!="")
+            {
+                $ChipList[$UserInfo["ChipId"]] = array("Name"=>$UserInfo["Name"],"BIB"=>$UserInfo["BIB"],"RaceGroupId"=>$UserInfo["RaceGroupId"],"TeamName"=>$UserInfo["TeamName"]);
+            }
+        }
+        set_time_limit(0);
 
-		    set_time_limit(0);
-			$ipserver = '139.196.172.182';
-			//$ipserver = '192.168.30.37';
 
-			$SocketPort = 9999;
-			$errno = 1;
-			$timeout = 1;
-			$buffLength = 1024;
-			echo "Server:".$ipserver.",Port:".$SocketPort."\n";
-			$socket=stream_socket_server('tcp://'.$ipserver.':'.$SocketPort, $errno, $errstr);
-			echo "socket:".$socket."\n";
-			stream_set_blocking($socket,0);
-			while(true)
-			{
-				$conn = @stream_socket_accept($socket,-1);
-				$Buff_to_process = array("Text" =>"","PassingMessage"=>"");
-                $Last = "";
-                if($conn)
+        //$ipserver = $RaceInfo['RaceInfo']['comment']["LocalIP"];
+        $ipserver = "0.0.0.0";
+        $SocketPort = "9999";
+        echo $ipserver."-".$SocketPort."\n";
+
+        $errno = 1;
+        $timeout = 1;
+        $buffLength = 1024;
+
+        $socket=stream_socket_server('tcp://'.$ipserver.':'.$SocketPort, $errno, $errstr);
+        echo "socket:".$socket."\n";
+        stream_set_blocking($socket,0);
+        while(true)
+        {
+            $conn = @stream_socket_accept($socket,-1);
+            $Buff_to_process = array("Text" =>"","PassingMessage"=>"");
+            $Last = "";
+            if($conn)
+            {
+                fwrite($conn,"ServerName@AckPong@Version2.1@$");
+            }
+            while($conn)
+            {
+                sleep(1);
+                //echo "conn:".$conn."\n";
+                $buff = fread($conn,$buffLength);
+                //echo "buff:".$buff."\n";
+                $length = strlen($buff);
+                if($length>0)
                 {
-                    fwrite($conn,"ServerName@AckPong@Version2.1@$");
-                }
-                while($conn)
-				{
-                    echo "conn:".$conn."\n";
-                    $buff = fread($conn,$buffLength);
-                    //echo "buff:".$buff."\n";
-                    $length = strlen($buff);
-                    if($length>0)
-                    {
-                        $Buff_to_process =  array("Text" =>$Last.$buff,"PassingMessage"=>"");
-                        //echo "LastText:".$Buff_to_process["Text"]."\n";
-                        do{
-                            $Buff_to_process = $oMylaps->popMylapsPassingMessage($Buff_to_process['Text']);
-                            $MylapsInfoArr  = base_common::parthMylapsArr(base_common::parthStrToArr($Buff_to_process['PassingMessage']));
-                            echo "芯片：".$MylapsInfoArr['c']."过线，时间：".$MylapsInfoArr["d"]." ".$MylapsInfoArr["t"]."\n";
-                            //echo "PassingMessage:".$Buff_to_process['PassingMessage']."\n";
-                            sleep(1);
+                    $Buff_to_process =  array("Text" =>$Last.$buff,"PassingMessage"=>"");
+                    //echo "LastText:".$Buff_to_process["Text"]."\n";
+                    do{
+                        $Buff_to_process = $oMylaps->popMylapsPassingMessage($Buff_to_process['Text']);
+                        $MylapsInfoArr  = base_common::parthMylapsArr(base_common::parthStrToArr($Buff_to_process['PassingMessage']));
+                        //echo "chip:".$MylapsInfoArr['c']."passed,time:".$MylapsInfoArr["d"]." ".$MylapsInfoArr["t"]."\n";
+                        if($Type == 1)
+                        {
+                            $oMemCache = new Base_Cache_Memcache("xrace");
+                            //获取缓存
+                            $m = $oMemCache->get("RaceTiming_".$RaceId);
+                            //缓存解开
+                            $m = json_decode($m,true);
+                            if(!isset($m["RaceInfo"]))
+                            {
+                                $m["RaceInfo"] = array("RaceName"=>$RaceInfo["RaceInfo"]["RaceName"],"RaceStartTime"=>strtotime($RaceInfo['RaceInfo']['StartTime']));
+
+                            }
+                            if(trim($MylapsInfoArr['c'])!=""  && isset($ChipList[$MylapsInfoArr['c']]))
+                            {
+                                echo $MylapsInfoArr['c']."/n";
+                                if(isset($m["TimingList"][$MylapsInfoArr['c']]))
+                                {
+                                    $LastTime = strtotime("20".$MylapsInfoArr["d"]." ".$MylapsInfoArr["t"]).".".substr($MylapsInfoArr["t"],-3);;
+
+                                    $LastLap = $LastTime-$m["TimingList"][$MylapsInfoArr['c']]["LastTime"];
+                                    if($LastLap>=30)
+                                    {
+                                        $m["TimingList"][$MylapsInfoArr['c']]["Round"] ++;
+                                        $m["TimingList"][$MylapsInfoArr['c']]["LastLap"]  = $LastLap;
+                                        $m["TimingList"][$MylapsInfoArr['c']]["LastTime"]  = $LastTime;
+                                        $m["TimingList"][$MylapsInfoArr['c']]["TotalTime"]  = $LastTime-$m["RaceInfo"]["RaceStartTime"];
+
+
+                                        if($m["TimingList"][$MylapsInfoArr['c']]["LastLap"] >0)
+                                        {
+                                            if(isset($m["BestLap"]["LastLap"]))
+                                            {
+                                                if($m["BestLap"]["LastLap"] > $m["TimingList"][$MylapsInfoArr['c']]["LastLap"])
+                                                {
+                                                    $m["BestLap"] =  $m["TimingList"][$MylapsInfoArr['c']];
+                                                }
+                                            }
+                                            else
+                                            {
+                                                $m["BestLap"] =  $m["TimingList"][$MylapsInfoArr['c']];
+                                            }
+
+                                        }
+                                        $m["LastLap"] = $m["TimingList"][$MylapsInfoArr['c']];
+                                    }
+                                }
+                                else
+                                {
+                                    $m["TimingList"][$MylapsInfoArr['c']] = array_merge(array("Round"=>0),$ChipList[$MylapsInfoArr['c']]);
+                                    $m["TimingList"][$MylapsInfoArr['c']]["LastTime"]  = strtotime("20".$MylapsInfoArr["d"]." ".$MylapsInfoArr["t"]).".".substr($MylapsInfoArr["t"],-3);
+
+                                    //$m[$MylapsInfoArr['c']]["Round"]=1;
+                                }
+                                $m2 = $m;$t1 = array();$t2 = array();
+                                foreach($m2["TimingList"] as $key => $value)
+                                {
+                                    $t1[$key] = $value["Round"];
+                                    $t2[$key] = $value["LastTime"];
+                                }
+                                array_multisort($t1,SORT_DESC,SORT_NUMERIC ,$t2,SORT_ASC,$m2["TimingList"]);
+                                $First= (reset($m2["TimingList"]));
+
+                                foreach($m2["TimingList"] as $key => $value)
+                                {
+                                    if($First["Round"] == $value["Round"])
+                                    {
+                                        $m2["TimingList"][$key]["Diff"] =    $value["LastLap"] - $First["LastLap"];
+                                    }
+                                }
+                                $oMemCache -> set("RaceTiming2_".$RaceId,json_encode($m2),86400);
+                                $oMemCache -> set("RaceTiming_".$RaceId,json_encode($m),86400);
+                            }
                         }
-                        while($Buff_to_process['PassingMessage'] != "");
-                        $Last = $Buff_to_process['Text'];
+                        else
+                        {
+                            //if(strlen($MylapsInfoArr['c'] >=3))
+                            {
+                                $StartInfo = $oRace->getRaceResult($RaceId,0,0,1);
+                                $L = explode("<br>",$StartInfo);
+                                $t = "20".$MylapsInfoArr["d"]." ".$MylapsInfoArr["t"];
+                                $t = strtotime($t);
+                                $t2 = explode(".",$MylapsInfoArr["t"]);
+                                $time= $t + $t2[1]/1000;
+                                foreach($L as $k => $v)
+                                {
+                                    if(substr($v,0,strlen($MylapsInfoArr['c'])) == $MylapsInfoArr['c'])
+                                    {
+                                        //echo $v;
+                                        $t = explode(",",$v);
+                                        $lag = $time-$t[3];
+                                        if($lag >0)
+                                        {
+                                            echo $t[5]."-".$t['2']."-".$t['1']."-",Base_Common::parthTimeLag($lag)."\n";
+                                        }
+                                    }
+                                }
+                                sleep(1);
+                            }
+
+
+
+
+                        }
                     }
-                    sleep(1);
+                    while($Buff_to_process['PassingMessage'] != "");
+                    $Last = $Buff_to_process['Text'];
+                }
+                //sleep(1);
 
 
-				}
-			}
-	}
+            }
+        }
+    }
 	function textTestAction()
     {
         $FileName = dirname(dirname(dirname(__FILE__)));

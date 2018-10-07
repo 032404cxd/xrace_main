@@ -1047,6 +1047,7 @@ class XraceConfigController extends AbstractController
                     }
                     if($returnType == 1)
                     {
+                        $RaceGroupList = array();
                         $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'], true);
                         $UserList = $this->oRace->getRaceUserListByFile($RaceInfo['RaceId']);
                         foreach($UserRaceInfo['Point'][$Point]['UserList'] as $key => $value)
@@ -1064,7 +1065,11 @@ class XraceConfigController extends AbstractController
                             {
                                 if($UserInfo['RaceUserId'] == $value['RaceUserId'])
                                 {
-                                    $text = $UserInfo['ChipId'].",".$value['Name'].",".$UserInfo['BIB'].",".$StartTime.",".$UserInfo['TeamName']."<br>";
+                                    if(!isset($RaceGroupList[$UserInfo['RaceGroupId']]))
+                                    {
+                                        $RaceGroupList[$UserInfo['RaceGroupId']] = $this->oRace->getRaceGroup($UserInfo['RaceGroupId']);
+                                    }
+                                    $text = $UserInfo['ChipId'].",".$value['Name'].",".$UserInfo['BIB'].",".$StartTime.",".$UserInfo['TeamName'].",".$RaceGroupList[$UserInfo['RaceGroupId']]['RaceGroupName']."<br>";
                                 }
                             }
                             echo $text;

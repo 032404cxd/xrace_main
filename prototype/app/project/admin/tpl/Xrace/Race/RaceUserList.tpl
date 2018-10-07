@@ -21,14 +21,17 @@
   function RaceResultList(rid,uid,rname){
     RaceResultListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.result.list&RaceId=' + rid + '&RaceUserId=' + uid, {title:rname+'成绩单',width:800,height:750});
   }
+  function RaceUserAdd(rid,rname){
+      RaceResultListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.add&RaceId=' + rid, {title:rname+'-新增选手',width:600,height:600});
+  }
 </script>
 <form action="{tpl:$this.sign/}&ac=race.user.list.update" name="race_user_list_update_form" id="race_user_list_update_form" method="post">
   <input type="hidden" name="RaceId" id="RaceId" value="{tpl:$RaceInfo.RaceId/}" />
 <input type="hidden" name="CurrentRaceGroupId" id="CurrentRaceGroupId" value="{tpl:$RaceGroupId/}" />
-  <fieldset><legend> 选手名单 {tpl:if($ReturnType==1)}  <a href="{tpl:$this.sign/}&ac=race.list&RaceStageId={tpl:$RaceInfo.RaceStageId/}">返回比赛列表</a>{/tpl:if}  {tpl:$DownloadUrl/}</legend>
+  <fieldset><legend> {tpl:$RaceInfo.RaceName/} 选手名单 {tpl:if($ReturnType==1)}  <a href="{tpl:$this.sign/}&ac=race.list&RaceStageId={tpl:$RaceInfo.RaceStageId/}">返回比赛列表</a>{/tpl:if}  {tpl:$DownloadUrl/}</legend>
   <table width="99%" align="center" class="table table-bordered table-striped">
-    <tr><th align="center" class="rowtip" colspan="5">
-            {tpl:loop $RaceUserList.RaceStatus $Status $StatusInfo} {tpl:$StatusInfo.StatusName/}<a href="{tpl:$this.sign/}&ac=race.user.list&RaceId={tpl:$RaceInfo.RaceId/}&RaceStatus={tpl:$Status/}&ReturnType={tpl:$ReturnType/}">{tpl:$StatusInfo.UserCount/}人</a>{/tpl:loop}</th></tr>
+    <tr><th align="center" class="rowtip" colspan="2">
+            {tpl:loop $RaceUserList.RaceStatus $Status $StatusInfo} {tpl:$StatusInfo.StatusName/}<a href="{tpl:$this.sign/}&ac=race.user.list&RaceId={tpl:$RaceInfo.RaceId/}&RaceStatus={tpl:$Status/}&ReturnType={tpl:$ReturnType/}">{tpl:$StatusInfo.UserCount/}人</a>{/tpl:loop}</th><th align="center" class="rowtip"><a href="javascript:;" onclick="RaceUserAdd('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">新增选手</a></th></tr>
     {tpl:if(count($RaceUserList))}
   <tr>
     <th align="center" class="rowtip">姓名</th>

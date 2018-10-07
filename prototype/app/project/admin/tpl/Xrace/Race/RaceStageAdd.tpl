@@ -1,9 +1,10 @@
 {tpl:tpl contentHeader/}
+<script src="js/ckeditor5/ckeditor.js"></script>
 <div class="br_bottom"></div>
 <form id="race_stage_add_form" name="race_stage_add_form"" action="{tpl:$this.sign/}&ac=race.stage.insert" method="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover">
-<td>赛事分站名称</td>
+<td>分站名称</td>
 	<td align="left"><input type="text" class="span3" name="RaceStageName"  id="RaceStageName" value=""  /></td>
 </tr>
 <td>赛事举办地</td>
@@ -81,17 +82,17 @@
 				   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >
 		</td>
 	</tr>
-	<tr class="hover"><td>赛事分站图片1</td>
+	<tr class="hover"><td>分站图片1</td>
 			<td align="left"><input name="RaceStageIcon[1]" type="file" class="span4" id="RaceStageIcon[1]" /></td>
 	</tr>
-	<tr class="hover"><td>赛事分站图片2</td>
+	<tr class="hover"><td>分站图片2</td>
 			<td align="left"><input name="RaceStageIcon[2]" type="file" class="span4" id="RaceStageIcon[2]" /></td>
 	</tr>
-	<tr class="hover"><td>赛事分站图片3</td>
+	<tr class="hover"><td>分站图片3</td>
 			<td align="left"><input name="RaceStageIcon[3]" type="file" class="span4" id="RaceStageIcon[3]" /></td>
 	</tr>
-	<tr class="hover"><td colspan = 2>赛事分站介绍</td></tr>
-	<tr class="hover"><td colspan = 2><?php echo $editor->editor("RaceStageComment",""); ?></td>
+	<tr class="hover"><td colspan = 2>分站介绍</td></tr>
+	<tr class="hover"><td colspan = 2><textarea name="RaceStageComment" id="RaceStageComment" ></textarea></td>
 	</tr>
 <tr class="noborder"><td></td>
 <td><button type="submit" id="race_stage_add_submit">提交</button></td>
@@ -106,13 +107,13 @@ $('#race_stage_add_submit').click(function(){
 		success:function(jsonResponse) {
 			if (jsonResponse.errno) {
 				var errors = [];
-				errors[1] = '赛事分站名称不能为空，请修正后再次提交';
+				errors[1] = '分站名称不能为空，请修正后再次提交';
 				errors[3] = '请选择一个有效的赛事，请修正后再次提交';
 				errors[4] = '请选择至少一个赛事分组，请修正后再次提交';
 				errors[9] = '入库失败，请修正后再次提交';
 				divBox.alertBox(errors[jsonResponse.errno],function(){});
 			} else {
-				var message = '添加赛事分站成功';
+				var message = '添加分站成功';
 				divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}');}});
 			}
 		}
@@ -133,5 +134,20 @@ function getGroupList()
 	});
 //*/
 }
+</script>
+<script>
+    ClassicEditor
+        .create( document.querySelector( '#RaceStageComment' ),
+            {
+                config: { height: '300px', width: '552px' },
+                ckfinder: {
+                    uploadUrl: '/callback/upload.php?type=img',
+                }
+            }
+        )
+        .catch( error => {
+        console.error( error );
+    } );
+
 </script>
 {tpl:tpl contentFooter/}

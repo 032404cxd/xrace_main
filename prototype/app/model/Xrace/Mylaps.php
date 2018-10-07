@@ -1026,17 +1026,20 @@ class Xrace_Mylaps extends Base_Widget
             $oRace->UserTimgingDataSave($RaceInfo['RaceId'],$v['RaceUserId'],$UInfo,0);
 		    if(($v['TeamId']>0) && ($v['CurrentPosition'] == count($UserRaceTimingInfo['Point'])))
 			{
-			    if(isset($TeamRankList[$v['RaceGroupId']][$v['TeamId']]) && count($TeamRankList[$v['RaceGroupId']][$v['TeamId']]['UserList'])<$RaceInfo['comment']['TeamResultRank'])
-				{
-					$TeamRankList[$v['RaceGroupId']][$v['TeamId']]['UserList'][count($TeamRankList[$v['RaceGroupId']][$v['TeamId']]['UserList'])+1] = $UserRaceTimingInfo['Total'][$k];
+//			    if(isset($TeamRankList[$v['RaceGroupId']][$v['TeamId']]) && count($TeamRankList[$v['RaceGroupId']][$v['TeamId']]['UserList'])<$RaceInfo['comment']['TeamResultRank'])
+                    if(isset($TeamRankList[$v['RaceGroupId']][$v['TeamId']]))
+
+                    {
+					$TeamRankList[$v['RaceGroupId']][$v['TeamId']]['UserList'][count($TeamRankList[$v['RaceGroupId']][$v['TeamId']]['UserList'])] = $UserRaceTimingInfo['Total'][$k];
 				}
 				else
 				{
 					$TeamRankList[$v['RaceGroupId']][$v['TeamId']]['TeamName'] = $v['TeamName'];
-					$TeamRankList[$v['RaceGroupId']][$v['TeamId']]['UserList'][1] = $UserRaceTimingInfo['Total'][$k];
+					$TeamRankList[$v['RaceGroupId']][$v['TeamId']]['UserList'][0] = $UserRaceTimingInfo['Total'][$k];
 				}
 			}
 		}
+		//根据积分排名排序总表
         if($FinalResultType=="credit")
         {
             $t0 = array();
@@ -1060,32 +1063,91 @@ class Xrace_Mylaps extends Base_Widget
                 array_multisort($t0,SORT_DESC,$t1, SORT_DESC, $t3, SORT_ASC, $UserRaceTimingInfo['Total']);
             }
         }
-		$TeamRank = array();$i=1;
+        //团队排名处理
+		$TeamRank = array();
 		$t1 = array();$t2=array();$t3=array();
-        foreach($TeamRankList as $GroupId => $GroupInfo)
+        //循环每个分组
+		foreach($TeamRankList as $GroupId => $GroupInfo)
         {
+            //循环分组下各个队伍
             foreach($GroupInfo as $k => $v)
             {
-                if(isset($TeamRankList[$GroupId][$k]['UserList'][$RaceInfo['comment']['TeamResultRank']]))
+
+                //如果人数够
+                if(count($TeamRankList[$GroupId][$k]['UserList'])>=$RaceInfo['comment']['TeamResultRank'])
+                //if(isset($TeamRankList[$GroupId][$k]['UserList'][$RaceInfo['comment']['TeamResultRank']]))
                 {
-                    $TeamRank[$GroupId][$i] = $TeamRankList[$GroupId][$k]['UserList'][$RaceInfo['comment']['TeamResultRank']];
-                    $t1[$GroupId][$k] = $TeamRankList[$GroupId][$k]['UserList'][$RaceInfo['comment']['TeamResultRank']]['TotalTime'];
-                    $t2[$GroupId][$k] = $TeamRankList[$GroupId][$k]['UserList'][$RaceInfo['comment']['TeamResultRank']]['TotalNetTime'];
-                    $t3[$GroupId][$k] = isset($TeamRankList[$GroupId][$k]['UserList'][$RaceInfo['comment']['TeamResultRank']]['TotalCredit'])?$TeamRankList[$GroupId][$k]['UserList'][$RaceInfo['comment']['TeamResultRank']]['TotalCredit']:0;
+                    $tt1 = $tt2 = $tt3 = array();
+                    foreach($v['UserList'] as $Uid => $UInfo)
+                    {
+                        $tt1[$Uid] = $UInfo['TotalTime'];
+                        $tt2[$Uid] = $UInfo['TotalNetTime'];
+                        $tt3[$Uid] = intval($UInfo['TotalCredit']);
+                    }
                     //根据不同的计时类型进行排序
                     if($FinalResultType=="gunshot")
                     {
-                        array_multisort( $t1[$GroupId], SORT_ASC, $TeamRank[$GroupId]);
+                        array_multisort( $tt1, SORT_ASC, $TeamRankList[$GroupId][$k]['UserList']);
                     }
                     elseif($FinalResultType=="net")
                     {
-                        array_multisort( $t2[$GroupId], SORT_ASC, $TeamRank[$GroupId]);
+                        array_multisort( $tt2, SORT_ASC, $TeamRankList[$GroupId][$k]['UserList']);
                     }
                     else
                     {
-                        array_multisort( $t3[$GroupId], SORT_DESC, $TeamRank[$GroupId]);
+                        array_multisort( $tt3, SORT_DESC, $TeamRankList[$GroupId][$k]['UserList']);
                     }
-                    $i++;
+
+                    if($RaceInfo['comment']['TeamResultRankType'] == "Top")
+                    {
+                        $TeamRank[$GroupId][$k] = $TeamRankList[$GroupId][$k]['UserList'][$RaceInfo['comment']['TeamResultRank']-1];
+                        $t1[$GroupId][$k] = $TeamRankList[$GroupId][$k]['UserList'][$RaceInfo['comment']['TeamResultRank']-1]['TotalTime'];
+                        $t2[$GroupId][$k] = $TeamRankList[$GroupId][$k]['UserList'][$RaceInfo['comment']['TeamResultRank']-1]['TotalNetTime'];
+                        $t3[$GroupId][$k] = isset($TeamRankList[$GroupId][$k]['UserList'][$RaceInfo['comment']['TeamResultRank']-1]['TotalCredit'])?$TeamRankList[$GroupId][$k]['UserList'][$RaceInfo['comment']['TeamResultRank']-1]['TotalCredit']:0;
+                        //根据不同的计时类型进行排序
+                        if($FinalResultType=="gunshot")
+                        {
+                            array_multisort( $t1[$GroupId], SORT_ASC, $TeamRank[$GroupId]);
+                        }
+                        elseif($FinalResultType=="net")
+                        {
+                            array_multisort( $t2[$GroupId], SORT_ASC, $TeamRank[$GroupId]);
+                        }
+                        else
+                        {
+                            array_multisort( $t3[$GroupId], SORT_DESC, $TeamRank[$GroupId]);
+                        }
+                    }
+                    elseif($RaceInfo['comment']['TeamResultRankType'] == "Sum")
+                    {
+                        //累加所需选手的数据
+                        for($n=0;$n<$RaceInfo['comment']['TeamResultRank'];$n++)
+                        {
+                            $TeamRank[$GroupId][$k]['TeamName'] = isset($TeamRank[$GroupId][$k]['TeamName'])?$TeamRank[$GroupId][$k]['TeamName']:$v['TeamName'];
+                            $TeamRank[$GroupId][$k]['UserList'][$n] = $TeamRankList[$GroupId][$k]['UserList'][$n];
+                            $TeamRank[$GroupId][$k]['TotalTime'] += $TeamRankList[$GroupId][$k]['UserList'][$n]['TotalTime'];
+                            $TeamRank[$GroupId][$k]['TotalNetTime'] += $TeamRankList[$GroupId][$k]['UserList'][$n]['TotalNetTime'];
+                            $TeamRank[$GroupId][$k]['TotalCredit'] += isset($TeamRankList[$GroupId][$k]['UserList'][$n]['TotalCredit'])?$TeamRankList[$GroupId][$k]['UserList'][$n]['TotalCredit']:0;
+
+
+                            $t1[$GroupId][$k] = $TeamRank[$GroupId][$k]['TotalTime'];
+                            $t2[$GroupId][$k] = $TeamRank[$GroupId][$k]['TotalNetTime'];
+                            $t3[$GroupId][$k] = $TeamRank[$GroupId][$k]['TotalCredit'];
+                        }
+                        //根据不同的计时类型进行排序
+                        if($FinalResultType=="gunshot")
+                        {
+                            array_multisort( $t1[$GroupId], SORT_ASC, $TeamRank[$GroupId]);
+                        }
+                        elseif($FinalResultType=="net")
+                        {
+                            array_multisort( $t2[$GroupId], SORT_ASC, $TeamRank[$GroupId]);
+                        }
+                        else
+                        {
+                            array_multisort( $t3[$GroupId], SORT_DESC, $TeamRank[$GroupId]);
+                        }
+                    }
                 }
             }
         }
@@ -1128,7 +1190,6 @@ class Xrace_Mylaps extends Base_Widget
             }
         }
 		$UserRaceTimingInfo['Team'] = $TeamRank;
-        //$UserRaceInfoList['LastId'] = $TimingInfo['Id'];
         $num++;
 		//保存配置文件
         $GenEnd = microtime(true);

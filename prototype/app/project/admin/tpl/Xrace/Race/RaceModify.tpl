@@ -11,6 +11,7 @@
         }
     }
 </script>
+<script src="js/ckeditor5/ckeditor.js"></script>
 <form id="race_add_form" name="race_add_form" action="{tpl:$this.sign/}&ac=race.update" method="post">
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceInfo.RaceStageId/}" />
 <input type="hidden" name="RaceId" id="RaceId" value="{tpl:$RaceId/}" />
@@ -45,19 +46,17 @@
 			{/tpl:loop}
 		</select>
 	</th></tr>
-	<tr class="hover"><th align="center" class="rowtip">需要确认后发布成绩</th><th align="center" class="rowtip">
+	<tr class="hover"><th align="center" class="rowtip">确认后发布成绩</th><th align="center" class="rowtip">
 			<select name="ResultNeedConfirm" size="1" class="span2">
-				<option value="0" {tpl:if(0==$RaceInfo.comment.ResultNeedConfirm)}selected="selected"{/tpl:if}>不需要裁判确认</option>
-				<option value="1" {tpl:if(1==$RaceInfo.comment.ResultNeedConfirm)}selected="selected"{/tpl:if}>需要裁判确认</option>
+				<option value="0" {tpl:if(0==$RaceInfo.comment.ResultNeedConfirm)}selected="selected"{/tpl:if}>不需要确认</option>
+				<option value="1" {tpl:if(1==$RaceInfo.comment.ResultNeedConfirm)}selected="selected"{/tpl:if}>需要确认</option>
 			</select>
 		</th></tr>
-<tr class="hover"><th align="center" class="rowtip">是否必选</th><th align="center" class="rowtip">
-			<input type="radio" name="MustSelect" id="MustSelect" value="1" {tpl:if($RaceInfo.MustSelect=="1")}checked{/tpl:if}>是
-			<input type="radio" name="MustSelect" id="MustSelect" value="0" {tpl:if($RaceInfo.MustSelect=="0")}checked{/tpl:if}>否</th>
-	</tr>
-	<tr class="hover"><th align="center" class="rowtip">是否排他单选</th><th align="center" class="rowtip">
-			<input type="radio" name="SingleSelect" id="SingleSelect" value="1" {tpl:if($RaceInfo.SingleSelect=="1")}checked{/tpl:if}>是
-			<input type="radio" name="SingleSelect" id="SingleSelect" value="0" {tpl:if($RaceInfo.SingleSelect=="0")}checked{/tpl:if}>否</th>
+<tr class="hover"><th align="center" class="rowtip">排他性</th><th align="center" class="rowtip">
+		是否必选：<input type="radio" name="MustSelect" id="MustSelect" value="1" {tpl:if($RaceInfo.MustSelect=="1")}checked{/tpl:if}>是
+		<input type="radio" name="MustSelect" id="MustSelect" value="0" {tpl:if($RaceInfo.MustSelect=="0")}checked{/tpl:if}>否<p>
+		是否排他单选：<input type="radio" name="SingleSelect" id="SingleSelect" value="1" {tpl:if($RaceInfo.SingleSelect=="1")}checked{/tpl:if}>是
+		<input type="radio" name="SingleSelect" id="SingleSelect" value="0" {tpl:if($RaceInfo.SingleSelect=="0")}checked{/tpl:if}>否</th>
 	</tr>
 	<tr class="hover"><th align="center" class="rowtip">计时数据方式</th><th align="center" class="rowtip">
 			<select name="RaceTimingType" size="1" class="span2">
@@ -66,15 +65,13 @@
 				{/tpl:loop}
 			</select>
 		</th></tr>
-	<tr class="hover"><th align="center" class="rowtip">计时点成绩计算方式</th><th align="center" class="rowtip">
-			<select name="RaceTimingResultType" size="1" class="span2">
+	<tr class="hover"><th align="center" class="rowtip">成绩计算</th><th align="center" class="rowtip">
+			成绩计算方式：<select name="RaceTimingResultType" size="1" class="span2">
 				{tpl:loop $RaceTimingResultTypeList $RaceTimingResultType $RaceTimingResultTypeName}
 				<option value="{tpl:$RaceTimingResultType/}" {tpl:if($RaceTimingResultType==$RaceInfo.RouteInfo.RaceTimingResultType)}selected="selected"{/tpl:if}>{tpl:$RaceTimingResultTypeName/}</option>
 				{/tpl:loop}
 			</select>
-		</th></tr>
-	<tr class="hover"><th align="center" class="rowtip">最终成绩计算方式</th><th align="center" class="rowtip">
-			<select name="FinalResultType" size="1" class="span2"  onchange="FinalResultChange($(this).val())">
+			最终成绩计算方式：<select name="FinalResultType" size="1" class="span2"  onchange="FinalResultChange($(this).val())">
 				{tpl:loop $FinalResultTypeList $FinalResultType $FinalResultTypeName}
 				<option value="{tpl:$FinalResultType/}" {tpl:if($FinalResultType==$RaceInfo.RouteInfo.FinalResultType)}selected="selected"  {tpl:if($FinalResultType=="credit")}
 				{/tpl:if} {/tpl:if}>{tpl:$FinalResultTypeName/}</option>
@@ -108,13 +105,19 @@
 <tr class="hover"><th align="center" class="rowtip">团队人数限制</th><th align="center" class="rowtip">最低:<input name="TeamUserMin" type="text"  class="span1" id="TeamUserMin" value = "{tpl:$RaceInfo.comment.TeamUserMin/}"/>最高:<input name="TeamUserMax" type="text"  class="span1" id="TeamUserMax" value = "{tpl:$RaceInfo.comment.TeamUserMax/}"/></th></tr>
 <tr class="hover"><th align="center" class="rowtip">成员数量</th><th align="center" class="rowtip">男性 最低:<input name="SexUser[Min][1]" type="text" class="span1" id="SexUser[Min][1]" value = "{tpl:$RaceInfo.comment.SexUser.Min.1/}" size="50" />最高:<input name="SexUser[Max][1]" type="text" class="span1" id="SexUser[Max][1]" value = "{tpl:$RaceInfo.comment.SexUser.Max.1/}" size="50" /> 女性  最低:<input name="SexUser[Min][2]" type="text" class="span1" id="SexUser[Min][2]" value = "{tpl:$RaceInfo.comment.SexUser.Min.2/}" size="50" />最高:<input name="SexUser[Max][2]" type="text" class="span1" id="SexUser[Max][2]" value = "{tpl:$RaceInfo.comment.SexUser.Max.2/}" size="50" /></th></tr>
 <tr class="hover"><th align="center" class="rowtip">起点</th><th align="center" class="rowtip"><input type="radio" name="NoStart" id="NoStart" value="1" {tpl:if($RaceInfo.comment.NoStart=="1")}checked{/tpl:if}>无起点<input type="radio" name="NoStart" id="NoStart"  value="0"  {tpl:if($RaceInfo.comment.NoStart=="0")}checked{/tpl:if}>有起点</th></tr>
-	<tr class="hover"><th align="center" class="rowtip">团队成绩名次</th><th align="center" class="rowtip"><select name="TeamResultRank" size="1" class="span2">
+	<tr class="hover"><th align="center" class="rowtip">团队成绩名次</th><th align="center" class="rowtip">
+				<select name="TeamResultRankType" size="1" class="span2">
+					{tpl:loop $TeamResultTypeList $teamResultType $teamResultTypeName }
+					<option value="{tpl:$teamResultType/}" {tpl:if($teamResultType==$RaceInfo.comment.TeamResultRankType)}selected="selected"{/tpl:if}>{tpl:$teamResultTypeName/}</option>
+					{/tpl:loop}</select>
+
+				<select name="TeamResultRank" size="1" class="span2">
 				{tpl:loop $t $i }
-				<option value="{tpl:$i/}" {tpl:if($i==$RaceInfo.comment.TeamResultRank)}selected="selected"{/tpl:if}>第{tpl:$i/}人</option>
+				<option value="{tpl:$i/}" {tpl:if($i==$RaceInfo.comment.TeamResultRank)}selected="selected"{/tpl:if}>{tpl:$i/}人</option>
 				{/tpl:loop}</select></tr>
 
 	<tr class="hover"><td colspan = 2>比赛介绍</td></tr>
-	<tr class="hover"><td colspan = 2><?php echo $editor->editor("RaceComment",$RaceInfo['RaceComment']); ?></td>
+	<tr class="hover"><td colspan = 2>    <tr class="hover"><td colspan = 2><textarea name="RaceComment" id="RaceComment" >{tpl:$RaceInfo.RaceComment/}</textarea></td>
 	</tr>
 <tr class="noborder"><td></td>
 <td><button type="submit" id="race_add_submit">提交</button></td>
@@ -167,5 +170,20 @@ $('#race_add_submit').click(function(){
             $("#CreditList").hide();
         }
     });
+</script>
+<script>
+    ClassicEditor
+        .create( document.querySelector( '#RaceComment' ),
+            {
+                config: { height: '300px', width: '552px' },
+                ckfinder: {
+                    uploadUrl: '/callback/upload.php?type=img',
+                }
+            }
+        )
+        .catch( error => {
+        console.error( error );
+    } );
+
 </script>
 {tpl:tpl contentFooter/}

@@ -27,6 +27,8 @@ class Xrace_Race extends Base_Widget
     protected $applySourceList = array(1=>"线上",2=>"线下");
     protected $applySepcialDiscount = array(0=>"无","single_max"=>"单人最高票价");
     protected $resultType = array("Individual"=>"个人成绩","Team"=>"团队成绩");
+    protected $teamResultType = array("Top"=>"第","Sum"=>"前");
+    
     public function getRaceStructure()
     {
         return $this->raceStructure;
@@ -90,7 +92,10 @@ class Xrace_Race extends Base_Widget
     {
         return $this->resultType;
     }
-
+    public function getTeamResultTypeList()
+    {
+        return $this->teamResultType;
+    }
 	//获取所有赛事的列表(已缓存)
 	public function getRaceCatalogList($Display = 0,$fields = "*",$Cache = 0,$wherePermission = "")
 	{
@@ -1554,25 +1559,50 @@ class Xrace_Race extends Base_Widget
 		return $RaceStatus;
 	}
 	//获取某场比赛的成绩列表
-	public function getRaceResult($RaceId,$RaceGroupId = 0,$RaceUserId = 0)
+	public function getRaceResult($RaceId,$RaceGroupId = 0,$RaceUserId = 0,$Point = 0)
 	{
 		if($RaceGroupId>0)
         {
             if($RaceUserId>0)
             {
-                $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.user.race.info',array('Force'=>1,'RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId,'RaceUserId'=>$RaceUserId));
+                $data = array('Force'=>1,'RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId,'RaceUserId'=>$RaceUserId);
+                if($Point >0)
+                {
+                    $data['Point'] = $Point;
+                    $data['returnType'] = 1;
+                }
+                $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.user.race.info',$data);
             }
             else
             {
-                $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.user.race.info',array('Force'=>1,'RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId));
+                $data = array('Force'=>1,'RaceId'=>$RaceId,'RaceGroupId'=>$RaceGroupId);
+                if($Point >0)
+                {
+                    $data['Point'] = $Point;
+                    $data['returnType'] = 1;
+                }
+                $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.user.race.info',$data);
             }
         }
         else
         {
-            $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.user.race.info',array('Force'=>1,'RaceId'=>$RaceId));
+            $data = array('Force'=>1,'RaceId'=>$RaceId);
+            if($Point >0)
+            {
+                $data['Point'] = $Point;
+                $data['returnType'] = 1;
+            }
+            $url = $this->config->apiUrl.Base_Common::getUrl('','xrace.config','get.user.race.info',$data);
         }
         $return = Base_Common::do_post($url,"",120);
-		return json_decode($return,true);
+		if($Point>0)
+        {
+            return $return;
+        }
+        else
+        {
+            return json_decode($return,true);
+        }
 	}
 	//添加单个套餐
 	public function insertRaceCombination(array $bind)

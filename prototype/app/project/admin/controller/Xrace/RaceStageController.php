@@ -256,12 +256,6 @@ class Xrace_RaceStageController extends AbstractController
             $RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
             //特殊折扣列表
             $ApplySepcialDiscount  = $this->oRace->getApplySepcialDiscount();
-			//加载富文本编辑器
-			include('Third/ckeditor/ckeditor.php');
-			$editor =  new CKEditor();
-			$editor->BasePath = '/js/ckeditor/';
-			$editor->config['height'] = 150;
-			$editor->config['width'] =750;
 			//初始化起止时间
 			$StageStartDate = date("Y-m-d",time()+30*86400);
 			$StageEndDate = date("Y-m-d",time()+32*86400);
@@ -417,12 +411,6 @@ class Xrace_RaceStageController extends AbstractController
 			{
 				$RaceStageIconList = $RaceStageInfo['RaceStageIcon'];
 			}
-			//加载富文本编辑器
-			include('Third/ckeditor/ckeditor.php');
-			$editor =  new CKEditor();
-			$editor->BasePath = '/js/ckeditor/';
-			$editor->config['height'] = 150;
-			$editor->config['width'] =750;
 			//渲染模板
 			include $this->tpl('Xrace_Race_RaceStageModify');
 		}
@@ -719,6 +707,8 @@ class Xrace_RaceStageController extends AbstractController
 		{
             //团队排名/个人排名
 		    $RaceResultTypeList  = $this->oRace->getResultTypeList();
+            //团队排名取个人成绩/汇总成绩
+            $TeamResultTypeList  = $this->oRace->getTeamResultTypeList();
 		    //比赛-分组的层级规则
 			$RaceStructureList  = $this->oRace->getRaceStructure();
 			//赛事分站ID
@@ -764,19 +754,13 @@ class Xrace_RaceStageController extends AbstractController
 			//获取计时成绩计算方式
 			$RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType("");
             //获取终点成绩计算方式
-            $FinalResultTypeList = $this->oRace->getFinalResultType();
+            $FinalResultTypeList = $this->oRace->getFinalResultType("");
 			//报名时间调用分站的报名时间
 			$ApplyStartTime = $RaceStageInfo['ApplyStartTime'];
 			$ApplyEndTime = $RaceStageInfo['ApplyEndTime'];
 			//初始化开始和结束时间
 			$StartTime = date("Y-m-d H:i:s",time()+86400*15);
 			$EndTime = date("Y-m-d H:i:s",time()+86400*16);
-			//加载富文本编辑器
-			include('Third/ckeditor/ckeditor.php');
-			$editor =  new CKEditor();
-			$editor->BasePath = '/js/ckeditor/';
-			$editor->config['height'] = 150;
-			$editor->config['width'] =750;
 			$MaxTeamRank = 5;
 			for($i=1;$i<=$MaxTeamRank;$i++)
 			{$t[$i] = $i;}
@@ -801,91 +785,87 @@ class Xrace_RaceStageController extends AbstractController
 		}
 	}
 	//修改比赛配置信息填写页面
-	public function raceModifyAction()
-	{
-		//检查权限
-		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
-		if($PermissionCheck['return'])
-		{
+    public function raceModifyAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
             //团队排名/个人排名
             $RaceResultTypeList  = $this->oRace->getResultTypeList();
-			//比赛-分组的层级规则
-			$RaceStructureList  = $this->oRace->getRaceStructure();
-			//比赛ID
-			$RaceId = intval($this->request->RaceId);
-			//比赛分组
-			$RaceGroupId = intval($this->request->RaceGroupId);
-			//获取比赛信息
-			$RaceInfo = $this->oRace->getRace($RaceId);
+            //团队排名取个人成绩/汇总成绩
+            $TeamResultTypeList  = $this->oRace->getTeamResultTypeList();
+            //比赛-分组的层级规则
+            $RaceStructureList  = $this->oRace->getRaceStructure();
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //比赛分组
+            $RaceGroupId = intval($this->request->RaceGroupId);
+            //获取比赛信息
+            $RaceInfo = $this->oRace->getRace($RaceId);
             //获取赛事分站信息
-			$RaceStageInfo = $this->oRace->getRaceStage($RaceInfo['RaceStageId'],"RaceStageId,RaceStageName,RaceCatalogId,comment");
-			//数据解包
-			$RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
+            $RaceStageInfo = $this->oRace->getRaceStage($RaceInfo['RaceStageId'],"RaceStageId,RaceStageName,RaceCatalogId,comment");
+            //数据解包
+            $RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
             //格式化分组ID
-			$RaceGroupId = in_array($RaceGroupId,array(0,$RaceInfo['RaceGroupId']))?$RaceGroupId:0;
-			//如果没有配置比赛结构 或者 比赛结构配置不在配置列表中
-			if(!isset($RaceStageInfo['comment']['RaceStructure']) || !isset($RaceStructureList[$RaceStageInfo['comment']['RaceStructure']]))
-			{
-				//默认为分组优先
-				$RaceStageInfo['comment']['RaceStructure'] = "group";
-			}
-			//如果有获取到比赛信息
-			if(isset($RaceInfo['RaceId']))
-			{
-				//获取比赛类型列表
-				$RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
-				//获取计时数据方式
-				$RaceTimingTypeList = $this->oRace->getTimingType();
-				//获取计时成绩计算方式
-				$RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType("");
+            $RaceGroupId = in_array($RaceGroupId,array(0,$RaceInfo['RaceGroupId']))?$RaceGroupId:0;
+            //如果没有配置比赛结构 或者 比赛结构配置不在配置列表中
+            if(!isset($RaceStageInfo['comment']['RaceStructure']) || !isset($RaceStructureList[$RaceStageInfo['comment']['RaceStructure']]))
+            {
+                //默认为分组优先
+                $RaceStageInfo['comment']['RaceStructure'] = "group";
+            }
+            //如果有获取到比赛信息
+            if(isset($RaceInfo['RaceId']))
+            {
+                //获取比赛类型列表
+                $RaceTypeList  = $this->oRace->getRaceTypeList("RaceTypeId,RaceTypeName");
+                //获取计时数据方式
+                $RaceTimingTypeList = $this->oRace->getTimingType();
+                //获取计时成绩计算方式
+                $RaceTimingResultTypeList = $this->oRace->getRaceTimingResultType("");
                 //获取终点成绩计算方式
                 $FinalResultTypeList = $this->oRace->getFinalResultType("");
-				//数据解包
+                //数据解包
                 $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
                 //解包数组
-				$RaceInfo['comment']['RaceStartMicro'] = isset($RaceInfo['comment']['RaceStartMicro'])?$RaceInfo['comment']['RaceStartMicro']:0;
-				//解包地图数组
-				$RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
-				if($RaceStageInfo['comment']['RaceStructure'] == "race")
-				{
-					//获取当前赛事下的分组列表
-					$RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],"RaceGroupName,RaceGroupId");
+                $RaceInfo['comment']['RaceStartMicro'] = isset($RaceInfo['comment']['RaceStartMicro'])?$RaceInfo['comment']['RaceStartMicro']:0;
+                //解包地图数组
+                $RaceInfo['RouteInfo'] = json_decode($RaceInfo['RouteInfo'],true);
+                if($RaceStageInfo['comment']['RaceStructure'] == "race")
+                {
+                    //获取当前赛事下的分组列表
+                    $RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],"RaceGroupName,RaceGroupId");
                     //置为0
-					$RaceGroupId = 0;
+                    $RaceGroupId = 0;
                     //循环已经配置的分组
-					foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $k => $v)
-					{
-					    //如果查到就保留
-						if(isset($RaceGroupList[$v]))
-						{
+                    foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $k => $v)
+                    {
+                        //如果查到就保留
+                        if(isset($RaceGroupList[$v]))
+                        {
                             $RaceStageInfo['comment']['SelectedRaceGroup'][$k] = array_merge(isset($RaceInfo['comment']['SelectedRaceGroup'][$v])?$RaceInfo['comment']['SelectedRaceGroup'][$v]:array(),$RaceGroupList[$v]);
-						    if(strtotime($RaceStageInfo['comment']['SelectedRaceGroup'][$k]['StartTime'])==0)
+                            if(strtotime($RaceStageInfo['comment']['SelectedRaceGroup'][$k]['StartTime'])==0)
                             {
                                 $RaceStageInfo['comment']['SelectedRaceGroup'][$k]['StartTime'] = $RaceInfo['StartTime'];
                                 $RaceStageInfo['comment']['SelectedRaceGroup'][$k]['RaceStartMicro'] = $RaceInfo['comment']['RaceStartMicro'];
                                 $RaceStageInfo['comment']['SelectedRaceGroup'][$k]['EndTime'] = $RaceInfo['EndTime'];
                             }
-						}
-						//否则就删除
-						else
-						{
-							unset($RaceStageInfo['comment']['SelectedRaceGroup'][$k]);
-						}
-					}
-				}
-				//加载富文本编辑器
-				include('Third/ckeditor/ckeditor.php');
-				$editor =  new CKEditor();
-				$editor->BasePath = '/js/ckeditor/';
-				$editor->config['height'] = 150;
-				$editor->config['width'] =750;
-				$MaxTeamRank = 5;
-				for($i=1;$i<=$MaxTeamRank;$i++)
-				{$t[$i] = $i;}
+                        }
+                        //否则就删除
+                        else
+                        {
+                            unset($RaceStageInfo['comment']['SelectedRaceGroup'][$k]);
+                        }
+                    }
+                }
+                $MaxTeamRank = 5;
+                for($i=1;$i<=$MaxTeamRank;$i++)
+                {$t[$i] = $i;}
                 //获取关联赛事下的积分类目列表
                 $CreditArr = $this->oCredit->getCreditList($RaceStageInfo['RaceCatalogId']);
-				$CreditArr[0] = array("CreditId"=>0,"CreditName"=>"全部");
-				foreach($RaceInfo['RouteInfo']['ResultCreditList'] as $CreditId => $CreditInfo)
+                $CreditArr[0] = array("CreditId"=>0,"CreditName"=>"全部");
+                foreach($RaceInfo['RouteInfo']['ResultCreditList'] as $CreditId => $CreditInfo)
                 {
                     if(isset($RaceInfo['RouteInfo']['ResultCreditList'][$CreditId]))
                     {
@@ -893,23 +873,93 @@ class Xrace_RaceStageController extends AbstractController
                     }
                 }
                 ksort($CreditArr);
-				//最大每分钟处理次数
-				$ProcessRate = $this->oRace->getMaxProcessRate();
+                //最大每分钟处理次数
+                $ProcessRate = $this->oRace->getMaxProcessRate();
                 $PrecessRateList = array();
-				for($i=1;$i<=$ProcessRate;$i++)
+                for($i=1;$i<=$ProcessRate;$i++)
                 {
                     $PrecessRateList[] = $i;
                 }
-				//渲染模板
-				include $this->tpl('Xrace_Race_RaceModify');
-			}
-		}
-		else
-		{
-			$home = $this->sign;
-			include $this->tpl('403');
-		}
-	}
+                //渲染模板
+                include $this->tpl('Xrace_Race_RaceModify');
+            }
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
+    //添加选手信息填写页面
+    public function raceUserAddAction()
+    {
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            //团队排名/个人排名
+            $RaceResultTypeList  = $this->oRace->getResultTypeList();
+            //团队排名取个人成绩/汇总成绩
+            $TeamResultTypeList  = $this->oRace->getTeamResultTypeList();
+            //比赛-分组的层级规则
+            $RaceStructureList  = $this->oRace->getRaceStructure();
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //比赛分组
+            $RaceGroupId = intval($this->request->RaceGroupId);
+            //获取比赛信息
+            $RaceInfo = $this->oRace->getRace($RaceId);
+            //获取赛事分站信息
+            $RaceStageInfo = $this->oRace->getRaceStage($RaceInfo['RaceStageId'],"RaceStageId,RaceStageName,RaceCatalogId,comment");
+            //数据解包
+            $RaceStageInfo['comment'] = json_decode($RaceStageInfo['comment'],true);
+            //格式化分组ID
+            $RaceGroupId = in_array($RaceGroupId,array(0,$RaceInfo['RaceGroupId']))?$RaceGroupId:0;
+            $oUser = new Xrace_UserInfo();
+            //获取性别列表
+            $SexList = $oUser->getSexList();
+            //获取实名认证证件类型列表
+            $AuthIdTypesList = $oUser->getAuthIdType();
+            //如果没有配置比赛结构 或者 比赛结构配置不在配置列表中
+            if(!isset($RaceStageInfo['comment']['RaceStructure']) || !isset($RaceStructureList[$RaceStageInfo['comment']['RaceStructure']]))
+            {
+                //默认为分组优先
+                $RaceStageInfo['comment']['RaceStructure'] = "group";
+            }
+            //如果有获取到比赛信息
+            if(isset($RaceInfo['RaceId']))
+            {
+                if($RaceStageInfo['comment']['RaceStructure'] == "race")
+                {
+                    //获取当前赛事下的分组列表
+                    $RaceGroupList = $this->oRace->getRaceGroupList($RaceStageInfo['RaceCatalogId'],"RaceGroupName,RaceGroupId");
+                    //置为0
+                    $RaceGroupId = 0;
+                    //循环已经配置的分组
+                    foreach($RaceStageInfo['comment']['SelectedRaceGroup'] as $k => $v)
+                    {
+                        //如果查到就保留
+                        if(isset($RaceGroupList[$v]))
+                        {
+                            $RaceStageInfo['comment']['SelectedRaceGroup'][$k] = array_merge(isset($RaceInfo['comment']['SelectedRaceGroup'][$v])?$RaceInfo['comment']['SelectedRaceGroup'][$v]:array(),$RaceGroupList[$v]);
+                        }
+                        //否则就删除
+                        else
+                        {
+                            unset($RaceStageInfo['comment']['SelectedRaceGroup'][$k]);
+                        }
+                    }
+                }
+                //渲染模板
+                include $this->tpl('Xrace_Race_RaceUserAdd');
+            }
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
     //复制比赛配置填写页面
     public function raceCopySubmitAction()
     {
@@ -934,12 +984,12 @@ class Xrace_RaceStageController extends AbstractController
             $home = $this->sign;
             include $this->tpl('403');
         }
-}
+    }
 	//添加比赛
 	public function raceInsertAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','TimeDB','TimePrefix','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm','CreditList','FinalResultType','ProcessRate');
+		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','TimeDB','TimePrefix','RaceTimingType','RaceTimingResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm','CreditList','FinalResultType','ProcessRate','TeamResultRankType');
 		//转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -1052,9 +1102,12 @@ class Xrace_RaceStageController extends AbstractController
 				//成绩计算方式
                 $bind['RouteInfo']['RaceTimingResultType'] = trim($bind['RaceTimingResultType']);
                 unset($bind['RaceTimingResultType']);
-                //成绩计算方式
+                //终点成绩计算方式
                 $bind['RouteInfo']['FinalResultType'] = trim($bind['FinalResultType']);
                 unset($bind['FinalResultType']);
+                //团队成绩计算方式
+                $bind['comment']['TeamResultRankType'] = trim($bind['TeamResultRankType']);
+                unset($bind['TeamResultRankType']);
                 if($bind['RouteInfo']['FinalResultType']=='credit')
                 {
                     if(isset($bind['CreditList'][0]))
@@ -1131,7 +1184,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceStageId','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','TimeDB','TimePrefix','RaceTimingType','RaceTimingResultType','FinalResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm','CreditList','ProcessRate');
+		$bind=$this->request->from('RaceName','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','TimeDB','TimePrefix','RaceTimingType','RaceTimingResultType','FinalResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm','CreditList','ProcessRate','TeamResultRankType');
         //转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));
@@ -1257,9 +1310,12 @@ class Xrace_RaceStageController extends AbstractController
 				//成绩计算方式
 				$bind['RouteInfo']['RaceTimingResultType'] = trim($bind['RaceTimingResultType']);
 				unset($bind['RaceTimingResultType']);
-                //成绩计算方式
+                //终点成绩计算方式
                 $bind['RouteInfo']['FinalResultType'] = trim($bind['FinalResultType']);
                 unset($bind['FinalResultType']);
+                //团队成绩计算方式
+                $bind['comment']['TeamResultRankType'] = trim($bind['TeamResultRankType']);
+                unset($bind['TeamResultRankType']);
                 if($bind['RouteInfo']['FinalResultType']=='credit')
                 {
                     if(isset($bind['CreditList'][0]))
@@ -1345,7 +1401,7 @@ class Xrace_RaceStageController extends AbstractController
 		echo json_encode($response);
 		return true;
 	}
-    //修改比赛
+    //复制比赛
     public function raceCopyAction()
     {
         //获取 页面参数
@@ -2546,6 +2602,256 @@ class Xrace_RaceStageController extends AbstractController
 			include $this->tpl('403');
 		}
 	}
+    //报名记录添加
+    public function raceUserInsertAction()
+    {
+        $NameErrorUser = array();
+        //检查权限
+        $PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
+        if($PermissionCheck['return'])
+        {
+            //获取 页面参数
+            $bind=$this->request->from('RaceId','RaceGroupId','BIB','ChipId','Name','Sex','IdType','IdNo','ContactMobile','TeamName');
+            print_r($bind);
+            die();
+            //比赛ID
+            $RaceId = intval($this->request->RaceId);
+            //比赛分组
+            $RaceGroupId = intval($this->request->RaceGroupId);
+            //获取比赛信息
+            $RaceInfo = $this->oRace->getRace($RaceId);
+            $RaceGroupId = in_array($RaceGroupId,array(0,$RaceInfo['RaceGroupId']))?$RaceGroupId:0;
+            //如果有获取到比赛信息
+            if(isset($RaceInfo['RaceId']))
+            {
+                //获取当前时间
+                $CurrentTime = date("Y-m-d H:i:s",time());
+                //获取赛事信息
+                $RaceStageInfo = $this->oRace->getRaceStage($RaceInfo['RaceStageId'],"RaceStageId,RaceCatalogId");
+                //文件上传
+                $oUpload = new Base_Upload('RaceUserList');
+                $upload = $oUpload->upload('RaceUserList');
+                $res = $upload->resultArr;
+                //打开文件
+                $handle = fopen($res['1']['path'], 'r');
+                $content = '';
+                $ApplyCount = 0;
+                $oUser = new Xrace_UserInfo();
+                $oTeam = new Xrace_Team();
+                $SexList = $oUser->getSexList();
+                $IdTypeList = $oUser->getAuthIdType();
+                //循环到文件结束
+                while(!feof($handle))
+                {
+                    //获取每行信息
+                    $content= fgets($handle, 8080);
+                    //以,为分隔符解开
+                    $t = explode(",",$content);
+                    if($RaceInfo['RaceGroupId']==0)
+                    {
+                        if(!isset($RaceGroupList[trim($t[1])]))
+                        {
+                            $RaceGroupInfo = $this->oRace->getRaceGroupByName(trim($t[1]),$RaceStageInfo['RaceCatalogId'],"RaceGroupId,RaceGroupName");
+                            if($RaceGroupInfo['RaceGroupId'])
+                            {
+                                $RaceGroupList[$RaceGroupInfo['RaceGroupName']] = $RaceGroupInfo;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        $RaceGroupInfo = array("RaceGroupId"=>$RaceInfo['RaceGroupId']);
+                    }
+                    if(trim($t['8'])=="")
+                    {
+                        $TeamId = 0;
+                    }
+                    else
+                    {
+                        if(isset($TeamList[trim($t['8'])]))
+                        {
+                            $TeamId = $TeamList[trim($t['8'])];
+                        }
+                        else
+                        {
+                            $TeamInfo = $oTeam->getTeamInfoByName(trim($t['8']),"TeamId,TeamName");
+                            if(isset($TeamInfo['TeamId']))
+                            {
+                                $TeamList[trim($t['8'])] = $TeamInfo['TeamId'];
+                                $TeamId = $TeamInfo['TeamId'];
+                            }
+                            else
+                            {
+                                //获取当前时间
+                                $Time = date("Y-m-d H:i:s", time());
+                                //生成队伍的数组
+                                $bind['TeamName'] = trim($t['8']);
+                                $bind['TeamComment'] = $bind['TeamName'];
+                                $bind['CreateUserId'] = 0;
+                                $bind['CreateTime'] = $Time;
+                                $bind['LastUpdateTime'] = $Time;
+                                //创建队伍信息
+                                $InsertTeam = $oTeam->insertTeam($bind);
+                                if($InsertTeam)
+                                {
+                                    $TeamId = $InsertTeam;
+                                    $TeamList[trim($t['8'])] = $InsertTeam;
+                                }
+                            }
+                        }
+                    }
+                    //根据证件号码获取用户信息
+                    $UserInfo = $oUser->getUserByColumn("IdNo",trim($t['6']));
+                    //如果找到
+                    if(isset($UserInfo['UserId']))
+                    {
+                        //如果关联比赛用户
+                        if($UserInfo['RaceUserId']>0)
+                        {
+                            $RaceUserInfo = $oUser->getRaceUser($UserInfo['RaceUserId'],"ContactMobile");
+                            //初始化新报名记录的信息
+                            $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$UserInfo['RaceUserId'],"ApplyRaceUserId"=>$UserInfo['RaceUserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
+                            //如果存在，则更新部分信息
+                            $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
+                            $Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
+                            //如果创建成功
+                            if($Apply)
+                            {
+                                //写入签到记录
+                                $oUser->insertUserCheckInInfo(array("RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceUserId"=>$UserInfo['RaceUserId'],"ApplyRaceUserId"=>$UserInfo['RaceUserId'],"Mobile"=>$RaceUserInfo['ContactMobile']));
+                                $ApplyCount++;
+                            }
+                        }
+                        else
+                        {
+                            //根据证件号码获取比赛用户信息
+                            $RaceUserInfo = $oUser->getRaceUserByColumn("IdNo",trim($t['6']));
+                            //如果已经被占用
+                            if(isset($RaceUserInfo['RaceUserId']))
+                            {
+                                $NewUserInfo = array("RaceUserId"=>$RaceUserInfo['RaceUserId']);
+                                $update = $oUser->updateUser($UserInfo['UserId'],$NewUserInfo);
+                                if($update)
+                                {
+                                    //初始化新报名记录的信息
+                                    $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$RaceUserInfo['RaceUserId'],"ApplyRaceUserId"=>$RaceUserInfo['RaceUserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
+                                    //如果存在，则更新部分信息
+                                    $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
+                                    $Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
+                                    //echo "apply002:".$Apply."<br>";
+                                    //如果创建成功
+                                    if($Apply)
+                                    {
+                                        //写入签到记录
+                                        $oUser->insertUserCheckInInfo(array("RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceUserId"=>$RaceUserInfo['RaceUserId'],"ApplyRaceUserId"=>$RaceUserInfo['RaceUserId'],"Mobile"=>$RaceUserInfo['ContactMobile']));
+                                        $ApplyCount++;
+                                    }
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
+                            else
+                            {
+                                //根据用户创建比赛用户
+                                $RaceUserId = $oUser->createRaceUserByUserInfo($UserInfo['UserId']);
+                                //如果创建成功
+                                if($RaceUserId)
+                                {
+                                    $RaceUserInfo = $oUser->getRaceUser($RaceUserId,"ContactMobile");
+                                    //初始化新报名记录的信息
+                                    $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$RaceUserId,"ApplyRaceUserId"=>$RaceUserId,"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
+                                    //如果存在，则更新部分信息
+                                    $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
+                                    $Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
+                                    //echo "apply003:".$Apply."<br>";
+                                    //如果创建成功
+                                    if($Apply)
+                                    {
+                                        //写入签到记录
+                                        $oUser->insertUserCheckInInfo(array("RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceUserId"=>$RaceUserId,"ApplyRaceUserId"=>$RaceUserId,"Mobile"=>$RaceUserInfo['ContactMobile']));
+                                        $ApplyCount++;
+                                    }
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        //根据证件号码获取比赛用户信息
+                        $RaceUserInfo = $oUser->getRaceUserByColumn("IdNo",trim($t['6']));
+                        //如果已经被占用
+                        if(isset($RaceUserInfo['RaceUserId']))
+                        {
+                            //初始化新报名记录的信息
+                            $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$RaceUserInfo['RaceUserId'],"ApplyRaceUserId"=>$RaceUserInfo['RaceUserId'],"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
+                            //如果存在，则更新部分信息
+                            $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
+                            //print_R($ApplyInfo);
+                            $Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
+                            //echo "apply004:".$Apply."<br>";
+                            //如果创建成功
+                            if($Apply)
+                            {
+                                //写入签到记录
+                                $oUser->insertUserCheckInInfo(array("RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceUserId"=>$RaceUserInfo['RaceUserId'],"ApplyRaceUserId"=>$RaceUserInfo['RaceUserId'],"Mobile"=>$RaceUserInfo['ContactMobile']));
+                                $ApplyCount++;
+                            }
+                        }
+                        else
+                        {
+                            $Sex = array_search($t[3],$SexList);
+                            $IdType = array_search($t[5],$IdTypeList);
+                            //生成用户信息
+                            $UserInfo = array('CreateUserId'=>0,'Name'=>$t['2'],'Sex'=>$Sex,'Birthday'=>"",'ContactMobile'=>$t['7'],'IdNo'=>trim($t['6']),'IdType'=>$IdType,'Available'=>0,'RegTime'=>date("Y-m-d H:i:s",time()));
+                            if($IdType==1)
+                            {
+                                $UserInfo['Birthday'] = substr(trim($t['6']),6,4)."-".substr(trim($t['6']),10,2)."-".substr(trim($t['6']),12,2);
+                                $UserInfo['Sex'] = $Sex==0?$Sex:(intval(substr(trim($t['6']),16,1))%2==0?2:1);
+                            }
+                            $CreateUser = 1;
+                            //创建用户
+                            $CreateUser = $oUser->insertRaceUser($UserInfo);
+                            //如果创建成功
+                            if($CreateUser)
+                            {
+                                //初始化新报名记录的信息
+                                $ApplyInfo = array("ApplyTime"=>$CurrentTime,"RaceUserId"=>$CreateUser,"ApplyRaceUserId"=>$CreateUser,"RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceGroupId"=>$RaceGroupInfo['RaceGroupId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceId"=>$RaceInfo['RaceId'],"BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
+                                //如果存在，则更新部分信息
+                                $ApplyUpdateInfo = array("BIB"=>trim($t[0]),"ChipId"=>trim($t[4]),"TeamId"=>$TeamId);
+                                $Apply = $oUser->insertRaceApplyUserInfo($ApplyInfo,$ApplyUpdateInfo);
+                                //echo "apply005:".$Apply."<br>";
+                                //如果创建成功
+                                if($Apply)
+                                {
+                                    //写入签到记录
+                                    $oUser->insertUserCheckInInfo(array("RaceCatalogId"=>$RaceStageInfo['RaceCatalogId'],"RaceStageId"=>$RaceInfo['RaceStageId'],"RaceUserId"=>$CreateUser,"ApplyRaceUserId"=>$CreateUser,"Mobile"=>$UserInfo['ContactMobile']));
+                                    $ApplyCount++;
+                                }
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                    continue;
+                }
+            }
+            echo json_encode(array('errno' => 0,'ApplyCount'=>$ApplyCount,'NameErrorUserCount'=>count($NameErrorUser),'NameErrorUser'=>count($NameErrorUser)>0?implode(",",$NameErrorUser):"无"));
+        }
+        else
+        {
+            $home = $this->sign;
+            include $this->tpl('403');
+        }
+    }
 	//用户退出比赛
 	public function userRaceDeleteAction()
 	{
@@ -2792,9 +3098,12 @@ class Xrace_RaceStageController extends AbstractController
             }
             if($Download==1)
             {
+                set_time_limit(0);
                 $oExcel = new Third_Excel();
                 $FileName= $RaceInfo['RaceName']."-".(($RaceGroupId>0)?$RaceGroupList[$RaceGroupId]["RaceGroupInfo"]['RaceGroupName']:"全场");
-                $oExcel->download($FileName)->addSheet('详情');
+                $oExcel->download($FileName);
+                /*
+                $oExcel->addSheet('详情');
                 //循环运动类型列表
                 foreach($RaceResultList['UserRaceInfo']['Sports'] as $sid => $SportsInfo)
                 {
@@ -2984,8 +3293,8 @@ class Xrace_RaceStageController extends AbstractController
                 }
                 $oExcel->addRows(array($t));
                 $oExcel->closeSheet();
-
-                $oExcel->addSheet('个人详情'.$RaceInfo['comment']['ResultType']);
+                */
+                $oExcel->addSheet('个人详情');
                 $t = array();
                 $t["BIB"] = "BIB";$t["Name"] = "姓名";$t["Group"] = "组别";$t["Team"] = "队伍";
                 //循环运动类型列表
@@ -3000,6 +3309,7 @@ class Xrace_RaceStageController extends AbstractController
                 $t["TotalTime"] = "总时间";$t["Lag"] = "落后";$t["Rank"] = "总排名";$t["GroupRank"] = "分组排名";$t['DNS'] = "DNS";$t["DNF"] = "DNF";
                 $oExcel->addRows(array($t));
                 unset($t);
+                /*
                 if($RaceInfo['comment']['ResultType'] == "Team")
                 {
                     foreach($RaceResultList['UserRaceInfo']['Team'] as $G => $GroupInfo)
@@ -3046,10 +3356,9 @@ class Xrace_RaceStageController extends AbstractController
                             }
                         }
                     }
-
                 }
                 else
-                {
+                {*/
                     //循环选手信息
                     foreach($RaceResultList['UserRaceInfo']['Total'] as $U => $UserInfo)
                     {
@@ -3058,13 +3367,16 @@ class Xrace_RaceStageController extends AbstractController
                         $t["Name"] = $UserInfo['Name'];
                         $t["GroupName"] = $RaceGroupList[$UserInfo['RaceGroupId']]["RaceGroupInfo"]['RaceGroupName'];
                         $t["TeamName"] = $UserInfo['TeamName'];
+
                         $UserRaceInfo = $this->oRace->getRaceResult($RaceId, $UserInfo['RaceGroupId'],$UserInfo['RaceUserId']);
                         //循环运动类型列表
+
                         foreach($RaceResultList['UserRaceInfo']['Sports'] as $sid => $SportsInfo)
                         {
                             $point = $SportsInfo['TimingPointList'][count($SportsInfo['TimingPointList'])-1];
                             $t[$point] = Base_Common::parthTimeLag($UserRaceInfo['UserRaceInfo']['Point'][$point]['SportsTime']);
                         }
+
                         foreach($RaceResultList['UserRaceInfo']['Sports'] as $sid => $SportsInfo)
                         {
                             $point = $SportsInfo['TimingPointList'][count($SportsInfo['TimingPointList'])-1];
@@ -3094,11 +3406,132 @@ class Xrace_RaceStageController extends AbstractController
                         $t["GroupRank"] = $UserInfo['GroupRank'];
                         $t["DNS"] = $UserInfo['CurrentPosition']>1?"否":"是";
                         $t["DNF"] = $UserInfo['Finished']>0?"否":"是";
+
                         $oExcel->addRows(array($t));
                         unset($t);
                     }
+                //}
+                $oExcel->closeSheet();
+                //循环比赛已经开设的分组列表
+                foreach($RaceInfo['comment']['SelectedRaceGroup'] as $GroupId => $GroupInfo)
+                {
+                    $RaceGroupInfo = $this->oRace->getRaceGroup($GroupId,"RaceGroupId,RaceGroupName");
+                    if($RaceGroupInfo['RaceGroupId'])
+                    {
+                        if($RaceGroupId == $RaceGroupInfo['RaceGroupId'] || $RaceGroupId == 0)
+                        {
+                            $oExcel->addSheet('团队详情-'.$RaceGroupInfo['RaceGroupName']);
+                            //如果取前几人的成绩
+                            if($RaceInfo['comment']['TeamResultRankType'] == "Top")
+                            {
+                                $t = array();
+                                $t["Team"] = "队伍";$t["BIB"] = "BIB";$t["Name"] = "姓名";
+                                //循环运动类型列表
+                                foreach($RaceResultList['UserRaceInfo']['Sports'] as $sid => $SportsInfo)
+                                {
+                                    $t[$sid] = $SportsInfo['SportsTypeInfo']['SportsTypeName'];
+                                }
+                                foreach($RaceResultList['UserRaceInfo']['Sports'] as $sid => $SportsInfo)
+                                {
+                                    $t[$sid."_Speed"] = $SportsInfo['SportsTypeInfo']['SportsTypeName']."_均速";
+                                }
+                                $t["TotalTime"] = "总时间";$t["Lag"] = "落后";
+                                $oExcel->addRows(array($t));
+                                //循环选手信息
+                                foreach($RaceResultList['UserRaceInfo']['Team'][$GroupId] as $U => $UserInfo)
+                                {
+                                    $t = array();
+                                    $t["TeamName"] = $UserInfo['TeamName'];
+                                    $t["BIB"] = $UserInfo['BIB'];
+                                    $t["Name"] = $UserInfo['Name'];
+                                    $UserRaceInfo = $this->oRace->getRaceResult($RaceId, $UserInfo['RaceGroupId'],$UserInfo['RaceUserId']);
+                                    //循环运动类型列表
+                                    foreach($RaceResultList['UserRaceInfo']['Sports'] as $sid => $SportsInfo)
+                                    {
+                                        $point = $SportsInfo['TimingPointList'][count($SportsInfo['TimingPointList'])-1];
+                                        $t[$point] = Base_Common::parthTimeLag($UserRaceInfo['UserRaceInfo']['Point'][$point]['SportsTime']);
+                                    }
+                                    foreach($RaceResultList['UserRaceInfo']['Sports'] as $sid => $SportsInfo)
+                                    {
+                                        $point = $SportsInfo['TimingPointList'][count($SportsInfo['TimingPointList'])-1];
+                                        $t[$point."_Speed"] = $UserRaceInfo['UserRaceInfo']['Point'][$point]['PointSpeed'];
+                                    }
+                                    if($RaceInfo['RouteInfo']['RaceTimingResultType']=="gunshot")
+                                    {
+                                        $t["Time"] = Base_Common::parthTimeLag($UserRaceInfo['UserRaceInfo']['Point'][count($UserRaceInfo['UserRaceInfo']['Point'])]['TotalTime']);
+                                        $t["TimeLag"] = Base_Common::parthTimeLag($UserInfo['TimeLag']);
+                                        }
+                                    else
+                                    {
+                                        $t["Time"] = Base_Common::parthTimeLag($UserRaceInfo['UserRaceInfo']['Point'][count($UserRaceInfo['UserRaceInfo']['Point'])]['TotalNetTime']);
+                                        $t["TimeLag"] = Base_Common::parthTimeLag($UserInfo['NetTimeLag']);
+                                    }
+                                    $oExcel->addRows(array($t));
+                                    unset($t);
+                                }
+                            }
+                            //如果取前几人的成绩
+                            elseif($RaceInfo['comment']['TeamResultRankType'] == "Sum")
+                            {
+                                $t = array();
+                                $t["Team"] = "队伍";$t["TotalTime"] = "总时间";$t["Lag"] = "落后";$t["BIB"] = "BIB";$t["Name"] = "姓名";
+                                //循环运动类型列表
+                                foreach($RaceResultList['UserRaceInfo']['Sports'] as $sid => $SportsInfo)
+                                {
+                                    $t[$sid] = $SportsInfo['SportsTypeInfo']['SportsTypeName'];
+                                }
+                                foreach($RaceResultList['UserRaceInfo']['Sports'] as $sid => $SportsInfo)
+                                {
+                                    $t[$sid."_Speed"] = $SportsInfo['SportsTypeInfo']['SportsTypeName']."_均速";
+                                }
+                                $oExcel->addRows(array($t));
+                                //循环选手信息
+                                foreach($RaceResultList['UserRaceInfo']['Team'][$GroupId] as $U => $TeamInfo)
+                                {
+                                    $t = array();$i = 1;
+                                    foreach($TeamInfo['UserList'] as $k => $UserInfo)
+                                    {
+                                        if($i == 1)
+                                        {
+                                            $t["TeamName"] = $TeamInfo['TeamName'];
+                                            if($RaceInfo['RouteInfo']['RaceTimingResultType']=="gunshot")
+                                            {
+                                                $t["Time"] = Base_Common::parthTimeLag($TeamInfo['TotalTime']);
+                                                $t["TimeLag"] = Base_Common::parthTimeLag($TeamInfo['TimeLag']);
+                                            }
+                                            else
+                                            {
+                                                $t["Time"] = Base_Common::parthTimeLag($TeamInfo['TotalNetTime']);
+                                                $t["TimeLag"] = Base_Common::parthTimeLag($TeamInfo['NetTimeLag']);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            $t["TeamName"] = "";
+                                            $t["Time"] = "";
+                                            $t["TimeLag"] = "";
+                                        }
+                                        $i++;
+                                        $t["BIB"] = $UserInfo['BIB'];
+                                        $t["Name"] = $UserInfo['Name'];
+                                        if($RaceInfo['RouteInfo']['RaceTimingResultType']=="gunshot")
+                                        {
+                                            $t["UserTime"] = Base_Common::parthTimeLag($UserInfo['TotalTime']);
+                                        }
+                                        else
+                                        {
+                                            $t["UserTime"] = Base_Common::parthTimeLag($UserInfo['TotalNetTime']);
+                                        }
+                                        $oExcel->addRows(array($t));
+                                        unset($t);
+                                    }
+                                }
+                            }
+                            $oExcel->closeSheet();
+                        }
+                    }
                 }
-                $oExcel->closeSheet()->close();
+                $oExcel->close();
             }
             //渲染模板
 			include $this->tpl('Xrace_Race_RaceResultList');

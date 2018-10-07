@@ -42,6 +42,9 @@
   function UpdateUserCreditByRace(rid,rname){
     UpdateUserCreditByRaceBox= divBox.confirmBox({content:'确定根据 '+ rname +' 比赛结果进行积分累加?',ok:function(){location.href = '{tpl:$this.sign/}&ac=update.credit.by.race.result&RaceId=' + rid;}});
   }
+  function RaceUserAdd(rid,rname){
+      RaceResultListBox = divBox.showBox('{tpl:$this.sign/}&ac=race.user.add&RaceId=' + rid, {title:rname+'-新增选手',width:600,height:600});
+  }
 </script>
 <input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
   <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupId/}" />
@@ -74,7 +77,7 @@
      | <a href="{tpl:$this.sign/}&ac=race.detail&RaceId={tpl:$RaceInfo.RaceId/}&RaceGroupId={tpl:$RaceInfo.RaceGroupId/}">计时点</a> | <a href="{tpl:$this.sign/}&ReturnType=1&ac=race.user.list&RaceId={tpl:$RaceInfo.RaceId/}">名单</a> | <a href="javascript:;" onclick="AutoAsignBIB('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">自动分配BIB</a>
       | <a  href="javascript:;" onclick="RaceResultUpdate('{tpl:$RaceInfo.RaceId/}')">成绩更新</a> | <a href="{tpl:$this.sign/}&ac=race.result.list&RaceId={tpl:$RaceInfo.RaceId/}"  target="_blank">成绩单</a> | <a  href="javascript:;" onclick="RaceDNF('{tpl:$RaceInfo.RaceId/}')">批量DNF</a> | <a  href="javascript:;" onclick="RaceDNS('{tpl:$RaceInfo.RaceId/}')">批量DNS</a>
         {tpl:if($RaceInfo.comment.ResultNeedConfirm==1)}| {tpl:if($RaceInfo.comment.RaceResultConfirm.ConfirmStatus==1)}成绩已发布{tpl:else}<a  href="javascript:;" onclick="RaceResultConfirm('{tpl:$RaceInfo.RaceId/}');">成绩确认发布</a>{/tpl:if}{/tpl:if}
-      | <a  href="javascript:;" onclick="RaceDelete('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">删除</a> | <a  href="javascript:;" onclick="RaceCopy('{tpl:$RaceInfo.RaceId/}')">复制</a> | <a href="{tpl:$this.sign/}&ac=race.check.in.submit&RaceId={tpl:$RaceInfo.RaceId/}" target="_blank">检录</a> | <a href="javascript:;" onclick="TimingDetailList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">计时记录详情</a> | <a href="javascript:;" onclick="UpdateUserCreditByRace('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">比赛积分累计</a></th>
+      | <a  href="javascript:;" onclick="RaceDelete('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">删除</a> | <a  href="javascript:;" onclick="RaceCopy('{tpl:$RaceInfo.RaceId/}')">复制</a> | <a href="{tpl:$this.sign/}&ac=race.check.in.submit&RaceId={tpl:$RaceInfo.RaceId/}" target="_blank">检录</a> | <a href="javascript:;" onclick="TimingDetailList('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">计时记录详情</a> | <a href="javascript:;" onclick="UpdateUserCreditByRace('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">比赛积分累计</a> | <a href="javascript:;" onclick="RaceUserAdd('{tpl:$RaceInfo.RaceId/}','{tpl:$RaceInfo.RaceName/}')">新增选手</a></th>
     </th>
   </tr>
   {/tpl:loop}
