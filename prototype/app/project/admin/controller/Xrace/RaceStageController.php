@@ -1184,7 +1184,7 @@ class Xrace_RaceStageController extends AbstractController
 	public function raceUpdateAction()
 	{
 		//获取 页面参数
-		$bind=$this->request->from('RaceName','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','TimeDB','TimePrefix','RaceTimingType','RaceTimingResultType','FinalResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm','CreditList','ProcessRate','TeamResultRankType');
+		$bind=$this->request->from('RaceStageId','RaceName','RaceGroupId','PriceList','ApplyStartTime','ApplyEndTime','StartTime','EndTime','SingleUser','TeamUser','SingleUserLimit','TeamLimit','TeamUserMin','TeamUserMax','SexUser','RaceTypeId','RaceComment','MustSelect','SingleSelect','TimeDB','TimePrefix','RaceTimingType','RaceTimingResultType','FinalResultType','RaceStartMicro','SelectedRaceGroup','NoStart','TeamResultRank','ResultType','ResultNeedConfirm','CreditList','ProcessRate','TeamResultRankType');
         //转化时间为时间戳
 		$ApplyStartTime = strtotime(trim($bind['ApplyStartTime']));
 		$ApplyEndTime = strtotime(trim($bind['ApplyEndTime']));

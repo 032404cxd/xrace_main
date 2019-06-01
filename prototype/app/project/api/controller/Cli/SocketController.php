@@ -148,7 +148,9 @@ class Cli_SocketController extends Base_Controller_Action
                         }
                         else
                         {
-                            //if(strlen($MylapsInfoArr['c'] >=3))
+                            //print_R($MylapsInfoArr);
+                            //echo "\n";
+                            if(isset($MylapsInfoArr['c']))
                             {
                                 $StartInfo = $oRace->getRaceResult($RaceId,0,0,1);
                                 $L = explode("<br>",$StartInfo);
@@ -169,7 +171,7 @@ class Cli_SocketController extends Base_Controller_Action
                                         }
                                     }
                                 }
-                                sleep(1);
+                                //sleep(1);
                             }
 
 

@@ -392,14 +392,12 @@ class Xrace_Race extends Base_Widget
 		$whereStage = (isset($params['RaceStageId']) && ($params['RaceStageId'] >0))?(" RaceStageId = ".$params['RaceStageId']):"";
 		//$whereEndTime = (isset($params['RaceEndTime']) && ($params['RaceEndTime'] >0))?(" unix_timestamp(EndTime) <= ".$params['RaceEndTime']):"";
         $whereIn = (isset($params['inRun']) && ($params['inRun']==1))?("((EndTime >= '".date("Y-m-d H:i:s",time()-300)."') and (StartTime <= '".date("Y-m-d H:i:s",time()+300). "'))"):"";
-        $whereToProcess = (isset($params['ToProcess']) && ($params['ToProcess']==1))?" or (ToProcess = '1')":"";
+        $whereToProcess = (isset($params['ToProcess']) && ($params['ToProcess']==1))?" ToProcess = '1'":"";
         $whereTimingType = (isset($params['TimingType']) && ($params['TimingType']!=""))?(" TimingType = '".$params['TimingType'])."'":"";
         $whereCondition = array($whereGroup,$whereStage,$whereIn,$whereToProcess,$whereTimingType);
         //生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceId asc";
-        //echo $sql."<br>";
-        //die();
         $return = $this->db->getAll($sql);
 		$RaceList = array();
 		foreach($return as $key => $value)

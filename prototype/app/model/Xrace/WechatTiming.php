@@ -238,9 +238,10 @@ class Xrace_WechatTiming extends Base_Widget
         $whereCondition = array($whereUser,$whereUserList,$whereStart,$whereStartTime,$whereEndTime);
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
-        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by Id ".($params['revert']==1?"desc":"asc").$Limit;
-        $return = $this->db->getAll($sql);
-        if($params['getCount']==1)
+        $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by Id asc".$Limit;
+        echo $sql."\n";
+		$return = $this->db->getAll($sql);
+        if(isset($params['getCount']) && $params['getCount']==1)
         {
             $RecordCount = $this->getTimingDataCount($params);
             return array("Record"=>$return,"RecordCount"=>$RecordCount['RecordCount'],"sql"=>$sql);
@@ -309,7 +310,7 @@ class Xrace_WechatTiming extends Base_Widget
         if($RaceInfo['ToProcess']==1)
         {
             //更新状态
-            //$update = $oRace->updateRace($RaceId,array("ToProcess"=>0));
+            $update = $oRace->updateRace($RaceId,array("ToProcess"=>0));
         }
         //解包压缩的数据
         $RaceInfo['comment'] = json_decode($RaceInfo['comment'],true);
@@ -390,10 +391,10 @@ class Xrace_WechatTiming extends Base_Widget
         //初始化空的用户列表
         $UserList = array();
         //循环报名记录
-        foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
+		foreach ($RaceUserList['RaceUserList'] as $ApplyId => $ApplyInfo)
         {
             //如果有配置芯片数据和BIB
-            if (trim($ApplyInfo['ChipId']) && trim($ApplyInfo['BIB']))
+            if (trim($ApplyInfo['BIB']))
             {
                 //拼接字符串加入到芯片列表
                 $UserIdList[$ApplyInfo['RaceUserId']] = "'" . $ApplyInfo['RaceUserId'] . "'";
@@ -414,7 +415,7 @@ class Xrace_WechatTiming extends Base_Widget
         while ($Count == $pageSize)
         {
             //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
-            $params = array('sorted'=>1,'StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'UserList'=>count($UserIdList) ? implode(",",$UserIdList):"-1");
+            $params = array('sorted'=>1,'StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+0*3600),'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+0*3600),'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'UserList'=>count($UserIdList) ? implode(",",$UserIdList):"-1");
             //获取计时数据
             $TimingList = $this->getTimingData($params);
             //依次循环计时数据

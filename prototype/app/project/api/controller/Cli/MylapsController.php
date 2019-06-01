@@ -25,24 +25,47 @@ class Cli_MylapsController extends Base_Controller_Action{
 		}
 		else
 		{
-			$RaceList = $this->oRace->getRaceList(array("inRun"=>1,"ToProcess"=>1,"TimingType"=>"mylaps"),"RaceId,ToProcess,comment");
-			foreach($RaceList as $RaceId => $RaceInfo)
-			{
-			    //数据解包
-			    $ProcessRate = isset($RaceInfo['comment']['ProcessRate'])?$RaceInfo['comment']['ProcessRate']:1;
-			    for($i=1;$i<=$ProcessRate;$i++)
-                {
-                    $Text = date("Y-m-d H:i:s",time()).":Start To Process RaceId:".$RaceId."\n";
-                    $filePath = __APP_ROOT_DIR__."log/Timing/";
-                    $fileName = date("Y-m-d",time()).".log";
-                    //写入日志文件
-                    Base_Common::appendLog($filePath,$fileName,$Text);
-                    $this->oMylaps->genMylapsTimingInfo($RaceId,$i==1?($RaceInfo['ToProcess']):0,0);
-                }
-			}
+			$RaceList = $this->oRace->getRaceList(array("ToProcess"=>1),"TimingType,RaceId,ToProcess,comment");
+			$Text = date("Y-m-d H:i:s",time()).":Mylaps ForceProcess Race Got:".count($RaceList)."\n";
+			echo $Text;
+			$filePath = __APP_ROOT_DIR__."log/Timing/";
+			$fileName = date("Y-m-d",time()).".log";
+			//写入日志文件
+			Base_Common::appendLog($filePath,$fileName,$Text);
+			$this->processTiming($RaceList);
+			sleep(1);
+			
+			$RaceList = $this->oRace->getRaceList(array("inRun"=>1),"TimingType,RaceId,ToProcess,comment");
+			$Text = date("Y-m-d H:i:s",time()).":Mylaps InRun Race Got:".count($RaceList)."\n";
+			echo $Text;
+			$filePath = __APP_ROOT_DIR__."log/Timing/";
+			$fileName = date("Y-m-d",time()).".log";
+			//写入日志文件
+			Base_Common::appendLog($filePath,$fileName,$Text);
+			$this->processTiming($RaceList);
 		}
 		//php.exe d:\xamppserver\htdocs\xrace_main\prototype\app\project\api\html\cli.php "ctl=mylaps&ac=timing&RaceId=146"
     }
+	public function processTiming($RaceList)
+	{
+		foreach($RaceList as $RaceId => $RaceInfo)
+		{
+			if($RaceInfo['TimingType']=="mylaps")
+			{
+				//数据解包
+				$ProcessRate = isset($RaceInfo['comment']['ProcessRate'])?$RaceInfo['comment']['ProcessRate']:1;
+				for($i=1;$i<=$ProcessRate;$i++)
+				{
+					$Text = date("Y-m-d H:i:s",time()).":Start To Process RaceId:".$RaceId."\n";
+					$filePath = __APP_ROOT_DIR__."log/Timing/";
+					$fileName = date("Y-m-d",time()).".log";
+					//写入日志文件
+					Base_Common::appendLog($filePath,$fileName,$Text);
+					$this->oMylaps->genMylapsTimingInfo($RaceId,$i==1?($RaceInfo['ToProcess']):0,0);
+				}					
+			}
+		}		
+	}
 
     public function uploadTimingAction()
     {
