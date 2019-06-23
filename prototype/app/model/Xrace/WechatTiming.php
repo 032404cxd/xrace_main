@@ -109,24 +109,35 @@ class Xrace_WechatTiming extends Base_Widget
                 //获取计时数据
                 $TimingList = $this->getTimingData($params);
                 //循环计时点
-                foreach($UserRaceInfo["Point"] as $Point => $PointInfo)
+                $t = array();$t2 = array();
+				foreach($UserRaceInfo["Point"] as $Point => $PointInfo)
                 {
                     $UserRaceInfo["Point"][$Point]["inTime"] = 0;
                     foreach($PointInfo as $key => $value)
                     {
-                        if(!in_array($key,array ("inTime","TName","TencentX","TencentY","ChipId")))
+                        $t[$Point] = $PointInfo['TolaranceTime'] + $PointInfo['inTime'];
+						$t2[$Point] = $PointInfo['inTime'];
+						if(!in_array($key,array ("inTime","TName","TencentX","TencentY","ChipId")))
                         {
                             unset($UserRaceInfo["Point"][$Point][$key]);
                         }
+						
                     }
-                    foreach($TimingList["Record"] as $Location => $TimingLog)
+					//如果前一个点的过线时间+等待时间  大于 当前过线时间
+					if($t[$Point-1]>$Timing["Time"])
+					{
+					            //无需重复打卡
+                                return array("return"=>-8,"time" => $t[$Point-1]-$Timing["Time"]);	
+					}
+					foreach($TimingList["Record"] as $Location => $TimingLog)
                     {
-                        if($PointInfo["ChipId"] == $TimingLog["Location"])
+						if($PointInfo["ChipId"] == $TimingLog["Location"])
                         {
                             $UserRaceInfo["Point"][$Point]["inTime"] = $TimingLog["time"];
                             break;
                         }
                     }
+					
                 }
                 $Pointound = 0;
                 //循环计时点
@@ -135,6 +146,10 @@ class Xrace_WechatTiming extends Base_Widget
                     if($PointInfo["ChipId"] == $Timing["Location"])
                     {
                         $Pointound = 1;
+						if($PointInfo["inTime"]<($t[$Point-1]))
+						{
+							$PointInfo["inTime"] = 0;
+						}
                         //如果已经经过
                         if($PointInfo["inTime"]>0)
                         {
@@ -239,7 +254,6 @@ class Xrace_WechatTiming extends Base_Widget
         //生成条件列
         $where = Base_common::getSqlWhere($whereCondition);
         $sql = "SELECT $fields FROM $table_to_process where 1 ".$where." order by Id asc".$Limit;
-        echo $sql."\n";
 		$return = $this->db->getAll($sql);
         if(isset($params['getCount']) && $params['getCount']==1)
         {
@@ -340,14 +354,27 @@ class Xrace_WechatTiming extends Base_Widget
                 $oRace->genRaceLogToText($RaceId);
             }
         }
+		
         //如果强制重新更新计时数
         if($Force==1)
         {
 
             //重新生成选手的mylaps排名数据
             $oRace->genRaceLogToText($RaceId);
-
         }
+		//获取选手和车队名单
+        $RaceUserList = $oRace->getRaceUserListByFile($RaceId);
+		echo "包含用户列表：".count($RaceUserList['RaceUserList'])."人\n";
+	
+		
+		//如果获取不到
+		if(!isset($RaceUserList['RaceUserList']))
+		{
+			echo "找不到用户记录，重建/n";
+			//重新生成选手的mylaps排名数据
+            $oRace->genRaceLogToText($RaceId);
+		}
+		
         $UserRaceTimingInfo = $oRace->GetRaceTimingOriginalInfo($RaceId,0);
         //初始化比赛时间列表
         $TimeList = array();
@@ -1171,8 +1198,6 @@ class Xrace_WechatTiming extends Base_Widget
         //重新获取比赛详情
         $TeamRankList = array();
         $UserRaceTimingInfo = $oRace->GetRaceTimingOriginalInfo($RaceId,$Cache);
-        //echo "SavePointCount3:".count($UserRaceInfoList)."<br>";
-
         foreach($UserRaceTimingInfo['Total'] as $k => $v)
         {
             $UInfo = $oRace->getUserRaceTimingOriginalInfo($RaceId, $v['RaceUserId'],$Cache);

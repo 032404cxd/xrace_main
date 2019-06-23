@@ -29,8 +29,8 @@ class WechatController extends AbstractController
      *获取打卡记录并入库
      */
     public function insertTimingAction()
-    {
-        //比赛ID
+    {	
+		//比赛ID
         $Timing['RaceId'] = abs(intval($this->request->RaceId));
         //用户ID
         $Timing['RaceUserId'] = abs(intval($this->request->RaceUserId));
@@ -92,6 +92,11 @@ class WechatController extends AbstractController
                 {
                     //全部置为空
                     $result = array("return" => 1, "comment" => "不需要重复打卡了哦","TimingLog"=>$InsertLog["TimingLog"]);
+                }
+				elseif($InsertLog['return'] == -8)
+                {
+                    //全部置为空
+                    $result = array("return" => 0, "comment" => "有点着急了哦，现在打卡不算的,还需等待".$InsertLog['time']."秒");
                 }
             }
         }

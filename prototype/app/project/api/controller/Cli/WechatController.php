@@ -30,7 +30,7 @@ class Cli_WechatController extends Base_Controller_Action{
 		}
 		else
 		{
-			$RaceList = $this->oRace->getRaceList(array("ToProcess"=>1),"TimingType,RaceId,ToProcess,comment");					
+			$RaceList = $this->oRace->getRaceList(array("ToProcess"=>1),"TimingType,RaceId,ToProcess,comment",1);					
 			$Text = date("Y-m-d H:i:s",time()).":WechatTiming ForceProcess Race Got:".count($RaceList)."\n";
 			echo $Text;
 			$filePath = __APP_ROOT_DIR__."log/Timing/";
@@ -39,7 +39,7 @@ class Cli_WechatController extends Base_Controller_Action{
 			Base_Common::appendLog($filePath,$fileName,$Text);
 			$this->processTiming($RaceList);
 			sleep(1);	
-			$RaceList = $this->oRace->getRaceList(array("inRun"=>1),"TimingType,RaceId,ToProcess,comment");
+			$RaceList = $this->oRace->getRaceList(array("inRun"=>1),"TimingType,RaceId,ToProcess,comment",1);
 			$Text = date("Y-m-d H:i:s",time()).":WechatTiming InRun Race Got:".count($RaceList)."\n";
 			echo $Text;
 			$filePath = __APP_ROOT_DIR__."log/Timing/";
@@ -72,7 +72,9 @@ class Cli_WechatController extends Base_Controller_Action{
 					$fileName = date("Y-m-d",time()).".log";
 					//写入日志文件
 					Base_Common::appendLog($filePath,$fileName,$Text);
-					$this->oWechat->genTimingInfo($RaceId,$i==1?($RaceInfo['ToProcess']):0,0);
+					//$this->oWechat->genTimingInfo($RaceId,$i==1?($RaceInfo['ToProcess']):0,0);
+					$this->oWechat->genTimingInfo($RaceId,1,0);
+
 				}					
 			}
 

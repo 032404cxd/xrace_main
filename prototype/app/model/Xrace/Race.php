@@ -384,7 +384,7 @@ class Xrace_Race extends Base_Widget
 		return $this->db->selectRow($table_to_process, $fields, '`RaceId` = ?', $RaceId);
 	}
 	//获取赛事分站和赛事组别获取比赛列表
-	public function getRaceList($params,$fields = '*')
+	public function getRaceList($params,$fields = '*',$test = 0)
 	{
 	    $table_to_process = Base_Widget::getDbTable($this->table_race);
 		//初始化查询条件
@@ -398,7 +398,11 @@ class Xrace_Race extends Base_Widget
         //生成条件列
 		$where = Base_common::getSqlWhere($whereCondition);
 		$sql = "SELECT $fields FROM " . $table_to_process . "  where 1 ".$where." ORDER BY RaceId asc";
-        $return = $this->db->getAll($sql);
+        if($test==1)
+		{
+			echo $sql."\n";
+		}
+		$return = $this->db->getAll($sql);
 		$RaceList = array();
 		foreach($return as $key => $value)
 		{
@@ -1938,7 +1942,7 @@ class Xrace_Race extends Base_Widget
         //如果需要获取缓存
         if($Cache == 1)
         {
-            //载入缓存
+			//载入缓存
             $m = $oMemCache -> get("TimingData_".$RaceId);
             $m = json_decode($m,true);
             if(isset($m['RaceInfo']))
@@ -1949,7 +1953,7 @@ class Xrace_Race extends Base_Widget
             {
                 $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
                 $fileName = "Total.php";
-                //载入预生成的配置文件
+				//载入预生成的配置文件
                 $return = Base_Common::loadConfig($filePath,$fileName);
                 //重构缓存
                 $this->TimgingDataSave($RaceId,$return,1);
@@ -1958,9 +1962,9 @@ class Xrace_Race extends Base_Widget
         }
         else
         {
-            $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
+			$filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/";
             $fileName = "Total.php";
-            //载入预生成的配置文件
+			//载入预生成的配置文件
             $return = Base_Common::loadConfig($filePath,$fileName);
             //重构缓存
             $this->TimgingDataSave($RaceId,$return,1);
