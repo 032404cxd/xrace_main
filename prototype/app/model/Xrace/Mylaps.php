@@ -206,7 +206,7 @@ class Xrace_Mylaps extends Base_Widget
 		while ($Count == $pageSize)
 		{
 		    //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
-			$params = array('sorted'=>1,'StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"-1");
+			$params = array('sorted'=>1,'StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+0*3600),'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+0*3600),'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'],'LastId'=>$LastId, 'pageSize'=>$pageSize, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"-1");
 			//获取计时数据
 			$TimingList = $this->getTimingData($params);
 			//依次循环计时数据
@@ -215,13 +215,13 @@ class Xrace_Mylaps extends Base_Widget
                 //最后获取到的记录ID
 			    $LastId = $TimingInfo['Id'];
 				//mylaps系统中生成的时间一直比当前时间晚8小时，修正
-				$TimingInfo['ChipTime'] = strtotime($TimingInfo['ChipTime']) - 8 * 3600;
+				$TimingInfo['ChipTime'] = strtotime($TimingInfo['ChipTime']) - 0*3600;
 				//对于毫秒数据进行四舍五入
 				$miliSec = substr($TimingInfo['MilliSecs'], -3) / 1000;
 				//计算实际的时间
 				$TimingInfo['ChipTime'] = $miliSec>=0.5?($TimingInfo['ChipTime']-1):$TimingInfo['ChipTime'];
 				//时间进行累加
-                $inTime = sprintf("%0.3f", $TimingInfo['time'])-8*3600;
+                $inTime = sprintf("%0.3f", $TimingInfo['time'])-0*3600;
                 $ChipTime = $inTime;
                 //如果时间在比赛的开始时间和结束时间之内
                 $RaceStartTime = $TimeList[$UserList[$TimingInfo['Chip']]['RaceGroupId']]['RaceStartTime'];

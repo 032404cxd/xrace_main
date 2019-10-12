@@ -5216,8 +5216,8 @@ class Xrace_RaceStageController extends AbstractController
                     $ChipList = isset($UserList[$ChipId])?array("'" . $ChipId . "'"):$ChipList;
                     //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
                     $params = array(
-                        'StartTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['StartTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),
-                        'EndTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['EndTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),
+                        'StartTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['StartTime'])+0*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+0*3600),
+                        'EndTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['EndTime'])+0*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+0*3600),
                         'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'], 'pageSize'=>$PageSize,'Page'=>$Page, 'ChipList'=>count($ChipList) ? implode(",",$ChipList):"-1",
                         'sorted'=>1,'revert'=>1,'getCount'=>1);
                     $oMylaps = new Xrace_Mylaps();
@@ -5225,7 +5225,7 @@ class Xrace_RaceStageController extends AbstractController
                     $TimingList = $oMylaps->getTimingData($params);
                     foreach($TimingList['Record'] as $RecordId => $Record)
                     {
-                        $TimingList['Record'][$RecordId]['time'] = date("Y-m-d H:i:s",sprintf("%0.3f", $Record['time'])-8*3600).strstr($Record['time'], '.');
+                        $TimingList['Record'][$RecordId]['time'] = date("Y-m-d H:i:s",sprintf("%0.3f", $Record['time'])-0*3600).strstr($Record['time'], '.');
                         $TimingList['Record'][$RecordId]['Name'] = $UserList[$Record['Chip']]['Name'];
                     }
                 }
@@ -5252,7 +5252,7 @@ class Xrace_RaceStageController extends AbstractController
                     //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
                     $params = array(
                         'StartTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['StartTime'])+0*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+0*3600),
-                        'EndTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['EndTime'])+8*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),
+                        'EndTime'=>$RaceGroupId>0?date("Y-m-d H:i:s",strtotime($RaceInfo['comment']['SelectedRaceGroup'][$RaceGroupId]['EndTime'])+0*3600):date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+0*3600),
                         'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'], 'pageSize'=>$PageSize,'Page'=>$Page, 'UserList'=>count($UserList) ? implode(",",$UserList):"-1",
                         'sorted'=>1,'revert'=>1,'getCount'=>1);
                     $oWechatTiming = new Xrace_WechatTiming();
@@ -5348,8 +5348,8 @@ class Xrace_RaceStageController extends AbstractController
                 $oMylaps = new Xrace_Mylaps();
                 //拼接获取计时数据的参数，注意芯片列表为空时的数据拼接
                 $params = array(
-                    'StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+8*3600),
-                    'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+8*3600),
+                    'StartTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['StartTime'])+0*3600),
+                    'EndTime'=>date("Y-m-d H:i:s",strtotime($RaceInfo['EndTime'])+0*3600),
                     'prefix'=>$RaceInfo['RouteInfo']['TimePrefix'],  'pageSize'=>$PageSize,'Page'=>$Page,
                     'ChipList'=>count($ChipList) ? implode(",",$ChipList):"-1",
                     'sorted'=>1,'revert'=>1,'getCount'=>1);
@@ -5358,7 +5358,7 @@ class Xrace_RaceStageController extends AbstractController
                 $ManagerList = array();
                 foreach($TimingList['Record'] as $RecordId => $Record)
                 {
-                    $TimingList['Record'][$RecordId]['time'] = date("Y-m-d H:i:s",sprintf("%0.3f", $Record['time'])-8*3600).strstr($Record['time'], '.');
+                    $TimingList['Record'][$RecordId]['time'] = date("Y-m-d H:i:s",sprintf("%0.3f", $Record['time'])-0*3600).strstr($Record['time'], '.');
                     $TimingList['Record'][$RecordId]['Name'] = $UserList[$Record['Chip']]['Name'];
                 }
                 $page_url = Base_Common::getUrl('','xrace/race.stage','timing.detail.list',array("RaceId"=>$RaceId,"Page"=>$Page,"PageSize"=>$PageSize,"ChipId"=>urldecode($ChipId)))."&Page=~page~";
