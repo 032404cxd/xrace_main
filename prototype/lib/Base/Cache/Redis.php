@@ -18,12 +18,13 @@ class Base_Cache_Redis implements Base_Cache_Interface
      * @access public
      */
     function __construct($server) {
-        if ( !extension_loaded('memcache') ) {
-            throw new Exception('没有加载memcache扩展！');
+        if ( !extension_loaded('redis') ) {
+            throw new Exception('没有加载redis扩展！');
         }           
         $this->handler = new Redis;
-
-        $this->handler->connect('127.0.0.1',6379);
+        $CacheConf = (@include dirname(dirname(dirname(dirname(dirname(__FILE__)))))."/CommonConfig/cacheConfig.php");
+        $this->handler->connect($CacheConf['REDIS_SERVER'],$CacheConf['REDIS_PORT']);
+        $this->handler->auth($CacheConf['REDIS_PASSWORD']);
     }
     public function test()
     {
@@ -31,7 +32,7 @@ class Base_Cache_Redis implements Base_Cache_Interface
 			$this->handler->set('name1', 'www.51projob.com');
 			$this->handler->set('name2', 'www.crazyant.com');
 			
-			echo "通过get方法获取到键的值：<br>"
+			echo "通过get方法获取ß到键的值：<br>"
 				.$this->handler->get('name1')."<br>"
 				.$this->handler->get('name2');	
     }
@@ -56,7 +57,7 @@ class Base_Cache_Redis implements Base_Cache_Interface
     public function set($name, $value,  $expire = 1) {
         if(is_null($expire)) {
         }
-        if($this->handler->set($name, $value, MEMCACHE_COMPRESSED, $expire)) {         
+        if($this->handler->set($name, $value,  $expire)) {
             return true;
         }
         return false;

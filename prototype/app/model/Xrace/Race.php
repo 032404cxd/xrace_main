@@ -99,13 +99,15 @@ class Xrace_Race extends Base_Widget
 	//获取所有赛事的列表(已缓存)
 	public function getRaceCatalogList($Display = 0,$fields = "*",$Cache = 0,$wherePermission = "")
 	{
-        $oMemCache = new Base_Cache_Memcache("xrace");
-        $Cache = 0;
+	    $oMemCache = new Base_Cache_Redis("xrace");
+	    //$Cache = 0;
         //如果需要获取缓存
         if($Cache == 1)
         {
+            echo "777";
             //获取缓存
             $m = $oMemCache->get("RaceCatalogList");
+            var_dump($m);
             //缓存解开
             $RaceCatalogList = json_decode($m,true);
             //如果数据为空
@@ -116,7 +118,7 @@ class Xrace_Race extends Base_Widget
             }
             else
             {
-                //echo "cached";
+                echo "cached";
             }
         }
         else
@@ -149,7 +151,7 @@ class Xrace_Race extends Base_Widget
         if(count($RaceCatalogList))
         {
             //写入缓存
-            //$oMemCache -> set('RaceCatalogList',json_encode($RaceCatalogList),3600);
+            $set = $oMemCache -> set('RaceCatalogList',json_encode($RaceCatalogList),3600);
         }
 		return $RaceCatalogList;
 	}
