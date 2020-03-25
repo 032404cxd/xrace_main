@@ -90,7 +90,20 @@ class Xrace_WechatTiming extends Base_Widget
             //如果最终没找到
             if($found == 0)
             {
-                return array("return"=>-4);
+                //获取当前分站当前用户的报名记录
+                $applyList = $oUser->getRaceUserList(array('RaceStageId'=>$RaceInfo['RaceStageId'],'RaceUserId'=>$RaceUserId));
+                if(count($applyList)>0)
+                {
+                    //重写比赛ID
+                    $Timing['RaceId'] = $applyList['0']['RaceId'];
+                    //获取比赛信息
+                    $RaceInfo = $oRace->getRace($Timing['RaceId']);
+                }
+                else
+                {
+                    return array("return"=>-4);
+                }
+		//return array("return"=>-4);
             }
             else
             {
