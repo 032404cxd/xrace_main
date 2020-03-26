@@ -243,12 +243,12 @@ class Xrace_App extends Base_Widget
 	 */
 	public function getNewestVersionList($Cache = 1)
 	{
-		$oMemCache = new Base_Cache_Memcache("xrace");
+		$oRedis = new Base_Cache_Redis("xrace");
 		//如果需要获取缓存
 		if($Cache == 1)
 		{
 			//获取缓存
-			$m = $oMemCache->get("NewestAppVersionList");
+			$m = $oRedis->get("NewestAppVersionList");
 			//缓存解开
 			$NewestAppVersionList = json_decode($m,true);
 			//如果数据为空
@@ -296,7 +296,7 @@ class Xrace_App extends Base_Widget
 			if(count($NewestAppVersionList))
 			{
 				//写入缓存
-				$oMemCache -> set('NewestAppVersionList',json_encode($NewestAppVersionList),86400);
+				$oRedis -> set('NewestAppVersionList',json_encode($NewestAppVersionList),86400);
 			}
 		}
 		return $NewestAppVersionList;
