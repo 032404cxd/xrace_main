@@ -75,9 +75,9 @@ class Cli_SocketController extends Base_Controller_Action
                         //echo "chip:".$MylapsInfoArr['c']."passed,time:".$MylapsInfoArr["d"]." ".$MylapsInfoArr["t"]."\n";
                         if($Type == 1)
                         {
-                            $oMemCache = new Base_Cache_Memcache("xrace");
+                            $oRedis = new Base_Cache_Redis("xrace");
                             //获取缓存
-                            $m = $oMemCache->get("RaceTiming_".$RaceId);
+                            $m = $oRedis->get("RaceTiming_".$RaceId);
                             //缓存解开
                             $m = json_decode($m,true);
                             if(!isset($m["RaceInfo"]))
@@ -142,8 +142,8 @@ class Cli_SocketController extends Base_Controller_Action
                                         $m2["TimingList"][$key]["Diff"] =    $value["LastLap"] - $First["LastLap"];
                                     }
                                 }
-                                $oMemCache -> set("RaceTiming2_".$RaceId,json_encode($m2),86400);
-                                $oMemCache -> set("RaceTiming_".$RaceId,json_encode($m),86400);
+                                $oRedis -> set("RaceTiming2_".$RaceId,json_encode($m2),86400);
+                                $oRedis -> set("RaceTiming_".$RaceId,json_encode($m),86400);
                             }
                         }
                         else
