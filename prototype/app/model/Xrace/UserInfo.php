@@ -322,12 +322,12 @@ class Xrace_UserInfo extends Base_Widget
      */
     public function getUserInfo($UserId, $fields = '*',$Cache=1)
     {
-        $oMemCache = new Base_Cache_Memcache("xrace");
+        $oRedis = new Base_Cache_Redis("xrace");
         //获取缓存
         if($Cache == 1)
         {
             //获取缓存
-            $m = $oMemCache->get("UserInfo_".$UserId);
+            $m = $oRedis->get("UserInfo_".$UserId);
             //缓存解开
             $UserInfo = json_decode($m,true);
             //如果结果集不有效
@@ -371,7 +371,7 @@ class Xrace_UserInfo extends Base_Widget
             if(isset($UserInfo['UserId']))
             {
                 //写入缓存
-                $oMemCache -> set("UserInfo_".$UserId,json_encode($UserInfo),86400);
+                $oRedis -> set("UserInfo_".$UserId,json_encode($UserInfo),86400);
             }
         }
         //如果结果集有效，并且获取的字段列表不是全部
@@ -618,9 +618,9 @@ class Xrace_UserInfo extends Base_Widget
      */
     public function MobileReg($Mobile,$Password)
     {
-        $oMemCache = new Base_Cache_Memcache("xrace");
+        $oRedis = new Base_Cache_Redis("xrace");
         //获取缓存
-        $m = $oMemCache->get("Mobile_".$Mobile);
+        $m = $oRedis->get("Mobile_".$Mobile);
         //如果获取到的数据为0
         if(intval($m)==0)
         {
@@ -761,9 +761,9 @@ class Xrace_UserInfo extends Base_Widget
      */
     public function MobileLogin($Mobile,$Password)
     {
-        $oMemCache = new Base_Cache_Memcache("xrace");
+        $oRedis = new Base_Cache_Redis("xrace");
         //获取缓存
-        $m = $oMemCache->get("Mobile_".$Mobile);
+        $m = $oRedis->get("Mobile_".$Mobile);
         //如果获取到的数据为0
         if(intval($m)==0)
         {
@@ -784,7 +784,7 @@ class Xrace_UserInfo extends Base_Widget
                     if(md5($Password)==$UserInfo['Password'])
                     {
                         //写入缓存
-                        $oMemCache -> set("Mobile_".$Mobile,$UserInfo['UserId'],86400);
+                        $oRedis -> set("Mobile_".$Mobile,$UserInfo['UserId'],86400);
                         //更新用户数据缓存
                         $UserInfo = $this->getUserInfo($UserInfo['UserId'],"*",0);
                         return $UserInfo;
@@ -825,14 +825,14 @@ class Xrace_UserInfo extends Base_Widget
      */
     public function ThirdPartyLogin($LoginData,$LoginSource)
     {
-        $oMemCache = new Base_Cache_Memcache("xrace");
+        $oRedis = new Base_Cache_Redis("xrace");
         switch ($LoginSource)
         {
             case "WeChat":
                 if(isset($LoginData['openid']))
                 {
                     //获取缓存
-                    $m = $oMemCache->get("ThirdParty_".$LoginSource."_".$LoginData['openid']);
+                    $m = $oRedis->get("ThirdParty_".$LoginSource."_".$LoginData['openid']);
                     //缓存数据解包
                     $m = json_decode($m,true);
                     //如果获取到的数据为0
@@ -859,7 +859,7 @@ class Xrace_UserInfo extends Base_Widget
                             }
                             //写缓存
                             $UserInfoCache = array_merge($LoginData,array("UserId"=>$UserInfo['UserId']));
-                            $oMemCache->set("ThirdParty_".$LoginSource."_".$LoginData['openid'],json_encode($UserInfoCache),86400);
+                            $oRedis->set("ThirdParty_".$LoginSource."_".$LoginData['openid'],json_encode($UserInfoCache),86400);
                             return $UserInfoCache;
                         }
                         else
@@ -936,7 +936,7 @@ class Xrace_UserInfo extends Base_Widget
                             }
                             //写缓存
                             $UserInfoCache = array_merge($LoginData,array("UserId"=>$UserInfo['UserId']));
-                            $oMemCache->set("ThirdParty_".$LoginSource."_".$LoginData['openid'],json_encode($UserInfoCache),86400);
+                            $oRedis->set("ThirdParty_".$LoginSource."_".$LoginData['openid'],json_encode($UserInfoCache),86400);
                             return $UserInfoCache;
                         }
                         else
@@ -973,14 +973,14 @@ class Xrace_UserInfo extends Base_Widget
      */
     public function ThirdPartyLoginNew($LoginData,$LoginSource)
     {
-        $oMemCache = new Base_Cache_Memcache("xrace");
+        $oRedis = new Base_Cache_Redis("xrace");
         switch ($LoginSource)
         {
             case "WeChat":
                 if(isset($LoginData['openid']))
                 {
                     //获取缓存
-                    $m = $oMemCache->get("ThirdParty_".$LoginSource."_".$LoginData['openid']);
+                    $m = $oRedis->get("ThirdParty_".$LoginSource."_".$LoginData['openid']);
                     //缓存数据解包
                     $m = json_decode($m,true);
                     //如果获取到的数据为0
@@ -1007,7 +1007,7 @@ class Xrace_UserInfo extends Base_Widget
                             }
                             //写缓存
                             $UserInfoCache = array_merge($LoginData,array("UserId"=>$UserInfo['UserId']));
-                            $oMemCache->set("ThirdParty_".$LoginSource."_".$LoginData['openid'],json_encode($UserInfoCache),86400);
+                            $oRedis->set("ThirdParty_".$LoginSource."_".$LoginData['openid'],json_encode($UserInfoCache),86400);
                             return $UserInfoCache;
                         }
                         else
@@ -1060,7 +1060,7 @@ class Xrace_UserInfo extends Base_Widget
                             }
                             //写缓存
                             $UserInfoCache = array_merge($LoginData,array("UserId"=>$UserInfo['UserId']));
-                            $oMemCache->set("ThirdParty_".$LoginSource."_".$LoginData['openid'],json_encode($UserInfoCache),86400);
+                            $oRedis->set("ThirdParty_".$LoginSource."_".$LoginData['openid'],json_encode($UserInfoCache),86400);
                             return $UserInfoCache;
                         }
                         else
@@ -1233,9 +1233,9 @@ class Xrace_UserInfo extends Base_Widget
                         if($UserId && $deleteRegInfo && $insertRegLog)
                         {
                             $this->db->commit();
-                            $oMemCache = new Base_Cache_Memcache("xrace");
+                            $oRedis = new Base_Cache_Redis("xrace");
                             //写入缓存
-                            $oMemCache -> set($RegInfo['RegPlatform']."_".$RegInfo['RegKey'],$UserId,86400);
+                            $oRedis -> set($RegInfo['RegPlatform']."_".$RegInfo['RegKey'],$UserId,86400);
                             return array("UserId"=>$UserId,"LoginSource"=>$RegInfo['RegPlatform']);
                         }
                         else
@@ -1495,12 +1495,12 @@ class Xrace_UserInfo extends Base_Widget
     //获取某场比赛的报名名单
     public function getRaceUserListByRace($params)
     {
-        $oMemCache = new Base_Cache_Memcache("xrace");
+        $oRedis = new Base_Cache_Redis("xrace");
         //如果需要获取缓存
         if($params['Cache'] == 1)
         {
             //获取缓存
-            $m = $oMemCache->get("RaceUserList_".$params['RaceId']);
+            $m = $oRedis->get("RaceUserList_".$params['RaceId']);
             //缓存解开
             $RaceUserList = json_decode($m,true);
             //如果数据为空
@@ -1578,7 +1578,7 @@ class Xrace_UserInfo extends Base_Widget
                 if(count($RaceUserList['RaceUserList']))
                 {
                     //写入缓存
-                    $oMemCache -> set("RaceUserList_".$params['RaceId'],json_encode($RaceUserList),86400);
+                    $oRedis -> set("RaceUserList_".$params['RaceId'],json_encode($RaceUserList),86400);
                 }
             }
         }
@@ -1882,9 +1882,9 @@ class Xrace_UserInfo extends Base_Widget
      */
     public function MobileResetPassword($Mobile)
     {
-        $oMemCache = new Base_Cache_Memcache("xrace");
+        $oRedis = new Base_Cache_Redis("xrace");
         //获取缓存
-        $m = $oMemCache->get("Mobile_".$Mobile);
+        $m = $oRedis->get("Mobile_".$Mobile);
         //如果获取到的数据为0
         if(intval($m)==0)
         {
