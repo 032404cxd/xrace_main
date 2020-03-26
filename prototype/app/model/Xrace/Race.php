@@ -99,14 +99,14 @@ class Xrace_Race extends Base_Widget
 	//获取所有赛事的列表(已缓存)
 	public function getRaceCatalogList($Display = 0,$fields = "*",$Cache = 0,$wherePermission = "")
 	{
-	    $oMemCache = new Base_Cache_Redis("xrace");
+	    $oRedis = new Base_Cache_Redis("xrace");
 	    //$Cache = 0;
         //如果需要获取缓存
         if($Cache == 1)
         {
             echo "777";
             //获取缓存
-            $m = $oMemCache->get("RaceCatalogList");
+            $m = $oRedis->get("RaceCatalogList");
             var_dump($m);
             //缓存解开
             $RaceCatalogList = json_decode($m,true);
@@ -151,7 +151,7 @@ class Xrace_Race extends Base_Widget
         if(count($RaceCatalogList))
         {
             //写入缓存
-            $set = $oMemCache -> set('RaceCatalogList',json_encode($RaceCatalogList),3600);
+            $set = $oRedis -> set('RaceCatalogList',json_encode($RaceCatalogList),3600);
         }
 		return $RaceCatalogList;
 	}
@@ -159,12 +159,12 @@ class Xrace_Race extends Base_Widget
 	public function getRaceCatalog($RaceCatalogId, $fields = '*',$Cache = 0)
 	{
         $RaceCatalogId = intval($RaceCatalogId);
-        $oMemCache = new Base_Cache_Memcache("xrace");
+        $oRedis = new Base_Cache_Redis("xrace");
         //如果需要获取缓存
         if($Cache == 1)
         {
             //获取缓存
-            $m = $oMemCache->get("RaceCatalogInfo_".$RaceCatalogId);
+            $m = $oRedis->get("RaceCatalogInfo_".$RaceCatalogId);
             //缓存解开
             $RaceCatalogInfo = json_decode($m,true);
             //如果数据为空
@@ -192,7 +192,7 @@ class Xrace_Race extends Base_Widget
         if($RaceCatalogInfo['RaceCatalogId'])
         {
             //写入缓存
-            $oMemCache -> set("RaceCatalogInfo_".$RaceCatalogId,json_encode($RaceCatalogInfo),3600);
+            $oRedis -> set("RaceCatalogInfo_".$RaceCatalogId,json_encode($RaceCatalogInfo),3600);
         }
         return $RaceCatalogInfo;
 	}
@@ -1408,10 +1408,10 @@ class Xrace_Race extends Base_Widget
 	public function raceLicenseCheck($RaceLicenseList,$UserId,$RaceStageInfo,$RaceGroupInfo)
 	{
 		$oUser = new Xrace_UserInfo();
-		$oMemCache = new Base_Cache_Memcache("xrace");
+		$oRedis = new Base_Cache_Redis("xrace");
 		{
 			//获取缓存
-			$m = $oMemCache->get("UserInfo_".$UserId);
+			$m = $oRedis->get("UserInfo_".$UserId);
 			//缓存解开
 			$m = json_decode($m,true);
 			//如果获取到的用户信息有效
@@ -1427,7 +1427,7 @@ class Xrace_Race extends Base_Widget
 				if(isset($UserInfo['UserId']))
 				{
 					//写入缓存
-					$oMemCache -> set("UserInfo_".$UserId,json_encode($UserInfo),86400);
+					$oRedis -> set("UserInfo_".$UserId,json_encode($UserInfo),86400);
 				}
 			}
 		}
@@ -1785,9 +1785,9 @@ class Xrace_Race extends Base_Widget
         //如果需要获取缓存
         if($Cache == 1)
         {
-            $oMemCache = new Base_Cache_Memcache("xrace");
+            $oRedis = new Base_Cache_Redis("xrace");
             //写入缓存
-            $oMemCache -> set("TimingData_".$RaceId,json_encode($TimingData),3600);
+            $oRedis -> set("TimingData_".$RaceId,json_encode($TimingData),3600);
         }
         else
         {
@@ -1801,9 +1801,9 @@ class Xrace_Race extends Base_Widget
     public function UserTimgingDataSave($RaceId,$RaceUserId,$TimingData,$Cache = 0)
     {
         $Cache = 0;
-        //$oMemCache = new Base_Cache_Memcache("xrace");
+        //$oRedis = new Base_Cache_Redis("xrace");
         //写入缓存
-        //$oMemCache -> set("TimingData_".$RaceId."_".$RaceUserId,json_encode($TimingData),3600);
+        //$oRedis -> set("TimingData_".$RaceId."_".$RaceUserId,json_encode($TimingData),3600);
         if($Cache == 0)
         {
             $filePath = __APP_ROOT_DIR__."Timing"."/".$RaceId."/"."UserList"."/";
@@ -1871,12 +1871,12 @@ class Xrace_Race extends Base_Widget
     //根据用户ID和比赛ID获取用户该场比赛的详情
     public function getUserRaceTimingOriginalInfo($RaceId,$RaceUserId,$Cache = 0)
     {
-        $oMemCache = new Base_Cache_Memcache("xrace");
+        $oRedis = new Base_Cache_Redis("xrace");
         //如果需要获取缓存
         if($Cache == 1)
         {
             //写入缓存
-            $m = $oMemCache -> get("TimingData_".$RaceId."_".$RaceUserId);
+            $m = $oRedis -> get("TimingData_".$RaceId."_".$RaceUserId);
             $m = json_decode($m,true);
             if(isset($m['RaceUserInfo']))
             {
@@ -1940,12 +1940,12 @@ class Xrace_Race extends Base_Widget
     //根据用户ID和比赛ID获取用户该场比赛的详情
     public function GetRaceTimingOriginalInfo($RaceId,$Cache = 0)
     {
-        $oMemCache = new Base_Cache_Memcache("xrace");
+        $oRedis = new Base_Cache_Redis("xrace");
         //如果需要获取缓存
         if($Cache == 1)
         {
 			//载入缓存
-            $m = $oMemCache -> get("TimingData_".$RaceId);
+            $m = $oRedis -> get("TimingData_".$RaceId);
             $m = json_decode($m,true);
             if(isset($m['RaceInfo']))
             {
