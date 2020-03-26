@@ -166,12 +166,12 @@ class Xrace_Team extends Base_Widget
      */
     public function getTeamInfo($TeamId, $fields = '*',$Cache=1)
     {
-        $oMemCache = new Base_Cache_Memcache("xrace");
+        $oRedis = new Base_Cache_Redis("xrace");
         //获取缓存
         if($Cache == 1)
         {
             //获取缓存
-            $m = $oMemCache->get("TeamInfo_".$TeamId);
+            $m = $oRedis->get("TeamInfo_".$TeamId);
             //缓存解开
             $TeamInfo = json_decode($m,true);
             //如果结果集不有效
@@ -193,7 +193,7 @@ class Xrace_Team extends Base_Widget
             if(isset($TeamInfo['TeamId']))
             {
                 //写入缓存
-                $oMemCache -> set("TeamInfo_".$TeamId,json_encode($TeamInfo),86400);
+                $oRedis -> set("TeamInfo_".$TeamId,json_encode($TeamInfo),86400);
             }
         }
         //如果结果集有效，并且获取的字段列表不是全部
@@ -223,13 +223,13 @@ class Xrace_Team extends Base_Widget
 	 */
 	public function getTeamListByGroup($RaceGroupInfo,$Cache = 1)
 	{
-		$oMemCache = new Base_Cache_Memcache("xrace");
+		$oRedis = new Base_Cache_Redis("xrace");
 		$CacheKey = "TeamList_".$RaceGroupInfo['RaceGroupId'];
 		//如果需要获取缓存
 		if($Cache == 1)
 		{
 			//获取缓存
-			$m = $oMemCache->get($CacheKey);
+			$m = $oRedis->get($CacheKey);
 			//缓存解开
 			$TeamList = json_decode($m,true);
 			//如果数据为空
@@ -279,7 +279,7 @@ class Xrace_Team extends Base_Widget
 				if(count($TeamList['TeamList']))
 				{
 					//写入缓存
-					$oMemCache -> set($CacheKey,json_encode($TeamList),86400);
+					$oRedis -> set($CacheKey,json_encode($TeamList),86400);
 					return $TeamList;
 				}
 				else
