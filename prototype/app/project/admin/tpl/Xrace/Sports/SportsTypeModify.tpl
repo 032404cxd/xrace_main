@@ -1,20 +1,26 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="sports_type_update_form" name="sports_type_update_form" action="{tpl:$this.sign/}&ac=sports.type.update" metdod="post">
-<input type="hidden" name="SportsTypeId" value="{tpl:$oSportsType.SportsTypeId/}" />
+<form id="sports_type_update_form" name="sports_type_update_form" action="{tpl:$this.sign/}&ac=sports.type.update" method="post">
+<input type="hidden" name="SportsTypeId" value="{tpl:$SportsTypeInfo.SportsTypeId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">
 <td>运动类型名称</td>
-<td align="left"><input name="SportsTypeName" type="text" class="span4" id="SportsTypeName" value="{tpl:$oSportsType.SportsTypeName/}" size="50" /></td>
+<td align="left"><input name="SportsTypeName" type="text" class="span2" id="SportsTypeName" value="{tpl:$SportsTypeInfo.SportsTypeName/}" size="50" /></td>
 </tr>
-<tr class="hover"><th align="center" class="rowtip"  colspan = 2>自定义参数列表</td></tr>
-</tr>
-{tpl:loop $oSportsType.comment.params $oParamsId $oParamsInfo}
 <tr class="hover">
-	<th align="center" class="rowtip" >参数名<input name="ParamsInfo[{tpl:$oParamsId/}][paramName]" type="text" class="span4" id="ParamsInfo[{tpl:$oParamsId/}][paramName]" value="{tpl:$oParamsInfo.paramName/}" size="50" /></th>
-	<th align="center" class="rowtip" >参数<input name="ParamsInfo[{tpl:$oParamsId/}][param]" type="text" class="span4" id="ParamsInfo[{tpl:$oParamsId/}][param]" value="{tpl:$oParamsInfo.param/}" size="50" /></th>
+<td>速度显示单位</td>
+<td align="left">
+<select name="SpeedDisplayType" size="1" class="span2">
+	<option value="0" {tpl:if(0==$SportsTypeInfo.SpeedDisplayType)}selected="selected"{/tpl:if}>不显示</option>
+	{tpl:loop $SpeedDisplayTypeList $SpeedDisplayType}
+	<option value="{tpl:$SpeedDisplayType/}" {tpl:if($SpeedDisplayType==$SportsTypeInfo.SpeedDisplayType)}selected="selected"{/tpl:if}>{tpl:$SpeedDisplayType/}</option>
+	{/tpl:loop}
+</select>
+</td>
 </tr>
-{/tpl:loop}
+<td>地平线对应标识</td>
+<td align="left"><input name="HorizonSign" type="text" class="span2" id="HorizonSign" value="{tpl:$SportsTypeInfo.comment.HorizonSign/}" size="50" /></td>
+</tr>
 <tr class="noborder"><td></td>
 <td><button type="submit" id="sports_type_update_submit">提交</button></td>
 </tr>

@@ -26,6 +26,7 @@ class Widget_Manager extends Base_Widget
 	 * @var string
 	 */
     protected $table = 'config_manager';
+    protected $table_data_permission = 'config_data_permission';
 
     protected $operation_table = 'user_menu_operation';
     /**
@@ -136,7 +137,7 @@ class Widget_Manager extends Base_Widget
             'reg_time' => empty($bind['reg_time']) ? Base_Registry::get('timestamp') : $bind['reg_time'],
         	'reset_password' => empty($bind['reset_password']) ? 0 : 1,
         	// selena add 3013/4/8
-        	'machine_show_list' => empty($bind['machine_show_list']) ? 0 : $bind['machine_show_list'],
+        	'openid' => empty($bind['openid']) ? "" : $bind['openid'],
         );
 
         $updateStruct = array();
@@ -220,7 +221,13 @@ class Widget_Manager extends Base_Widget
     {
         $sql = "SELECT $fields FROM {$this->table} WHERE `name` = ?";
         $row = $this->db->getRow($sql, $name);
+        return $row;
+    }
 
+    public function getRowByOpenId($openid, $fields = '*')
+    {
+        $sql = "SELECT $fields FROM {$this->table} WHERE `openid` = ?";
+        $row = $this->db->getRow($sql, $openid);
         return $row;
     }
 
@@ -484,13 +491,13 @@ class Widget_Manager extends Base_Widget
 				}
                                 $bind['operation_flag'] = 0;
                                 $this->logUserMenuOperation($bind);
-				$return = array('return'=>0,'message'=>"对不起,您没有执行 ".$action." 的权限!");
+				$return = array('return'=>0,'message'=>"对不起,您没有执行 ".$operation.".-.".$action." 的权限!");
 			}
 			else
 			{
                                 $bind['operation_flag'] = 0;
                                 $this->logUserMenuOperation($bind);
-				$return = array('return'=>0,'message'=>"无此权限!");
+				$return = array('return'=>0,'message'=>"无此".$operation."权限!");
 			}
 		}
 		return $return;
@@ -509,7 +516,15 @@ class Widget_Manager extends Base_Widget
             'operation_name' => $bind['operation_name'],
             'operation_flag' => $bind['operation_flag'],
         );
-        return $this->db->insert($this->operation_table, $insertStruct);
+		if($bind['menu_id'])
+		{
+			return $this->db->insert($this->operation_table, $insertStruct);
+		}
+		else
+		{
+			return true;
+		}
+        //return $this->db->insert($this->operation_table, $insertStruct);
     }
 
     /**
@@ -534,5 +549,158 @@ class Widget_Manager extends Base_Widget
 		$sql = "SELECT $fields FROM {$this->table} WHERE `name` = ?";
 		return $this->db->getRow($sql, $name);
 	}
+	public function getPermissionList($group_id)
+    {
+        $oRace = new Xrace_Race();
+        $RaceCatalogList  = $oRace->getRaceCatalogList(0,"RaceCatalogId,RaceCatalogName",0);
+        $PermissionList = $this->getDataPermissionByGroup($group_id);
+        foreach($PermissionList as $key => $PermissionInfo)
+        {
+            $RaceCatalogList[$PermissionInfo['RaceCatalogId']]['Permission'] = 1;
+        }
+        return $RaceCatalogList;
+    }
+    public function getDataPermissionByGroup($group_ids,$fields = "*")
+    {
+        $group_ids = trim($group_ids);
+        $table_to_process = Base_Widget::getDbTable($this->table_data_permission);
+        return $this->db->select($table_to_process, $fields, "`group_id` in ($group_ids)");
+    }
+    public function updateDataPermissionByGroup($bind)
+    {
+        //获取已有权限
+        $PermissionList = $this->getDataPermissionByGroup($bind['group_id']);
+        $dataArr = array("ToDelete"=>array(),"ToInsert"=>array());
+        //循环已有权限
+        foreach($PermissionList as $key => $PermissionInfo)
+        {
+            //如果不能存在于选定的权限列表
+            if(!isset($bind['RaceCatalogList'][$PermissionInfo['RaceCatalogId']]))
+            {
+                //待删除
+                $dataArr['ToDelete'][$PermissionInfo['RaceCatalogId']] = 1;
+            }
+        }
+        //循环选定的权限
+        foreach($bind['RaceCatalogList'] as $key => $PermissionInfo)
+        {
+            //假定未找到
+            $found = 0;
+            //循环已有权限
+            foreach($PermissionList as $key2 => $PermissionInfo2)
+            {
+                //如果找到
+                if($PermissionInfo['Permission']==$PermissionInfo2['RaceCatalogId'])
+                {
+                    // 跳出循环
+                    $found  = 1;
+                    break;
+                }
+            }
+            //如果循环未找到
+            if($found == 0)
+            {
+                //待加入
+                $dataArr['ToInsert'][$PermissionInfo['Permission']] = 1;
+            }
+        }
+        //如果待处理队列中有数据
+        if((count($dataArr['ToDelete'])+count($dataArr['ToInsert']))>0)
+        {
+            $this->db->begin();
+            //初始成功标签
+            $flag = 1;
+            //循环待加入列表
+            foreach($dataArr['ToInsert'] as $RaceCatalogId => $Permission)
+            {
+                //添加记录
+                $flag = $this->insertDataPermission($bind['group_id'],$RaceCatalogId);
+                //如果失败
+                if(!$flag)
+                {
+                    //回滚
+                    $this->db->rollBack();
+                    return false;
+                }
+            }
+            //循环待删除列表
+            foreach($dataArr['ToDelete'] as $RaceCatalogId => $Permission)
+            {
+                //删除记录
+                $flag = $this->deleteDataPermission($bind['group_id'],$RaceCatalogId);
+                //如果失败
+                if(!$flag)
+                {
+                    //回滚
+                    $this->db->rollBack();
+                    return false;
+                }
+            }
+            if($flag)
+            {
+                $this->db->commit();
+                return true;
+            }
+            else
+            {
+                $this->db->rollBack();
+                return false;
+            }
+        }
+        else
+        {
+            return true;
+        }
+    }
+    //新增单个赛事分站
+    public function insertDataPermission($group_id,$RaceCatalogId)
+    {
+        if($group_id == 0)
+        {
+            $group_id = $this->data_groups;
+        }
+        $bind = array("group_id"=>abs(intval($group_id)),"RaceCatalogId"=>abs(intval($RaceCatalogId)));
+        $table_to_process = Base_Widget::getDbTable($this->table_data_permission);
+        return $this->db->insert($table_to_process, $bind);
+    }
+    //删除单个赛事分站
+    public function deleteDataPermission($group_id,$RaceCatalogId)
+    {
+        $group_id = abs(intval($group_id));
+        $RaceCatalogId = abs(intval($RaceCatalogId));
+        $table_to_process = Base_Widget::getDbTable($this->table_data_permission);
+        return $this->db->delete($table_to_process, '`group_id` = ? and `RaceCatalogId` = ?', array($group_id,$RaceCatalogId));
+    }
+    public function getDataPermissionByGroupWhere($data_groups = "")
+    {
+        if($data_groups == "")
+        {
+            $PermissionList = $this->getDataPermissionByGroup($this->data_groups,"RaceCatalogId");
+        }
+        else
+        {
+            $PermissionList = $this->getDataPermissionByGroup($data_groups,"RaceCatalogId");
+        }
+        if(count($PermissionList>=1))
+        {
+            $t = array();
+            foreach($PermissionList as $key => $RaceCatalogInfo)
+            {
+                $t[$RaceCatalogInfo['RaceCatalogId']] = $RaceCatalogInfo['RaceCatalogId'];
+            }
+            if($t == "")
+            {
+                return " RaceCatalogId in (0)";
+            }
+            else
+            {
+                return " RaceCatalogId in (".implode(',',$t).")";
+            }
+        }
+        else
+        {
+            return "0";
+        }
+    }
 
 }

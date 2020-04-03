@@ -1,60 +1,57 @@
 {tpl:tpl contentHeader/}
 
 <form action="{tpl:$this.sign/}&ac=timing.point.insert" name="timing_point_add_form" id="timing_point_add_form" method="post">
-<input type="hidden" name="RaceStageId" id="RaceStageId" value="{tpl:$RaceStageInfo.RaceStageId/}" />
-  <input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceGroupInfo.RaceGroupId/}" />
   <input type="hidden" name="RaceId" id="RaceId" value="{tpl:$RaceId/}" />
   <input type="hidden" name="SportsTypeId" id="SportsTypeId" value="{tpl:$SportsTypeId/}" />
 
 <table width="99%" align="center" class="table table-bordered table-striped">
   <tr>
     <th align="center" class="rowtip">在</th>
-    </tr>
-  <tr>
     <th align="center" class="rowtip">
-      <select name="After" id="After" size="1">
+      <select name="After" id="After" size="1" class="span2" >
         <option value="-1" >头部</option>
         {tpl:loop $SportsTypeInfo.TimingDetailList.comment $TimingId $TimingInfo}
         <option value="{tpl:$TimingId/}" {tpl:if($TimingId==$After)}selected="selected"{/tpl:if}>{tpl:$TimingInfo.TName/}</option>
         {/tpl:loop}
-      </select>
+      </select>之后添加</th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">
-      之后添加
-      </th>
+    <th align="center" class="rowtip">计时点名称</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="TName" id="TName" value="" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">
-      计时点名称：<input type="text" name="TName" id="TName" value="" />
-    </th>
+    <th align="center" class="rowtip">计时点序列号</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="ChipId" id="ChipId" value="" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">
-      计时芯片序列号：<input type="text" name="ChipId" id="ChipId" value="" />
-    </th>
+    <th align="center" class="rowtip">距上一点<br>(米，负数不计时)</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="ToPrevious" id="ToPrevious" value="" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">
-      距下一计时点：<input type="text" name="ToNext" id="ToNext" value="" />米
-    </th>
+    <th align="center" class="rowtip">圈数(次)</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="Round" id="Round" value="1" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">
-      圈数：<input type="text" name="Round" id="Round" value="" />次
-    </th>
+    <th align="center" class="rowtip">百度地图经度</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="BaiduMapX" id="BaiduMapX" value="0" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">
-      海拔上升：<input type="text" name="AltAsc" id="AltAsc" value="" />米
-    </th>
+    <th align="center" class="rowtip">百度地图纬度</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="BaiduMapY" id="BaiduMapY" value="0" /></th>
   </tr>
   <tr>
-    <th align="center" class="rowtip">
-      海拔下降：<input type="text" name="AltDec" id="AltDec" value="" />米
-    </th>
+    <th align="center" class="rowtip">腾讯地图经度</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="TencentX" id="TencentX" value="0" /></th>
   </tr>
-  <tr><th align="center" class="rowtip">
+  <tr>
+    <th align="center" class="rowtip">腾讯地图纬度</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="TencentY" id="TencentY" value="0" /></th>
+  </tr>
+  <tr>
+    <th align="center" class="rowtip">等待时间(秒)</th>
+    <th align="center" class="rowtip"><input type="text" class="span2" name="TolaranceTime" id="TolaranceTime" value="60" /></th>
+  </tr>
+  <tr><th align="center" class="rowtip" colspan="2">
     <button type="submit" id="timing_point_add">提交</button>
     </th></tr>
   <tr>
@@ -76,10 +73,8 @@
           divBox.alertBox(errors[jsonResponse.errno],function(){});
         } else {
           var message = '计时点添加成功';
-          RaceStageId=$("#RaceStageId");
-          RaceGroupId=$("#RaceGroupId");
           RaceId=$("#RaceId");
-          divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=race.detail&RaceStageId=' + RaceStageId.val() + '&RaceGroupId=' + RaceGroupId.val() + '&RaceId=' + RaceId.val());}});
+          divBox.confirmBox({content:message,ok:function(){windowParent.getRightHtml('{tpl:$this.sign/}'+ '&ac=race.detail&RaceId=' + RaceId.val());}});
         }
       }
     };

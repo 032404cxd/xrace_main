@@ -4,92 +4,30 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <style type="text/css">
-        body, html {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
-        #map1_container {width:100%;height:100%;float:left;overflow: hidden;margin:0;}
-        #allmap1{margin:0 0 3px;height:3000px;}
+        body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
     </style>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=Wc8mVltjVceMFvNhHRemytGf"></script>
-    <title>同时加载两个地图</title>
+    <title>地址解析</title>
 </head>
 <body>
-<div id="r-result">请输入:<input type="text" id="suggestId" size="20" value="百度" style="width:150px;" /></div>
-<div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
-<div id="map1_container"><div id="allmap1"></div></div>
+<div id="allmap"></div>
 </body>
 </html>
 <script type="text/javascript">
-    //百度地图API功能
-    //加载第一张地图
-    //var map1 = new BMap.Map("allmap1");            // 创建Map实例
-    //map1.centerAndZoom("上海",12);
-    //var point1 = new BMap.Point(116.404, 39.915);
-    //map1.centerAndZoom(point1,15);
-    //map1.setCurrentCity("上海");
-    //map1.enableScrollWheelZoom();                  //启用滚轮放大缩小小
-    //map1.addControl(new BMap.NavigationControl());    
-    //map1.addControl(new BMap.ScaleControl());    
-    //map1.addControl(new BMap.OverviewMapControl());    
-    //map1.addControl(new BMap.MapTypeControl());    
-    //map1.setCurrentCity("上海"); 
-</script>
-<script type="text/javascript">
-	// 百度地图API功能
-	function G(id) {
-            return document.getElementById(id);
-	}
-
-	var map = new BMap.Map("allmap1");
-        map.centerAndZoom(new BMap.Point(116.404, 39.915), 11);  // 初始化地图,设置中心点坐标和地图级别
-	map.setCurrentCity("上海");                    // 初始化地图,设置城市和地图级别。
-        map.enableScrollWheelZoom();                  //启用滚轮放大缩小小
-        map.addControl(new BMap.NavigationControl());    
-        map.addControl(new BMap.ScaleControl());    
-        map.addControl(new BMap.OverviewMapControl());    
-        map.addControl(new BMap.MapTypeControl()); 
-
-	var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
-		{"input" : "suggestId"
-		,"location" : map
-	});
-
-	ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
-	var str = "";
-		var _value = e.fromitem.value;
-		var value = "";
-		if (e.fromitem.index > -1) {
-			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-		}    
-		str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
-		
-		value = "";
-		if (e.toitem.index > -1) {
-			_value = e.toitem.value;
-			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-		}    
-		str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
-		G("searchResultPanel").innerHTML = str;
-	});
-
-	var myValue;
-	ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
-	var _value = e.item.value;
-		myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-		G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
-		
-		setPlace();
-	});
-
-	function setPlace(){
-		map.clearOverlays();    //清除地图上所有覆盖物
-		function myFun(){
-			var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
-			map.centerAndZoom(pp, 18);
-			map.addOverlay(new BMap.Marker(pp));    //添加标注
-		}
-		var local = new BMap.LocalSearch(map, { //智能搜索
-		  onSearchComplete: myFun
-		});
-		local.search(myValue);
-	}
+    // 百度地图API功能
+    var map = new BMap.Map("allmap");
+    var point = new BMap.Point(116.331398,39.897445);
+    map.centerAndZoom(point,12);
+    // 创建地址解析器实例
+    var myGeo = new BMap.Geocoder();
+    // 将地址解析结果显示在地图上,并调整地图视野
+    myGeo.getPoint("北京市海淀区上地10街", function(point){
+        if (point) {
+            map.centerAndZoom(point, 16);
+            map.addOverlay(new BMap.Marker(point));
+        }else{
+            alert("您选择地址没有解析到结果!");
+        }
+    }, "北京市");
 </script>
 

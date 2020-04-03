@@ -66,17 +66,12 @@ class Widget_Menu_Permission extends Base_Widget
 	}
 	public function getPermissionByGroup($group_id, $fields = '*')
 	{
-		$table_to_process = Base_Widget::getDbTable($this->table_permission);
-		return $this->db->select($table_to_process, '*', 'group_id = ?', $group_id);
-	}
-	public function getPermissionByGruop($group_id, $fields = '*')
-	{
-		$table_to_process = Base_Widget::getDbTable($this->table_permission);
+	    $table_to_process = Base_Widget::getDbTable($this->table_permission);
 		return $this->db->select($table_to_process, '*', 'group_id = ?', $group_id);
 	}
 	public function getTopPermissionByGroup($group_id,$top_menu_id)
 	{
-		$permission_list = $this->getPermissionByGruop($group_id);
+		$permission_list = $this->getPermissionByGroup($group_id);
 		$top_permission = array();
 		$permission_to_process = array();
 		foreach($permission_list as $key => $value)

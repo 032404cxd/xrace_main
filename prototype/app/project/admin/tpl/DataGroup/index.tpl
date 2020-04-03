@@ -27,7 +27,7 @@ function promptDelete(p_id, p_name){
 <td>
 <a href="javascript:;" onclick="groupModify('{tpl:$row.group_id/}')">修改</a>
 | <a  href="javascript:;" onclick="promptDelete('{tpl:$row.group_id/}','{tpl:$row.name/}')">删除</a>
-| <a href="?ctl=config/permission&ac=list.partner.permission&group_id={tpl:$row.group_id/}">数据权限</a></td>
+| <a href="?ctl=data.group&ac=permission.by.group&group_id={tpl:$row.group_id/}">数据权限</a></td>
 </tr>
 {/tpl:loop}
 </table>

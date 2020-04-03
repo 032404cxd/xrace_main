@@ -1,5 +1,5 @@
 {tpl:tpl contentHeader/}
-<fieldset><legend> {tpl:$group.name/} 组权限</legend>
+<fieldset><legend> {tpl:$group.name/} 组权限  {tpl:$returnUrl/}</legend>
 
 
 <form action="?ctl=menu/permission&ac=update.by.group" method="post">

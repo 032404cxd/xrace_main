@@ -15,11 +15,7 @@ class Menu_PermissionController extends AbstractController
 	 */
 	public function modifyByMenuAction()
 	{
-		/**
-		 * 记录日志
-		 */
-		$log = "修改一个菜单对应的管理员组的权限表单页面\n\nServerIp:\n" . $this->request->getServer('SERVER_ADDR') . "\n\nGET:\n" . var_export($_GET, true) . "\n\nPOST:\n" . var_export($_POST, true);
-		$this->oLogManager->push('log', $log);
+		$returnUrl = "<a href='".Base_Common::getUrl('','menu')."'>返回</a>";
 				
 		$this->manager->checkMenuPermission($this->sign, Widget_Manager::MENU_PURVIEW_SELECT);
 
@@ -70,13 +66,9 @@ class Menu_PermissionController extends AbstractController
 	 * 修改一个管理员组对应的菜单权限表单页面
 	 */
 	public function modifyByGroupAction()
-	{
-		/**
-		 * 记录日志
-		 */
-		$log = "修改一个管理员组对应的菜单权限表单页面\n\nServerIp:\n" . $this->request->getServer('SERVER_ADDR') . "\n\nGET:\n" . var_export($_GET, true) . "\n\nPOST:\n" . var_export($_POST, true);
-		$this->oLogManager->push('log', $log);
-				
+	{				
+		$returnUrl = "<a href='".Base_Common::getUrl('','menu.group')."'>返回</a>";
+
 		$this->manager->checkMenuPermission($this->sign, Widget_Manager::MENU_PURVIEW_DELETE);
 
 		$group_id = intval($this->request->group_id);

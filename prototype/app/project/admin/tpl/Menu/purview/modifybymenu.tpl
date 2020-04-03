@@ -1,5 +1,5 @@
 {tpl:tpl contentHeader/}
-<fieldset><legend> {tpl:$menu.name/} 权限</legend>
+<fieldset><legend> {tpl:$menu.name/} 权限  {tpl:$returnUrl/}</legend>
 
 <form action="?ctl=menu/permission&ac=update.by.menu" method="post">
 <input type="hidden" name="menu_id" value="{tpl:$menu_id/}" />

@@ -7,7 +7,6 @@ include dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))."/CommonC
 
 $db = array();
 $db['isPersistent'] = 0;
-
 $db['xrace'][0] = array(
 	'host' => HOST_LOCAL,
 	'user' => USER_LOCAL,
@@ -15,12 +14,83 @@ $db['xrace'][0] = array(
 	'port' => PORT_LOCAL,
 	'database' => 'xrace',
 );
+
 $db['xrace_config'][0] = array(
 	'host' => HOST_LOCAL,
 	'user' => USER_LOCAL,
 	'password' => PASSWORD_LOCAL,
 	'port' => PORT_LOCAL,
 	'database' => 'xrace_config',
+);
+
+$db['xrace_bm'][0] = array(
+	'host' => HOST_LOCAL,
+	'user' => USER_LOCAL,
+	'password' => PASSWORD_LOCAL,
+	'port' => PORT_LOCAL,
+	'database' => 'xrace_bm',
+);
+
+$db['mylaps'][0] = array(
+	'host' => HOST_LOCAL,
+	'user' => USER_LOCAL,
+	'password' => PASSWORD_LOCAL,
+	'port' => PORT_LOCAL,
+	'database' => 'mylaps',
+);
+
+$db['wechat_timing'][0] = array(
+    'host' => HOST_LOCAL,
+    'user' => USER_LOCAL,
+    'password' => PASSWORD_LOCAL,
+    'port' => PORT_LOCAL,
+    'database' => 'wechat_timing',
+);
+
+$db['mylapstest'][0] = array(
+    'host' => HOST_LOCAL,
+    'user' => USER_LOCAL,
+    'password' => PASSWORD_LOCAL,
+    'port' => PORT_LOCAL,
+    'database' => 'mylapstest',
+);
+
+$db['xrace_user'][0] = array(
+	'host' => HOST_LOCAL,
+	'user' => USER_LOCAL,
+	'password' => PASSWORD_LOCAL,
+	'port' => PORT_LOCAL,
+	'database' => 'xrace_user',
+);
+
+$db['xrace_credit'][0] = array(
+	'host' => HOST_LOCAL,
+	'user' => USER_LOCAL,
+	'password' => PASSWORD_LOCAL,
+	'port' => PORT_LOCAL,
+	'database' => 'xrace_credit',
+);
+
+$db['rc_config'][0] = array(
+    'host' => HOST_LOCAL,
+    'user' => USER_LOCAL_RC,
+    'password' => PASSWORD_LOCAL_RC,
+    'port' => PORT_LOCAL,
+    'database' => 'rc_config',
+);
+$db['xrace_race'][0] = array(
+    'host' => HOST_LOCAL,
+    'user' => USER_LOCAL_RC,
+    'password' => PASSWORD_LOCAL_RC,
+    'port' => PORT_LOCAL,
+    'database' => 'xrace_race',
+);
+$db['qcode'][0] = array(
+    'host' => HOST_LOCAL,
+    'user' => USER_LOCAL,
+    'password' => PASSWORD_LOCAL,
+    'port' => PORT_LOCAL,
+    'database' => 'qcode',
 );
 return $db;
 ?>

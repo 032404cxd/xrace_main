@@ -1,10 +1,13 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="race_type_add_form" name="race_type_add_form" action="{tpl:$this.sign/}&ac=race.type.insert" metdod="post">
+<form id="race_type_add_form" name="race_type_add_form" action="{tpl:$this.sign/}&ac=race.type.insert" method="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover">
 <td>比赛类型名称</td>
 	<td align="left"><input type="text" class="span4" name="RaceTypeName"  id="RaceTypeName" value="" size="50" /></td>
+</tr>
+<tr class="hover"><td>比赛类型图标</td>
+	<td align="left"><input name="RaceTypeIcon[1]" type="file" class="span4" id="RaceTypeIcon[1]" /></td>
 </tr>
 <tr class="noborder"><td></td>
 <td><button type="submit" id="race_type_add_submit">提交</button></td>

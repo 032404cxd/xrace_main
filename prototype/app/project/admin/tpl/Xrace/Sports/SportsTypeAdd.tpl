@@ -1,19 +1,24 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="sports_type_add_form" name="sports_type_add_form" action="{tpl:$this.sign/}&ac=sports.type.insert" metdod="post">
+<form id="sports_type_add_form" name="sports_type_add_form" action="{tpl:$this.sign/}&ac=sports.type.insert" method="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover">
 <td>运动类型名称</td>
-	<td align="left"><input type="text" class="span4" name="SportsTypeName"  id="SportsTypeName" value="" size="50" /></td>
+	<td align="left"><input type="text" class="span2" name="SportsTypeName"  id="SportsTypeName" value="" size="50" /></td>
 </tr>
-<tr class="hover"><th align="center" class="rowtip"  colspan = 2>自定义参数列表</td></tr>
+<td>速度显示单位</td>
+<td align="left">
+	<select name="SpeedDisplayType" size="1" class="span2">
+		<option value="0" {tpl:if(0==$SportsTypeInfo.SpeedDisplayType)}selected="selected"{/tpl:if}>不显示</option>
+		{tpl:loop $SpeedDisplayTypeList $SpeedDisplayType}
+		<option value="{tpl:$SpeedDisplayType/}">{tpl:$SpeedDisplayType/}</option>
+		{/tpl:loop}
+	</select>
+</td>
 </tr>
-{tpl:loop $oSportsType.comment.params $oParamsId $oParamsInfo}
-<tr class="hover">
-	<th align="center" class="rowtip" >参数名<input name="ParamsInfo[{tpl:$oParamsId/}][paramName]" type="text" class="span4" id="ParamsInfo[{tpl:$oParamsId/}][paramName]" value="{tpl:$oParamsInfo.paramName/}" size="50" /></th>
-	<th align="center" class="rowtip" >参数<input name="ParamsInfo[{tpl:$oParamsId/}][param]" type="text" class="span4" id="ParamsInfo[{tpl:$oParamsId/}][param]" value="{tpl:$oParamsInfo.param/}" size="50" /></th>
+<td>地平线对应标识</td>
+<td align="left"><input name="HorizonSign" type="text" class="span2" id="HorizonSign" value="" size="50" /></td>
 </tr>
-{/tpl:loop}
 	<tr class="noborder"><td></td>
 <td><button type="submit" id="app_add_submit">提交</button></td>
 </tr>

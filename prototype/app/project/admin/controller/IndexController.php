@@ -43,6 +43,11 @@ class IndexController extends AbstractController
 
     public function homeAction()
     {
+        $oUpdateLog = new Xrace_UpdateLog();
+        //获取更新记录列表
+        $UpdateLogList = $oUpdateLog->getUpdateLogList(1,8);
+        //更新记录类型列表
+        $UpdateLogTypeList = $oUpdateLog->getLogTypeList();
         include $this->tpl();
     }
 }

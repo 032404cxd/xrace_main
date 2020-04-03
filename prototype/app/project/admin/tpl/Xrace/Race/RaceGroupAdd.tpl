@@ -1,6 +1,6 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="race_group_add_form" name="race_group_add_form"" action="{tpl:$this.sign/}&ac=race.group.insert" metdod="post">
+<form id="race_group_add_form" name="race_group_add_form"" action="{tpl:$this.sign/}&ac=race.group.insert" method="post">
 <table width="99%" align="center" class="table table-bordered table-striped">
 <tr class="hover">
 <td>赛事组别名称</td>
@@ -9,7 +9,7 @@
 <tr class="hover"><td>所属赛事</td>
 	<td align="left">	<select name="RaceCatalogId" size="1">
 			<option value="0">全部</option>
-			{tpl:loop $RaceCatalogArr $RaceCatalogInfo}
+			{tpl:loop $RaceCatalogList $RaceCatalogInfo}
 			<option value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" >{tpl:$RaceCatalogInfo.RaceCatalogName/}</option>
 			{/tpl:loop}
 		</select></td>

@@ -1,6 +1,6 @@
 <?php
 /**
- * 用户激活相关mod层
+ * 运动相关mod层
  * @author 陈晓东 <cxd032404@hotmail.com>
  */
 
@@ -9,14 +9,14 @@ class Xrace_Sports extends Base_Widget
 {
 	//声明所用到的表
 	protected $table = 'config_sports_type';
+    //速度显示规则列表
+    protected $speedDisplayList = array('km/h'/*每小时公里数*/,'mile/h'/*每小时英里数*/,'time/100m'/*每100米耗时*/,'time/km'/*每公里耗时*/,'time/mile'/*每公里耗时*/);
 
-	protected $maxParams = 5;
-
-	public function getMaxParmas()
-	{
-		return $this->maxParams;
-	}
-	/**
+    public function getSpeedDisplayList()
+    {
+        return $this->speedDisplayList;
+    }
+    /**
 	 * 查询全部
 	 * @param $fields
 	 * @return array
@@ -26,14 +26,15 @@ class Xrace_Sports extends Base_Widget
 		$table_to_process = Base_Widget::getDbTable($this->table);
 		$sql = "SELECT $fields FROM " . $table_to_process . " ORDER BY SportsTypeId ASC";
 		$return = $this->db->getAll($sql);
+		$SportsTypeList = array();
 		if(count($return))
 		{
 			foreach($return as $key => $value)
 			{
-				$AllSportsType[$value['SportsTypeId']] = $value;
+				$SportsTypeList[$value['SportsTypeId']] = $value;
 			}
 		}
-		return $AllSportsType;
+		return $SportsTypeList;
 	}
 	/**
 	 * 获取单条记录
@@ -41,11 +42,11 @@ class Xrace_Sports extends Base_Widget
 	 * @param string $fields
 	 * @return array
 	 */
-	public function getSportsType($sportsTypeId, $fields = '*')
+	public function getSportsType($SportsTypeId, $fields = '*')
 	{
-		$sportsTypeId = intval($sportsTypeId);
-		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->selectRow($table_to_process, $fields, '`SportsTypeId` = ?', $sportsTypeId);
+		$SportsTypeId = intval($SportsTypeId);
+        $table_to_process = Base_Widget::getDbTable($this->table);
+		return $this->db->selectRow($table_to_process, $fields, '`SportsTypeId` = ?', $SportsTypeId);
 	}
 	/**
 	 * 更新
@@ -53,11 +54,11 @@ class Xrace_Sports extends Base_Widget
 	 * @param array $bind
 	 * @return boolean
 	 */
-	public function updateSportsType($sportsTypeId, array $bind)
+	public function updateSportsType($SportsTypeId, array $bind)
 	{
-		$sportsTypeId = intval($sportsTypeId);
+		$SportsTypeId = intval($SportsTypeId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->update($table_to_process, $bind, '`SportsTypeId` = ?', $sportsTypeId);
+		return $this->db->update($table_to_process, $bind, '`SportsTypeId` = ?', $SportsTypeId);
 	}
 	/**
 	 * 插入
@@ -75,11 +76,11 @@ class Xrace_Sports extends Base_Widget
 	 * @param integer $AppId
 	 * @return boolean
 	 */
-	public function deleteSportsType($sportsTypeId)
+	public function deleteSportsType($SportsTypeId)
 	{
-		$sportsTypeId = intval($sportsTypeId);
+		$SportsTypeId = intval($SportsTypeId);
 		$table_to_process = Base_Widget::getDbTable($this->table);
-		return $this->db->delete($table_to_process, '`SportsTypeId` = ?', $sportsTypeId);
+		return $this->db->delete($table_to_process, '`SportsTypeId` = ?', $SportsTypeId);
 	}
 
 }

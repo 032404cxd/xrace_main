@@ -81,8 +81,6 @@ class Base_Db_Hash
 		$t = explode(".",$table);
 		$table = $t[count($t)-1];
 		if (!isset($this->tableConf[$table])) {
-					echo $table."<br>";
-		print_R($this->tableConf);
 			die($table . ' to database config error');
 		}
 

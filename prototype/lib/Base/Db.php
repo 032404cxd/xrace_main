@@ -578,7 +578,7 @@ class Base_Db
 			if(is_numeric(stripos($val,"_"))  && stripos($val,"_") == 0)
 			{
 			    $sets[] = $col."=".substr($val,1);
-			    unset($update[$col]);
+			    unset($bind[$col]);
 		    }
 		    else
 		    {
@@ -717,13 +717,28 @@ class Base_Db
 	}
 	public function checkTableExist($TableName)
 	{
-		$t = explode(".",$TableName);
+	    $t = explode(".",$TableName);
 		$db = $t[0];
 		$table = $t[1];
 		$this->query("use $db");
-		$table_list = $this->getAll("show tables where Tables_in_$db like '$table'");
-		return count($table_list);
+        $table_list = $this->getAll("show tables  like '$table'");
+
+        return count($table_list);
 	}
+    public function getTableRecoudCount($TableName,$LastId = 0)
+    {
+        $t = explode(".",$TableName);
+        $db = $t[0];
+        $table = $t[1];
+        $this->query("use $db");
+        $sql = "select count(1) as count,min(time) as LastTime from $TableName";
+        if($LastId>0)
+        {
+            $sql.= "where Id > $LastId";
+        }
+        $recordCount = $this->getRow($sql);
+        return $recordCount;
+    }
 
 	public function getErrno()
 	{
@@ -734,5 +749,59 @@ class Base_Db
 	{
 	    return $this->error;
 	}
-
+    public function createTable($table_to_copy,$table_suffix)
+    {
+        $table_to_check = Base_Widget::getDbTable($table_to_copy);
+        $table_to_process = $table_to_check."_".$table_suffix;
+        $exist = $this->checkTableExist($table_to_process);
+        if($exist>0)
+        {
+            return $table_to_process;
+        }
+        else
+        {
+            $sql = "SHOW CREATE TABLE " . $table_to_check;
+            $row = $this->getRow($sql);
+            $sql = $row['Create Table'];
+            $sql = str_replace('`' . $table_to_copy . '`', 'IF NOT EXISTS ' . $table_to_process, $sql);
+            $create = $this->query($sql);
+            if($create)
+            {
+                return $table_to_process;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+    public function copyTable($table_to_copy,$table_name)
+    {
+        $table_to_check = Base_Widget::getDbTable($table_to_copy);
+        $table_to_process = $table_name;
+        //echo "TabelToProcess:".$table_to_process."<br>";
+        $exist = $this->checkTableExist($table_to_process);
+        if($exist>0)
+        {
+            return $table_to_process;
+        }
+        else
+        {
+            $sql = "SHOW CREATE TABLE " . $table_to_check;
+            $row = $this->getRow($sql);
+            $sql = $row['Create Table'];
+            $sql = str_replace('`' . $table_to_copy . '`', 'IF NOT EXISTS ' . $table_to_process, $sql);
+            //echo "/n/n";
+            //echo $sql."<br>";
+            $create = $this->query($sql);
+            if($create)
+            {
+                return $table_to_process;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
 }

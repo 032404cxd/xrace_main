@@ -480,5 +480,13 @@ class ManagerController extends AbstractController
 		echo json_encode($response);
 		return true;
 	}
+    public function openidBindQrAction()
+    {
+        include('Third/phpqrcode/phpqrcode.php');
+        //分站ID
+        $id = intval($this->request->id);
+        $url = urlencode('http://admin.xrace.cn/callback/WxOpenidBind.php?id='.$id);
+        include $this->tpl('Xrace_Race_QR');
+    }
 
 }

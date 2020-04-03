@@ -1,6 +1,10 @@
 {tpl:tpl contentHeader/}
 <div class="br_bottom"></div>
-<form id="race_catalog_update_form" name="race_catalog_update_form" action="{tpl:$this.sign/}&ac=race.catalog.update" metdod="post">
+
+<script src="js/ckeditor5/ckeditor.js"></script>
+
+
+<form id="race_catalog_update_form" name="race_catalog_update_form" action="{tpl:$this.sign/}&ac=race.catalog.update" method="post">
 <input type="hidden" name="RaceCatalogId" value="{tpl:$RaceCatalogInfo.RaceCatalogId/}" />
 <table width="99%" align="center" class="table table-bordered table-striped" widtd="99%">
 <tr class="hover">
@@ -12,6 +16,15 @@
 </tr>
 	<tr class="hover"><td>赛事图标</td>
 		<td align="left"><input name="RaceCatalogIcon[1]" type="file" class="span4" id="RaceCatalogIcon[1]" /></td>
+	</tr>
+	<tr class="hover"><th align="center" class="rowtip">是否显示</th><th align="center" class="rowtip">
+			<input type="radio" name="Display" id="Display" value="1" {tpl:if($RaceCatalogInfo.Display=="1")}checked{/tpl:if}>是
+			<input type="radio" name="Display" id="Display" value="0" {tpl:if($RaceCatalogInfo.Display=="0")}checked{/tpl:if}>否</th>
+	</tr>
+	<tr class="hover"><td colspan = 2>赛事介绍</td></tr>
+	<tr class="hover"><td colspan = 2>
+	<textarea name="RaceCatalogComment" id="RaceCatalogComment" >{tpl:$RaceCatalogInfo.RaceCatalogComment/}</textarea>
+		</td>
 	</tr>
 <tr class="noborder"><td></td>
 <td><button type="submit" id="race_catalog_update_submit">提交</button></td>
@@ -39,5 +52,20 @@ $('#race_catalog_update_submit').click(function(){
 	};
 	$('#race_catalog_update_form').ajaxForm(options);
 });
+</script>
+<script>
+    ClassicEditor
+        .create( document.querySelector( '#RaceCatalogComment' ),
+			{
+    			config: { height: '300px', width: '552px' },
+				ckfinder: {
+                    uploadUrl: '/callback/upload.php?type=img',
+                }
+			}
+    )
+        .catch( error => {
+        console.error( error );
+    } );
+
 </script>
 {tpl:tpl contentFooter/}
