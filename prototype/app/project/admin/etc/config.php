@@ -13,5 +13,12 @@ $config['projectName'] = "XraceWeb控制台";
 $config['currentVersion'] = "2.0";
 $config['apiUrl'] = "http://api.xrace.cn";
 $config['adminUrl'] = "http://admin.xrace.cn";
+$config['oss'] = [
+         'ACCESS_KEY_ID'=>'LTAI4FkbExDy9cEfwqNfb93X',
+         'ACCESS_KEY_SECRET'=>'57iMpXwB0UYR71tXGuacAHmoCDtTaL',
+         'END_POINT'=>'oss-cn-shanghai.aliyuncs.com',
+         'BUCKET'=>'xrace-pic'
+
+];
 
 return $config;

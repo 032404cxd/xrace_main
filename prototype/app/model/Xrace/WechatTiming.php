@@ -1567,7 +1567,7 @@ class Xrace_WechatTiming extends Base_Widget
             }
             else
             {
-                $oMemCache = new Base_Cache_Memcache("xrace");
+                $oRedis = new Base_Cache_Redis("xrace");
                 $key = "WechatTiming_".$Timing["RaceId"]."_".$Timing["RaceGroupId"];
                 $m = json_decode($key,true);
                 if(count($m['RaceUserList']))
@@ -1663,7 +1663,7 @@ class Xrace_WechatTiming extends Base_Widget
                     $m = array("RaceUserList"=>$Total,"RaceInfo"=>array("RaceName"=>$RaceInfo["RaceName"],"RaceGroupName"=>$RaceGroupInfo["RaceGroupName"],"ResultType"=>$RaceInfo['comment']["ResultType"]));
 
                     //写入缓存
-                    $oMemCache -> set($key,json_encode($m),60);
+                    $oRedis -> set($key,json_encode($m),60);
                     return array_merge(array("return"=>1),$m,array("cache"=>0));
                 }
 

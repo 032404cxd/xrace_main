@@ -100,14 +100,11 @@ class Xrace_Race extends Base_Widget
 	public function getRaceCatalogList($Display = 0,$fields = "*",$Cache = 0,$wherePermission = "")
 	{
 	    $oRedis = new Base_Cache_Redis("xrace");
-	    //$Cache = 0;
         //如果需要获取缓存
         if($Cache == 1)
         {
-            echo "777";
             //获取缓存
             $m = $oRedis->get("RaceCatalogList");
-            var_dump($m);
             //缓存解开
             $RaceCatalogList = json_decode($m,true);
             //如果数据为空

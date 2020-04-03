@@ -10,8 +10,9 @@
 //@todo:
 class Base_Cache_Redis implements Base_Cache_Interface
 {	
-	  var $handler;
+    var $handler;
     var $options;
+    var $connections;
     /**
      * 架构函数
      * @param array $options 缓存参数
@@ -20,21 +21,29 @@ class Base_Cache_Redis implements Base_Cache_Interface
     function __construct($server) {
         if ( !extension_loaded('redis') ) {
             throw new Exception('没有加载redis扩展！');
-        }           
-        $this->handler = new Redis;
+        }
+        //$connections = [];
         $CacheConf = (@include dirname(dirname(dirname(dirname(dirname(__FILE__)))))."/CommonConfig/cacheConfig.php");
-        $this->handler->connect($CacheConf['REDIS_SERVER'],$CacheConf['REDIS_PORT']);
-        $this->handler->auth($CacheConf['REDIS_PASSWORD']);
+        if(is_array($CacheConf['REDIS_SERVER']))
+        {
+            foreach($CacheConf['REDIS_SERVER'] as $k => $r)
+            {
+                $this->handler = new Redis;
+                $this->handler->connect($r,$CacheConf['REDIS_PORT']);
+                $this->handler->auth($CacheConf['REDIS_PASSWORD']);
+                $this->connections[$k] = $this->handler;
+            }
+        }
     }
     public function test()
     {
 	    //这里开始使用redis的功能，就是设置一下
-			$this->handler->set('name1', 'www.51projob.com');
-			$this->handler->set('name2', 'www.crazyant.com');
+			$this->set('name1', 'www.51projob.com');
+			$this->set('name2', 'www.crazyant.com');
 			
 			echo "通过get方法获取ß到键的值：<br>"
-				.$this->handler->get('name1')."<br>"
-				.$this->handler->get('name2');	
+				.$this->get('name1')."<br>"
+				.$this->get('name2');
     }
     /**
      * 读取缓存
@@ -43,7 +52,9 @@ class Base_Cache_Redis implements Base_Cache_Interface
      * @return mixed
      */
     public function get($name) {
-        return $this->handler->get($name);
+
+        $r = $this->connections[array_rand($this->connections,1)];
+        return $r->get($name);
     }
 
     /**
@@ -55,10 +66,9 @@ class Base_Cache_Redis implements Base_Cache_Interface
      * @return boolen
      */
     public function set($name, $value,  $expire = 1) {
-        if(is_null($expire)) {
-        }
-        if($this->handler->set($name, $value,  $expire)) {
-            return true;
+        foreach($this->connections as $r)
+        {
+            $r->set($name, $value,  $expire);
         }
         return false;
     }
@@ -84,29 +94,4 @@ class Base_Cache_Redis implements Base_Cache_Interface
     public function clear() {
         return $this->handler->flush();
     }
-    
-    /**
-     * 缓存配置文件
-     * @access public
-     * @return boolen
-     */
-    function load($cachename, $id='id', $orderby='') {
-    	$arraydata = $this->get($cachename);
-    	if (!$arraydata) {
-    		$sql = 'SELECT * FROM ' . DB_TABLEPRE . $cachename;
-    		$orderby && $sql.=" ORDER BY $orderby ASC";
-    		$query = $this->options['db']->query($sql);
-    		while ($item = $this->options['db']->fetch_array($query)) {
-    			if (isset($item['k'])) {
-    				$arraydata[$item['k']] = $item['v'];
-    			} else {
-    				$arraydata[$item[$id]] = $item;
-    			}
-    		}
-    		$this->set($cachename, $arraydata);
-    	}
-    	return $arraydata;
-    }
-
-
 }

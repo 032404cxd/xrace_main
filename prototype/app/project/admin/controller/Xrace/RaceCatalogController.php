@@ -30,10 +30,11 @@ class Xrace_RaceCatalogController extends AbstractController
 	//赛事列表页面
 	public function indexAction()
 	{
-		//检查权限
+	    //检查权限
 		$PermissionCheck = $this->manager->checkMenuPermission(0);
 		if($PermissionCheck['return'])
 		{
+            //$upload = \App\Libraries\Oss\OssClientFile::uploadMatchCdn($content_pic_s,"public/Public/image/".$content_pic_s);
 		    $DataPermissionListWhere = $this->manager->getDataPermissionByGroupWhere();
 			//当前站点根域名
 			$RootUrl = "http://".$_SERVER['HTTP_HOST'];
@@ -41,7 +42,7 @@ class Xrace_RaceCatalogController extends AbstractController
 			$RaceCatalogList  = $this->oRace->getRaceCatalogList(0,"*",0,$DataPermissionListWhere);
 			foreach($RaceCatalogList as $RaceCatalogId => $RaceCatalogInfo)
 			{
-				$RaceCatalogList[$RaceCatalogId]['RaceCatalogName'].=($RaceCatalogInfo['Display'])?"":"(隐藏)";
+			    $RaceCatalogList[$RaceCatalogId]['RaceCatalogName'].=($RaceCatalogInfo['Display'])?"":"(隐藏)";
 				$RaceCatalogList[$RaceCatalogId]['RankingListUrl'] = "<a href='".Base_Common::getUrl('','xrace/race.catalog','ranking.list',array('RaceCatalogId'=>$RaceCatalogId)) ."'>排名</a>";
 
             }
@@ -155,6 +156,11 @@ class Xrace_RaceCatalogController extends AbstractController
 			$upload = $oUpload->upload('RaceCatalogIcon');
 			$res[1] = $upload->resultArr;
 			$path = isset( $res[1][1] ) ? $res[1][1]:array('path'=>"");
+            /*
+			include('Third/oss/OssClientFile.php');
+            $oss = app\lib\Third\oss\ossClientFile::uploadMatchCdn($path['path_root'],$path['path'],$this->config->oss);
+            $url = $oss['info']['url'];
+            */
 			//如果正确上传，就保存文件路径
 			if(strlen($path['path'])>2)
 			{

@@ -18,6 +18,7 @@ define('__APP_TPL_DIR__',__APP_ROOT_DIR__ . '/tpl/');
 );
 
 require_once 'Base/Common.php';
+require_once '../../vendor/autoload.php';
 
 Base_Common::init(array(
     'timezone' => 'Asia/Shanghai',
