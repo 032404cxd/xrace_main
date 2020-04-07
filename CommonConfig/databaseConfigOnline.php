@@ -4,6 +4,4 @@ define(PORT_LOCAL,3306);
 define(USER_LOCAL,'dbo16');
 define(PASSWORD_LOCAL,'xrAec95R');
 
-define(USER_LOCAL_RC,'rcdbuser');
-define(PASSWORD_LOCAL_RC,'Sep17MyYgL');
 ?>
