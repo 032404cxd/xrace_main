@@ -71,17 +71,10 @@ $db['xrace_credit'][0] = array(
 	'database' => 'xrace_credit',
 );
 
-$db['rc_config'][0] = array(
-    'host' => HOST_LOCAL,
-    'user' => USER_LOCAL_RC,
-    'password' => PASSWORD_LOCAL_RC,
-    'port' => PORT_LOCAL,
-    'database' => 'rc_config',
-);
 $db['xrace_race'][0] = array(
     'host' => HOST_LOCAL,
-    'user' => USER_LOCAL_RC,
-    'password' => PASSWORD_LOCAL_RC,
+    'user' => USER_LOCAL,
+    'password' => PASSWORD_LOCAL,
     'port' => PORT_LOCAL,
     'database' => 'xrace_race',
 );
