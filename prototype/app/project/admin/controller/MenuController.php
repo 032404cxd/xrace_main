@@ -97,7 +97,6 @@ class MenuController extends AbstractController
         
 		$name = $this->request->name;
 		$link = $this->request->link;
-		$sign = $this->request->sign;
 		$sort = $this->request->sort;
         
         foreach($_REQUEST as $key=>$val){
@@ -228,7 +227,6 @@ class MenuController extends AbstractController
 		$menu_id = $this->request->menu_id;
 		$name = $this->request->name;
 		$link = $this->request->link;
-		$sign = $this->request->sign;
 		$sort = $this->request->sort;
 		$permission_list = $this->request->permission_list;
 
