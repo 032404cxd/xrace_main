@@ -1,6 +1,4 @@
 <?php
-//ALTER TABLE `config_sports_type` ADD `SpeedDisplayType` VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '速度显示单位' AFTER `SportsTypeName`;
-
 /**
  * 运动管理
  * @author Chen<cxd032404@hotmail.com>
