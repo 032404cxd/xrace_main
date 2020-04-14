@@ -18,17 +18,16 @@ class Widget_Menu extends Base_Widget
 	public function insert(array $bind)
 	{
 		$insertStruct = array(
-			'name' => empty($bind['name']) ? '' : $bind['name'],
-			'link' => empty($bind['link']) ? '' : $bind['link'],
-			'parent' => empty($bind['parent']) ? 0 : intval($bind['parent']),
-			'sort' => empty($bind['sort']) ? 80 : intval($bind['sort']),
-			'sign' => empty($bind['sign']) ? '' : $bind['sign'],
+            'name' => empty($bind['name']) ? '' : $bind['name'],
+            'link' => empty($bind['link']) ? '' : $bind['link'],
+            'parent' => empty($bind['parent']) ? 0 : intval($bind['parent']),
+            'sort' => empty($bind['sort']) ? 80 : intval($bind['sort']),
+            'permission_List' => empty($bind['permission_list']) ? "" : trim($bind['permission_list']),
 		);
 
 		if (isset($bind['menu_id'])) {
 			$insertStruct['menu_id']=$bind['menu_id'];
 		}
-
 		return $this->db->insert($this->getDbTable(), $insertStruct);
 	}
 

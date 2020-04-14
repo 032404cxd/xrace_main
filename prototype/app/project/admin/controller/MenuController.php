@@ -247,7 +247,6 @@ class MenuController extends AbstractController
 		$bind['parent'] = $parent;
 		$bind['sort'] = $sort;
 		$bind['permission_list'] = trim($permission_list);
-
 		$res = $Menu->update($menu_id,$bind);
 		if (!$res) {
 			$response = array('errno' => 9);
