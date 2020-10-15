@@ -156,11 +156,6 @@ class Xrace_RaceCatalogController extends AbstractController
 			$upload = $oUpload->upload('RaceCatalogIcon');
 			$res[1] = $upload->resultArr;
 			$path = isset( $res[1][1] ) ? $res[1][1]:array('path'=>"");
-            /*
-			include('Third/oss/OssClientFile.php');
-            $oss = app\lib\Third\oss\ossClientFile::uploadMatchCdn($path['path_root'],$path['path'],$this->config->oss);
-            $url = $oss['info']['url'];
-            */
 			//如果正确上传，就保存文件路径
 			if(strlen($path['path'])>2)
 			{

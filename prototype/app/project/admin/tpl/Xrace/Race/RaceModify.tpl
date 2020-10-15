@@ -34,7 +34,7 @@
 			<input type="hidden" name="CurrentRaceGroupId" id="CurrentRaceGroupId" value="0" />
 			{tpl:else}
 	<tr class="hover"><th align="center" class="rowtip">比赛时间</th>
-		<th align="center" class="rowtip"><input type="text" name="StartTime" value="{tpl:$RaceInfo.StartTime/}" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >.<input name="RaceStartMicro" type="text" class="span1" id="RaceStartMicro" value = "{tpl:$RaceInfo.comment.RaceStartMicro func="sprintf('%03d',@@)"/}" />-<input type="text" name="EndTime" value="{tpl:$RaceInfo.EndTime/}" value="" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
+		<th align="center" class="rowtip"><input type="text" name="StartTime" value="{tpl:$RaceInfo.StartTime/}" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" >.<input name="RaceStartMicro" type="text" class="span1" id="RaceStartMicro" value = "{tpl:$RaceInfo.comment.RaceStartMicro func="sprintf('%03d',@@)"/}" />-<input type="text" name="EndTime" value="{tpl:$RaceInfo.EndTime/}" class="input-medium"   onFocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></th></tr>
 	<input type="hidden" name="RaceGroupId" id="RaceGroupId" value="{tpl:$RaceInfo.RaceGroupId/}" />
 			<input type="hidden" name="CurrentRaceGroupId" id="CurrentRaceGroupId" value="{tpl:$RaceGroupId/}" />
 			{/tpl:if}

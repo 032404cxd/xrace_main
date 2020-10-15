@@ -2295,7 +2295,10 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
-			//比赛ID
+
+
+
+            //比赛ID
 			$RaceId = intval($this->request->RaceId);
 			//获取BIB号码列表
 			$UserList = $this->request->from('UserList');
@@ -2364,7 +2367,7 @@ class Xrace_RaceStageController extends AbstractController
 		$PermissionCheck = $this->manager->checkMenuPermission("RaceModify");
 		if($PermissionCheck['return'])
 		{
-			//比赛ID
+		    //比赛ID
 			$RaceId = intval($this->request->RaceId);
 			//比赛分组
 			$RaceGroupId = intval($this->request->RaceGroupId);
